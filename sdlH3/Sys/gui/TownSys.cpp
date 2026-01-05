@@ -1,0 +1,573 @@
+#include "TownSys.h"
+#include "CameraSys.h"
+#include "Cfg/HeroCfg.h"
+#include "Cfg/TownCfg.h"
+#include "Comp/HeroComp.h"
+#include "Comp/ObjectComp.h"
+#include "Comp/PlayerIdComp.h"
+#include "Comp/PositionComp.h"
+#include "Comp/TownComp.h"
+#include "Ent/Ent.h"
+#include "Enum/Enum.h"
+#include "Global/Global.h"
+#include "H3mLoader/H3mObject.h"
+#include "Pcx/Pcx.h"
+#include "SDL3/SDL_rect.h"
+#include "SDL3/SDL_render.h"
+#include "SDL3/SDL_scancode.h"
+#include "Sys/gui/AdvMapSys.h"
+#include "Window/Window.h"
+#include "World/World.h"
+#include "entt/entity/fwd.hpp"
+#include <cstdint>
+#include <functional>
+#include <optional>
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
+static std::string mouseAreaStr = "";
+
+void TownSys::split() {}
+
+static void close() {
+  World::enterAdvScrn();
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  if (townComp->heroEnt[1].has_value()) {
+    auto heroEnt = townComp->heroEnt[1].value();
+    AdvMapSys::heroFocus(heroEnt, level);
+  }
+}
+
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> v;
+  Button b;
+
+  auto t = Global::defCache["tsbtns.def/0"];
+
+  std::vector<SDL_Texture *> vec;
+  vec = {t[0], t[1], t[2]};
+  b.textures = vec;
+  b.r = {744, 382, 48, 28};
+  b.func = close;
+  b.disable = false;
+  v.push_back(b);
+
+  vec = {t[4], t[5]};
+  b.textures = vec;
+  b.r = {744, 544, 48, 28};
+  b.func = close;
+  b.disable = false;
+  v.push_back(b);
+
+  if (Global::townScnType == (uint8_t)Enum::SCNTYPE::POP) {
+    for (auto &b : v) {
+      b.disable = true;
+    }
+  }
+
+  return v;
+}
+
+static void drawScrn() {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto texture = Global::pcxCache[TownCfg::backGroundsStr[townComp->id]][0];
+  SDL_FRect posRect = {leftUp.x, leftUp.y, 800, 374};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  posRect = {leftUp.x, leftUp.y + 374, 800, 226};
+  texture = Global::pcxCache["townScrn.pcx"][Global::playerId];
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  // add default ani
+  auto builds = TownCfg::townDefaultAni[townComp->id];
+  for (auto &[k, v] : townComp->buildings) {
+    builds.insert(k);
+  }
+  mouseAreaStr = "";
+  SDL_FRect mouseAreaRect;
+  static std::unordered_map<std::string, std::vector<bool>> townAreaBuilds[8];
+  for (auto buildStr : TownCfg::townZ[townComp->id]) {
+    if (builds.contains(buildStr)) {
+      auto textures =
+          Global::defCache[TownCfg::townBuilds[townComp->id].at(buildStr) +
+                           "/0"];
+      auto frame = Global::bldFrameIndex % textures.size();
+      auto townPoint = TownCfg::townPoint[townComp->id].at(buildStr);
+      posRect = {leftUp.x + townPoint.x, leftUp.y + townPoint.y,
+                 static_cast<float>(textures[frame]->w),
+                 static_cast<float>(textures[frame]->h)};
+      SDL_RenderTexture(Window::renderer, textures[0], nullptr, &posRect);
+      SDL_RenderTexture(Window::renderer, textures[frame], nullptr, &posRect);
+      SDL_FPoint mousePoint = {Window::mouseX, Window::mouseY};
+      if (posRect.x <= mousePoint.x && mousePoint.x < posRect.x + posRect.w &&
+          posRect.y <= mousePoint.y && mousePoint.y < posRect.y + posRect.h) {
+        uint32_t point = (mousePoint.x - posRect.x) +
+                         textures[0]->w * (mousePoint.y - posRect.y);
+        if (!townAreaBuilds[townComp->id].contains(buildStr) &&
+            TownCfg::townBorder[townComp->id].contains(buildStr)) {
+          townAreaBuilds[townComp->id][buildStr] =
+              Pcx("./Data/H3bitmap.lod/" +
+                  TownCfg::townArea[townComp->id].at(buildStr))
+                  .loadArea();
+        }
+        if (townAreaBuilds[townComp->id][buildStr][point]) {
+          mouseAreaStr = buildStr;
+          mouseAreaRect = posRect;
+        }
+      }
+    }
+  }
+  if (mouseAreaStr != "") {
+    texture =
+        Global::pcxCache[TownCfg::townBorder[townComp->id].at(mouseAreaStr)][0];
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &mouseAreaRect);
+  }
+}
+
+static void drawBorder() {
+  // 绘制边框
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  SDL_FRect posRect = {leftUp.x, leftUp.y, 800, 374};
+  SDL_SetRenderDrawColor(Window::renderer, 247, 222, 123, 255); //
+  SDL_RenderRect(Window::renderer, &posRect);
+}
+
+static void drawButton() {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  auto v = buttonInfo();
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
+  auto top = (*topFunc.target<bool (*)()>() == TownSys::run);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+}
+
+void drawCreature(uint8_t i,
+                  std::vector<std::pair<uint16_t, uint32_t>> *creature) {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  SDL_FRect posRect;
+  for (uint8_t m = 0; m < creature->size(); m++) {
+    auto [id, count] = creature->at(m);
+    if (count == 0) {
+      continue;
+    }
+    posRect = {leftUp.x + 304 + m * 62, leftUp.y + 387 + i * 96, 58, 64};
+    auto texture = Global::defCache["TWCRPORT.def/0"][id + 2];
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  }
+}
+
+static void drawHeroPor() {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  SDL_FRect posRect;
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  for (auto i = 0; i <= 1; i++) {
+    if (townComp->heroEnt[i].has_value()) {
+      auto heroEnt = townComp->heroEnt[i].value();
+      auto heroComp = &registry.get<HeroComp>(heroEnt);
+      posRect = {leftUp.x + 242, leftUp.y + 387 + i * 96, 58, 64};
+      auto texture =
+          Global::pcxCache[HeroCfg::heroLargePor[heroComp->portrait]][0];
+      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+      drawCreature(i, &heroComp->creatures);
+    } else if (i == 0) {
+      auto playerId = registry.get<PlayerIdComp>(townEnt).id;
+      posRect = {leftUp.x + 241, leftUp.y + 387, 58, 64};
+      SDL_RenderTexture(Window::renderer,
+                        Global::defCache["CREST58.def/0"][playerId], nullptr,
+                        &posRect);
+      drawCreature(i, &townComp->garCreatures);
+    }
+  }
+  if (Global::townScnIndex != 0xff) {
+    auto i = Global::townScnIndex / 8;
+    auto m = Global::townScnIndex % 8;
+    posRect = {leftUp.x + 242 + m * 62, leftUp.y + 387 + i * 96, 58, 64};
+    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255);
+    SDL_RenderRect(Window::renderer, &posRect);
+  }
+}
+static void buildAnimate() {
+  Global::bldFrameTime += Window::deltaTime;
+  if (Global::bldFrameTime >= 120) {
+    Global::bldFrameTime = 0;
+    Global::bldFrameIndex++;
+  }
+}
+
+bool TownSys::run() {
+  buildAnimate();
+  drawScrn();
+  drawBorder();
+  drawButton();
+  drawHeroPor();
+  return true;
+}
+
+static void clickCapitol(bool leftClick) { World::enterTownHall(); }
+
+static void clickBlackSmith(bool leftClick) {}
+
+const static std::unordered_map<std::string, std::function<void(bool)>>
+    buildsFunc = {
+        {"capitol", clickCapitol},
+        {"blacksmith", clickBlackSmith},
+};
+
+// 修正版本：全局累加相同种类的数量
+static std::vector<std::pair<uint16_t, uint32_t>>
+mergeCreatures(const std::vector<std::pair<uint16_t, uint32_t>> &vec1,
+               const std::vector<std::pair<uint16_t, uint32_t>> &vec2) {
+
+  std::vector<std::pair<uint16_t, uint32_t>> v;
+  for (uint8_t i = 0; i < vec1.size(); i++) {
+    auto p1 = vec1[i];
+    auto p2 = vec2[i];
+    if (p1.second == 0 || p2.second == 0) {
+      uint16_t id = p1.first == 0xffff ? p2.first : p1.first;
+      v.push_back({id, p1.second + p2.second});
+    } else if (p1.first == p2.first) {
+      v.push_back({p1.first, p1.second + p2.second});
+    } else {
+      v.push_back(p1);
+      v.push_back(p2);
+    }
+  }
+  while (v.size() > 7) {
+    auto last = v.back();
+    for (uint8_t i = 6; i >= 0; i--) {
+      if (v[i].first == last.first) {
+        v[i].second += last.second;
+        v.pop_back();
+        break;
+      } else if (v[i].second == 0) {
+        v[i] = last;
+        v.pop_back();
+        break;
+      }
+    }
+  }
+  return v;
+}
+
+static void heroIn(entt::entity heroEnt, entt::entity townEnt) {
+  auto &registry = World::registrys[World::level];
+  auto heroComp = &registry.get<HeroComp>(heroEnt);
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto heroComeIn = [&]() {
+    registry.get<PositionComp>(heroEnt).z = INT32_MIN;
+    heroComp->curEnt = townEnt;
+    registry.get<PositionComp>(heroComp->flagEnt).z = INT32_MIN;
+    for (auto i = 0; i < Global::heros[Global::playerId].size(); i++) {
+      if (Global::heros[Global::playerId][i].second == heroEnt &&
+          Global::heros[Global::playerId][i].first == World::level) {
+        Global::heros[Global::playerId].erase(
+            Global::heros[Global::playerId].begin() + i);
+        break;
+      }
+    }
+    townComp->heroEnt[0] = heroEnt;
+    townComp->garCreatures.assign(7, {0xffff, 0});
+    Global::herosIndex[Global::playerId] = 0xff;
+    townComp->heroEnt[1] = std::nullopt;
+    World::needSort = true;
+  };
+  if (townComp->garCreatures.empty()) {
+    heroComeIn();
+  } else {
+    std::set<uint16_t> hCreatureSet;
+    for (auto [type, count] : townComp->garCreatures) {
+      if (count > 0) {
+        hCreatureSet.insert(type);
+      }
+    }
+    std::set<uint16_t> tCreatureSet;
+    for (auto [type, count] : heroComp->creatures) {
+      if (count > 0) {
+        tCreatureSet.insert(type);
+      }
+    }
+    std::set<uint16_t> aCreatureSet;
+    aCreatureSet.insert(hCreatureSet.begin(), hCreatureSet.end());
+    aCreatureSet.insert(tCreatureSet.begin(), tCreatureSet.end());
+    if (aCreatureSet.size() <= 7) {
+      auto creature =
+          mergeCreatures(townComp->garCreatures, heroComp->creatures);
+      heroComp->creatures = creature;
+      heroComeIn();
+    }
+  }
+}
+
+static void heroOut(entt::entity heroEnt, entt::entity townEnt) {
+  auto &registry = World::registrys[World::level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  townComp->heroEnt[0] = std::nullopt;
+  townComp->heroEnt[1] = heroEnt;
+  townComp->garCreatures.assign(7, {0xffff, 0});
+  auto positionComp = &registry.get<PositionComp>(heroEnt);
+  H3mObject object;
+  object.printPriority = 0;
+  object.id = (uint32_t)ObjectType::HERO;
+  object.position[0] = registry.get<ObjectComp>(heroEnt).x;
+  object.position[1] = registry.get<ObjectComp>(heroEnt).y;
+  object.usedTiles = {{0x01, 0x07}};
+  positionComp->z = Ent::loadZorder(0, object);
+  auto heroComp = &registry.get<HeroComp>(heroEnt);
+  heroComp->curEnt = townEnt;
+  registry.get<PositionComp>(heroComp->flagEnt).z = positionComp->z;
+  Global::heros[Global::playerId].push_back({World::level, heroEnt});
+  World::needSort = true;
+}
+
+static void heroSwap() {
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto h0 = townComp->heroEnt[0].value();
+  auto h1 = townComp->heroEnt[1].value();
+
+  heroIn(h1, townEnt);
+  heroOut(h0, townEnt);
+
+  townComp->heroEnt[0] = h1;
+  townComp->heroEnt[1] = h0;
+}
+
+static bool clickBuild(bool leftClick) {
+  if (mouseAreaStr != "") {
+    // 说明点击到了建筑上
+    buildsFunc.at(mouseAreaStr)(leftClick);
+    return true;
+  }
+  return false;
+}
+
+static bool clickHeroCres(bool leftClick) {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  SDL_FPoint point = {static_cast<float>(static_cast<int>(Window::mouseX)),
+                      static_cast<float>(static_cast<int>(Window::mouseY))};
+
+  // 检测点击位置
+  uint8_t index = 0xFF;
+  for (uint8_t i = 0; i < 2; i++) {
+    for (uint8_t m = 0; m <= 7; m++) {
+      SDL_FRect posRect = {leftUp.x + 242 + m * 62, leftUp.y + 387 + i * 96, 58,
+                           64};
+      if (SDL_PointInRectFloat(&point, &posRect)) {
+        index = i * 8 + m;
+        break;
+      }
+    }
+    if (index != 0xFF)
+      break;
+  }
+
+  if (index == 0xFF)
+    return false;
+
+  auto [i, m] = std::pair{index / 8, index % 8};
+  auto [li, lm] = std::pair{Global::townScnIndex / 8, Global::townScnIndex % 8};
+
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto *townComp = &registry.get<TownComp>(townEnt);
+
+  // 右键点击处理
+  if (!leftClick) {
+    if (townComp->heroEnt[i].has_value()) {
+      auto heroEnt = townComp->heroEnt[i].value();
+      if (m == 0) {
+        World::enterHeroScrn(level, heroEnt,
+                             static_cast<uint8_t>(Enum::SCNTYPE::POP));
+      } else {
+        auto *heroComp = &registry.get<HeroComp>(heroEnt);
+        World::enterCreature({level, heroEnt}, heroComp->creatures[m - 1],
+                             static_cast<uint8_t>(Enum::CRETYPE::POP_HERO));
+      }
+    } else if (m >= 1 && i == 0) {
+      World::enterCreature(townComp->garCreatures[m - 1],
+                           static_cast<uint8_t>(Enum::CRETYPE::POP_DWE));
+    }
+    return true;
+  }
+
+  // 左键点击处理
+  if (Global::townScnIndex != 0xFF) {
+    // 获取第一次点击的目标
+    struct FirstClickTarget {
+      std::optional<entt::entity> hero;
+      std::pair<uint16_t, uint32_t> *creature = nullptr;
+    } firstClick;
+
+    if (townComp->heroEnt[li].has_value()) {
+      auto heroEnt = townComp->heroEnt[li].value();
+      if (lm == 0) {
+        firstClick.hero = heroEnt;
+      } else {
+        auto *heroComp = &registry.get<HeroComp>(heroEnt);
+        firstClick.creature = &heroComp->creatures[lm - 1];
+      }
+    } else if (lm >= 1) {
+      firstClick.creature = &townComp->garCreatures[lm - 1];
+    }
+
+    // 获取第二次点击的目标
+    struct SecondClickTarget {
+      std::optional<entt::entity> hero;
+      std::pair<uint16_t, uint32_t> *creature = nullptr;
+    } secondClick;
+
+    if (townComp->heroEnt[i].has_value()) {
+      auto heroEnt = townComp->heroEnt[i].value();
+      if (m == 0) {
+        secondClick.hero = heroEnt;
+      } else {
+        auto *heroComp = &registry.get<HeroComp>(heroEnt);
+        secondClick.creature = &heroComp->creatures[m - 1];
+      }
+    } else if (m >= 1 && i == 0) {
+      secondClick.creature = &townComp->garCreatures[m - 1];
+    }
+
+    // 处理不同的点击组合
+    bool processed = false;
+
+    // 双击英雄头像
+    if (secondClick.hero && firstClick.hero &&
+        secondClick.hero == firstClick.hero) {
+      World::enterHeroScrn(level, *secondClick.hero,
+                           static_cast<uint8_t>(Enum::SCNTYPE::MOD));
+      processed = true;
+    }
+    // 英雄与空地交互
+    else if (!secondClick.hero && firstClick.hero) {
+      if (!secondClick.creature) {
+        if (townComp->heroEnt[0].has_value()) {
+          heroOut(*firstClick.hero, townEnt);
+        } else {
+          heroIn(*firstClick.hero, townEnt);
+        }
+        processed = true;
+      } else if (secondClick.creature->second == 0) {
+        processed = true;
+      }
+    }
+    // 交换英雄
+    else if (secondClick.hero && firstClick.hero) {
+      heroSwap();
+      processed = true;
+    }
+    // 双击生物
+    else if (secondClick.creature && firstClick.creature && i == li &&
+             m == lm) {
+      if (townComp->heroEnt[i].has_value()) {
+        auto heroEnt = townComp->heroEnt[i].value();
+        World::enterCreature({level, heroEnt}, *secondClick.creature,
+                             static_cast<uint8_t>(Enum::CRETYPE::MOD_HERO));
+      } else {
+        World::enterCreature(*secondClick.creature,
+                             static_cast<uint8_t>(Enum::CRETYPE::MOD_HERO));
+      }
+      processed = true;
+    }
+    // 交换/合并生物
+    else if (secondClick.creature && firstClick.creature) {
+      if (secondClick.creature->first == firstClick.creature->first) {
+        secondClick.creature->second += firstClick.creature->second;
+        *firstClick.creature = {0xFF, 0};
+      } else {
+        std::swap(*secondClick.creature, *firstClick.creature);
+      }
+      processed = true;
+    }
+    // 无效点击
+    else if (!secondClick.hero) {
+      processed = true;
+    }
+
+    if (processed) {
+      index = 0xFF;
+    }
+  } else {
+    // 首次点击验证
+    if (townComp->heroEnt[i].has_value()) {
+      auto heroEnt = townComp->heroEnt[i].value();
+      auto *heroComp = &registry.get<HeroComp>(heroEnt);
+      if (m != 0 && heroComp->creatures[m - 1].second == 0) {
+        index = 0xFF;
+      }
+    } else if (i == 0 &&
+               (m == 0 || townComp->garCreatures[m - 1].second == 0)) {
+      index = 0xFF;
+    } else if (i == 1) {
+      index = 0xFF;
+    }
+  }
+  Global::townScnIndex = index;
+  return true;
+}
+
+bool TownSys::leftMouseUp(float x, float y) {
+  if (Global::townScnType == (uint8_t)Enum::SCNTYPE::POP) {
+    return false;
+  }
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  auto v = buttonInfo();
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+    return false;
+  }
+  if (clickBuild(true)) {
+    return false;
+  }
+  if (clickHeroCres(true)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool TownSys::rightMouseUp(float x, float y) {
+  if (Global::townScnType == (uint8_t)Enum::SCNTYPE::POP) {
+    World::iterateSystems.push_back([]() -> bool {
+      World::exitScrn();
+      return false;
+    });
+  }
+  return false;
+}
+
+bool TownSys::rightMouseDown(float x, float y) {
+  if (Global::townScnType == (uint8_t)Enum::SCNTYPE::POP) {
+    return false;
+  }
+  if (clickHeroCres(false)) {
+    return false;
+  }
+  return true;
+}
+
+bool TownSys::keyUp(uint16_t key) {
+  switch (key) {
+  case SDL_SCANCODE_ESCAPE: {
+    close();
+    break;
+  }
+  default:
+    break;
+  }
+  return true;
+}

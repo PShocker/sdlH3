@@ -1,0 +1,204 @@
+#include "TavernSys.h"
+#include "AdvMapSys.h"
+#include "Cfg/HeroCfg.h"
+#include "Comp/HeroComp.h"
+#include "Comp/ObjectComp.h"
+#include "Ent/Ent.h"
+#include "Enum/Enum.h"
+#include "Global/Global.h"
+#include "Lang/Lang.h"
+#include "SDL3/SDL_render.h"
+#include "SDL3/SDL_scancode.h"
+#include "Sys/FreeTypeSys.h"
+#include "Sys/gui/CursorSys.h"
+#include "Window/Window.h"
+#include "World/World.h"
+#include "entt/entity/entity.hpp"
+#include <cstdint>
+
+static bool canBuy() {
+  auto &r = Global::resources[Global::playerId][6];
+  if (r >= 2500) {
+    return true;
+  }
+  return false;
+}
+
+static void close() { World::exitScrn(); }
+
+static void buy() {
+  auto registry = &World::registrys[World::level];
+  Global::fadeCallBack = []() {
+    World::LMouseUpSysBak.pop_back();
+    World::LMouseDownSysBak.pop_back();
+    World::RMouseUpSysBak.pop_back();
+    World::RMouseDownSysBak.pop_back();
+    World::keyUpSysBak.pop_back();
+    Global::cursorBack.pop_back();
+    return true;
+  };
+  World::iterateSystems.pop_back();
+  World::iterateSystems.pop_back();
+  World::iterateSystemsBak.push_back(World::iterateSystems);
+  World::iterateSystemsBak.back().push_back(CursorSys::run);
+  World::iterateSystems.push_back([registry]() {
+    auto ent = Global::tavernHeros[Global::playerId][Global::goalIndex];
+    auto hComp = World::registrys[0].get<HeroComp>(ent);
+    auto heroEnt = Ent::loadHero(
+        hComp, Global::playerId, registry->get<ObjectComp>(Global::goalEnt).x,
+        registry->get<ObjectComp>(Global::goalEnt).y, World::level, 2, 0);
+    Global::heros[Global::playerId].push_back({World::level, heroEnt});
+    Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
+
+    World::registrys[0].destroy(ent);
+    return true;
+  });
+  Global::fadeRect = {0, 0, Global::viewPort.w - 199, Global::viewPort.h - 47};
+  World::iterateSystems.push_back(World::enterFadeScrn);
+  return;
+}
+
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> v;
+  Button b;
+
+  b.textures = Global::defCache["TPTAV01.DEF/0"];
+  b.r = {272, 355, 96, 54};
+  b.func = buy;
+  if (!canBuy()) {
+    b.disable = true;
+  } else {
+    b.disable = false;
+  }
+  v.push_back(b);
+
+  b.textures = Global::defCache["ICANCEL.DEF/0"];
+  b.r = {310, 428, 64, 30};
+  b.func = close;
+  b.disable = false;
+  v.push_back(b);
+
+  b.textures = Global::defCache["TPTAV02.DEF/0"];
+  b.r = {22, 428, 64, 32};
+  b.func = close;
+  b.disable = false;
+  v.push_back(b);
+
+  return v;
+}
+
+static void drawBackGround() {
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
+                    (Global::viewPort.h - 504) / 2};
+  auto texture = Global::pcxCache["TpTavern.pcx"][Global::playerId];
+  posRect = {leftUp.x, leftUp.y, 395, 504};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  auto strPool = *Lang::strPool[Global::langIndex];
+  FreeTypeSys::setSize(13);
+  FreeTypeSys::setColor(240, 224, 104, 255);
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
+                          strPool[926 + (uint8_t)ObjectType::TAVERN]);
+}
+
+const static std::vector<SDL_FRect> PorPosition = {
+    {72, 299, 58, 64},
+    {162, 299, 58, 64},
+};
+
+static void drawPortraits() {
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
+                    (Global::viewPort.h - 504) / 2};
+  auto &registry = World::registrys[World::level];
+
+  for (uint8_t i = 0; i < 2; i++) {
+    if (Global::tavernHeros[Global::playerId][i] == entt::null) {
+      continue;
+    }
+    auto heroEnt = Global::tavernHeros[Global::playerId][i];
+    auto heroComp = &World::registrys[0].get<HeroComp>(heroEnt);
+    auto texture =
+        Global::pcxCache[HeroCfg::heroLargePor[heroComp->portrait]][0];
+    posRect = {leftUp.x + PorPosition[i].x, leftUp.y + PorPosition[i].y,
+               static_cast<float>(texture->w), static_cast<float>(texture->h)};
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    if (Global::goalIndex == i) {
+      SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255);
+      SDL_SetRenderDrawBlendMode(Window::renderer, SDL_BLENDMODE_BLEND);
+      SDL_RenderRect(Window::renderer, &posRect);
+    }
+  }
+}
+
+static void drawButton() {
+
+  SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
+                    (Global::viewPort.h - 504) / 2};
+  auto v = buttonInfo();
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
+  auto top = (*topFunc.target<bool (*)()>() == TavernSys::run);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+}
+
+bool TavernSys::run() {
+  drawBackGround();
+  drawPortraits();
+  drawButton();
+  return true;
+}
+
+bool TavernSys::keyUp(uint16_t key) {
+  switch (key) {
+  case SDL_SCANCODE_ESCAPE: {
+    close();
+    break;
+  }
+  default:
+    break;
+  }
+  return true;
+}
+
+static bool clickHero(bool leftClick) {
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
+                    (Global::viewPort.h - 504) / 2};
+  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
+  for (uint8_t i = 0; i < PorPosition.size(); i++) {
+    posRect = PorPosition[i];
+    posRect.x += leftUp.x;
+    posRect.y += leftUp.y;
+    if (SDL_PointInRectFloat(&point, &posRect)) {
+      if (leftClick) {
+        Global::goalIndex = i;
+      } else {
+        auto heroEnt = Global::tavernHeros[Global::playerId][i];
+        World::enterHeroScrn(0, heroEnt, (uint8_t)Enum::SCNTYPE::POP);
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
+bool TavernSys::leftMouseUp(float x, float y) {
+  SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
+                    (Global::viewPort.h - 504) / 2};
+  auto v = buttonInfo();
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+    return false;
+  }
+  if (clickHero(true)) {
+    return false;
+  }
+  return true;
+}
+
+bool TavernSys::rightMouseDown(float x, float y) {
+  if (clickHero(false)) {
+    return false;
+  }
+  return true;
+}

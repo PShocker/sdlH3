@@ -1,0 +1,15 @@
+#pragma once
+
+#include "SDL3/SDL_pixels.h"
+struct PlayerPal {
+  static inline SDL_Color palette[8][32];
+  static void init();
+
+  static inline SDL_Color colors[] = {
+      {0xff, 0, 0, 255},       // 玩家1,红色
+      {0x31, 0x52, 0xff, 255}, // 玩家2,蓝色
+      {0x9c, 0x73, 0x52, 255}, // 玩家3,褐色
+      {0x42, 0x94, 0x29, 255}, //....
+      {0xff, 0x84, 0, 255},    {0x8c, 0x29, 0xa5, 255}, {0x09, 0x9c, 0xa5, 255},
+      {0xc6, 0x7b, 0x8c, 255}, {0x84, 0x84, 0x84, 255}};
+};

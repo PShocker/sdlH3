@@ -1,0 +1,12 @@
+[submodule "3rdparty/SDL"]
+	path = 3rdparty/SDL
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "3rdparty/entt"]
+	path = 3rdparty/entt
+	url = https://github.com/skypjack/entt.git
+[submodule "3rdparty/freetype"]
+	path = 3rdparty/freetype
+	url = https://github.com/freetype/freetype.git
+[submodule "3rdparty/zlib"]
+	path = 3rdparty/zlib
+	url = https://github.com/madler/zlib.git

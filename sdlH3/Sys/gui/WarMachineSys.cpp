@@ -1,0 +1,158 @@
+#include "WarMachineSys.h"
+#include "AdvMapSys.h"
+#include "Cfg/CreatureCfg.h"
+#include "Cfg/WarMachineCfg.h"
+#include "Comp/HeroComp.h"
+#include "Enum/Enum.h"
+#include "Global/Global.h"
+#include "Lang/Lang.h"
+#include "SDL3/SDL_rect.h"
+#include "SDL3/SDL_render.h"
+#include "Sys/FreeTypeSys.h"
+#include "WarMachineFacSys.h"
+#include "Window/Window.h"
+#include "World/World.h"
+#include "entt/entity/fwd.hpp"
+#include <cstdint>
+#include <string>
+
+static void close() { World::exitScrn(); }
+
+static void dismiss() {
+  auto index = Global::goalIndex;
+  entt::entity heroEnt = Global::heroEnt;
+  if (Global::creIndex) {
+    heroEnt = Global::goalEnt;
+  }
+  Global::confirmCallBack = [heroEnt, index]() {
+    auto registry = &World::registrys[World::level];
+    auto heroComp = &registry->get<HeroComp>(heroEnt);
+    heroComp->creatures[index] = {0xffff, 0};
+  };
+  World::enterConfirm(100, 100, ((uint8_t)Enum::SCNTYPE::MOD));
+}
+
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> v;
+  if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
+      Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
+      Global::creType == (uint8_t)Enum::CRETYPE::POP_DWE) {
+    return v;
+  }
+  Button b;
+
+  b.textures = Global::defCache["hsbtns.DEF/0"];
+  b.r = {230, 236, 52, 36};
+  b.func = close;
+  b.disable = false;
+  v.push_back(b);
+
+  b.textures = Global::defCache["IVIEWCR2.DEF/0"];
+  b.r = {232, 188, 46, 32};
+  b.func = close;
+  b.disable = false;
+  v.push_back(b);
+
+  b.textures = Global::defCache["IViewCr.DEF/0"];
+  b.r = {180, 188, 46, 32};
+  b.func = close;
+  b.disable = false;
+  v.push_back(b);
+
+  return v;
+}
+
+static void drawBackGround() {
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
+                    static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
+  posRect = {leftUp.x, leftUp.y, 298, 311};
+  auto texture = Global::pcxCache["CrStkPu.pcx"][Global::playerId];
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  FreeTypeSys::setSize(13);
+  FreeTypeSys::setColor(248, 240, 216, 255);
+  auto strPool = *Lang::strPool[Global::langIndex];
+  FreeTypeSys::draw(leftUp.x + 153, leftUp.y + 46, strPool[2339]);
+  FreeTypeSys::draw(leftUp.x + 153, leftUp.y + 65, strPool[2340]);
+  FreeTypeSys::draw(leftUp.x + 153, leftUp.y + 84, strPool[2341]);
+  FreeTypeSys::draw(leftUp.x + 153, leftUp.y + 103, strPool[2342]);
+  FreeTypeSys::draw(leftUp.x + 153, leftUp.y + 122, strPool[2343]);
+  FreeTypeSys::draw(leftUp.x + 153, leftUp.y + 141, strPool[2344]);
+  FreeTypeSys::draw(leftUp.x + 153, leftUp.y + 160, strPool[2345]);
+}
+
+static void drawMachine() {
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
+                    static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
+  auto id = Global::crePair.first;
+  auto group = Global::creGroup;
+  auto defPath = WarMachineCfg::warMachineGraphics.at(id);
+  auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
+  WarMachineFacSys::drawMachine(leftUp.x + 20, leftUp.y + 47, id, group,
+                                Global::creFrameIndex % textures.size(), 0);
+}
+
+static void drawButton() {
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
+                    static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
+  auto v = buttonInfo();
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
+  auto top = (*topFunc.target<bool (*)()>() == WarMachineSys::run);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+}
+
+static void machAnimate() {
+  Global::creFrameTime += Window::deltaTime;
+  if (Global::creFrameTime >= 90) {
+    Global::creFrameTime = 0;
+    Global::creFrameIndex += 1;
+    // if (condition) {
+    // }
+  }
+}
+
+bool WarMachineSys::run() {
+  machAnimate();
+  drawBackGround();
+  drawMachine();
+  drawButton();
+  return true;
+}
+
+bool WarMachineSys::keyUp(uint16_t key) {
+  switch (key) {
+  case SDL_SCANCODE_ESCAPE: {
+    close();
+    break;
+  }
+  default:
+    break;
+  }
+  return true;
+}
+
+bool WarMachineSys::leftMouseUp(float x, float y) {
+  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
+                    static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
+  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
+  auto v = buttonInfo();
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+    return false;
+  }
+  return true;
+}
+
+bool WarMachineSys::rightMouseUp(float x, float y) {
+  if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
+      Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
+      Global::creType == (uint8_t)Enum::CRETYPE::POP_DWE) {
+    World::iterateSystems.push_back([]() -> bool {
+      World::exitScrn();
+      return false;
+    });
+  }
+  return false;
+}
