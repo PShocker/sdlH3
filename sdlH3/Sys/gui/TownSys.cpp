@@ -1,4 +1,5 @@
 #include "TownSys.h"
+#include "BMPFont/BMPFont.h"
 #include "CameraSys.h"
 #include "Cfg/HeroCfg.h"
 #include "Cfg/TownCfg.h"
@@ -28,7 +29,7 @@
 #include <utility>
 #include <vector>
 
-static std::string mouseAreaStr = "";
+static std::optional<uint8_t> mouseArea;
 
 void TownSys::split() {}
 
@@ -90,16 +91,15 @@ static void drawScrn() {
   for (auto &[k, v] : townComp->buildings) {
     builds.insert(k);
   }
-  mouseAreaStr = "";
+  mouseArea = std::nullopt;
   SDL_FRect mouseAreaRect;
-  static std::unordered_map<std::string, std::vector<bool>> townAreaBuilds[8];
-  for (auto buildStr : TownCfg::townZ[townComp->id]) {
-    if (builds.contains(buildStr)) {
+  static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
+  for (auto build : TownCfg::townZ[townComp->id]) {
+    if (builds.contains(build)) {
       auto textures =
-          Global::defCache[TownCfg::townBuilds[townComp->id].at(buildStr) +
-                           "/0"];
+          Global::defCache[TownCfg::townBuilds[townComp->id].at(build) + "/0"];
       auto frame = Global::bldFrameIndex % textures.size();
-      auto townPoint = TownCfg::townPoint[townComp->id].at(buildStr);
+      auto townPoint = TownCfg::townPoint[townComp->id].at(build);
       posRect = {leftUp.x + townPoint.x, leftUp.y + townPoint.y,
                  static_cast<float>(textures[frame]->w),
                  static_cast<float>(textures[frame]->h)};
@@ -110,23 +110,23 @@ static void drawScrn() {
           posRect.y <= mousePoint.y && mousePoint.y < posRect.y + posRect.h) {
         uint32_t point = (mousePoint.x - posRect.x) +
                          textures[0]->w * (mousePoint.y - posRect.y);
-        if (!townAreaBuilds[townComp->id].contains(buildStr) &&
-            TownCfg::townBorder[townComp->id].contains(buildStr)) {
-          townAreaBuilds[townComp->id][buildStr] =
+        if (!townAreaBuilds[townComp->id].contains((uint8_t)build) &&
+            TownCfg::townBorder[townComp->id].contains(build)) {
+          townAreaBuilds[townComp->id][(uint8_t)build] =
               Pcx("./Data/H3bitmap.lod/" +
-                  TownCfg::townArea[townComp->id].at(buildStr))
+                  TownCfg::townArea[townComp->id].at(build))
                   .loadArea();
         }
-        if (townAreaBuilds[townComp->id][buildStr][point]) {
-          mouseAreaStr = buildStr;
+        if (townAreaBuilds[townComp->id][(uint8_t)build][point]) {
+          mouseArea = (uint8_t)build;
           mouseAreaRect = posRect;
         }
       }
     }
   }
-  if (mouseAreaStr != "") {
-    texture =
-        Global::pcxCache[TownCfg::townBorder[townComp->id].at(mouseAreaStr)][0];
+  if (mouseArea.has_value()) {
+    texture = Global::pcxCache[TownCfg::townBorder[townComp->id].at(
+        (TownCfg::Building)mouseArea.value())][0];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &mouseAreaRect);
   }
 }
@@ -162,6 +162,18 @@ void drawCreature(uint8_t i,
     posRect = {leftUp.x + 304 + m * 62, leftUp.y + 387 + i * 96, 58, 64};
     auto texture = Global::defCache["TWCRPORT.def/0"][id + 2];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+    posRect.x += 58;
+    posRect.y = posRect.y + 48;
+    while (count > 0) {
+      auto digit = count % 10; // 获取当前最低位
+      texture = BMPFont::fontCache["verd10b.fnt"]['0' + digit].texture;
+      posRect = {posRect.x - texture->w, posRect.y,
+                 static_cast<float>(texture->w),
+                 static_cast<float>(texture->h)};
+      SDL_RenderTexture(Window::renderer, texture, NULL, &posRect);
+      count /= 10; // 去掉最低位
+    }
   }
 }
 
@@ -219,10 +231,10 @@ static void clickCapitol(bool leftClick) { World::enterTownHall(); }
 
 static void clickBlackSmith(bool leftClick) {}
 
-const static std::unordered_map<std::string, std::function<void(bool)>>
-    buildsFunc = {
-        {"capitol", clickCapitol},
-        {"blacksmith", clickBlackSmith},
+const static std::unordered_map<uint8_t, std::function<void(bool)>> buildsFunc =
+    {
+        {(uint8_t)TownCfg::Building::CAPITOL, clickCapitol},
+        {(uint8_t)TownCfg::Building::BLACKSMITH, clickBlackSmith},
 };
 
 // 修正版本：全局累加相同种类的数量
@@ -346,9 +358,9 @@ static void heroSwap() {
 }
 
 static bool clickBuild(bool leftClick) {
-  if (mouseAreaStr != "") {
+  if (mouseArea.has_value()) {
     // 说明点击到了建筑上
-    buildsFunc.at(mouseAreaStr)(leftClick);
+    buildsFunc.at(mouseArea.value())(leftClick);
     return true;
   }
   return false;

@@ -3,239 +3,555 @@
 #include <array>
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 struct HeroCfg {
-  const static inline std::vector<
-      std::vector<std::pair<std::string, std::string>>>
+
+  enum class SecondarySkill : uint8_t {
+    PATHFINDING = 0,
+    ARCHERY = 1,
+    LOGISTICS = 2,
+    SCOUTING = 3,
+    DIPLOMACY = 4,
+    NAVIGATION = 5,
+    LEADERSHIP = 6,
+    WISDOM = 7,
+    MYSTICISM = 8,
+    LUCK = 9,
+    BALLISTICS = 10,
+    EAGLE_EYE = 11,
+    NECROMANCY = 12,
+    ESTATES = 13,
+    FIRE_MAGIC = 14,
+    AIR_MAGIC = 15,
+    WATER_MAGIC = 16,
+    EARTH_MAGIC = 17,
+    SCHOLAR = 18,
+    TACTICS = 19,
+    ARTILLERY = 20,
+    LEARNING = 21,
+    OFFENCE = 22,
+    ARMORER = 23,
+    INTELLIGENCE = 24,
+    SORCERY = 25,
+    RESISTANCE = 26,
+    FIRST_AID = 27
+  };
+
+  enum class SecondaryLevel : uint8_t { BASIC = 0, ADVANCED = 1, EXPERT = 2 };
+
+  const static inline std::vector<std::vector<std::pair<uint8_t, uint8_t>>>
       heroSecSkills = {
           // 0-23: 基础英雄
-          {{"leadership", "basic"}, {"archery", "basic"}},     // 0
-          {{"leadership", "basic"}, {"archery", "basic"}},     // 1
-          {{"leadership", "basic"}, {"armorer", "basic"}},     // 2
-          {{"leadership", "basic"}, {"navigation", "basic"}},  // 3
-          {{"leadership", "basic"}, {"estates", "basic"}},     // 4
-          {{"leadership", "basic"}, {"offence", "basic"}},     // 5
-          {{"leadership", "basic"}, {"artillery", "basic"}},   // 6
-          {{"leadership", "basic"}, {"tactics", "basic"}},     // 7
-          {{"wisdom", "basic"}, {"firstAid", "basic"}},        // 8
-          {{"wisdom", "basic"}, {"diplomacy", "basic"}},       // 9
-          {{"wisdom", "basic"}, {"estates", "basic"}},         // 10
-          {{"wisdom", "advanced"}},                            // 11
-          {{"wisdom", "basic"}, {"mysticism", "basic"}},       // 12
-          {{"wisdom", "basic"}, {"eagleEye", "basic"}},        // 13
-          {{"wisdom", "basic"}, {"learning", "basic"}},        // 14
-          {{"wisdom", "basic"}, {"intelligence", "basic"}},    // 15
-          {{"leadership", "basic"}, {"armorer", "basic"}},     // 16
-          {{"luck", "basic"}, {"resistance", "basic"}},        // 17
-          {{"archery", "advanced"}},                           // 18
-          {{"diplomacy", "basic"}, {"leadership", "basic"}},   // 19
-          {{"resistance", "advanced"}},                        // 20
-          {{"archery", "basic"}, {"offence", "basic"}},        // 21
-          {{"pathfinding", "basic"}, {"resistance", "basic"}}, // 22
-          {{"archery", "basic"}, {"logistics", "basic"}},      // 23
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARCHERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 0
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARCHERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 1
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARMORER,
+            (uint8_t)SecondaryLevel::BASIC}}, // 2
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::NAVIGATION,
+            (uint8_t)SecondaryLevel::BASIC}}, // 3
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ESTATES,
+            (uint8_t)SecondaryLevel::BASIC}}, // 4
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 5
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARTILLERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 6
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 7
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::FIRST_AID,
+            (uint8_t)SecondaryLevel::BASIC}}, // 8
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::DIPLOMACY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 9
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ESTATES,
+            (uint8_t)SecondaryLevel::BASIC}}, // 10
+          {{(uint8_t)SecondarySkill::WISDOM,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 11
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::MYSTICISM,
+            (uint8_t)SecondaryLevel::BASIC}}, // 12
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::EAGLE_EYE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 13
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEARNING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 14
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::INTELLIGENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 15
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARMORER,
+            (uint8_t)SecondaryLevel::BASIC}}, // 16
+          {{(uint8_t)SecondarySkill::LUCK, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::RESISTANCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 17
+          {{(uint8_t)SecondarySkill::ARCHERY,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 18
+          {{(uint8_t)SecondarySkill::DIPLOMACY, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC}}, // 19
+          {{(uint8_t)SecondarySkill::RESISTANCE,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 20
+          {{(uint8_t)SecondarySkill::ARCHERY, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 21
+          {{(uint8_t)SecondarySkill::PATHFINDING,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::RESISTANCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 22
+          {{(uint8_t)SecondarySkill::ARCHERY, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LOGISTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 23
 
           // 24-31: Druid英雄
-          {{"wisdom", "basic"}, {"scholar", "basic"}},       // 24
-          {{"wisdom", "advanced"}, {"ballistics", "basic"}}, // 25
-          {{"wisdom", "basic"}, {"intelligence", "basic"}},  // 26
-          {{"wisdom", "basic"}, {"firstAid", "basic"}},      // 27
-          {{"wisdom", "basic"}, {"eagleEye", "basic"}},      // 28
-          {{"wisdom", "basic"}, {"luck", "basic"}},          // 29
-          {{"wisdom", "basic"}, {"sorcery", "basic"}},       // 30
-          {{"wisdom", "basic"}, {"scouting", "basic"}},      // 31
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCHOLAR,
+            (uint8_t)SecondaryLevel::BASIC}}, // 24
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::ADVANCED},
+           {(uint8_t)SecondarySkill::BALLISTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 25
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::INTELLIGENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 26
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::FIRST_AID,
+            (uint8_t)SecondaryLevel::BASIC}}, // 27
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::EAGLE_EYE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 28
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LUCK,
+            (uint8_t)SecondaryLevel::BASIC}}, // 29
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SORCERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 30
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCOUTING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 31
 
           // 32-39: 更多Druid相关英雄
-          {{"scouting", "basic"}, {"mysticism", "basic"}},   // 32
-          {{"scholar", "advanced"}},                         // 33
-          {{"mysticism", "basic"}, {"sorcery", "basic"}},    // 34
-          {{"scholar", "basic"}, {"armorer", "basic"}},      // 35
-          {{"mysticism", "basic"}, {"tactics", "basic"}},    // 36
-          {{"scholar", "basic"}, {"resistance", "basic"}},   // 37
-          {{"mysticism", "basic"}, {"offence", "basic"}},    // 38
-          {{"scholar", "basic"}, {"intelligence", "basic"}}, // 39
+          {{(uint8_t)SecondarySkill::SCOUTING, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::MYSTICISM,
+            (uint8_t)SecondaryLevel::BASIC}}, // 32
+          {{(uint8_t)SecondarySkill::SCHOLAR,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 33
+          {{(uint8_t)SecondarySkill::MYSTICISM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SORCERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 34
+          {{(uint8_t)SecondarySkill::SCHOLAR, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARMORER,
+            (uint8_t)SecondaryLevel::BASIC}}, // 35
+          {{(uint8_t)SecondarySkill::MYSTICISM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 36
+          {{(uint8_t)SecondarySkill::SCHOLAR, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::RESISTANCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 37
+          {{(uint8_t)SecondarySkill::MYSTICISM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 38
+          {{(uint8_t)SecondarySkill::SCHOLAR, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::INTELLIGENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 39
 
           // 40-47: Wizard英雄
-          {{"wisdom", "advanced"}},                         // 40
-          {{"wisdom", "basic"}, {"mysticism", "basic"}},    // 41
-          {{"wisdom", "basic"}, {"eagleEye", "basic"}},     // 42
-          {{"wisdom", "basic"}, {"intelligence", "basic"}}, // 43
-          {{"wisdom", "basic"}, {"ballistics", "basic"}},   // 44
-          {{"wisdom", "basic"}, {"sorcery", "basic"}},      // 45
-          {{"wisdom", "basic"}, {"diplomacy", "basic"}},    // 46
-          {{"wisdom", "basic"}, {"scholar", "basic"}},      // 47
+          {{(uint8_t)SecondarySkill::WISDOM,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 40
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::MYSTICISM,
+            (uint8_t)SecondaryLevel::BASIC}}, // 41
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::EAGLE_EYE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 42
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::INTELLIGENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 43
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::BALLISTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 44
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SORCERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 45
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::DIPLOMACY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 46
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCHOLAR,
+            (uint8_t)SecondaryLevel::BASIC}}, // 47
 
           // 48-55: 更多Wizard相关英雄
-          {{"scouting", "advanced"}},                       // 48
-          {{"wisdom", "basic"}, {"scholar", "basic"}},      // 49
-          {{"armorer", "advanced"}},                        // 50
-          {{"tactics", "basic"}, {"resistance", "basic"}},  // 51
-          {{"scholar", "basic"}, {"offence", "basic"}},     // 52
-          {{"archery", "basic"}, {"scouting", "basic"}},    // 53
-          {{"artillery", "basic"}, {"logistics", "basic"}}, // 54
-          {{"offence", "advanced"}},                        // 55
+          {{(uint8_t)SecondarySkill::SCOUTING,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 48
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCHOLAR,
+            (uint8_t)SecondaryLevel::BASIC}}, // 49
+          {{(uint8_t)SecondarySkill::ARMORER,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 50
+          {{(uint8_t)SecondarySkill::TACTICS, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::RESISTANCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 51
+          {{(uint8_t)SecondarySkill::SCHOLAR, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 52
+          {{(uint8_t)SecondarySkill::ARCHERY, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCOUTING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 53
+          {{(uint8_t)SecondarySkill::ARTILLERY, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LOGISTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 54
+          {{(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 55
 
           // 56-63: Heretic英雄
-          {{"wisdom", "basic"}, {"intelligence", "basic"}}, // 56
-          {{"wisdom", "basic"}, {"scholar", "basic"}},      // 57
-          {{"wisdom", "basic"}, {"mysticism", "basic"}},    // 58
-          {{"wisdom", "basic"}, {"ballistics", "basic"}},   // 59
-          {{"wisdom", "basic"}, {"learning", "basic"}},     // 60
-          {{"wisdom", "basic"}, {"eagleEye", "basic"}},     // 61
-          {{"wisdom", "basic"}, {"sorcery", "basic"}},      // 62
-          {{"wisdom", "basic"}, {"leadership", "basic"}},   // 63
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::INTELLIGENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 56
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCHOLAR,
+            (uint8_t)SecondaryLevel::BASIC}}, // 57
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::MYSTICISM,
+            (uint8_t)SecondaryLevel::BASIC}}, // 58
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::BALLISTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 59
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEARNING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 60
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::EAGLE_EYE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 61
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SORCERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 62
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC}}, // 63
 
           // 64-71: Death Knight英雄
-          {{"necromancy", "basic"}, {"resistance", "basic"}}, // 64
-          {{"necromancy", "basic"}, {"artillery", "basic"}},  // 65
-          {{"necromancy", "basic"}, {"learning", "basic"}},   // 66
-          {{"necromancy", "basic"}, {"tactics", "basic"}},    // 67
-          {{"necromancy", "basic"}, {"offence", "basic"}},    // 68
-          {{"necromancy", "advanced"}},                       // 69
-          {{"necromancy", "basic"}, {"offence", "basic"}},    // 70
-          {{"necromancy", "basic"}, {"armorer", "basic"}},    // 71
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::RESISTANCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 64
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARTILLERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 65
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEARNING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 66
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 67
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 68
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 69
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 70
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARMORER,
+            (uint8_t)SecondaryLevel::BASIC}}, // 71
 
           // 72-79: Necromancer英雄
-          {{"necromancy", "basic"}, {"scholar", "basic"}},      // 72
-          {{"necromancy", "basic"}, {"wisdom", "basic"}},       // 73
-          {{"necromancy", "basic"}, {"sorcery", "basic"}},      // 74
-          {{"necromancy", "basic"}, {"eagleEye", "basic"}},     // 75
-          {{"necromancy", "basic"}, {"mysticism", "basic"}},    // 76
-          {{"necromancy", "basic"}, {"learning", "basic"}},     // 77
-          {{"necromancy", "advanced"}},                         // 78
-          {{"necromancy", "basic"}, {"intelligence", "basic"}}, // 79
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCHOLAR,
+            (uint8_t)SecondaryLevel::BASIC}}, // 72
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::WISDOM,
+            (uint8_t)SecondaryLevel::BASIC}}, // 73
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SORCERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 74
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::EAGLE_EYE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 75
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::MYSTICISM,
+            (uint8_t)SecondaryLevel::BASIC}}, // 76
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEARNING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 77
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 78
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::INTELLIGENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 79
 
           // 80-87: Overlord英雄
-          {{"scouting", "basic"}, {"leadership", "basic"}},   // 80
-          {{"artillery", "basic"}, {"offence", "basic"}},     // 81
-          {{"tactics", "basic"}, {"offence", "basic"}},       // 82
-          {{"leadership", "basic"}, {"resistance", "basic"}}, // 83
-          {{"offence", "advanced"}},                          // 84
-          {{"logistics", "basic"}, {"tactics", "basic"}},     // 85
-          {{"leadership", "basic"}, {"scholar", "basic"}},    // 86
-          {{"tactics", "basic"}, {"offence", "basic"}},       // 87
+          {{(uint8_t)SecondarySkill::SCOUTING, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC}}, // 80
+          {{(uint8_t)SecondarySkill::ARTILLERY, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 81
+          {{(uint8_t)SecondarySkill::TACTICS, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 82
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::RESISTANCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 83
+          {{(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 84
+          {{(uint8_t)SecondarySkill::LOGISTICS, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 85
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCHOLAR,
+            (uint8_t)SecondaryLevel::BASIC}}, // 86
+          {{(uint8_t)SecondarySkill::TACTICS, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 87
 
           // 88-95: Warlock英雄
-          {{"wisdom", "basic"}, {"scholar", "basic"}},      // 88
-          {{"wisdom", "basic"}, {"mysticism", "basic"}},    // 89
-          {{"wisdom", "basic"}, {"sorcery", "basic"}},      // 90
-          {{"wisdom", "advanced"}},                         // 91
-          {{"wisdom", "basic"}, {"eagleEye", "basic"}},     // 92
-          {{"wisdom", "basic"}, {"scouting", "advanced"}},  // 93
-          {{"wisdom", "basic"}, {"intelligence", "basic"}}, // 94
-          {{"wisdom", "basic"}, {"learning", "basic"}},     // 95
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCHOLAR,
+            (uint8_t)SecondaryLevel::BASIC}}, // 88
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::MYSTICISM,
+            (uint8_t)SecondaryLevel::BASIC}}, // 89
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SORCERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 90
+          {{(uint8_t)SecondarySkill::WISDOM,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 91
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::EAGLE_EYE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 92
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCOUTING,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 93
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::INTELLIGENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 94
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEARNING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 95
 
           // 96-103: 更多Warlock相关英雄
-          {{"offence", "basic"}, {"ballistics", "basic"}},  // 96
-          {{"offence", "basic"}, {"artillery", "basic"}},   // 97
-          {{"offence", "basic"}, {"archery", "basic"}},     // 98
-          {{"offence", "basic"}, {"scouting", "basic"}},    // 99
-          {{"offence", "basic"}, {"pathfinding", "basic"}}, // 100
-          {{"offence", "basic"}, {"resistance", "basic"}},  // 101
-          {{"offence", "advanced"}},                        // 102
-          {{"offence", "basic"}, {"tactics", "basic"}},     // 103
+          {{(uint8_t)SecondarySkill::OFFENCE, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::BALLISTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 96
+          {{(uint8_t)SecondarySkill::OFFENCE, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARTILLERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 97
+          {{(uint8_t)SecondarySkill::OFFENCE, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARCHERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 98
+          {{(uint8_t)SecondarySkill::OFFENCE, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCOUTING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 99
+          {{(uint8_t)SecondarySkill::OFFENCE, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::PATHFINDING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 100
+          {{(uint8_t)SecondarySkill::OFFENCE, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::RESISTANCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 101
+          {{(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 102
+          {{(uint8_t)SecondarySkill::OFFENCE, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 103
 
           // 104-111: Battlemage英雄
-          {{"wisdom", "basic"}, {"sorcery", "basic"}},    // 104
-          {{"wisdom", "basic"}, {"leadership", "basic"}}, // 105
-          {{"wisdom", "basic"}, {"logistics", "basic"}},  // 106
-          {{"wisdom", "basic"}, {"tactics", "basic"}},    // 107
-          {{"wisdom", "basic"}, {"artillery", "basic"}},  // 108
-          {{"wisdom", "basic"}, {"offence", "basic"}},    // 109
-          {{"wisdom", "basic"}, {"eagleEye", "basic"}},   // 110
-          {{"wisdom", "basic"}, {"resistance", "basic"}}, // 111
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SORCERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 104
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC}}, // 105
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LOGISTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 106
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 107
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARTILLERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 108
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 109
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::EAGLE_EYE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 110
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::RESISTANCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 111
 
           // 112-119: Beastmaster英雄
-          {{"armorer", "basic"}, {"resistance", "basic"}},  // 112
-          {{"armorer", "basic"}, {"leadership", "basic"}},  // 113
-          {{"armorer", "basic"}, {"archery", "basic"}},     // 114
-          {{"armorer", "advanced"}},                        // 115
-          {{"armorer", "basic"}, {"offence", "basic"}},     // 116
-          {{"armorer", "basic"}, {"pathfinding", "basic"}}, // 117
-          {{"armorer", "basic"}, {"artillery", "basic"}},   // 118
-          {{"armorer", "basic"}, {"scouting", "basic"}},    // 119
+          {{(uint8_t)SecondarySkill::ARMORER, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::RESISTANCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 112
+          {{(uint8_t)SecondarySkill::ARMORER, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC}}, // 113
+          {{(uint8_t)SecondarySkill::ARMORER, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARCHERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 114
+          {{(uint8_t)SecondarySkill::ARMORER,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 115
+          {{(uint8_t)SecondarySkill::ARMORER, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 116
+          {{(uint8_t)SecondarySkill::ARMORER, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::PATHFINDING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 117
+          {{(uint8_t)SecondarySkill::ARMORER, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARTILLERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 118
+          {{(uint8_t)SecondarySkill::ARMORER, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SCOUTING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 119
 
           // 120-127: Witch英雄
-          {{"wisdom", "advanced"}},                         // 120
-          {{"wisdom", "basic"}, {"mysticism", "basic"}},    // 121
-          {{"wisdom", "basic"}, {"navigation", "basic"}},   // 122
-          {{"wisdom", "basic"}, {"firstAid", "basic"}},     // 123
-          {{"wisdom", "basic"}, {"learning", "basic"}},     // 124
-          {{"wisdom", "basic"}, {"sorcery", "basic"}},      // 125
-          {{"wisdom", "basic"}, {"intelligence", "basic"}}, // 126
-          {{"wisdom", "basic"}, {"eagleEye", "basic"}},     // 127
+          {{(uint8_t)SecondarySkill::WISDOM,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 120
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::MYSTICISM,
+            (uint8_t)SecondaryLevel::BASIC}}, // 121
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::NAVIGATION,
+            (uint8_t)SecondaryLevel::BASIC}}, // 122
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::FIRST_AID,
+            (uint8_t)SecondaryLevel::BASIC}}, // 123
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEARNING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 124
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::SORCERY,
+            (uint8_t)SecondaryLevel::BASIC}}, // 125
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::INTELLIGENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 126
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::EAGLE_EYE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 127
 
           // 128-135: Planeswalker英雄
-          {{"artillery", "basic"}, {"offence", "basic"}}, // 128
-          {{"estates", "basic"}, {"tactics", "basic"}},   // 129
-          {{"artillery", "basic"}, {"offence", "basic"}}, // 130
-          {{"tactics", "advanced"}},                      // 131
-          {{"logistics", "basic"}, {"offence", "basic"}}, // 132
-          {{"estates", "basic"}, {"tactics", "basic"}},   // 133
-          {{"offence", "advanced"}},                      // 134
-          {{"tactics", "basic"}, {"learning", "basic"}},  // 135
+          {{(uint8_t)SecondarySkill::ARTILLERY, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 128
+          {{(uint8_t)SecondarySkill::ESTATES, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 129
+          {{(uint8_t)SecondarySkill::ARTILLERY, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 130
+          {{(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 131
+          {{(uint8_t)SecondarySkill::LOGISTICS, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 132
+          {{(uint8_t)SecondarySkill::ESTATES, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 133
+          {{(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 134
+          {{(uint8_t)SecondarySkill::TACTICS, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEARNING,
+            (uint8_t)SecondaryLevel::BASIC}}, // 135
 
           // 136-143: Elementalist英雄
-          {{"wisdom", "basic"}, {"fireMagic", "basic"}},  // 136
-          {{"wisdom", "basic"}, {"airMagic", "basic"}},   // 137
-          {{"wisdom", "basic"}, {"waterMagic", "basic"}}, // 138
-          {{"wisdom", "basic"}, {"earthMagic", "basic"}}, // 139
-          {{"wisdom", "basic"}, {"fireMagic", "basic"}},  // 140
-          {{"wisdom", "basic"}, {"airMagic", "basic"}},   // 141
-          {{"wisdom", "basic"}, {"waterMagic", "basic"}}, // 142
-          {{"wisdom", "basic"}, {"earthMagic", "basic"}}, // 143
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::FIRE_MAGIC,
+            (uint8_t)SecondaryLevel::BASIC}}, // 136
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::AIR_MAGIC,
+            (uint8_t)SecondaryLevel::BASIC}}, // 137
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::WATER_MAGIC,
+            (uint8_t)SecondaryLevel::BASIC}}, // 138
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::EARTH_MAGIC,
+            (uint8_t)SecondaryLevel::BASIC}}, // 139
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::FIRE_MAGIC,
+            (uint8_t)SecondaryLevel::BASIC}}, // 140
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::AIR_MAGIC,
+            (uint8_t)SecondaryLevel::BASIC}}, // 141
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::WATER_MAGIC,
+            (uint8_t)SecondaryLevel::BASIC}}, // 142
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::EARTH_MAGIC,
+            (uint8_t)SecondaryLevel::BASIC}}, // 143
 
           // 144-155: 特殊战役英雄
-          {{"leadership", "advanced"}},                    // 144
-          {{"wisdom", "basic"}, {"fireMagic", "expert"}},  // 145
-          {{"leadership", "basic"}, {"offence", "basic"}}, // 146
-          {{"wisdom", "advanced"}},                        // 147
-          {{"archery", "basic"}, {"leadership", "basic"}}, // 148
-          {{"offence", "advanced"}},                       // 149
-          {{"necromancy", "advanced"}},                    // 150
-          {{"estates", "basic"}, {"tactics", "basic"}},    // 151
-          {{"leadership", "basic"}, {"armorer", "basic"}}, // 152
-          {{"estates", "basic"}, {"tactics", "basic"}},    // 153
-          {{"tactics", "basic"}, {"offence", "basic"}},    // 154
-          {{"leadership", "basic"}, {"tactics", "basic"}}  // 155
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 144
+          {{(uint8_t)SecondarySkill::WISDOM, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::FIRE_MAGIC,
+            (uint8_t)SecondaryLevel::EXPERT}}, // 145
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 146
+          {{(uint8_t)SecondarySkill::WISDOM,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 147
+          {{(uint8_t)SecondarySkill::ARCHERY, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC}}, // 148
+          {{(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 149
+          {{(uint8_t)SecondarySkill::NECROMANCY,
+            (uint8_t)SecondaryLevel::ADVANCED}}, // 150
+          {{(uint8_t)SecondarySkill::ESTATES, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 151
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::ARMORER,
+            (uint8_t)SecondaryLevel::BASIC}}, // 152
+          {{(uint8_t)SecondarySkill::ESTATES, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::BASIC}}, // 153
+          {{(uint8_t)SecondarySkill::TACTICS, (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::OFFENCE,
+            (uint8_t)SecondaryLevel::BASIC}}, // 154
+          {{(uint8_t)SecondarySkill::LEADERSHIP,
+            (uint8_t)SecondaryLevel::BASIC},
+           {(uint8_t)SecondarySkill::TACTICS,
+            (uint8_t)SecondaryLevel::BASIC}} // 155
   };
-
-  const static inline std::unordered_map<std::string, uint8_t>
-      heroSecSkillsNameIndex = {
-          {"pathfinding", 0},   {"archery", 1},     {"logistics", 2},
-          {"scouting", 3},      {"diplomacy", 4},   {"navigation", 5},
-          {"leadership", 6},    {"wisdom", 7},      {"mysticism", 8},
-          {"luck", 9},          {"ballistics", 10}, {"eagleEye", 11},
-          {"necromancy", 12},   {"estates", 13},    {"fireMagic", 14},
-          {"airMagic", 15},     {"waterMagic", 16}, {"earthMagic", 17},
-          {"scholar", 18},      {"tactics", 19},    {"artillery", 20},
-          {"learning", 21},     {"offence", 22},    {"armorer", 23},
-          {"intelligence", 24}, {"sorcery", 25},    {"resistance", 26},
-          {"firstAid", 27}};
-
-  const static inline std::unordered_map<std::string, uint8_t>
-      heroSecSkillsLevelIndex = {
-          {"basic", 0},
-          {"advanced", 1},
-          {"expert", 2},
-  };
-
-  const static inline std::string SecSkillNames[] = {
-      "pathfinding", "archery",      "logistics",
-      "scouting",    "diplomacy", //  5
-      "navigation",  "leadership",   "wisdom",
-      "mysticism",   "luck", // 10
-      "ballistics",  "eagleEye",     "necromancy",
-      "estates",     "fireMagic", // 15
-      "airMagic",    "waterMagic",   "earthMagic",
-      "scholar",     "tactics", // 20
-      "artillery",   "learning",     "offence",
-      "armorer",     "intelligence", // 25
-      "sorcery",     "resistance",   "firstAid"};
-
-  const static inline std::string SecSkilLvl[] = {"basic", "advanced",
-                                                  "expert"};
 
   // HCTRAITS.TXT
   const static inline std::vector<std::array<uint8_t, 4>> heroPrimarySkills = {

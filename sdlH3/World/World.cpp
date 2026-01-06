@@ -282,6 +282,7 @@ void World::enterHeroTrade(entt::entity heroEnt, entt::entity goalEnt,
   Global::artPair = {0xff, 0xffff};
 
   Global::goalLevel = goalLevel;
+  Global::goalIndex = 0xff;
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
@@ -370,7 +371,7 @@ void World::enterViewWorld() {
   LMouseUpSys.push_back(ViewWorldSys::leftMouseUp);
   keyUpSys.push_back(ViewWorldSys::keyUp);
 
-  Global::viewWorldScale=2;
+  Global::viewWorldScale = 2;
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 

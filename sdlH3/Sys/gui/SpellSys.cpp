@@ -28,14 +28,26 @@ std::pair<uint8_t, uint8_t> SpellSys::heroSplLevel(HeroComp *heroComp,
   }
   std::unordered_map<uint8_t, uint8_t> skillMap;
   for (auto [key, val] : heroComp->secSkills) {
-    if (HeroCfg::SecSkillNames[key] == "earthMagic") {
+    switch (key) {
+    case (uint8_t)HeroCfg::SecondarySkill::EARTH_MAGIC: {
       skillMap[0] = val + 1;
-    } else if (HeroCfg::SecSkillNames[key] == "waterMagic") {
+      break;
+    }
+    case (uint8_t)HeroCfg::SecondarySkill::WATER_MAGIC: {
       skillMap[1] = val + 1;
-    } else if (HeroCfg::SecSkillNames[key] == "fireMagic") {
+      break;
+    }
+    case (uint8_t)HeroCfg::SecondarySkill::FIRE_MAGIC: {
       skillMap[2] = val + 1;
-    } else if (HeroCfg::SecSkillNames[key] == "airMagic") {
+      break;
+    }
+    case (uint8_t)HeroCfg::SecondarySkill::AIR_MAGIC: {
       skillMap[3] = val + 1;
+      break;
+    }
+    default: {
+      break;
+    }
     }
   }
   for (uint8_t i = 0; i < 4; i++) {

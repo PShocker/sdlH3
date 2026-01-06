@@ -18,10 +18,12 @@
 
 static void close() {
   auto [index, artId] = Global::artPair;
+  entt::registry *registry[2] = {&World::registrys[World::level],
+                                 &World::registrys[Global::goalLevel]};
   entt::entity heroEnts[2] = {Global::heroEnt, Global::goalEnt};
   if (artId != 0xffff) {
-    auto heroComp = &World::registrys[World::level].get<HeroComp>(
-        heroEnts[Global::artClick]);
+    auto heroComp =
+        &registry[Global::artClick]->get<HeroComp>(heroEnts[Global::artClick]);
     std::vector<uint16_t> &artifactsBack = heroComp->artifactsInBackpack;
     std::vector<uint16_t> &artifacts = heroComp->artifacts;
     if (Global::artBackClick) {
@@ -57,10 +59,11 @@ static void drawCreature() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-  auto &registry = World::registrys[World::level];
+  entt::registry *registry[2] = {&World::registrys[World::level],
+                                 &World::registrys[Global::goalLevel]};
   entt::entity heroEnts[2] = {Global::heroEnt, Global::goalEnt};
   for (uint8_t m = 0; m <= 1; m++) {
-    auto heroComp = &registry.get<HeroComp>(heroEnts[m]);
+    auto heroComp = &registry[m]->get<HeroComp>(heroEnts[m]);
     for (uint8_t i = 0; i < heroComp->creatures.size(); i++) {
       auto [id, count] = heroComp->creatures[i];
       if (count == 0) {
@@ -91,10 +94,11 @@ static void drawHeroSecSkill() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-  auto &registry = World::registrys[World::level];
+  entt::registry *registry[2] = {&World::registrys[World::level],
+                                 &World::registrys[Global::goalLevel]};
   entt::entity heroEnts[2] = {Global::heroEnt, Global::goalEnt};
   for (uint8_t i = 0; i <= 1; i++) {
-    auto heroComp = &registry.get<HeroComp>(heroEnts[i]);
+    auto heroComp = &registry[i]->get<HeroComp>(heroEnts[i]);
     for (int m = 0; m < heroComp->secSkills.size(); ++m) {
       posRect = {(float)leftUp.x + 32 + 36 * m + 454 * i, leftUp.y + 88, 32,
                  32};
@@ -109,11 +113,12 @@ static void drawHeroPortraitSpec() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-  auto &registry = World::registrys[World::level];
+  entt::registry *registry[2] = {&World::registrys[World::level],
+                                 &World::registrys[Global::goalLevel]};
   entt::entity heroEnts[2] = {Global::heroEnt, Global::goalEnt};
   for (uint8_t i = 0; i < 2; i++) {
     posRect = {(float)leftUp.x + 257 + 228 * i, leftUp.y + 13, 58, 64};
-    auto heroComp = &registry.get<HeroComp>(heroEnts[i]);
+    auto heroComp = &registry[i]->get<HeroComp>(heroEnts[i]);
     auto texture =
         Global::pcxCache[HeroCfg::heroLargePor[heroComp->portrait]][0];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
@@ -122,6 +127,7 @@ static void drawHeroPortraitSpec() {
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   }
 }
+
 static void drawPSKIL() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
@@ -165,18 +171,19 @@ static void drawMoraleLuck() {
 static void drawBackGround() {
   SDL_FRect srcRect;
   SDL_FRect posRect;
-  entt::entity heroEnts[2] = {Global::heroEnt, Global::goalEnt};
-  auto playerId =
-      World::registrys[World::level].get<PlayerIdComp>(heroEnts[0]).id;
-  auto textures = Global::pcxCache["Trade2.pcx"];
-  auto texture = textures[playerId];
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-
+  entt::registry *registry[2] = {&World::registrys[World::level],
+                                 &World::registrys[Global::goalLevel]};
+  entt::entity heroEnts[2] = {Global::heroEnt, Global::goalEnt};
+  auto playerId = registry[0]->get<PlayerIdComp>(heroEnts[0]).id;
+  auto textures = Global::pcxCache["Trade2.pcx"];
+  auto texture = textures[playerId];
   srcRect = {0, 0, 400, 600};
   posRect = {leftUp.x, leftUp.y, 400, 600};
   SDL_RenderTexture(Window::renderer, texture, &srcRect, &posRect);
-  playerId = World::registrys[World::level].get<PlayerIdComp>(heroEnts[1]).id;
+
+  playerId = registry[1]->get<PlayerIdComp>(heroEnts[1]).id;
   texture = textures[playerId];
   leftUp.x = leftUp.x + 400;
   srcRect = {400, 0, 400, 600};
@@ -185,7 +192,6 @@ static void drawBackGround() {
 }
 
 static void drawButton() {
-
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
   auto v = buttonInfo();
@@ -207,11 +213,14 @@ static void drawArtifacts() {
 
     return;
   };
-  auto heroComp =
-      &World::registrys[World::level].get<HeroComp>(Global::heroEnt);
+
+  entt::registry *registry[2] = {&World::registrys[World::level],
+                                 &World::registrys[Global::goalLevel]};
+
+  auto heroComp = &registry[0]->get<HeroComp>(Global::heroEnt);
   drawArtifact(heroComp, -269, 159, 0);
 
-  heroComp = &World::registrys[World::level].get<HeroComp>(Global::goalEnt);
+  heroComp = &registry[1]->get<HeroComp>(Global::goalEnt);
   drawArtifact(heroComp, 163, 159, 1);
 
   auto &[selectedIndex, selectedArtId] = Global::artPair;
@@ -246,12 +255,39 @@ bool HeroTradeSys::run() {
 }
 
 static bool clickPrim(bool leftClick) {
-  return true;
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
+  for (uint8_t i = 0; i < 2; i++) {
+    leftUp.x += i * 490;
+    posRect = {static_cast<float>(leftUp.x + 102 + 1), leftUp.y + 46, 32, 32};
+    if (SDL_PointInRectFloat(&point, &posRect)) {
+      HeroScrSys::showPrimComfirm(leftClick, 4);
+    }
+
+    posRect = {static_cast<float>(leftUp.x + 138 + 1), leftUp.y + 46, 32, 32};
+    if (SDL_PointInRectFloat(&point, &posRect)) {
+      HeroScrSys::showPrimComfirm(leftClick, 5);
+    }
+  }
+
+  for (uint8_t i = 0; i < 4; i++) {
+    leftUp.x = (Global::viewPort.w - 800) / 2;
+    posRect = {static_cast<float>(leftUp.x + 383 + 1), leftUp.y + 18 + 36 * i,
+               32, 32};
+    if (SDL_PointInRectFloat(&point, &posRect)) {
+      HeroScrSys::showPrimComfirm(leftClick, i);
+    }
+  }
+  return false;
 }
 
 static bool clickEquip(bool leftClick) {
   const SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                           (Global::viewPort.h - 600) / 2};
+  entt::registry *registry[2] = {&World::registrys[World::level],
+                                 &World::registrys[Global::goalLevel]};
   entt::entity heroEnts[2] = {Global::heroEnt, Global::goalEnt};
   const auto artifactClick = [&](HeroComp *heroComp, int32_t x, int32_t y,
                                  uint8_t index) -> bool {
@@ -300,8 +336,8 @@ static bool clickEquip(bool leftClick) {
           if (artifacts[targetIndex] != 0xffff) {
             auto targetArtId = artifacts[targetIndex];
             artifacts[targetIndex] = selectedArtId;
-            auto size = World::registrys[World::level]
-                            .get<HeroComp>(heroEnts[Global::artClick])
+            auto size = registry[Global::artClick]
+                            ->get<HeroComp>(heroEnts[Global::artClick])
                             .artifactsInBackpack.size();
             Global::artPair = {size, targetArtId};
             Global::artBackClick = true;
@@ -331,14 +367,74 @@ static bool clickEquip(bool leftClick) {
     }
     return true;
   };
-  auto heroComp = &World::registrys[World::level].get<HeroComp>(heroEnts[0]);
+  auto heroComp = &registry[0]->get<HeroComp>(heroEnts[0]);
   if (artifactClick(heroComp, -269, 159, 0)) {
     return true;
   }
-  heroComp = &World::registrys[World::level].get<HeroComp>(heroEnts[1]);
+  heroComp = &registry[1]->get<HeroComp>(heroEnts[1]);
   if (artifactClick(heroComp, 163, 159, 1)) {
     return true;
   }
+  return true;
+}
+
+static bool clickCre(bool leftClick) {
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  entt::registry *registry[2] = {&World::registrys[World::level],
+                                 &World::registrys[Global::goalLevel]};
+  entt::entity heroEnts[2] = {Global::heroEnt, Global::goalEnt};
+  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
+  for (uint8_t m = 0; m <= 1; m++) {
+    auto heroComp = &registry[m]->get<HeroComp>(heroEnts[m]);
+    for (uint8_t i = 0; i < heroComp->creatures.size(); i++) {
+      auto [id, count] = heroComp->creatures[i];
+      posRect = {(float)leftUp.x + 67 + 418 * m + i * 36, leftUp.y + 132, 32,
+                 32};
+      if (SDL_PointInRectFloat(&point, &posRect)) {
+        if (leftClick) {
+          if (Global::splitOn) {
+            auto crePtr = &heroComp->creatures.at(i);
+            if (Global::splitCre[0] != crePtr &&
+                (crePtr->second == 0 ||
+                 crePtr->first == Global::splitCre[0]->first)) {
+              Global::splitCre[1] = crePtr;
+              World::enterSplitCre();
+              Global::splitOn = false;
+              Global::goalIndex = 0xff;
+            }
+          } else if (Global::goalIndex == (m * 7 + i)) {
+            std::pair<uint8_t, entt::entity> heroPair = {m, heroEnts[m]};
+            World::enterCreature(heroPair, heroComp->creatures[i],
+                                 (uint8_t)Enum::CRETYPE::MOD_HERO);
+          } else if (Global::goalIndex == 0xff) {
+            if (count != 0) {
+              Global::goalIndex = (m * 7 + i);
+            }
+          } else {
+            auto i0 = Global::goalIndex / 7;
+            auto i1 = Global::goalIndex % 7;
+            auto &creatures0 =
+                registry[i0]->get<HeroComp>(heroEnts[i0]).creatures;
+            if (heroComp->creatures[i].second == 0 ||
+                heroComp->creatures[i].first != creatures0[i1].first) {
+              std::swap(heroComp->creatures[i], creatures0[i1]);
+            } else {
+              heroComp->creatures[i].second += creatures0[i1].second;
+              creatures0[i1] = {0xffff, 0};
+            }
+            Global::goalIndex = 0xff;
+          }
+        } else {
+          std::pair<uint8_t, entt::entity> heroPair = {m, heroEnts[m]};
+          World::enterCreature(heroPair, heroComp->creatures[i],
+                               (uint8_t)Enum::CRETYPE::POP_HERO);
+        }
+      }
+    }
+  }
+
   return true;
 }
 
@@ -382,6 +478,12 @@ bool HeroTradeSys::rightMouseDown(float x, float y) {
   if (clickSecSki(false)) {
     return false;
   }
+  if (clickPrim(false)) {
+    return false;
+  }
+  if (clickCre(false)) {
+    return false;
+  }
   if (clickEquip(false)) {
     return false;
   }
@@ -391,15 +493,17 @@ bool HeroTradeSys::rightMouseDown(float x, float y) {
 static void clickBackPage() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
+  entt::registry *registry[2] = {&World::registrys[World::level],
+                                 &World::registrys[Global::goalLevel]};
   entt::entity heroEnts[2] = {Global::heroEnt, Global::goalEnt};
   const auto artifactPageClick = [&](HeroComp *heroComp, int32_t x, int32_t y,
                                      uint8_t index) -> void {
     Global::artPageIndex[index] += ArtifactsOfHeroSys::clickPage(
         heroComp, leftUp.x + x, leftUp.y + y, Global::artPageIndex[index]);
   };
-  auto heroComp = &World::registrys[World::level].get<HeroComp>(heroEnts[0]);
+  auto heroComp = &registry[0]->get<HeroComp>(heroEnts[0]);
   artifactPageClick(heroComp, -269, 159, 0);
-  heroComp = &World::registrys[World::level].get<HeroComp>(heroEnts[1]);
+  heroComp = &registry[1]->get<HeroComp>(heroEnts[1]);
   artifactPageClick(heroComp, 163, 159, 1);
 }
 
@@ -409,6 +513,12 @@ bool HeroTradeSys::leftMouseUp(float x, float y) {
   SDL_FRect posRect;
   auto v = buttonInfo();
   if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+    return false;
+  }
+  if (clickPrim(true)) {
+    return false;
+  }
+  if (clickCre(true)) {
     return false;
   }
   if (clickSecSki(true)) {

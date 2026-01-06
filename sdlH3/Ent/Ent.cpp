@@ -99,7 +99,12 @@
 #include <utility>
 #include <vector>
 
-entt::entity Ent::loadBuild(const std::string &str) { return entt::null; }
+entt::entity Ent::loadBuild(uint8_t level, uint8_t id) {
+  entt::entity ent = entt::null;
+  auto &registry = World::registrys[level];
+
+  return ent;
+}
 
 static std::vector<std::pair<int16_t, int16_t>>
 loadBlockTiles(H3mObject &object) {
@@ -184,11 +189,7 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     heroComp->level = 1;
     if (hero.secSkills.empty()) {
       auto secSkills = HeroCfg::heroSecSkills.at(heroComp->portrait);
-      for (auto pair : secSkills) {
-        heroComp->secSkills.push_back(
-            {HeroCfg::heroSecSkillsNameIndex.at(pair.first),
-             HeroCfg::heroSecSkillsLevelIndex.at(pair.second)});
-      }
+      heroComp->secSkills = secSkills;
     } else {
       heroComp->secSkills = hero.secSkills;
       for (auto &p : heroComp->secSkills) {
@@ -226,13 +227,6 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     auto buildings =
         std::any_cast<std::set<uint8_t>>(object.data["builtBuildings"]);
     object.subId = 0;
-    auto buildMap = TownCfg::townIndex;
-    // 方法A：使用insert（推荐）
-    buildMap.insert(TownCfg::townSpecialIndex[object.subId].begin(),
-                    TownCfg::townSpecialIndex[object.subId].end());
-    std::erase_if(buildings, [buildMap](uint8_t value) {
-      return !buildMap.contains(value);
-    });
     object.data["builtBuildings"] = buildings;
   }
   case ObjectType::TOWN: {
@@ -245,24 +239,14 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     }
     auto buildings =
         std::any_cast<std::set<uint8_t>>(object.data["builtBuildings"]);
-    std::unordered_set<std::string> fullBuilds;
-    for (auto buildId : buildings) {
-      std::string buildStr;
-      if (TownCfg::townIndex.contains(buildId)) {
-        buildStr = TownCfg::townIndex.at(buildId);
-      } else {
-        buildStr = TownCfg::townSpecialIndex[townComp->id].at(buildId);
-      }
-      fullBuilds.insert(buildStr);
-    }
     // 替换为升级后的建筑
-    std::unordered_map<std::string, entt::entity> builds;
+    std::unordered_map<uint8_t, entt::entity> builds;
     for (auto &group : TownCfg::townHallSlots[townComp->id]) {
       for (auto &vec : group) {
         for (int i = vec.size() - 1; i >= 0; --i) {
-          if (fullBuilds.contains(vec[i])) {
-            builds[vec[i]] = Ent::loadBuild(vec[i]);
-            if (vec[i] != "resourceSilo") {
+          if (buildings.contains(vec[i])) {
+            builds[vec[i]] = Ent::loadBuild(level, vec[i]);
+            if (vec[i] != (uint8_t)TownCfg::Building::RESOURCE_SILO) {
               break;
             }
           }

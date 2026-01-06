@@ -17,6 +17,6 @@ struct Ent {
   static void loadPath(std::vector<SDL_Point> &path, entt::entity heroEnt,
                        uint16_t indexCost);
   static void load(H3mData &data);
-  static entt::entity loadBuild(const std::string &str);
+  static entt::entity loadBuild(uint8_t level, uint8_t id);
   static int64_t loadZorder(int32_t i, H3mObject &object);
 };

@@ -1,6 +1,7 @@
 #include "KingdomSys.h"
 #include "AdvMapSys.h"
 #include "Cfg/HeroCfg.h"
+#include "Cfg/TownCfg.h"
 #include "Comp/HeroComp.h"
 #include "Comp/TownComp.h"
 #include "Global/Global.h"
@@ -9,6 +10,7 @@
 #include "SDL3/SDL_render.h"
 #include "Window/Window.h"
 #include "World/World.h"
+#include <cstdint>
 #include <vector>
 
 static void close() { World::exitScrn(); }
@@ -147,11 +149,12 @@ static void drawTown() {
       }
     }
 
-    if (townComp->buildings.contains("fort")) {
+    if (townComp->buildings.contains((uint8_t)TownCfg::Building::FORT)) {
       texture = Global::defCache["ITMCLS.def/0"][0];
-    } else if (townComp->buildings.contains("citadel")) {
+    } else if (townComp->buildings.contains(
+                   (uint8_t)TownCfg::Building::CITADEL)) {
       texture = Global::defCache["ITMCLS.def/0"][1];
-    } else if (townComp->buildings.contains("castle")) {
+    } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CASTLE)) {
       texture = Global::defCache["ITMCLS.def/0"][2];
     } else {
       texture = Global::defCache["ITMCLS.def/0"][3];
@@ -159,11 +162,11 @@ static void drawTown() {
     posRect = {x + 113, y + 33, 34, 34};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
-    if (townComp->buildings.contains("townHall")) {
+    if (townComp->buildings.contains((uint8_t)TownCfg::Building::TOWN_HALL)) {
       texture = Global::defCache["ITMTLS.def/0"][1];
-    } else if (townComp->buildings.contains("cityHall")) {
+    } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CITY_HALL)) {
       texture = Global::defCache["ITMTLS.def/0"][2];
-    } else if (townComp->buildings.contains("capitol")) {
+    } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CAPITOL)) {
       texture = Global::defCache["ITMTLS.def/0"][3];
     } else {
       texture = Global::defCache["ITMTLS.def/0"][0];

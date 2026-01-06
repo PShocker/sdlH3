@@ -6,7 +6,7 @@
 
 拉取项目
 ```
-git clone --recurse-submodules https://github.com/PShocker/sdlH3.git --depth 1 -b new
+git clone --recurse-submodules https://github.com/PShocker/sdlH3.git --depth 1
 ```
 
 新建build目录,进入
