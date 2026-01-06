@@ -17,6 +17,19 @@
 #include <utility>
 #include <vector>
 
+static std::vector<std::pair<uint16_t, uint32_t>> cres() {
+  std::vector<std::pair<uint16_t, uint32_t>> v;
+  auto level = World::level;
+  auto creatures =
+      World::registrys[level].get<DwellingComp>(Global::goalEnt).creatures;
+  for (auto v0 : creatures) {
+    for (auto v1 : v0.first) {
+      v.push_back({v1, v0.second});
+    }
+  }
+  return v;
+}
+
 static void toMax() { Global::dweSliderNum = DwellingSys::maxCount(); }
 
 static void close() { World::exitScrn(); }
@@ -24,9 +37,9 @@ static void close() { World::exitScrn(); }
 static void buy() {
   auto &registry = World::registrys[World::level];
   // 判断英雄身上是否可以放下这个生物
-  auto dweComp = &registry.get<DwellingComp>(Global::goalEnt);
-  auto creatureId = dweComp->creatures[Global::dweIndex].first;
-  auto creatureNum = dweComp->creatures[Global::dweIndex].second;
+  auto creatures = cres();
+  auto creatureId = creatures[Global::dweIndex].first;
+  auto creatureNum = creatures[Global::dweIndex].second;
   auto heroComp = &registry.get<HeroComp>(Global::heroEnt);
   int8_t r = -1;
   for (uint8_t i = 0; i < heroComp->creatures.size(); i++) {
@@ -121,10 +134,8 @@ static void drawCreatures() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
-  auto creatures = World::registrys[World::level]
-                       .get<DwellingComp>(Global::goalEnt)
-                       .creatures;
-  int size = creatures.size();
+  auto creatures = cres();
+  uint8_t size = creatures.size();
   // 100x120
   int per = (485 - size * 100) / (size + 1);
   for (uint8_t i = 0; i < size; i++) {
@@ -189,10 +200,9 @@ static void drawCost() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
-  auto dweComp =
-      &World::registrys[World::level].get<DwellingComp>(Global::goalEnt);
-  auto creature = dweComp->creatures[Global::goalIndex].first;
-  auto cost = CreatureCfg::creatureCost.at(creature);
+  auto creatures = cres();
+  auto id = creatures[Global::dweIndex].first;
+  auto cost = CreatureCfg::creatureCost.at(id);
   std::vector<std::pair<uint8_t, uint8_t>> costVec;
   for (int8_t i = cost.size() - 1; i >= 0; i--) {
     if (cost[i] != 0) {
@@ -226,10 +236,9 @@ static void drawCost() {
 }
 
 uint32_t DwellingSys::maxCount() {
-  auto dweComp =
-      &World::registrys[World::level].get<DwellingComp>(Global::goalEnt);
-  auto creature = dweComp->creatures[Global::goalIndex].first;
-  auto cost = CreatureCfg::creatureCost.at(creature);
+  auto creatures = cres();
+  auto id = creatures[Global::dweIndex].first;
+  auto cost = CreatureCfg::creatureCost.at(id);
   uint32_t maxCount = UINT32_MAX;
   for (uint8_t i = 0; i < cost.size(); i++) {
     auto r = Global::resources[Global::playerId][i];
@@ -238,7 +247,7 @@ uint32_t DwellingSys::maxCount() {
     }
     maxCount = std::min(r / cost[i], maxCount);
   }
-  auto count = dweComp->creatures[Global::goalIndex].second;
+  auto count = creatures[Global::dweIndex].second;
   return std::min(maxCount, count);
 }
 
@@ -290,10 +299,9 @@ static bool clickCre(bool leftClick) {
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   SDL_FRect posRect;
 
-  auto dweComp =
-      &World::registrys[World::level].get<DwellingComp>(Global::goalEnt);
+  auto creatures = cres();
   // click creature
-  int size = dweComp->creatures.size();
+  int size = creatures.size();
   // 100x120
   int per = (485 - size * 100) / (size + 1);
   for (uint8_t i = 0; i < size; i++) {
@@ -302,15 +310,15 @@ static bool clickCre(bool leftClick) {
     posRect = {x, y, 100, 130};
     if (SDL_PointInRectFloat(&point, &posRect)) {
       if (leftClick) {
-        if (Global::goalIndex == i) {
-          World::enterCreature(dweComp->creatures[i],
-                               (uint8_t)Enum::CRETYPE::MOD_DWE);
+        if (Global::dweIndex == i) {
+          auto cre = creatures[i];
+          World::enterCreature(cre, (uint8_t)Enum::CRETYPE::MOD_DWE);
         } else {
-          Global::goalIndex = i;
+          Global::dweIndex = i;
         }
       } else {
-        World::enterCreature(dweComp->creatures[i],
-                             (uint8_t)Enum::CRETYPE::POP_DWE);
+        auto cre = creatures[i];
+        World::enterCreature(cre, (uint8_t)Enum::CRETYPE::POP_DWE);
       }
       return true;
     }

@@ -362,12 +362,12 @@ static void drawAdvMap() {
   SDL_RenderTexture(Window::renderer, texture, &srcRect, &posRect);
 }
 
-static void drawResBar() {
+void AdvMapSys::drawResBar(float x, float y) {
   SDL_FRect srcRect;
   SDL_FRect posRect;
   auto texture = Global::pcxCache["AResBar.pcx"][Global::playerId];
   srcRect = {0, 0, 595, 22};
-  posRect = {3, Global::viewPort.h - 25, 595, 22};
+  posRect = {x, y, 595, 22};
   SDL_RenderTexture(Window::renderer, texture, &srcRect, &posRect);
   posRect.x += 34;
   posRect.y += 2;
@@ -605,9 +605,11 @@ static void drawTownStat() {
 
     if (townComp->buildings.contains((uint8_t)TownCfg::Building::TOWN_HALL)) {
       texture = Global::defCache["ITMTLS.def/0"][1];
-    } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CITY_HALL)) {
+    } else if (townComp->buildings.contains(
+                   (uint8_t)TownCfg::Building::CITY_HALL)) {
       texture = Global::defCache["ITMTLS.def/0"][2];
-    } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CAPITOL)) {
+    } else if (townComp->buildings.contains(
+                   (uint8_t)TownCfg::Building::CAPITOL)) {
       texture = Global::defCache["ITMTLS.def/0"][3];
     } else {
       texture = Global::defCache["ITMTLS.def/0"][0];
@@ -618,9 +620,11 @@ static void drawTownStat() {
 
     if (townComp->buildings.contains((uint8_t)TownCfg::Building::FORT)) {
       texture = Global::defCache["ITMCLS.def/0"][0];
-    } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CITADEL)) {
+    } else if (townComp->buildings.contains(
+                   (uint8_t)TownCfg::Building::CITADEL)) {
       texture = Global::defCache["ITMCLS.def/0"][1];
-    } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CASTLE)) {
+    } else if (townComp->buildings.contains(
+                   (uint8_t)TownCfg::Building::CASTLE)) {
       texture = Global::defCache["ITMCLS.def/0"][2];
     } else {
       texture = Global::defCache["ITMCLS.def/0"][3];
@@ -910,7 +914,7 @@ bool AdvMapSys::run() {
   drawIM();
   drawMiniMap();
   drawAgem();
-  drawResBar();
+  drawResBar(3, Global::viewPort.h - 25);
   drawStat();
   drawPageButton();
   drawBottomInfo();

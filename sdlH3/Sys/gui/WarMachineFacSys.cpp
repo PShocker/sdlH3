@@ -77,7 +77,7 @@ static void drawBackGround() {
   FreeTypeSys::drawCenter(posRect.x + 34, posRect.y + 2, strPool[1859]);
   auto wComp =
       &World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
-  auto count = wComp->warMachines[Global::goalIndex].second;
+  auto count = wComp->warMachines[Global::dweIndex].second;
   FreeTypeSys::drawCenter(posRect.x + 34, posRect.y + 24, count);
   posRect = {leftUp.x + 246, leftUp.y + 222, 67, 42};
   SDL_RenderRect(Window::renderer, &posRect);
@@ -116,7 +116,7 @@ static void drawWarMachine() {
     auto defPath = WarMachineCfg::warMachineGraphics.at(id);
     auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
     auto index = Global::dweFrameIndex % textures.size();
-    auto colorType = Global::goalIndex == i ? 1 : 0;
+    auto colorType = Global::dweIndex == i ? 1 : 0;
     WarMachineFacSys::drawMachine(x, y, id, group, index, colorType);
   }
 }
@@ -172,7 +172,7 @@ static void drawCost() {
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
   auto wComp =
       &World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
-  auto mId = wComp->warMachines[Global::goalIndex].first;
+  auto mId = wComp->warMachines[Global::dweIndex].first;
   auto cost = WarMachineCfg::machineCost.at(mId);
   std::vector<std::pair<uint8_t, uint8_t>> costVec;
   for (int8_t i = cost.size() - 1; i >= 0; i--) {
@@ -209,7 +209,7 @@ static void drawCost() {
 uint32_t WarMachineFacSys::maxCount() {
   auto wComp =
       &World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
-  auto mId = wComp->warMachines[Global::goalIndex].first;
+  auto mId = wComp->warMachines[Global::dweIndex].first;
   auto cost = WarMachineCfg::machineCost.at(mId);
   uint32_t maxCount = UINT32_MAX;
   for (uint8_t i = 0; i < cost.size(); i++) {
@@ -219,7 +219,7 @@ uint32_t WarMachineFacSys::maxCount() {
     }
     maxCount = std::min(r / cost[i], maxCount);
   }
-  auto count = wComp->warMachines[Global::goalIndex].second;
+  auto count = wComp->warMachines[Global::dweIndex].second;
   return std::min(maxCount, count);
 }
 static void drawSlider() {
@@ -279,11 +279,11 @@ static bool clickMachine(bool leftClick) {
     posRect = {x, y, 100, 130};
     if (SDL_PointInRectFloat(&point, &posRect)) {
       if (leftClick) {
-        if (Global::goalIndex == i) {
+        if (Global::dweIndex == i) {
           World::enterWarMachine(wComp->warMachines[i],
                                  (uint8_t)Enum::CRETYPE::MOD_DWE);
         }
-        Global::goalIndex = i;
+        Global::dweIndex = i;
       } else {
         World::enterWarMachine(wComp->warMachines[i],
                                (uint8_t)Enum::CRETYPE::POP_DWE);

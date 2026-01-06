@@ -12,10 +12,12 @@
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
+#include "Lang/Lang.h"
 #include "Pcx/Pcx.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
+#include "Sys/FreeTypeSys.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
@@ -126,7 +128,7 @@ static void drawScrn() {
   }
   if (mouseArea.has_value()) {
     texture = Global::pcxCache[TownCfg::townBorder[townComp->id].at(
-        (TownCfg::Building)mouseArea.value())][0];
+        mouseArea.value())][0];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &mouseAreaRect);
   }
 }
@@ -218,18 +220,50 @@ static void buildAnimate() {
   }
 }
 
+static void drawResbar() {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  AdvMapSys::drawResBar(leftUp.x + 3, leftUp.y + 575);
+}
 bool TownSys::run() {
   buildAnimate();
   drawScrn();
   drawBorder();
   drawButton();
   drawHeroPor();
+  drawResbar();
   return true;
 }
 
 static void clickCapitol(bool leftClick) { World::enterTownHall(); }
 
-static void clickBlackSmith(bool leftClick) {}
+static void clickBlackSmith(bool leftClick) {
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  if (townComp->heroEnt[1].has_value()) {
+    auto heroEnt = townComp->heroEnt[1].value();
+    auto goalEnt =
+        townComp->buildings.at((uint8_t)TownCfg::Building::BLACKSMITH);
+    World::enterWarMachineFac(heroEnt, goalEnt);
+  } else {
+    Global::confirmOnlyOK = true;
+    Global::confirmCallBack = std::nullopt;
+    auto confirmbakW = 400;
+    auto confirmbakH = 140;
+    Global::confirmdraw = [confirmbakW, confirmbakH]() {
+      SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
+                        Global::viewPort.h / 2 - confirmbakH / 2};
+      auto strPool = *Lang::strPool[Global::langIndex];
+      FreeTypeSys::setSize(13);
+      FreeTypeSys::setColor(240, 224, 104, 255);
+      FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 15,
+                              strPool[1003]);
+    };
+    World::enterConfirm(confirmbakW, confirmbakH,
+                        ((uint8_t)Enum::SCNTYPE::MOD));
+  }
+}
 
 const static std::unordered_map<uint8_t, std::function<void(bool)>> buildsFunc =
     {

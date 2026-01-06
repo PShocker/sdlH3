@@ -1074,7 +1074,7 @@ int32_t HeroScrSys::heroSight(HeroComp &hComp) {
   }
   // 辅助技能
   for (auto p : hComp.secSkills) {
-    if (p.first == 3) {
+    if (p.first == (uint8_t)HeroCfg::SecondarySkill::SCOUTING) {
       r += p.second + 1;
       break;
     }

@@ -95,14 +95,20 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
 entt::entity Ent::loadBuild(uint8_t level, uint8_t id) {
   entt::entity ent = entt::null;
   auto &registry = World::registrys[level];
-
+  switch (id) {
+  case (uint8_t)TownCfg::Building::BLACKSMITH: {
+    ent = registry.create();
+    auto wComp = &registry.emplace<WarMachineFacComp>(ent);
+    wComp->warMachines = {{0, 1}, {1, 1}, {2, 1}};
+    break;
+  }
+  }
   return ent;
 }
 
@@ -287,14 +293,13 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     auto dwellingComp = &registry.emplace<DwellingComp>(ent);
     dwellingComp->id = object.subId;
 
-    auto creatureStr =
-        DwellingCfg::dweCreature[object.id - 17].at(object.subId);
-    for (auto str : creatureStr) {
-      if (CreatureCfg::creatureIndex.contains(str)) {
-        auto index = CreatureCfg::creatureIndex.at(str);
-        dwellingComp->creatures.push_back(
-            {index, CreatureCfg::creatureGrowth.at(index)});
-      }
+    auto creatures =
+        DwellingCfg::dweCreature[object.id -
+                                 (uint8_t)ObjectType::CREATURE_GENERATOR1]
+            .at(object.subId);
+    for (auto id : creatures) {
+      dwellingComp->creatures.push_back(
+          {std::vector<uint16_t>{id}, CreatureCfg::creatureGrowth.at(id)});
     }
     auto playerIdComp = &registry.emplace<PlayerIdComp>(ent);
     playerIdComp->id = std::any_cast<uint8_t>(object.data["playerId"]);

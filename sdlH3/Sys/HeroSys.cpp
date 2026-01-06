@@ -1,4 +1,5 @@
 #include "HeroSys.h"
+#include "Cfg/HeroCfg.h"
 #include "Cfg/TerrainCfg.h"
 #include "Comp/BoatComp.h"
 #include "Comp/CampFireComp.h"
@@ -510,7 +511,7 @@ static void handleHeroMeet(entt::entity heroEnt, uint8_t level0,
     // 判断有没有学术
     for (auto v2 : {hComp0->secSkills, hComp1->secSkills}) {
       for (auto v1 : v2) {
-        if (v1.first == 21) {
+        if (v1.first == (uint8_t)HeroCfg::SecondarySkill::LEARNING) {
           learnLevel = std::max(learnLevel, (int8_t)v1.second);
         }
       }

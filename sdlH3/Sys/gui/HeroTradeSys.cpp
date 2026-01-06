@@ -79,8 +79,8 @@ static void drawCreature() {
       auto num = FreeTypeSys::str(count);
       FreeTypeSys::drawLeft(posRect.x + 32, posRect.y + 16, num);
       if (Global::goalIndex != 0xff) {
-        auto x = Global::goalIndex / 8;
-        auto y = Global::goalIndex % 8;
+        auto x = Global::goalIndex / 7;
+        auto y = Global::goalIndex % 7;
         if (x == m && y == i) {
           SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255);
           SDL_RenderRect(Window::renderer, &posRect);
@@ -405,9 +405,11 @@ static bool clickCre(bool leftClick) {
               Global::goalIndex = 0xff;
             }
           } else if (Global::goalIndex == (m * 7 + i)) {
-            std::pair<uint8_t, entt::entity> heroPair = {m, heroEnts[m]};
+            auto level = m == 0 ? World::level : Global::goalLevel;
+            std::pair<uint8_t, entt::entity> heroPair = {level, heroEnts[m]};
             World::enterCreature(heroPair, heroComp->creatures[i],
                                  (uint8_t)Enum::CRETYPE::MOD_HERO);
+            Global::goalIndex = 0xff;
           } else if (Global::goalIndex == 0xff) {
             if (count != 0) {
               Global::goalIndex = (m * 7 + i);
@@ -427,7 +429,8 @@ static bool clickCre(bool leftClick) {
             Global::goalIndex = 0xff;
           }
         } else {
-          std::pair<uint8_t, entt::entity> heroPair = {m, heroEnts[m]};
+          auto level = m == 0 ? World::level : Global::goalLevel;
+          std::pair<uint8_t, entt::entity> heroPair = {level, heroEnts[m]};
           World::enterCreature(heroPair, heroComp->creatures[i],
                                (uint8_t)Enum::CRETYPE::POP_HERO);
         }

@@ -619,6 +619,8 @@ void World::enterDwe(entt::entity heroEnt, entt::entity goalEnt) {
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
 
+  Global::dweIndex = 0;
+
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
@@ -634,6 +636,8 @@ void World::enterWarMachineFac(entt::entity heroEnt, entt::entity goalEnt) {
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
+
+  Global::dweIndex = 0;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
