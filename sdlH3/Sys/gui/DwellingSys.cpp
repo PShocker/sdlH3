@@ -17,6 +17,31 @@
 #include <utility>
 #include <vector>
 
+std::vector<SDL_Point> DwellingSys::creatruePos(uint8_t size) {
+  std::vector<SDL_Point> v;
+  switch (size) {
+  case 2: {
+    const auto centerX = 485 / 2;
+    auto x0 = centerX - 50 - 70;
+    auto x1 = centerX - 50 + 70;
+    auto y = 60;
+    v.push_back(SDL_Point{x0, y});
+    v.push_back(SDL_Point{x1, y});
+    break;
+  }
+  default: {
+    auto per = (485 - size * 100) / (size + 1);
+    for (uint8_t i = 0; i < size; i++) {
+      auto x = per * (i + 1) + i * 100;
+      auto y = 60;
+      v.push_back(SDL_Point{x, y});
+    }
+    break;
+  }
+  }
+  return v;
+}
+
 static std::vector<std::pair<uint16_t, uint32_t>> cres() {
   std::vector<std::pair<uint16_t, uint32_t>> v;
   auto level = World::level;
@@ -113,9 +138,8 @@ static void drawBackGround() {
   posRect = {leftUp.x + 172, leftUp.y + 222, 67, 42};
   SDL_RenderRect(Window::renderer, &posRect);
   FreeTypeSys::drawCenter(posRect.x + 34, posRect.y + 2, strPool[1859]);
-  auto dweComp =
-      &World::registrys[World::level].get<DwellingComp>(Global::goalEnt);
-  auto count = dweComp->creatures[Global::goalIndex].second;
+  auto creatures = cres();
+  auto count = creatures[Global::dweIndex].second;
   FreeTypeSys::drawCenter(posRect.x + 34, posRect.y + 24, count);
   posRect = {leftUp.x + 246, leftUp.y + 222, 67, 42};
   SDL_RenderRect(Window::renderer, &posRect);
@@ -137,17 +161,17 @@ static void drawCreatures() {
   auto creatures = cres();
   uint8_t size = creatures.size();
   // 100x120
-  int per = (485 - size * 100) / (size + 1);
+  auto pos = DwellingSys::creatruePos(size);
   for (uint8_t i = 0; i < size; i++) {
-    auto x = leftUp.x + per * (i + 1);
-    auto y = leftUp.y + 60;
+    auto p = pos[i];
     auto id = creatures[i].first;
     auto defPath = CreatureCfg::creatureGraphics.at(id);
     auto group = 0;
     auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
     auto index = Global::dweFrameIndex % textures.size();
-    auto colorType = Global::goalIndex == i ? 1 : 0;
-    DwellingSys::drawCreature(x, y, id, group, index, colorType);
+    auto colorType = Global::dweIndex == i ? 1 : 0;
+    DwellingSys::drawCreature(leftUp.x + p.x, leftUp.y + p.y, id, group, index,
+                              colorType);
   }
 }
 
@@ -303,11 +327,10 @@ static bool clickCre(bool leftClick) {
   // click creature
   int size = creatures.size();
   // 100x120
-  int per = (485 - size * 100) / (size + 1);
+  auto pos = DwellingSys::creatruePos(size);
   for (uint8_t i = 0; i < size; i++) {
-    auto x = leftUp.x + per * (i + 1);
-    auto y = leftUp.y + 60;
-    posRect = {x, y, 100, 130};
+    auto p = pos[i];
+    posRect = {leftUp.x + p.x, leftUp.y + p.y, 100, 130};
     if (SDL_PointInRectFloat(&point, &posRect)) {
       if (leftClick) {
         if (Global::dweIndex == i) {

@@ -32,7 +32,7 @@
 #include <utility>
 #include <vector>
 
-static std::optional<uint8_t> mouseArea;
+static std::optional<uint8_t> mouseBuildId;
 
 void TownSys::split() {}
 
@@ -86,9 +86,14 @@ static std::unordered_set<uint8_t> townVisiableBuild() {
   if (s.contains((uint8_t)TownCfg::Building::CAPITOL)) {
     s.erase((uint8_t)TownCfg::Building::TOWN_HALL);
     s.erase((uint8_t)TownCfg::Building::CITY_HALL);
+    s.erase((uint8_t)TownCfg::Building::VILLAGE_HALL);
   }
   if (s.contains((uint8_t)TownCfg::Building::CITY_HALL)) {
     s.erase((uint8_t)TownCfg::Building::TOWN_HALL);
+    s.erase((uint8_t)TownCfg::Building::VILLAGE_HALL);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::TOWN_HALL)) {
+    s.erase((uint8_t)TownCfg::Building::VILLAGE_HALL);
   }
   if (s.contains((uint8_t)TownCfg::Building::CASTLE)) {
     s.erase((uint8_t)TownCfg::Building::FORT);
@@ -155,7 +160,7 @@ static void drawScrn() {
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   // add default ani
   auto builds = townVisiableBuild();
-  mouseArea = std::nullopt;
+  mouseBuildId = std::nullopt;
   SDL_FRect mouseAreaRect;
   static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
   for (auto build : TownCfg::townZ[townComp->id]) {
@@ -174,23 +179,25 @@ static void drawScrn() {
           posRect.y <= mousePoint.y && mousePoint.y < posRect.y + posRect.h) {
         uint32_t point = (mousePoint.x - posRect.x) +
                          textures[0]->w * (mousePoint.y - posRect.y);
-        if (!townAreaBuilds[townComp->id].contains((uint8_t)build) &&
+        if (!townAreaBuilds[townComp->id].contains(build) &&
             TownCfg::townBorder[townComp->id].contains(build)) {
-          townAreaBuilds[townComp->id][(uint8_t)build] =
+          townAreaBuilds[townComp->id][build] =
               Pcx("./Data/H3bitmap.lod/" +
                   TownCfg::townArea[townComp->id].at(build))
                   .loadArea();
         }
-        if (townAreaBuilds[townComp->id][(uint8_t)build][point]) {
-          mouseArea = (uint8_t)build;
+        if (townAreaBuilds[townComp->id][build][point]) {
+          mouseBuildId = build;
           mouseAreaRect = posRect;
         }
       }
     }
   }
-  if (mouseArea.has_value()) {
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
+  auto top = (*topFunc.target<bool (*)()>() == TownSys::run);
+  if (mouseBuildId.has_value() && top) {
     texture = Global::pcxCache[TownCfg::townBorder[townComp->id].at(
-        mouseArea.value())][0];
+        mouseBuildId.value())][0];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &mouseAreaRect);
   }
 }
@@ -296,42 +303,6 @@ bool TownSys::run() {
   drawResbar();
   return true;
 }
-
-static void clickCapitol(bool leftClick) { World::enterTownHall(); }
-
-static void clickBlackSmith(bool leftClick) {
-  auto [level, townEnt] = Global::townScnPair;
-  auto &registry = World::registrys[level];
-  auto townComp = &registry.get<TownComp>(townEnt);
-  if (townComp->heroEnt[1].has_value()) {
-    auto heroEnt = townComp->heroEnt[1].value();
-    auto goalEnt =
-        townComp->buildings.at((uint8_t)TownCfg::Building::BLACKSMITH);
-    World::enterWarMachineFac(heroEnt, goalEnt);
-  } else {
-    Global::confirmOnlyOK = true;
-    Global::confirmCallBack = std::nullopt;
-    auto confirmbakW = 400;
-    auto confirmbakH = 140;
-    Global::confirmdraw = [confirmbakW, confirmbakH]() {
-      SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
-                        Global::viewPort.h / 2 - confirmbakH / 2};
-      auto strPool = *Lang::strPool[Global::langIndex];
-      FreeTypeSys::setSize(13);
-      FreeTypeSys::setColor(240, 224, 104, 255);
-      FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 15,
-                              strPool[1003]);
-    };
-    World::enterConfirm(confirmbakW, confirmbakH,
-                        ((uint8_t)Enum::SCNTYPE::MOD));
-  }
-}
-
-const static std::unordered_map<uint8_t, std::function<void(bool)>> buildsFunc =
-    {
-        {(uint8_t)TownCfg::Building::CAPITOL, clickCapitol},
-        {(uint8_t)TownCfg::Building::BLACKSMITH, clickBlackSmith},
-};
 
 // 修正版本：全局累加相同种类的数量
 static std::vector<std::pair<uint16_t, uint32_t>>
@@ -453,10 +424,81 @@ static void heroSwap() {
   townComp->heroEnt[1] = h0;
 }
 
+static void clickCapitol(bool leftClick) { World::enterTownHall(); }
+
+static void clickBlackSmith(bool leftClick) {
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  if (townComp->heroEnt[1].has_value()) {
+    auto heroEnt = townComp->heroEnt[1].value();
+    auto goalEnt =
+        townComp->buildings.at((uint8_t)TownCfg::Building::BLACKSMITH);
+    World::enterWarMachineFac(heroEnt, goalEnt);
+  } else {
+    Global::confirmOnlyOK = true;
+    Global::confirmCallBack = std::nullopt;
+    auto confirmbakW = 400;
+    auto confirmbakH = 140;
+    Global::confirmdraw = [confirmbakW, confirmbakH]() {
+      SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
+                        Global::viewPort.h / 2 - confirmbakH / 2};
+      auto strPool = *Lang::strPool[Global::langIndex];
+      FreeTypeSys::setSize(13);
+      FreeTypeSys::setColor(240, 224, 104, 255);
+      FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 15,
+                              strPool[1003]);
+    };
+    World::enterConfirm(confirmbakW, confirmbakH,
+                        ((uint8_t)Enum::SCNTYPE::MOD));
+  }
+}
+
+static void clickDwe(bool leftClick) {
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto buildId = mouseBuildId.value();
+  if (leftClick) {
+    auto ent = townComp->buildings[buildId];
+    World::enterDwe(Global::heroEnt, ent);
+  } else {
+  }
+}
+
 static bool clickBuild(bool leftClick) {
-  if (mouseArea.has_value()) {
+  if (mouseBuildId.has_value()) {
     // 说明点击到了建筑上
-    buildsFunc.at(mouseArea.value())(leftClick);
+    switch (mouseBuildId.value()) {
+    case (uint8_t)TownCfg::Building::CAPITOL: {
+      clickCapitol(leftClick);
+      break;
+    }
+    case (uint8_t)TownCfg::Building::BLACKSMITH: {
+      clickBlackSmith(leftClick);
+      break;
+    }
+    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_1:
+    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_2:
+    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_3:
+    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_4:
+    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_5:
+    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_6:
+    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_7:
+    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1:
+    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_2:
+    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_3:
+    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_4:
+    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_5:
+    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6:
+    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_7: {
+      clickDwe(leftClick);
+      break;
+    }
+    default: {
+      break;
+    }
+    }
     return true;
   }
   return false;

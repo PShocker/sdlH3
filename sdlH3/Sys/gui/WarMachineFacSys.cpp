@@ -1,6 +1,7 @@
 #include "WarMachineFacSys.h"
 #include "Cfg/WarMachineCfg.h"
 #include "Comp/WarMachineFacComp.h"
+#include "DwellingSys.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
@@ -107,17 +108,17 @@ static void drawWarMachine() {
   auto mhs = wComp.warMachines;
   int size = mhs.size();
   // 100x120
-  int per = (485 - size * 100) / (size + 1);
+  auto pos = DwellingSys::creatruePos(size);
   for (uint8_t i = 0; i < size; i++) {
-    auto x = leftUp.x + per * (i + 1) + i * 100;
-    auto y = leftUp.y + 60;
+    auto p = pos[i];
     auto group = 2;
     auto id = mhs[i].first;
     auto defPath = WarMachineCfg::warMachineGraphics.at(id);
     auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
     auto index = Global::dweFrameIndex % textures.size();
     auto colorType = Global::dweIndex == i ? 1 : 0;
-    WarMachineFacSys::drawMachine(x, y, id, group, index, colorType);
+    WarMachineFacSys::drawMachine(leftUp.x + p.x, leftUp.y + p.y, id, group,
+                                  index, colorType);
   }
 }
 
@@ -272,11 +273,11 @@ static bool clickMachine(bool leftClick) {
       &World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
   int size = wComp->warMachines.size();
   // 100x120
-  int per = (485 - size * 100) / (size + 1);
+  auto pos = DwellingSys::creatruePos(size);
+
   for (uint8_t i = 0; i < size; i++) {
-    auto x = leftUp.x + per * (i + 1) + i * 100;
-    auto y = leftUp.y + 60;
-    posRect = {x, y, 100, 130};
+    auto p = pos[i];
+    posRect = {leftUp.x + p.x, leftUp.y + p.y, 100, 130};
     if (SDL_PointInRectFloat(&point, &posRect)) {
       if (leftClick) {
         if (Global::dweIndex == i) {
