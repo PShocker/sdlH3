@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CreatureCfg.h"
 #include "SDL3/SDL_rect.h"
 #include <cstdint>
 #include <string>
@@ -1961,55 +1962,127 @@ struct TownCfg {
        {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6, "TZFWYV2.pcx"},
        {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7, "TZFHYD2A.pcx"}}};
 
-  //   const static inline std::unordered_map<uint8_t, std::string> townIndex =
-  //   {
-  //       {0, "townHall"},        {1, "cityHall"},
-  //       {2, "capitol"},         {3, "fort"},
-  //       {4, "citadel"},         {5, "castle"},
-  //       {6, "tavern"},          {7, "blacksmith"},
-  //       {8, "marketplace"},     {9, "resourceSilo"},
-  //       {11, "mageGuild1"},     {12, "mageGuild2"},
-  //       {13, "mageGuild3"},     {14, "mageGuild4"},
-  //       {15, "mageGuild5"},     {16, "shipyard"},
-  //       {17, "grail"},          {22, "dwellingLvl1"},
-  //       {23, "dwellingUpLvl1"}, {24, "horde1"},
-  //       {25, "dwellingLvl2"},   {26, "dwellingUpLvl2"},
-  //       {27, "horde2"},         {28, "dwellingLvl3"},
-  //       {29, "dwellingUpLvl3"}, {30, "horde3"},
-  //       {31, "dwellingLvl4"},   {32, "dwellingUpLvl4"},
-  //       {33, "horde4"},         {34, "dwellingLvl5"},
-  //       {35, "dwellingUpLvl5"}, {36, "horde5"},
-  //       {37, "dwellingLvl6"},   {38, "dwellingUpLvl6"},
-  //       {39, "dwellingLvl7"},   {40, "dwellingUpLvl7"},
-  //       {255, "villageHall"},
-  //   };
-
-  //   const static inline std::unordered_map<uint8_t, std::string>
-  //       townSpecialIndex[] = {
-  //           // castle - 索引0
-  //           {{18, "special1"}, {20, "special2"}, {19, "special3"}},
-  //           // rampart - 索引1
-  //           {{18, "special1"}, {19, "special2"}, {20, "special3"}},
-  //           // tower - 索引2
-  //           {{10, "special1"},
-  //            {20, "special2"},
-  //            {18, "special3"},
-  //            {19, "special4"}},
-  //           // inferno - 索引3
-  //           {{18, "special2"}, {19, "special3"}, {20, "special4"}},
-  //           // necropolis - 索引4
-  //           {{18, "special1"}, {19, "special2"}, {20, "special3"}},
-  //           // dungeon - 索引5
-  //           {{10, "special1"},
-  //            {18, "special2"},
-  //            {19, "special3"},
-  //            {20, "special4"}},
-  //           // stronghold - 索引6
-  //           {{18, "special1"},
-  //            {19, "special2"},
-  //            {20, "special3"},
-  //            {21, "special4"}},
-  //           // fortress - 索引7
-  //           {{20, "special1"}, {19, "special2"}, {18, "special3"}},
-  //   };
+  const static inline std::vector<std::vector<uint16_t>> townCreature[] = {
+      // 城堡生物
+      {{(uint16_t)CreatureCfg::Creature::PIKEMAN,
+        (uint16_t)CreatureCfg::Creature::HALBERDIER},
+       {(uint16_t)CreatureCfg::Creature::ARCHER,
+        (uint16_t)CreatureCfg::Creature::MARKSMAN},
+       {(uint16_t)CreatureCfg::Creature::GRIFFIN,
+        (uint16_t)CreatureCfg::Creature::ROYAL_GRIFFIN},
+       {(uint16_t)CreatureCfg::Creature::SWORDSMAN,
+        (uint16_t)CreatureCfg::Creature::CRUSADER},
+       {(uint16_t)CreatureCfg::Creature::MONK,
+        (uint16_t)CreatureCfg::Creature::ZEALOT},
+       {(uint16_t)CreatureCfg::Creature::CAVALIER,
+        (uint16_t)CreatureCfg::Creature::CHAMPION},
+       {(uint16_t)CreatureCfg::Creature::ANGEL,
+        (uint16_t)CreatureCfg::Creature::ARCHANGEL}},
+      // 壁垒
+      {{(uint16_t)CreatureCfg::Creature::CENTAUR,
+        (uint16_t)CreatureCfg::Creature::CENTAUR_CAPTAIN},
+       {(uint16_t)CreatureCfg::Creature::DWARF,
+        (uint16_t)CreatureCfg::Creature::BATTLE_DWARF},
+       {(uint16_t)CreatureCfg::Creature::WOOD_ELF,
+        (uint16_t)CreatureCfg::Creature::GRAND_ELF},
+       {(uint16_t)CreatureCfg::Creature::PEGASUS,
+        (uint16_t)CreatureCfg::Creature::SILVER_PEGASUS},
+       {(uint16_t)CreatureCfg::Creature::DENDROID_GUARD,
+        (uint16_t)CreatureCfg::Creature::DENDROID_SOLDIER},
+       {(uint16_t)CreatureCfg::Creature::UNICORN,
+        (uint16_t)CreatureCfg::Creature::WAR_UNICORN},
+       {(uint16_t)CreatureCfg::Creature::GREEN_DRAGON,
+        (uint16_t)CreatureCfg::Creature::GOLD_DRAGON}},
+      // 塔楼
+      {{(uint16_t)CreatureCfg::Creature::GREMLIN,
+        (uint16_t)CreatureCfg::Creature::MASTER_GREMLIN},
+       {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE,
+        (uint16_t)CreatureCfg::Creature::OBSIDIAN_GARGOYLE},
+       {(uint16_t)CreatureCfg::Creature::STONE_GOLEM,
+        (uint16_t)CreatureCfg::Creature::IRON_GOLEM},
+       {(uint16_t)CreatureCfg::Creature::MAGE,
+        (uint16_t)CreatureCfg::Creature::ARCH_MAGE},
+       {(uint16_t)CreatureCfg::Creature::GENIE,
+        (uint16_t)CreatureCfg::Creature::MASTER_GENIE},
+       {(uint16_t)CreatureCfg::Creature::NAGA,
+        (uint16_t)CreatureCfg::Creature::NAGA_QUEEN},
+       {(uint16_t)CreatureCfg::Creature::GIANT,
+        (uint16_t)CreatureCfg::Creature::TITAN}},
+      // 地狱
+      {{(uint16_t)CreatureCfg::Creature::IMP,
+        (uint16_t)CreatureCfg::Creature::FAMILIAR},
+       {(uint16_t)CreatureCfg::Creature::GOG,
+        (uint16_t)CreatureCfg::Creature::MAGOG},
+       {(uint16_t)CreatureCfg::Creature::HELL_HOUND,
+        (uint16_t)CreatureCfg::Creature::CERBERUS},
+       {(uint16_t)CreatureCfg::Creature::DEMON,
+        (uint16_t)CreatureCfg::Creature::HORNED_DEMON},
+       {(uint16_t)CreatureCfg::Creature::PIT_FIEND,
+        (uint16_t)CreatureCfg::Creature::PIT_LORD},
+       {(uint16_t)CreatureCfg::Creature::EFREETI,
+        (uint16_t)CreatureCfg::Creature::EFREET_SULTAN},
+       {(uint16_t)CreatureCfg::Creature::DEVIL,
+        (uint16_t)CreatureCfg::Creature::ARCH_DEVIL}},
+      // 墓园
+      {{(uint16_t)CreatureCfg::Creature::SKELETON,
+        (uint16_t)CreatureCfg::Creature::SKELETON_WARRIOR},
+       {(uint16_t)CreatureCfg::Creature::WALKING_DEAD,
+        (uint16_t)CreatureCfg::Creature::ZOMBIE},
+       {(uint16_t)CreatureCfg::Creature::WIGHT,
+        (uint16_t)CreatureCfg::Creature::WRAITH},
+       {(uint16_t)CreatureCfg::Creature::VAMPIRE,
+        (uint16_t)CreatureCfg::Creature::VAMPIRE_LORD},
+       {(uint16_t)CreatureCfg::Creature::LICH,
+        (uint16_t)CreatureCfg::Creature::POWER_LICH},
+       {(uint16_t)CreatureCfg::Creature::BLACK_KNIGHT,
+        (uint16_t)CreatureCfg::Creature::DREAD_KNIGHT},
+       {(uint16_t)CreatureCfg::Creature::BONE_DRAGON,
+        (uint16_t)CreatureCfg::Creature::GHOST_DRAGON}},
+      // 地牢
+      {{(uint16_t)CreatureCfg::Creature::TROGLODYTE,
+        (uint16_t)CreatureCfg::Creature::INFERNAL_TROGLODYTE},
+       {(uint16_t)CreatureCfg::Creature::HARPY,
+        (uint16_t)CreatureCfg::Creature::HARPY_HAG},
+       {(uint16_t)CreatureCfg::Creature::BEHOLDER,
+        (uint16_t)CreatureCfg::Creature::EVIL_EYE},
+       {(uint16_t)CreatureCfg::Creature::MEDUSA,
+        (uint16_t)CreatureCfg::Creature::MEDUSA_QUEEN},
+       {(uint16_t)CreatureCfg::Creature::MINOTAUR,
+        (uint16_t)CreatureCfg::Creature::MINOTAUR_KING},
+       {(uint16_t)CreatureCfg::Creature::MANTICORE,
+        (uint16_t)CreatureCfg::Creature::SCORPICORE},
+       {(uint16_t)CreatureCfg::Creature::RED_DRAGON,
+        (uint16_t)CreatureCfg::Creature::BLACK_DRAGON}},
+      // 据点
+      {{(uint16_t)CreatureCfg::Creature::GOBLIN,
+        (uint16_t)CreatureCfg::Creature::HOBGOBLIN},
+       {(uint16_t)CreatureCfg::Creature::WOLF_RIDER,
+        (uint16_t)CreatureCfg::Creature::WOLF_RAIDER},
+       {(uint16_t)CreatureCfg::Creature::ORC,
+        (uint16_t)CreatureCfg::Creature::ORC_CHIEFTAIN},
+       {(uint16_t)CreatureCfg::Creature::OGRE,
+        (uint16_t)CreatureCfg::Creature::OGRE_MAGE},
+       {(uint16_t)CreatureCfg::Creature::ROC,
+        (uint16_t)CreatureCfg::Creature::THUNDERBIRD},
+       {(uint16_t)CreatureCfg::Creature::CYCLOPS,
+        (uint16_t)CreatureCfg::Creature::CYCLOPS_KING},
+       {(uint16_t)CreatureCfg::Creature::BEHEMOTH,
+        (uint16_t)CreatureCfg::Creature::ANCIENT_BEHEMOTH}},
+      // 要塞
+      {{(uint16_t)CreatureCfg::Creature::GNOLL,
+        (uint16_t)CreatureCfg::Creature::GNOLL_MARAUDER},
+       {(uint16_t)CreatureCfg::Creature::LIZARDMAN,
+        (uint16_t)CreatureCfg::Creature::LIZARD_WARRIOR},
+       {(uint16_t)CreatureCfg::Creature::GORGON,
+        (uint16_t)CreatureCfg::Creature::MIGHTY_GORGON},
+       {(uint16_t)CreatureCfg::Creature::SERPENT_FLY,
+        (uint16_t)CreatureCfg::Creature::DRAGON_FLY},
+       {(uint16_t)CreatureCfg::Creature::BASILISK,
+        (uint16_t)CreatureCfg::Creature::GREATER_BASILISK},
+       {(uint16_t)CreatureCfg::Creature::WYVERN,
+        (uint16_t)CreatureCfg::Creature::WYVERN_MONARCH},
+       {(uint16_t)CreatureCfg::Creature::HYDRA,
+        (uint16_t)CreatureCfg::Creature::CHAOS_HYDRA}},
+      // 元素和特殊生物（如果有需要）
+  };
 };

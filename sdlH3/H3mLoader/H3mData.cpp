@@ -839,6 +839,9 @@ void H3mData::readObjects() {
 
         H3mBitMask::readBitmask(reader, possibleSpells, features.spellsBytes,
                                 features.spellsCount, true);
+        object.data["obligatorySpells"] = obligatorySpells;
+        object.data["possibleSpells"] = possibleSpells;
+
         uint32_t eventsCount = reader.readU32();
         std::vector<H3mEvent> events;
         for (int eventID = 0; eventID < eventsCount; ++eventID) {

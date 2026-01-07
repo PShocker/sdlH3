@@ -1,6 +1,6 @@
 #pragma once
-#include "Comp/BoatComp.h"
 #include "Comp/HeroComp.h"
+#include "Comp/TownComp.h"
 #include "H3mLoader/H3mData.h"
 #include "H3mLoader/H3mObject.h"
 #include "SDL3/SDL_rect.h"
@@ -17,6 +17,7 @@ struct Ent {
   static void loadPath(std::vector<SDL_Point> &path, entt::entity heroEnt,
                        uint16_t indexCost);
   static void load(H3mData &data);
-  static entt::entity loadBuild(uint8_t level, uint8_t id);
+  static entt::entity loadBuild(uint8_t level, TownComp &townComp,
+                                uint8_t buildId);
   static int64_t loadZorder(int32_t i, H3mObject &object);
 };

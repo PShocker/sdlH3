@@ -32,6 +32,7 @@
 #include "Comp/LibraryComp.h"
 #include "Comp/LightComp.h"
 #include "Comp/MagEyeComp.h"
+#include "Comp/MageGuildComp.h"
 #include "Comp/MarketComp.h"
 #include "Comp/MarlettoComp.h"
 #include "Comp/MerCampComp.h"
@@ -98,14 +99,127 @@
 #include <utility>
 #include <vector>
 
-entt::entity Ent::loadBuild(uint8_t level, uint8_t id) {
+entt::entity Ent::loadBuild(uint8_t level, TownComp &townComp,
+                            uint8_t buildId) {
+  auto townId = townComp.id;
   entt::entity ent = entt::null;
   auto &registry = World::registrys[level];
-  switch (id) {
+  switch (buildId) {
   case (uint8_t)TownCfg::Building::BLACKSMITH: {
     ent = registry.create();
     auto wComp = &registry.emplace<WarMachineFacComp>(ent);
     wComp->warMachines = {{0, 1}, {1, 1}, {2, 1}};
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_1: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][0][0];
+    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][0];
+    dComp->creatures.push_back({creatures, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_2: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][1][0];
+    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_2: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][1];
+    dComp->creatures.push_back({creatures, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_3: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][2][0];
+    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_3: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][2];
+    dComp->creatures.push_back({creatures, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_4: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][3][0];
+    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_4: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][3];
+    dComp->creatures.push_back({creatures, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_5: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][4][0];
+    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_5: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][4];
+    dComp->creatures.push_back({creatures, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_6: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][5][0];
+    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][5];
+    dComp->creatures.push_back({creatures, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_7: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][6][0];
+    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_7: {
+    ent = registry.create();
+    auto dComp = &registry.emplace<DwellingComp>(ent);
+    auto creatures = TownCfg::townCreature[townId][6];
+    dComp->creatures.push_back({creatures, 0});
+    break;
+  }
+  case (uint8_t)TownCfg::Building::MAGE_GUILD_1: {
+    ent = registry.create();
+    auto mComp = &registry.emplace<MageGuildComp>(ent);
+    mComp->level = 1;
+    auto s = SpellCfg::SpellLevels[1];
+    std::vector<uint8_t> result;
+    std::sample(s.begin(), s.end(), std::back_inserter(result), 5, Global::gen);
+    mComp->spells = result;
+    break;
+  }
+  default: {
     break;
   }
   }
@@ -243,23 +357,14 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     if (townComp->garCreatures.empty()) {
       townComp->garCreatures.assign(7, {0xffff, 0});
     }
-    auto buildings =
-        std::any_cast<std::set<uint8_t>>(object.data["builtBuildings"]);
-    // 替换为升级后的建筑
-    std::unordered_map<uint8_t, entt::entity> builds;
-    for (auto &group : TownCfg::townHallSlots[townComp->id]) {
-      for (auto &vec : group) {
-        for (int i = vec.size() - 1; i >= 0; --i) {
-          if (buildings.contains(vec[i])) {
-            builds[vec[i]] = Ent::loadBuild(level, vec[i]);
-            if (vec[i] != (uint8_t)TownCfg::Building::RESOURCE_SILO) {
-              break;
-            }
-          }
-        }
-      }
-    }
-    townComp->buildings = builds;
+
+    townComp->forbidBuildings =
+        std::any_cast<std::set<uint8_t>>(object.data["forbidBuildings"]);
+    townComp->obligatorySpells =
+        std::any_cast<std::set<uint8_t>>(object.data["obligatorySpells"]);
+    townComp->possibleSpells =
+        std::any_cast<std::set<uint8_t>>(object.data["possibleSpells"]);
+
     auto playerIdComp = &registry.emplace<PlayerIdComp>(ent);
     playerIdComp->id = std::any_cast<uint8_t>(object.data["playerId"]);
     playerIdComp->id = playerIdComp->id == 0xff ? 8 : playerIdComp->id;
@@ -278,6 +383,15 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     }
     townComp->nameIndex = townComp->nameIndex % 16;
     townComp->heroEnt = {std::nullopt, std::nullopt};
+
+    auto buildings =
+        std::any_cast<std::set<uint8_t>>(object.data["builtBuildings"]);
+    std::unordered_map<uint8_t, entt::entity> builds;
+    for (auto i : buildings) {
+      builds[i] = Ent::loadBuild(level, *townComp, i);
+    }
+    townComp->buildings = builds;
+
     texturePath = texturePath + "/" + std::to_string(playerIdComp->id);
     break;
   }
@@ -297,9 +411,10 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
         DwellingCfg::dweCreature[object.id -
                                  (uint8_t)ObjectType::CREATURE_GENERATOR1]
             .at(object.subId);
-    for (auto id : creatures) {
+    for (auto creature : creatures) {
       dwellingComp->creatures.push_back(
-          {std::vector<uint16_t>{id}, CreatureCfg::creatureGrowth.at(id)});
+          {std::vector<uint16_t>{creature},
+           CreatureCfg::creatureGrowth.at(creature)});
     }
     auto playerIdComp = &registry.emplace<PlayerIdComp>(ent);
     playerIdComp->id = std::any_cast<uint8_t>(object.data["playerId"]);

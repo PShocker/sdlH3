@@ -28,12 +28,77 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
 static std::optional<uint8_t> mouseArea;
 
 void TownSys::split() {}
+
+static std::unordered_set<uint8_t> townVisiableBuild() {
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto s = TownCfg::townDefaultAni[townComp->id];
+  for (const auto &pair : townComp->buildings) {
+    s.insert(pair.first);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1)) {
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_1);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_2)) {
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_2);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_3)) {
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_3);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_4)) {
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_4);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_5)) {
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_5);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6)) {
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_6);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_7)) {
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_7);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_5)) {
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_1);
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_2);
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_3);
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_4);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_4)) {
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_1);
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_2);
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_3);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_3)) {
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_1);
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_2);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_2)) {
+    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_1);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::CAPITOL)) {
+    s.erase((uint8_t)TownCfg::Building::TOWN_HALL);
+    s.erase((uint8_t)TownCfg::Building::CITY_HALL);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::CITY_HALL)) {
+    s.erase((uint8_t)TownCfg::Building::TOWN_HALL);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::CASTLE)) {
+    s.erase((uint8_t)TownCfg::Building::FORT);
+    s.erase((uint8_t)TownCfg::Building::CITADEL);
+  }
+  if (s.contains((uint8_t)TownCfg::Building::CITADEL)) {
+    s.erase((uint8_t)TownCfg::Building::FORT);
+  }
+  return s;
+}
 
 static void close() {
   World::enterAdvScrn();
@@ -89,10 +154,7 @@ static void drawScrn() {
   texture = Global::pcxCache["townScrn.pcx"][Global::playerId];
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   // add default ani
-  auto builds = TownCfg::townDefaultAni[townComp->id];
-  for (auto &[k, v] : townComp->buildings) {
-    builds.insert(k);
-  }
+  auto builds = townVisiableBuild();
   mouseArea = std::nullopt;
   SDL_FRect mouseAreaRect;
   static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
