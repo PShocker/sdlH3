@@ -33,6 +33,7 @@
 #include <vector>
 
 static std::optional<uint8_t> mouseBuildId;
+static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
 
 void TownSys::split() {}
 
@@ -158,11 +159,21 @@ static void drawScrn() {
   posRect = {leftUp.x, leftUp.y + 374, 800, 226};
   texture = Global::pcxCache["townScrn.pcx"][Global::playerId];
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-  // add default ani
+}
+
+static void drawBuilds() {
+  SDL_FRect posRect;
+
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  SDL_FPoint mousePoint = {Window::mouseX, Window::mouseY};
+
   auto builds = townVisiableBuild();
   mouseBuildId = std::nullopt;
-  SDL_FRect mouseAreaRect;
-  static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
+  std::vector<uint8_t> sortBuild;
   for (auto build : TownCfg::townZ[townComp->id]) {
     if (builds.contains(build)) {
       auto textures =
@@ -172,9 +183,6 @@ static void drawScrn() {
       posRect = {leftUp.x + townPoint.x, leftUp.y + townPoint.y,
                  static_cast<float>(textures[frame]->w),
                  static_cast<float>(textures[frame]->h)};
-      SDL_RenderTexture(Window::renderer, textures[0], nullptr, &posRect);
-      SDL_RenderTexture(Window::renderer, textures[frame], nullptr, &posRect);
-      SDL_FPoint mousePoint = {Window::mouseX, Window::mouseY};
       if (posRect.x <= mousePoint.x && mousePoint.x < posRect.x + posRect.w &&
           posRect.y <= mousePoint.y && mousePoint.y < posRect.y + posRect.h) {
         uint32_t point = (mousePoint.x - posRect.x) +
@@ -186,19 +194,31 @@ static void drawScrn() {
                   TownCfg::townArea[townComp->id].at(build))
                   .loadArea();
         }
-        if (townAreaBuilds[townComp->id][build][point]) {
+        if (townAreaBuilds[townComp->id].contains(build) &&
+            townAreaBuilds[townComp->id][build][point]) {
           mouseBuildId = build;
-          mouseAreaRect = posRect;
         }
       }
+      sortBuild.push_back(build);
     }
   }
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == TownSys::run);
-  if (mouseBuildId.has_value() && top) {
-    texture = Global::pcxCache[TownCfg::townBorder[townComp->id].at(
-        mouseBuildId.value())][0];
-    SDL_RenderTexture(Window::renderer, texture, nullptr, &mouseAreaRect);
+  for (auto build : sortBuild) {
+    auto textures =
+        Global::defCache[TownCfg::townBuilds[townComp->id].at(build) + "/0"];
+    auto frame = Global::bldFrameIndex % textures.size();
+    auto townPoint = TownCfg::townPoint[townComp->id].at(build);
+    posRect = {leftUp.x + townPoint.x, leftUp.y + townPoint.y,
+               static_cast<float>(textures[frame]->w),
+               static_cast<float>(textures[frame]->h)};
+    SDL_RenderTexture(Window::renderer, textures[0], nullptr, &posRect);
+    SDL_RenderTexture(Window::renderer, textures[frame], nullptr, &posRect);
+    if (mouseBuildId == build && top) {
+      auto texture = Global::pcxCache[TownCfg::townBorder[townComp->id].at(
+          mouseBuildId.value())][0];
+      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    }
   }
 }
 
@@ -297,6 +317,7 @@ static void drawResbar() {
 bool TownSys::run() {
   buildAnimate();
   drawScrn();
+  drawBuilds();
   drawBorder();
   drawButton();
   drawHeroPor();
@@ -471,6 +492,8 @@ static void clickDwe(bool leftClick) {
   }
 }
 
+static void clickMageGuild(bool leftClick) {}
+
 static bool clickBuild(bool leftClick) {
   if (mouseBuildId.has_value()) {
     // 说明点击到了建筑上
@@ -498,6 +521,14 @@ static bool clickBuild(bool leftClick) {
     case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6:
     case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_7: {
       clickDwe(leftClick);
+      break;
+    }
+    case (uint8_t)TownCfg::Building::MAGE_GUILD_1:
+    case (uint8_t)TownCfg::Building::MAGE_GUILD_2:
+    case (uint8_t)TownCfg::Building::MAGE_GUILD_3:
+    case (uint8_t)TownCfg::Building::MAGE_GUILD_4:
+    case (uint8_t)TownCfg::Building::MAGE_GUILD_5: {
+      clickMageGuild(leftClick);
       break;
     }
     default: {

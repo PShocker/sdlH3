@@ -58,6 +58,7 @@ struct World {
   static void enterPuzzle(entt::entity goalEnt);
   static void enterSplitCre();
   static void enterViewWorld();
+  static void enterMageGuild(uint8_t level, entt::entity ent);
 
   static void enterTreasure(entt::entity heroEnt, entt::entity goalEnt);
   static void enterWindMill(entt::entity goalEnt);

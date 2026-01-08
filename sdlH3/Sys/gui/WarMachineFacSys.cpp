@@ -132,8 +132,7 @@ void WarMachineFacSys::drawMachineBak(float x, float y, uint16_t id,
     SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
   }
   SDL_RenderRect(Window::renderer, &posRect);
-  drawWarMachine(x, y, id, group, index,
-                 (uint8_t)CreatureCfg::OV_COLOR::TRANSPARENCY);
+  drawWarMachine(x, y, id, group, index, (uint8_t)CreatureCfg::OV_COLOR::CYAN);
 }
 
 static void drawWarMachines() {

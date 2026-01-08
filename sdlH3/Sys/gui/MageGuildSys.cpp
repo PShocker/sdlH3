@@ -11,36 +11,15 @@
 #include <cstdint>
 #include <vector>
 
-static float bakW = 450;
-static float bakH = 340;
-
-static bool visited() {
-  auto &heroComp =
-      World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  if (heroComp.visited.contains((uint8_t)ObjectType::FOUNTAIN_OF_YOUTH)) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-static void receive() {
-  auto &heroComp =
-      World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  World::exitScrn();
-  if (!visited()) {
-    heroComp.luck.push_back({(uint8_t)ObjectType::FOUNTAIN_OF_YOUTH, 1});
-  }
-  heroComp.visited.insert((uint8_t)ObjectType::FOUNTAIN_OF_YOUTH);
-}
+static void close() { World::exitScrn(); }
 
 static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
   Button b;
 
-  b.textures = Global::defCache["iOKAY.def/0"];
-  b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-  b.func = receive;
+  b.textures = Global::defCache["TPMAGE1.DEF/0"];
+  b.r = {748, 556, 48, 40};
+  b.func = close;
   b.disable = false;
   v.push_back(b);
 
@@ -48,39 +27,33 @@ static std::vector<Button> buttonInfo() {
 }
 
 static void drawBackGround() {
-  auto x = Global::viewPort.w / 2;
-  auto y = Global::viewPort.h / 2;
-  AdvPopSys::drawBackGround(x, y, bakW, bakH, Global::playerId);
-
-  FreeTypeSys::setSize(13);
-  FreeTypeSys::setColor(240, 224, 104, 255);
-  auto strPool = *Lang::strPool[Global::langIndex];
-  std::u16string s = strPool[953];
-  FreeTypeSys::drawCenter(x + bakW / 2, y - bakH / 2 + 50, s);
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 800) / 2),
+                    static_cast<float>(((int)Global::viewPort.h - 600) / 2)};
+  posRect = {leftUp.x, leftUp.y, 800, 600};
+  auto texture = Global::pcxCache["TPMAGE.pcx"][Global::playerId];
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
   return;
 }
 
-const SDL_FRect lukPosition = {bakW / 2 - 41, bakH / 3, 82, 93};
+static const std::vector<std::vector<SDL_Point>> positions = {
+    {{222, 445}, {312, 445}, {402, 445}, {520, 445}, {610, 445}, {700, 445}},
+    {{48, 53}, {48, 147}, {48, 241}, {48, 335}, {48, 429}},
+    {{570, 82}, {672, 82}, {570, 157}, {672, 157}},
+    {{183, 42}, {183, 148}, {183, 253}},
+    {{491, 325}, {591, 325}}};
 
-static void draw() {
+static void drawSpells() {
   SDL_FRect posRect;
-  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                    Global::viewPort.h / 2 - bakH / 2};
-  if (!visited()) {
-    auto texture = Global::defCache["ilck82.def/0"][4];
-    posRect = {leftUp.x + lukPosition.x, leftUp.y + lukPosition.y,
-               lukPosition.w, lukPosition.h};
-    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
-    SDL_RenderRect(Window::renderer, &posRect);
-  }
+  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 800) / 2),
+                    static_cast<float>(((int)Global::viewPort.h - 600) / 2)};
 }
 
 static void drawButton() {
   SDL_FRect posRect;
-  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                    Global::viewPort.h / 2 - bakH / 2};
+  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 800) / 2),
+                    static_cast<float>(((int)Global::viewPort.h - 600) / 2)};
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
@@ -90,29 +63,14 @@ static void drawButton() {
 
 bool MageGuildSys::run() {
   drawBackGround();
-  draw();
+  drawSpells();
   drawButton();
   return true;
 }
 
-static bool clickLuk(bool leftClick) {
-  if (!visited()) {
-    SDL_FRect posRect;
-    SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                      Global::viewPort.h / 2 - bakH / 2};
-    SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
-    posRect = {leftUp.x + lukPosition.x, leftUp.y + lukPosition.y,
-               lukPosition.w, lukPosition.h};
-    if (SDL_PointInRectFloat(&point, &posRect)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 bool MageGuildSys::leftMouseUp(float x, float y) {
-  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                    Global::viewPort.h / 2 - bakH / 2};
+  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 800) / 2),
+                    static_cast<float>(((int)Global::viewPort.h - 600) / 2)};
   auto v = buttonInfo();
   if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
     return false;
@@ -120,8 +78,10 @@ bool MageGuildSys::leftMouseUp(float x, float y) {
   return true;
 }
 
+static bool clickSpells(bool leftClick) { return false; }
+
 bool MageGuildSys::rightMouseDown(float x, float y) {
-  if (clickLuk(false)) {
+  if (clickSpells(false)) {
     return false;
   }
   return true;
@@ -130,7 +90,7 @@ bool MageGuildSys::rightMouseDown(float x, float y) {
 bool MageGuildSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    receive();
+    close();
     break;
   }
   default:

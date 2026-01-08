@@ -44,6 +44,7 @@
 #include "Sys/gui/LibrarySys.h"
 #include "Sys/gui/MagSpringSys.h"
 #include "Sys/gui/MagWellSys.h"
+#include "Sys/gui/MageGuildSys.h"
 #include "Sys/gui/MarketSys.h"
 #include "Sys/gui/MarlettoSys.h"
 #include "Sys/gui/MerCampSys.h"
@@ -620,6 +621,24 @@ void World::enterDwe(entt::entity heroEnt, entt::entity goalEnt) {
   Global::goalEnt = goalEnt;
 
   Global::dweIndex = 0;
+
+  Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+}
+
+void World::enterMageGuild(uint8_t level, entt::entity ent) {
+  enterScrn();
+
+  iterateSystems.pop_back();
+  iterateSystems.push_back(MageGuildSys::run);
+  iterateSystems.push_back(CursorSys::run);
+
+  LMouseUpSys.push_back(MageGuildSys::leftMouseUp);
+  RMouseDownSys.push_back(MageGuildSys::rightMouseDown);
+  keyUpSys.push_back(MageGuildSys::keyUp);
+
+  Global::townScnPair = {level, ent};
+  Global::goalIndex = 0xff;
+  Global::townScnIndex = 0xff;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }

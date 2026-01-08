@@ -582,7 +582,8 @@ std::pair<uint8_t, entt::entity> CursorSys::choose(bool click, float x,
             }
             if (click) {
               auto &towns = Global::towns[Global::playerId];
-              if (towns[Global::townsIndex[Global::playerId]].second == ent) {
+              if (Global::townsIndex[Global::playerId] != 0xffff &&
+                  towns[Global::townsIndex[Global::playerId]].second == ent) {
                 World::enterTownScrn(World::level, ent,
                                      (uint8_t)Enum::SCNTYPE::MOD);
               } else {

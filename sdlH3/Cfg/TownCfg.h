@@ -17,8 +17,6 @@ struct TownCfg {
 
   const static inline std::string tavernVideoStr = "TAVERN.BIK";
 
-  const static inline std::string guildBackgroundStr = "TPMAGE.pcx";
-
   const static inline std::vector<std::string> guildWindowStr = {
       "TPMAGECS.pcx", "TPMAGERM.pcx", "TPMAGEIN.pcx", "TPMAGEIN.pcx",
       "TPMAGENC.pcx", "TPMAGEDN.pcx", "TPMAGEST.pcx", "TPMAGEFR.pcx"};
