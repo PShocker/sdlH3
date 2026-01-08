@@ -170,6 +170,7 @@ struct Global {
       pcxCache;
   static inline std::unordered_map<std::string, std::vector<SDL_Texture *>>
       defCache;
+  static inline std::unordered_map<std::string, std::vector<uint8_t>> pcmCache;
   static void init();
   static void startGame();
   static void endGame();

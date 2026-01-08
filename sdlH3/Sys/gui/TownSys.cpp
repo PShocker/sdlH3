@@ -308,7 +308,6 @@ bool TownSys::run() {
 static std::vector<std::pair<uint16_t, uint32_t>>
 mergeCreatures(const std::vector<std::pair<uint16_t, uint32_t>> &vec1,
                const std::vector<std::pair<uint16_t, uint32_t>> &vec2) {
-
   std::vector<std::pair<uint16_t, uint32_t>> v;
   for (uint8_t i = 0; i < vec1.size(); i++) {
     auto p1 = vec1[i];
@@ -460,8 +459,14 @@ static void clickDwe(bool leftClick) {
   auto townComp = &registry.get<TownComp>(townEnt);
   auto buildId = mouseBuildId.value();
   if (leftClick) {
-    auto ent = townComp->buildings[buildId];
-    World::enterDwe(Global::heroEnt, ent);
+    entt::entity srcEnt;
+    auto goalEnt = townComp->buildings[buildId];
+    if (townComp->heroEnt[0].has_value()) {
+      srcEnt = townComp->heroEnt[0].value();
+    } else {
+      srcEnt = townEnt;
+    }
+    World::enterDwe(srcEnt, goalEnt);
   } else {
   }
 }

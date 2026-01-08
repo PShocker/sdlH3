@@ -3,9 +3,12 @@
 #include "Cfg/CreatureCfg.h"
 #include "Cfg/TownCfg.h"
 #include "Comp/DwellingComp.h"
+#include "Comp/HeroComp.h"
+#include "Comp/TownComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "Lang/Lang.h"
+#include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "Sys/FreeTypeSys.h"
@@ -65,21 +68,29 @@ static void buy() {
   auto creatures = cres();
   auto creatureId = creatures[Global::dweIndex].first;
   auto creatureNum = creatures[Global::dweIndex].second;
-  auto heroComp = &registry.get<HeroComp>(Global::heroEnt);
+  std::vector<std::pair<uint16_t, uint32_t>> *cres;
+  if (registry.all_of<HeroComp>(Global::heroEnt)) {
+    auto heroComp = &registry.get<HeroComp>(Global::heroEnt);
+    cres = &heroComp->creatures;
+  } else {
+    // townComp
+    auto townComp = &registry.get<TownComp>(Global::heroEnt);
+    cres = &townComp->garCreatures;
+  }
   int8_t r = -1;
-  for (uint8_t i = 0; i < heroComp->creatures.size(); i++) {
-    if (heroComp->creatures[i].first == creatureId) {
+  for (uint8_t i = 0; i < cres->size(); i++) {
+    if ((*cres)[i].first == creatureId) {
       r = i;
       break;
     }
   }
   if (r != -1) {
-    heroComp->creatures[r].second += creatureNum;
+    (*cres)[r].second += creatureNum;
     close();
-  } else if (heroComp->creatures.size() < 8) {
-    for (uint8_t i = 0; i < heroComp->creatures.size(); i++) {
-      if (heroComp->creatures[i].first == 0xffff) {
-        heroComp->creatures[i] = {creatureId, creatureNum};
+  } else if ((*cres).size() < 8) {
+    for (uint8_t i = 0; i < (*cres).size(); i++) {
+      if ((*cres)[i].first == 0xffff) {
+        (*cres)[i] = {creatureId, creatureNum};
         break;
       }
     }
@@ -166,17 +177,38 @@ static void drawCreatures() {
     auto p = pos[i];
     auto id = creatures[i].first;
     auto defPath = CreatureCfg::creatureGraphics.at(id);
-    auto group = 0;
+    auto group = 1;
     auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
     auto index = Global::dweFrameIndex % textures.size();
     auto colorType = Global::dweIndex == i ? 1 : 0;
-    DwellingSys::drawCreature(leftUp.x + p.x, leftUp.y + p.y, id, group, index,
-                              colorType);
+    DwellingSys::drawCreatureBak(leftUp.x + p.x, leftUp.y + p.y, id, group,
+                                 index, colorType);
   }
 }
 
 void DwellingSys::drawCreature(float x, float y, uint16_t id, uint16_t group,
                                uint16_t index, uint8_t colorType) {
+  // colorType指生物的描边颜色
+  auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) + "/" +
+                                   std::to_string(group)];
+  auto texture = textures[index];
+  SDL_FRect srcRect;
+  if (CreatureCfg::creatureExAttr[id][CreatureCfg::EX_ATTRIBUTE::DOUBLE_WIDE]) {
+    srcRect = {165, 145, 100, 130};
+  } else {
+    srcRect = {145, 145, 100, 130};
+  }
+  SDL_FRect posRect{x, y, 100, 130};
+  // 色彩混合
+  auto pal = SDL_GetTexturePalette(texture);
+  SDL_Color originColor = pal->colors[5];
+  pal->colors[5] = CreatureCfg::ovColor[colorType];
+  SDL_RenderTexture(Window::renderer, texture, &srcRect, &posRect);
+  pal->colors[5] = originColor;
+}
+
+void DwellingSys::drawCreatureBak(float x, float y, uint16_t id, uint16_t group,
+                                  uint16_t index, uint8_t colorType) {
   auto townIndex = CreatureCfg::creatureTowns.at(id);
   SDL_FRect posRect{x, y, 100, 130};
   auto texture = Global::pcxCache[TownCfg::creatureBackground[townIndex][1]][0];
@@ -187,16 +219,8 @@ void DwellingSys::drawCreature(float x, float y, uint16_t id, uint16_t group,
     SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
   }
   SDL_RenderRect(Window::renderer, &posRect);
-  auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) + "/" +
-                                   std::to_string(group)];
-  texture = textures[index];
-  SDL_FRect srcRect;
-  if (CreatureCfg::creatureExAttr[id][CreatureCfg::EX_ATTRIBUTE::DOUBLE_WIDE]) {
-    srcRect = {165, 145, 100, 130};
-  } else {
-    srcRect = {145, 145, 100, 130};
-  }
-  SDL_RenderTexture(Window::renderer, texture, &srcRect, &posRect);
+  drawCreature(x, y, id, group, index,
+               (uint8_t)CreatureCfg::OV_COLOR::TRANSPARENCY);
 }
 
 static void drawButton() {

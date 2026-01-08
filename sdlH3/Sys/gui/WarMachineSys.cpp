@@ -90,8 +90,8 @@ static void drawMachine() {
   auto group = Global::creGroup;
   auto defPath = WarMachineCfg::warMachineGraphics.at(id);
   auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
-  WarMachineFacSys::drawMachine(leftUp.x + 20, leftUp.y + 47, id, group,
-                                Global::creFrameIndex % textures.size(), 0);
+  WarMachineFacSys::drawMachineBak(leftUp.x + 20, leftUp.y + 47, id, group,
+                                   Global::creFrameIndex % textures.size(), 0);
 }
 
 static void drawButton() {

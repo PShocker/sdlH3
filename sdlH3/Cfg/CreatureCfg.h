@@ -1,10 +1,22 @@
 #pragma once
 
+#include "SDL3/SDL_pixels.h"
 #include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
 struct CreatureCfg {
+
+  enum OV_COLOR {
+    CYAN,
+    TRANSPARENCY,
+  };
+
+  const static inline std::array<SDL_Color, 2> ovColor = {
+      SDL_Color{0, 255, 255, 255}, // CYAN
+      SDL_Color{0, 0, 0, 0}        // TRANSPARENCY
+  };
+
   enum class Creature : uint16_t {
     // 城堡
     PIKEMAN = 0,

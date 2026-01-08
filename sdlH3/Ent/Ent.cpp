@@ -317,13 +317,31 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
       }
     }
     heroComp->creatures = hero.creatureSet.creatures;
+    if (heroComp->creatures.empty()) {
+      //
+      for (auto pair : HeroCfg::heroCreatures[heroComp->portrait]) {
+        switch (pair.first) {
+        case (uint16_t)CreatureCfg::Creature::CATAPULT:
+        case (uint16_t)CreatureCfg::Creature::BALLISTA:
+        case (uint16_t)CreatureCfg::Creature::FIRST_AID_TENT:
+        case (uint16_t)CreatureCfg::Creature::AMMO_CART: {
+          break;
+        }
+        default: {
+          heroComp->creatures.push_back(pair);
+          break;
+        }
+        }
+      }
+    }
+    heroComp->creatures.resize(7, {0xffff, 0});
+
     heroComp->spells = hero.spells;
     heroComp->artifactsInBackpack = hero.artifactsInBackpack;
     heroComp->artifacts = hero.artifacts;
     if (heroComp->artifacts.empty()) {
       heroComp->artifacts.assign(19, 0xffff);
     }
-    heroComp->creatures.resize(7, {0xffff, 0});
     if (object.data.contains("heroDefaultPrimSkills")) {
       heroComp->primSkills = HeroCfg::heroPrimarySkills.at(object.subId);
     } else {

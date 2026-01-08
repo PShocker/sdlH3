@@ -99,7 +99,44 @@ static void drawBackGround() {
       strPool[926 + (uint8_t)ObjectType::WAR_MACHINE_FACTORY]);
 }
 
-static void drawWarMachine() {
+static void drawWarMachine(float x, float y, uint16_t id, uint16_t group,
+                           uint16_t index, uint8_t colorType) {
+  auto defPath = WarMachineCfg::warMachineGraphics.at(id);
+  auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
+  auto texture = textures[index];
+  SDL_FRect srcRect;
+  if (WarMachineCfg::machinedoubleWide[id]) {
+    srcRect = {165, 145, 100, 130};
+  } else {
+    srcRect = {145, 145, 100, 130};
+  }
+  SDL_FRect posRect{x, y, 100, 130};
+  // 色彩混合
+  auto pal = SDL_GetTexturePalette(texture);
+  SDL_Color originColor = pal->colors[5];
+  pal->colors[5] = CreatureCfg::ovColor[colorType];
+  SDL_RenderTexture(Window::renderer, texture, &srcRect, &posRect);
+  pal->colors[5] = originColor;
+}
+
+void WarMachineFacSys::drawMachineBak(float x, float y, uint16_t id,
+                                      uint16_t group, uint16_t index,
+                                      uint8_t colorType) {
+
+  SDL_FRect posRect{x, y, 100, 130};
+  auto texture = Global::pcxCache["TPCASNEU.pcx"][0];
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  if (colorType == 1) {
+    SDL_SetRenderDrawColor(Window::renderer, 255, 0, 0, 255);
+  } else {
+    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
+  }
+  SDL_RenderRect(Window::renderer, &posRect);
+  drawWarMachine(x, y, id, group, index,
+                 (uint8_t)CreatureCfg::OV_COLOR::TRANSPARENCY);
+}
+
+static void drawWarMachines() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
@@ -117,35 +154,9 @@ static void drawWarMachine() {
     auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
     auto index = Global::dweFrameIndex % textures.size();
     auto colorType = Global::dweIndex == i ? 1 : 0;
-    WarMachineFacSys::drawMachine(leftUp.x + p.x, leftUp.y + p.y, id, group,
-                                  index, colorType);
+    WarMachineFacSys::drawMachineBak(leftUp.x + p.x, leftUp.y + p.y, id, group,
+                                     index, colorType);
   }
-}
-
-void WarMachineFacSys::drawMachine(float x, float y, uint16_t id,
-                                   uint16_t group, uint16_t index,
-                                   uint8_t colorType) {
-
-  SDL_FRect posRect{x, y, 100, 130};
-
-  auto texture = Global::pcxCache["TPCASNEU.pcx"][0];
-  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-  if (colorType == 1) {
-    SDL_SetRenderDrawColor(Window::renderer, 255, 0, 0, 255);
-  } else {
-    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
-  }
-  SDL_RenderRect(Window::renderer, &posRect);
-  auto defPath = WarMachineCfg::warMachineGraphics.at(id);
-  auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
-  texture = textures[index];
-  SDL_FRect srcRect;
-  if (WarMachineCfg::machinedoubleWide[id]) {
-    srcRect = {165, 145, 100, 130};
-  } else {
-    srcRect = {145, 145, 100, 130};
-  }
-  SDL_RenderTexture(Window::renderer, texture, &srcRect, &posRect);
 }
 
 static void drawButton() {
@@ -240,7 +251,7 @@ static void drawSlider() {
 bool WarMachineFacSys::run() {
   dweAnimate();
   drawBackGround();
-  drawWarMachine();
+  drawWarMachines();
   drawCost();
   drawButton();
   drawSlider();

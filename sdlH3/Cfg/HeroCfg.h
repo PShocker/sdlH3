@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Cfg/CreatureCfg.h"
 #include <array>
 #include <cstdint>
 #include <string>
@@ -672,6 +673,660 @@ struct HeroCfg {
       // 17: Planeswalker
       {2, 2, 2, 2, 4, 4, 3, 8, 8, 2, 4, 8, 0, 3,
        6, 6, 6, 6, 8, 1, 1, 4, 1, 1, 8, 8, 0, 4}};
+
+  const static inline std::vector<std::vector<std::pair<uint16_t, uint32_t>>>
+      heroCreatures = {
+          // === 城堡英雄 (0-15) ===
+          // 0: 欧灵
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 1: 威尔斯凯
+          {{(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7}},
+          // 2: 艾得力克
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 3: 斯尔维亚
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 4: 罗德-哈特（城堡版本）
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 5: 索萨
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 6: 克里斯丁
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::BALLISTA, 1},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 7: 塔里斯
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 8: 瑞恩
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::FIRST_AID_TENT, 1},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 9: 阿德拉
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 10: 库斯伯特
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 11: 艾德里得
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 12: 因海姆
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 13: 塞亚
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 14: 罗尼斯
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 15: 凯特琳
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+
+          // === 壁垒英雄 (16-31) ===
+          // 16: 孟斐拉
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 17: 尤佛瑞汀
+          {{(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5}},
+          // 18: 杰诺娃
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 19: 罗伊德
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 20: 索格灵
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 21: 伊沃
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 22: 克兰
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 23: 凯琳
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 24: 克洛尼斯
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 25: 尤兰德
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 26: 艾丽莎
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 27: 珍尼
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::FIRST_AID_TENT, 1},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 28: 马尔凯姆
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 29: 马洛迪亚
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 30: 艾拉戈
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+          // 31: 艾丽斯
+          {{(uint16_t)CreatureCfg::Creature::CENTAUR, 24},
+           {(uint16_t)CreatureCfg::Creature::DWARF, 5},
+           {(uint16_t)CreatureCfg::Creature::WOOD_ELF, 6}},
+
+          // === 塔楼英雄 (32-47) ===
+          // 32: 匹克杰姆
+          {{(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5}},
+          // 33: 塞恩
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 34: 琼斯菲尔
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 2},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 35: 妮拉
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 4},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 36: 特洛萨
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::BALLISTA, 1},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 37: 法佛纳
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 38: 瑞萨
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 39: 罗娜
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 40: 艾斯却尔
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 41: 海伦
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 42: 塞瑞纳
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 43: 黛瑞丝
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 44: 塞德洛斯
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 45: 索姆拉
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 46: 塞瑞
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+          // 47: 埃尔尼
+          {{(uint16_t)CreatureCfg::Creature::GREMLIN, 40},
+           {(uint16_t)CreatureCfg::Creature::STONE_GARGOYLE, 5},
+           {(uint16_t)CreatureCfg::Creature::IRON_GOLEM, 3}},
+
+          // === 地狱英雄 (48-63) ===
+          // 48: 斐欧纳
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 49: 瑞斯卡
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 50: 玛利斯
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 51: 伊格纳蒂斯
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::IMP, 25}},
+          // 52: 奥格塔维亚
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 53: 卡尔
+          {{(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7}},
+          // 54: 斐瑞
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::BALLISTA, 1},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 55: 纳美斯
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 56: 艾登
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 57: 希瑞尔
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 58: 艾西斯
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 59: 奥力马
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 60: 卡利德
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 61: 艾许
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 62: 泽达
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+          // 63: 夏洛克斯
+          {{(uint16_t)CreatureCfg::Creature::IMP, 25},
+           {(uint16_t)CreatureCfg::Creature::GOG, 7},
+           {(uint16_t)CreatureCfg::Creature::HELL_HOUND, 4}},
+
+          // === 墓园英雄 (64-79) ===
+          // 64: 斯强克
+          {{(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6}},
+          // 65: 德加尔
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 66: 摩多
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 67: 查玛
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 68: 塔米克
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 69: 艾莎
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 70: 克劳维斯
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 71: 凯瑟瑞
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::SKELETON, 30}},
+          // 72: 史蒂芬
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 73: 艾斯瑞
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 74: 山德鲁
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 75: 尼姆巴斯
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 76: 山特
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 77: 希斯
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 78: 维德尼娜
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 79: 纳格斯
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+
+          // === 地牢英雄 (80-95) ===
+          // 80: 罗勒雷
+          {{(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6}},
+          // 81: 艾拉切
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::BALLISTA, 1},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 82: 戴斯
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 83: 艾杰特
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 84: 黛玛克
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 85: 耿纳
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 86: 希力卡
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 87: 莎克特
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40}},
+          // 88: 艾玛
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 89: 杰格
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 90: 马尔克斯
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 91: 杰德特
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 92: 吉恩
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 93: 蒂玛
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 94: 萨费罗斯
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 95: 达克斯多
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+
+          // === 据点英雄 (96-111) ===
+          // 96: 约克
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 97: 格尼森
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::BALLISTA, 1},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 98: 杰巴克斯
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 99: 希娃
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 100: 格兰切尔
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::GOBLIN, 25}},
+          // 101: 克洛林
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 102: 肯洛-哈格
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 103: 塔洛希尔
+          {{(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7}},
+          // 104: 哥德
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 105: 维尔
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 106: 德萨
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 107: 特洛克
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 108: 祖宾
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 109: 干德鲁
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 110: 奥力斯
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 111: 塞瑞格
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+
+          // === 要塞英雄 (112-127) ===
+          // 112: 布朗
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 113: 鲁肯
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::GNOLL, 20}},
+          // 114: 维斯特
+          {{(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7}},
+          // 115: 泰泽
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 116: 阿尔金
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 117: 克巴斯
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4},
+           {(uint16_t)CreatureCfg::Creature::DRAGON_FLY, 4}},
+          // 118: 格伍夫
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::BALLISTA, 1},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 119: 布鲁菲德
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 120: 麦林德
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 121: 罗斯可
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 122: 傅尔
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 123: 威迪斯
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::FIRST_AID_TENT, 1},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 124: 马利斯（要塞）
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 125: 斯蒂格
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 126: 安洁儿
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 127: 蒂娃
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+
+          // === 元素城英雄 (128-143) ===
+          // 128: 帕里斯
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 3}},
+          // 129: 索尔那
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+          // 130: 依格尼萨
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+          // 131: 拉克斯
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 2}},
+          // 132: 莫奈尔
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 3}},
+          // 133: 埃德蒙
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+          // 134: 费拉
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+          // 135: 凯尔特
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 2}},
+          // 136: 露娜
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+          // 137: 博丽斯
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+          // 138: 萨丽尔
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+          // 139: 兰贝斯
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+          // 140: 恩托斯
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+          // 141: 阿奈尔
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+          // 142: 格雷尔
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+          // 143: 格兰登
+          {{(uint16_t)CreatureCfg::Creature::PIXIE, 25},
+           {(uint16_t)CreatureCfg::Creature::AIR_ELEMENTAL, 5},
+           {(uint16_t)CreatureCfg::Creature::WATER_ELEMENTAL, 3}},
+
+          // === 特殊英雄 (144-160) ===
+          // 144: 姆拉克爵士
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 145: 埃德妮
+          {{(uint16_t)CreatureCfg::Creature::GNOLL, 20},
+           {(uint16_t)CreatureCfg::Creature::LIZARDMAN, 7},
+           {(uint16_t)CreatureCfg::Creature::SERPENT_FLY, 4}},
+          // 146: 凯瑟琳
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 147: 德肯
+          {{(uint16_t)CreatureCfg::Creature::ENCHANTER, 6},
+           {(uint16_t)CreatureCfg::Creature::ENCHANTER, 3},
+           {(uint16_t)CreatureCfg::Creature::ENCHANTER, 1}},
+          // 148: 格鲁
+          {{(uint16_t)CreatureCfg::Creature::SHARPSHOOTER, 6},
+           {(uint16_t)CreatureCfg::Creature::SHARPSHOOTER, 3},
+           {(uint16_t)CreatureCfg::Creature::SHARPSHOOTER, 1}},
+          // 149: 科尔格
+          {{(uint16_t)CreatureCfg::Creature::GOBLIN, 25},
+           {(uint16_t)CreatureCfg::Creature::WOLF_RIDER, 7},
+           {(uint16_t)CreatureCfg::Creature::ORC, 6}},
+          // 150: 罗德-哈特（墓园版本）
+          {{(uint16_t)CreatureCfg::Creature::SKELETON, 30},
+           {(uint16_t)CreatureCfg::Creature::ZOMBIE, 6},
+           {(uint16_t)CreatureCfg::Creature::WIGHT, 6}},
+          // 151: 摩莉尔（地牢）
+          {{(uint16_t)CreatureCfg::Creature::TROGLODYTE, 40},
+           {(uint16_t)CreatureCfg::Creature::HARPY, 6},
+           {(uint16_t)CreatureCfg::Creature::BEHOLDER, 4}},
+          // 152: 罗兰德
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 153: 巨龙摩莉尔（城堡？）
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 154: 伯拉格
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+          // 155: 塞尔伦
+          {{(uint16_t)CreatureCfg::Creature::PIKEMAN, 20},
+           {(uint16_t)CreatureCfg::Creature::ARCHER, 7},
+           {(uint16_t)CreatureCfg::Creature::GRIFFIN, 3}},
+
+          // === 最后的英雄索引到160 ===
+          // 156-160: 预留位置或特殊英雄
+          {},
+          {},
+          {},
+          {},
+          {}};
 
   const static inline uint64_t heroLevelExp[] = {
       0,      // 等级1
