@@ -59,9 +59,9 @@ static void dismiss() {
     World::iterateSystemsBak.push_back(World::iterateSystems);
     World::iterateSystemsBak.back().push_back(CursorSys::run);
     World::iterateSystems.push_back([]() {
-      auto [level, ent] = Global::heroScnPair;
+      auto [level, heroEnt] = Global::heroScnPair;
       for (uint8_t i = 0; i < Global::heros[Global::playerId].size(); i++) {
-        if (Global::heros[Global::playerId][i].second == ent &&
+        if (Global::heros[Global::playerId][i].second == heroEnt &&
             Global::heros[Global::playerId][i].first == level) {
           Global::heros[Global::playerId].erase(
               Global::heros[Global::playerId].begin() + i);
@@ -71,13 +71,13 @@ static void dismiss() {
           break;
         }
       }
-      auto heroComp = &World::registrys[level].get<HeroComp>(ent);
+      auto heroComp = &World::registrys[level].get<HeroComp>(heroEnt);
       if (heroComp->curEnt.has_value()) {
         auto curEnt = heroComp->curEnt.value();
         if (auto townComp =
                 World::registrys[World::level].try_get<TownComp>(curEnt)) {
           for (auto &ent : townComp->heroEnt) {
-            if (ent == Global::heroEnt) { // std::optional 支持直接比较
+            if (ent == heroEnt) { // std::optional 支持直接比较
               ent = std::nullopt;
               break;
             }
@@ -88,7 +88,7 @@ static void dismiss() {
         World::registrys[World::level].destroy(pathEnt);
       }
       World::registrys[World::level].destroy(heroComp->flagEnt);
-      World::registrys[World::level].destroy(ent);
+      World::registrys[World::level].destroy(heroEnt);
       World::needSort = true;
       Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
       if (Global::advPages[Global::playerId].first > 0) {

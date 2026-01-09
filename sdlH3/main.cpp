@@ -5,8 +5,8 @@
 #include "Pal/PlayerPal.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_mouse.h"
+#include "Sys/AudioSys.h"
 #include "Sys/FreeTypeSys.h"
-#include "Sys/MusicSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include <cstdint>
@@ -40,7 +40,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   }
   std::srand(std::time(0));
 
-  H3mData data("./Maps/Good to Go.h3m");
+  H3mData data("./Maps/Untitled.h3m");
   data.init();
   Global::mapW = data.header.width * 32;
   Global::mapH = data.header.height * 32;
@@ -58,7 +58,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
   World::enterAdvScrn();
 
-  MusicSys::run();
+  AudioSys::init();
 
   SDL_HideCursor();
 

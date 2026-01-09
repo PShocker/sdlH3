@@ -14,15 +14,26 @@ static SDL_AudioSpec spec = {
     .format = SDL_AUDIO_S16, .channels = 2, .freq = 44100};
 
 static std::map<std::string, uint32_t> audioData;
-
+// AITheme0.wav
+// horse00.wav
 static void prepareAudio() {
+  // switch (condition) {
+
+  // }
   if (!audioData.contains("AITheme0.wav")) {
     audioData["AITheme0.wav"] = 0;
+  }
+  if (Global::heroMove) {
+    if (!audioData.contains("horse00.wav")) {
+      audioData["horse00.wav"] = 0;
+    }
+  } else {
+    audioData.erase("horse00.wav");
   }
 }
 
 static bool playAudio() {
-  const int minimum_audio = (8000 * sizeof(float)) / 2;
+  const int minimum_audio = (4000 * sizeof(float)) / 2;
   if (SDL_GetAudioStreamQueued(stream) < minimum_audio) {
     uint8_t *data = (uint8_t *)SDL_stack_alloc(uint8_t, minimum_audio);
     SDL_memset(data, 0, minimum_audio * sizeof(uint8_t));

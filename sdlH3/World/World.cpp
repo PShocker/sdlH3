@@ -101,8 +101,8 @@ void World::enterAdvScrn() {
   keyDownSysBak.clear();
 
   iterateSystems.clear();
-  iterateSystems.push_back(AudioSys::run);
   iterateSystems.push_back(AnimateSys::run);
+  iterateSystems.push_back(AudioSys::run);
   iterateSystems.push_back(CameraSys::run);
   iterateSystems.push_back(World::run);
   iterateSystems.push_back(RenderSys::run);
