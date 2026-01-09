@@ -110,7 +110,6 @@ static bool clickMor(bool leftClick) {
 bool BuoySys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   auto v = buttonInfo();
   if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
     return false;

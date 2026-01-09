@@ -6,6 +6,7 @@
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_surface.h"
 #include "Sys/AnimateSys.h"
+#include "Sys/AudioSys.h"
 #include "Sys/BorderSys.h"
 #include "Sys/FadeSys.h"
 #include "Sys/FogSys.h"
@@ -100,6 +101,7 @@ void World::enterAdvScrn() {
   keyDownSysBak.clear();
 
   iterateSystems.clear();
+  iterateSystems.push_back(AudioSys::run);
   iterateSystems.push_back(AnimateSys::run);
   iterateSystems.push_back(CameraSys::run);
   iterateSystems.push_back(World::run);

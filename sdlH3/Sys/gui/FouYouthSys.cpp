@@ -81,7 +81,6 @@ static void drawButton() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == FouYouthSys::run);

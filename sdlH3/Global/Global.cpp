@@ -37,20 +37,20 @@
 void loadPcx() {
   const auto loadCommon = []() {
     const std::vector<std::string> filePaths = {
-        "TPMAGE.pcx", "VWorld.pcx", "univbldg.pcx", "TPCASNEU.pcx",
-        "PUZZLOGO.pcx", "PUZCAS00.pcx", "PUZCAS01.pcx", "PUZCAS02.pcx",
-        "PUZCAS03.pcx", "PUZCAS04.pcx", "PUZCAS05.pcx", "PUZCAS06.pcx",
-        "PUZCAS07.pcx", "PUZCAS08.pcx", "PUZCAS09.pcx", "PUZCAS10.pcx",
-        "PUZCAS11.pcx", "PUZCAS12.pcx", "PUZCAS13.pcx", "PUZCAS14.pcx",
-        "PUZCAS15.pcx", "PUZCAS16.pcx", "PUZCAS17.pcx", "PUZCAS18.pcx",
-        "PUZCAS19.pcx", "PUZCAS20.pcx", "PUZCAS21.pcx", "PUZCAS22.pcx",
-        "PUZCAS23.pcx", "PUZCAS24.pcx", "PUZCAS25.pcx", "PUZCAS26.pcx",
-        "PUZCAS27.pcx", "PUZCAS28.pcx", "PUZCAS29.pcx", "PUZCAS30.pcx",
-        "PUZCAS31.pcx", "PUZCAS32.pcx", "PUZCAS33.pcx", "PUZCAS34.pcx",
-        "PUZCAS35.pcx", "PUZCAS36.pcx", "PUZCAS37.pcx", "PUZCAS38.pcx",
-        "PUZCAS39.pcx", "PUZCAS40.pcx", "PUZCAS41.pcx", "PUZCAS42.pcx",
-        "PUZCAS43.pcx", "PUZCAS44.pcx", "PUZCAS45.pcx", "PUZCAS46.pcx",
-        "PUZCAS47.pcx",
+        "TPMAGECS.pcx", "TPMAGE.pcx", "VWorld.pcx", "univbldg.pcx",
+        "TPCASNEU.pcx", "PUZZLOGO.pcx", "PUZCAS00.pcx", "PUZCAS01.pcx",
+        "PUZCAS02.pcx", "PUZCAS03.pcx", "PUZCAS04.pcx", "PUZCAS05.pcx",
+        "PUZCAS06.pcx", "PUZCAS07.pcx", "PUZCAS08.pcx", "PUZCAS09.pcx",
+        "PUZCAS10.pcx", "PUZCAS11.pcx", "PUZCAS12.pcx", "PUZCAS13.pcx",
+        "PUZCAS14.pcx", "PUZCAS15.pcx", "PUZCAS16.pcx", "PUZCAS17.pcx",
+        "PUZCAS18.pcx", "PUZCAS19.pcx", "PUZCAS20.pcx", "PUZCAS21.pcx",
+        "PUZCAS22.pcx", "PUZCAS23.pcx", "PUZCAS24.pcx", "PUZCAS25.pcx",
+        "PUZCAS26.pcx", "PUZCAS27.pcx", "PUZCAS28.pcx", "PUZCAS29.pcx",
+        "PUZCAS30.pcx", "PUZCAS31.pcx", "PUZCAS32.pcx", "PUZCAS33.pcx",
+        "PUZCAS34.pcx", "PUZCAS35.pcx", "PUZCAS36.pcx", "PUZCAS37.pcx",
+        "PUZCAS38.pcx", "PUZCAS39.pcx", "PUZCAS40.pcx", "PUZCAS41.pcx",
+        "PUZCAS42.pcx", "PUZCAS43.pcx", "PUZCAS44.pcx", "PUZCAS45.pcx",
+        "PUZCAS46.pcx", "PUZCAS47.pcx",
 
         "Puzzle.pcx", "UNIVGREN.PCX", "UNIVGOLD.PCX", "UNIVRED.PCX",
         "TPCASCAS.pcx", "CRBKGCAS.pcx", "TOCSMAG1.pcx", "TOCSMAG2.pcx",
@@ -542,9 +542,24 @@ void loadDef() {
   loadBoat();
 }
 
+void loadAudio() {
+  const std::vector<std::string> filePaths = {"AITheme0.wav"};
+  for (auto filePath : filePaths) {
+    SDL_AudioSpec spec;
+    uint8_t *wav_data = NULL;
+    uint32_t wav_data_len = 0;
+    std::string wav_path = "Audio/" + filePath;
+    SDL_LoadWAV(wav_path.c_str(), &spec, &wav_data, &wav_data_len);
+    Global::pcmCache[filePath] =
+        std::vector<uint8_t>(wav_data, wav_data + wav_data_len);
+    SDL_free(wav_data);
+  }
+}
+
 void Global::init() {
   loadDef();
   loadPcx();
+  loadAudio();
 }
 
 void Global::startGame() {

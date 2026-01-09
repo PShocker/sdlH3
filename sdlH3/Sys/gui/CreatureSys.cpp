@@ -282,7 +282,6 @@ bool CreatureSys::keyUp(uint16_t key) {
 bool CreatureSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
-  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   auto v = buttonInfo();
   if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
     return false;

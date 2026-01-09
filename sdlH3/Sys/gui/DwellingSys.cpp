@@ -227,7 +227,6 @@ static void drawButton() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
-  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == DwellingSys::run);
