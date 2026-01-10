@@ -274,7 +274,7 @@ static bool clickSlider() {
   return false;
 }
 
-static bool clickMachine(bool leftClick) {
+static bool clickMachine(uint8_t clickType) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
   SDL_FRect posRect;
@@ -289,15 +289,16 @@ static bool clickMachine(bool leftClick) {
     auto p = pos[i];
     posRect = {leftUp.x + p.x, leftUp.y + p.y, 100, 130};
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (leftClick) {
+      uint8_t creType;
+      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
         if (Global::dweIndex == i) {
-          World::enterWarMachine(wComp->warMachines[i],
-                                 (uint8_t)Enum::CRETYPE::MOD_DWE);
+          creType = (uint8_t)Enum::CRETYPE::MOD_DWE;
+          World::enterWarMachine(wComp->warMachines[i], creType);
         }
         Global::dweIndex = i;
       } else {
-        World::enterWarMachine(wComp->warMachines[i],
-                               (uint8_t)Enum::CRETYPE::POP_DWE);
+        creType = (uint8_t)Enum::CRETYPE::POP_DWE;
+        World::enterWarMachine(wComp->warMachines[i], creType);
       }
       return false;
     }
@@ -308,23 +309,25 @@ bool WarMachineFacSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   // click slider
   if (clickSlider()) {
     return false;
   }
-  if (clickMachine(true)) {
+  if (clickMachine(clickType)) {
     return false;
   }
   return true;
 }
 
 bool WarMachineFacSys::rightMouseDown(float x, float y) {
-  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
-                    static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
-  if (clickMachine(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickMachine(clickType)) {
     return false;
   }
   return true;

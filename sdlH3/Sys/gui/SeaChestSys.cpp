@@ -3,6 +3,7 @@
 #include "AdvPopSys.h"
 #include "Comp/ArtifactComp.h"
 #include "Comp/SeaChestComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -106,14 +107,14 @@ bool SeaChestSys::run() {
   return true;
 }
 
-static bool clickPrim(bool leftClick) {
+static bool clickPrim(uint8_t clickType) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   SDL_FRect posRect{leftUp.x + artPosition.x, leftUp.y + artPosition.y,
                     artPosition.w, artPosition.h};
   if (SDL_PointInRectFloat(&point, &posRect)) {
-    if (!leftClick) {
+    if (!(clickType == (uint8_t)Enum::CLICKTYPE::L_UP)) {
       auto &sComp =
           World::registrys[World::level].get<SeaChestComp>(Global::goalEnt);
       HeroScrSys::showArtifactComfirm(sComp.artifacts[0]);
@@ -127,14 +128,18 @@ bool SeaChestSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool SeaChestSys::rightMouseDown(float x, float y) {
-  if (clickPrim(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickPrim(clickType)) {
     return true;
   }
   return true;

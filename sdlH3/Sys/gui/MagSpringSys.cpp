@@ -2,6 +2,7 @@
 #include "AdvPopSys.h"
 #include "Comp/HeroComp.h"
 #include "Comp/WarTombComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -32,15 +33,14 @@ static void receive() {
   World::exitScrn();
 }
 
-static std::vector<Button>
-buttonInfo() {
+static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
   Button b;
 
-  b.textures=Global::defCache["iOKAY.def/0"];
-  b.r={bakW / 2 - 32, bakH - 60, 64, 30};
-  b.func=receive;
-  b.disable=false;
+  b.textures = Global::defCache["iOKAY.def/0"];
+  b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+  b.func = receive;
+  b.disable = false;
   v.push_back(b);
 
   return v;
@@ -92,7 +92,7 @@ bool MagSpringSys::run() {
   return true;
 }
 
-static bool clickMana(bool leftClick) {
+static bool clickMana(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
@@ -100,9 +100,7 @@ static bool clickMana(bool leftClick) {
   posRect = {leftUp.x + primPosition.x, leftUp.y + primPosition.y,
              primPosition.w, primPosition.h};
   if (SDL_PointInRectFloat(&point, &posRect)) {
-    if (!leftClick) {
-      HeroScrSys::showManaComfirm(leftClick);
-    }
+    HeroScrSys::showManaComfirm(clickType);
     return true;
   }
   return false;
@@ -112,14 +110,18 @@ bool MagSpringSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool MagSpringSys::rightMouseDown(float x, float y) {
-  if (clickMana(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickMana(clickType)) {
     return true;
   }
   return true;

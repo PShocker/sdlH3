@@ -237,7 +237,7 @@ bool LevelUpSys::prepareLvlUp(HeroComp &heroComp) {
 
 bool LevelUpSys::keyUp(uint16_t key) { return false; }
 
-static bool clickHeroPor(bool leftClick) {
+static bool clickHeroPor(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 385) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 470) / 2)};
@@ -245,20 +245,17 @@ static bool clickHeroPor(bool leftClick) {
   posRect = {leftUp.x + porPosition.x, leftUp.y + porPosition.y, porPosition.w,
              porPosition.h};
   if (SDL_PointInRectFloat(&point, &posRect)) {
-    if (leftClick) {
-      World::enterHeroScrn(World::level, Global::heroEnt,
-                           (uint8_t)Enum::SCNTYPE::MOD);
-    } else {
-      World::enterHeroScrn(World::level, Global::heroEnt,
-                           (uint8_t)Enum::SCNTYPE::POP);
-    }
+    auto type = clickType == (uint8_t)Enum::CLICKTYPE::L_UP
+                    ? (uint8_t)Enum::SCNTYPE::MOD
+                    : (uint8_t)Enum::SCNTYPE::POP;
+    World::enterHeroScrn(World::level, Global::heroEnt, type);
   }
   return false;
 }
 
 bool LevelUpSys::rightMouseUp(float x, float y) { return true; }
 
-static bool clickSecSki(bool leftClick) {
+static bool clickSecSki(uint8_t clickType) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 385) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 470) / 2)};
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
@@ -283,12 +280,12 @@ static bool clickSecSki(bool leftClick) {
     posRect = {leftUp.x + secSkiPosition[i].x, leftUp.y + secSkiPosition[i].y,
                secSkiPosition[i].w, secSkiPosition[i].h};
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (leftClick) {
+      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
         Global::goalIndex = i;
       } else {
         auto level = secSkiIndex[i] % 3;
         auto index = secSkiIndex[i] / 3 - 1;
-        HeroScrSys::showSecSkiComfirm(leftClick, index, level);
+        HeroScrSys::showSecSkiComfirm(clickType, index, level);
       }
       return true;
     }
@@ -299,21 +296,25 @@ static bool clickSecSki(bool leftClick) {
 bool LevelUpSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 385) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 470) / 2)};
-  if (clickSecSki(true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  auto v = buttonInfo();
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
-  auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  if (clickSecSki(clickType)) {
     return false;
   }
   return true;
 }
 
 bool LevelUpSys::rightMouseDown(float x, float y) {
-  if (clickSecSki(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickSecSki(clickType)) {
     return false;
   }
-  if (clickHeroPor(false)) {
+  if (clickHeroPor(clickType)) {
     return false;
   }
   return true;

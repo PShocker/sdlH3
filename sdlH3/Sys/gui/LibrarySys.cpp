@@ -1,6 +1,7 @@
 #include "LibrarySys.h"
 #include "AdvPopSys.h"
 #include "Comp/LibraryComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -130,7 +131,7 @@ bool LibrarySys::run() {
   return true;
 }
 
-static bool clickPrim(bool leftClick) {
+static bool clickPrim(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
@@ -140,9 +141,7 @@ static bool clickPrim(bool leftClick) {
     posRect.x += leftUp.x;
     posRect.y += leftUp.y;
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (!leftClick) {
-        HeroScrSys::showPrimComfirm(leftClick, i);
-      }
+      HeroScrSys::showPrimComfirm(clickType, i);
       return true;
     }
   }
@@ -152,15 +151,19 @@ static bool clickPrim(bool leftClick) {
 bool LibrarySys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool LibrarySys::rightMouseDown(float x, float y) {
-  if (clickPrim(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickPrim(clickType)) {
     return true;
   }
   return true;

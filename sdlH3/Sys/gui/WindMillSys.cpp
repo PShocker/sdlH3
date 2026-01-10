@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
 #include "Comp/WindMillComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -101,7 +102,7 @@ bool WindMillSys::run() {
   return true;
 }
 
-static bool clickRes(bool leftClick) {
+static bool clickRes(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
@@ -112,7 +113,7 @@ static bool clickRes(bool leftClick) {
     auto wComp =
         World::registrys[World::level].get<WindMillComp>(Global::goalEnt);
     auto id = wComp.resources[0].first;
-    HeroScrSys::showResConfirm(leftClick, id);
+    HeroScrSys::showResConfirm(clickType, id);
     return true;
   }
   return false;
@@ -122,14 +123,18 @@ bool WindMillSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool WindMillSys::rightMouseDown(float x, float y) {
-  if (clickRes(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickRes(clickType)) {
     return false;
   }
   return true;

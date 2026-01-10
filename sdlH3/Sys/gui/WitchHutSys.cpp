@@ -4,6 +4,7 @@
 #include "Comp/HeroComp.h"
 #include "Comp/WindMillComp.h"
 #include "Comp/WitchHutComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 
 #include "H3mLoader/H3mObject.h"
@@ -123,7 +124,7 @@ bool WitchHutSys::run() {
   return true;
 }
 
-static bool clickSecSki(bool leftClick) {
+static bool clickSecSki(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
@@ -133,7 +134,7 @@ static bool clickSecSki(bool leftClick) {
   if (SDL_PointInRectFloat(&point, &posRect)) {
     auto &wComp =
         World::registrys[World::level].get<WitchHutComp>(Global::goalEnt);
-    HeroScrSys::showSecSkiComfirm(leftClick, wComp.secId, 0);
+    HeroScrSys::showSecSkiComfirm(clickType, wComp.secId, 0);
     return true;
   }
   return false;
@@ -143,14 +144,18 @@ bool WitchHutSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool WitchHutSys::rightMouseDown(float x, float y) {
-  if (clickSecSki(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickSecSki(clickType)) {
     return true;
   }
   return true;

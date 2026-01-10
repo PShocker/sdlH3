@@ -3,6 +3,7 @@
 #include "BMPFont/BMPFont.h"
 #include "Cfg/CreatureCfg.h"
 #include "DwellingSys.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "Lang/Lang.h"
@@ -172,7 +173,9 @@ bool SpliteCreSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
@@ -182,7 +185,9 @@ bool SpliteCreSys::rightMouseDown(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;

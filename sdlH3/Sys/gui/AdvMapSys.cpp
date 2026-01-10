@@ -945,68 +945,112 @@ clickCreatureStat(std::vector<std::pair<uint16_t, uint32_t>> creatures) {
   return 0xff;
 }
 
-static bool clickStat(bool leftClick) {
-  SDL_FRect posRect = {Global::viewPort.w - 189, Global::viewPort.h - 200, 176,
-                       166};
-  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
-  if (SDL_PointInRectFloat(&point, &posRect)) {
-    if (Global::advStatTime >= Window::dtNow) {
-      Global::advStatTime = Window::dtNow;
-      return true;
-    }
-    std::vector<std::pair<uint16_t, uint32_t>> *creatures;
-    uint8_t level = 0;
-    entt::entity heroEnt = entt::null;
-    if (Global::herosIndex[Global::playerId] < 8) {
-      auto playerId = Global::playerId;
-      auto heroIndex = Global::herosIndex[playerId];
-      level = Global::heros[playerId][heroIndex].first;
-      heroEnt = Global::heros[playerId][heroIndex].second;
-      auto heroComp = &World::registrys[level].get<HeroComp>(heroEnt);
-      creatures = &heroComp->creatures;
-    } else if (Global::townsIndex[Global::playerId] < 0xffff) {
-      auto playerId = Global::playerId;
-      auto townIndex = Global::townsIndex[playerId];
-      auto [level, townEnt] = Global::towns[playerId][townIndex];
-      auto townComp = &World::registrys[level].get<TownComp>(townEnt);
-      creatures = &townComp->garCreatures;
-    }
-    auto i = clickCreatureStat(*creatures);
-    if (i == 0xff) {
-      return false;
-    }
-    if (Global::advCreIndex == 0xff && leftClick) {
-      if (creatures->at(i).second != 0) {
-        Global::advCreIndex = i;
-      }
-    } else if (Global::advCreIndex == i || !leftClick) {
-      if (creatures->at(i).second != 0) {
-        uint8_t creType = leftClick ? (uint8_t)Enum::CRETYPE::MOD_HERO
-                                    : (uint8_t)Enum::CRETYPE::POP_HERO;
-        if (leftClick) {
-          Global::advCreIndex = 0xff;
-        }
-        if (heroEnt != entt::null) {
-          World::enterCreature({level, heroEnt}, creatures->at(i), creType);
-        } else {
-          World::enterCreature(creatures->at(i), creType);
-        }
-      }
-    } else {
-      // swap or merge
-      if (creatures->at(i).first != creatures->at(Global::advCreIndex).first) {
-        std::swap(creatures->at(i), creatures->at(Global::advCreIndex));
-      } else {
-        creatures->at(i).second += creatures->at(Global::advCreIndex).second;
-        creatures->at(Global::advCreIndex).second = 0;
-      }
-      Global::advCreIndex = 0xff;
-    }
+static bool clickStat(uint8_t clickType) {
+  // 1. 使用常量定义矩形区域
+  static const SDL_FRect STAT_RECT = {Global::viewPort.w - 189,
+                                      Global::viewPort.h - 200, 176, 166};
+
+  // 2. 鼠标位置检查
+  const SDL_FPoint mousePoint = {static_cast<float>(Window::mouseX),
+                                 static_cast<float>(Window::mouseY)};
+
+  if (!SDL_PointInRectFloat(&mousePoint, &STAT_RECT)) {
+    return false;
   }
-  return false;
+
+  // 3. 冷却时间检查
+  if (Global::advStatTime >= Window::dtNow) {
+    Global::advStatTime = Window::dtNow;
+    return true;
+  }
+
+  // 4. 定义局部变量
+  std::vector<std::pair<uint16_t, uint32_t>> *creatures = nullptr;
+  uint8_t level = 0;
+  entt::entity heroEnt = entt::null;
+  const auto playerId = Global::playerId;
+
+  // 5. 获取生物列表（优化重复代码）
+  if (Global::herosIndex[playerId] < 8) {
+    const auto heroIndex = Global::herosIndex[playerId];
+    const auto &heroData = Global::heros[playerId][heroIndex];
+    level = heroData.first;
+    heroEnt = heroData.second;
+    creatures = &World::registrys[level].get<HeroComp>(heroEnt).creatures;
+  } else if (Global::townsIndex[playerId] != 0xFFFF) {
+    const auto townIndex = Global::townsIndex[playerId];
+    const auto &townData = Global::towns[playerId][townIndex];
+    level = townData.first;
+    const auto townEnt = townData.second;
+    creatures = &World::registrys[level].get<TownComp>(townEnt).garCreatures;
+  }
+
+  // 6. 检查有效性
+  if (!creatures || creatures->empty()) {
+    return false;
+  }
+
+  // 7. 获取点击的生物索引
+  const uint8_t clickedIndex = clickCreatureStat(*creatures);
+  if (clickedIndex == 0xFF) {
+    return false;
+  }
+
+  // 8. 使用引用避免重复访问
+  auto &clickedCreature = creatures->at(clickedIndex);
+
+  // 9. 判断点击类型
+  const bool isLeftClick =
+      (clickType == static_cast<uint8_t>(Enum::CLICKTYPE::L_UP));
+  const bool isRightClick =
+      (clickType == static_cast<uint8_t>(Enum::CLICKTYPE::R_UP));
+
+  // 10. 主要逻辑分支
+  if (Global::advCreIndex == 0xFF && isLeftClick) {
+    // 开始拖拽
+    if (clickedCreature.second != 0) {
+      Global::advCreIndex = clickedIndex;
+    }
+    return false;
+  }
+
+  if (Global::advCreIndex == clickedIndex || !isLeftClick) {
+    // 放置或右键操作
+    if (clickedCreature.second != 0) {
+      const uint8_t creType =
+          isLeftClick ? static_cast<uint8_t>(Enum::CRETYPE::MOD_HERO)
+                      : static_cast<uint8_t>(Enum::CRETYPE::POP_HERO);
+
+      if (isLeftClick) {
+        Global::advCreIndex = 0xFF;
+      }
+
+      if (heroEnt != entt::null) {
+        World::enterCreature({level, heroEnt}, clickedCreature, creType);
+      } else {
+        World::enterCreature(clickedCreature, creType);
+      }
+    }
+    return true;
+  }
+
+  // 11. 交换或合并逻辑
+  auto &draggedCreature = creatures->at(Global::advCreIndex);
+
+  if (clickedCreature.first != draggedCreature.first) {
+    // 交换
+    std::swap(clickedCreature, draggedCreature);
+  } else {
+    // 合并
+    clickedCreature.second += draggedCreature.second;
+    draggedCreature.second = 0;
+  }
+
+  Global::advCreIndex = 0xFF;
+  return true;
 }
 
-static bool clickHeroPor(bool leftClick) {
+static bool clickHeroPor(uint8_t clickType) {
   // click small hero PortraitsSmall
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   SDL_FRect posRect;
@@ -1020,7 +1064,7 @@ static bool clickHeroPor(bool leftClick) {
     if (SDL_PointInRectFloat(&point, &posRect)) {
       auto &[level, heroEnt] = Global::heros[Global::playerId][index];
       auto &registry = World::registrys[level];
-      if (leftClick) {
+      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
         if (Global::herosIndex[Global::playerId] == index) {
           World::enterHeroScrn(level, heroEnt, (uint8_t)Enum::SCNTYPE::MOD);
         } else {
@@ -1038,7 +1082,7 @@ static bool clickHeroPor(bool leftClick) {
   return false;
 }
 
-static bool clickTownPor(bool leftClick) {
+static bool clickTownPor(uint8_t clickType) {
   // click small town PortraitsSmall
   SDL_FRect posRect;
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
@@ -1051,7 +1095,7 @@ static bool clickTownPor(bool leftClick) {
     if (SDL_PointInRectFloat(&point, &posRect)) {
       auto &[level, townEnt] = Global::towns[Global::playerId][index];
       auto &registry = World::registrys[level];
-      if (leftClick) {
+      if (clickType == static_cast<uint8_t>(Enum::CLICKTYPE::L_UP)) {
         if (Global::townsIndex[Global::playerId] == index) {
           World::enterTownScrn(level, townEnt, (uint8_t)Enum::SCNTYPE::MOD);
         }
@@ -1074,19 +1118,34 @@ bool AdvMapSys::leftMouseUp(float x, float y) {
   for (auto &b : button) {
     b.r.x = Global::viewPort.w - b.r.x;
   }
-  if (AdvMapSys::clickButtons(0, 0, button, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+  if (AdvMapSys::clickButtons(0, 0, button, clickType)) {
     return false;
   }
-  if (clickHeroPor(true)) {
+  if (clickHeroPor(clickType)) {
     return false;
   }
-  if (clickTownPor(true)) {
+  if (clickTownPor(clickType)) {
     return false;
   }
-  if (clickStat(true)) {
+  if (clickStat(clickType)) {
     return false;
   }
 
+  return true;
+}
+
+bool AdvMapSys::leftMouseDown(float x, float y) {
+  if (Global::heroMove) {
+    return true;
+  }
+  auto button = buttonInfo();
+  for (auto &b : button) {
+    b.r.x = Global::viewPort.w - b.r.x;
+  }
+  if (AdvMapSys::clickButtons(0, 0, button, (uint8_t)Enum::CLICKTYPE::L_DOWN)) {
+    return false;
+  }
   return true;
 }
 
@@ -1094,13 +1153,14 @@ bool AdvMapSys::rightMouseDown(float x, float y) {
   if (Global::heroMove) {
     return true;
   }
-  if (clickHeroPor(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+  if (clickHeroPor(clickType)) {
     return false;
   }
-  if (clickTownPor(false)) {
+  if (clickTownPor(clickType)) {
     return false;
   }
-  if (clickStat(false)) {
+  if (clickStat(clickType)) {
     return false;
   }
   return true;
@@ -1221,34 +1281,45 @@ void AdvMapSys::drawButtons(float x, float y, bool press,
 }
 
 bool AdvMapSys::clickButtons(float x, float y, std::vector<Button> &v,
-                             bool leftClick) {
+                             uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   for (uint8_t i = 0; i < v.size(); i++) {
     SDL_FRect posRect = {x + v[i].r.x, y + v[i].r.y, v[i].r.w, v[i].r.h};
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (leftClick) {
+      switch (clickType) {
+      case (uint8_t)Enum::CLICKTYPE::L_UP: {
         if (!v[i].disable) {
           v[i].func();
+          Global::audioData["button.wav"] = 0;
         }
-      } else if (v[i].title != u"" || v[i].info != u"") {
-        auto confirmbakW = 450;
-        auto confirmbakH = 130;
-        auto title = v[i].title;
-        auto info = v[i].info;
-        Global::confirmdraw = [confirmbakW, confirmbakH, title, info]() {
-          SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
-                            Global::viewPort.h / 2 - confirmbakH / 2};
-          FreeTypeSys::setSize(13);
-          FreeTypeSys::setColor(240, 224, 104, 255);
-          FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 15,
-                                  title);
-          FreeTypeSys::setColor(255, 255, 255, 255);
-          FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 55,
-                                  info);
-        };
-        World::enterConfirm(confirmbakW, confirmbakH,
-                            ((uint8_t)Enum::SCNTYPE::POP));
+        break;
+      }
+      case (uint8_t)Enum::CLICKTYPE::R_DOWN: {
+        if (v[i].title != u"" || v[i].info != u"") {
+          auto confirmbakW = 450;
+          auto confirmbakH = 130;
+          auto title = v[i].title;
+          auto info = v[i].info;
+          Global::confirmdraw = [confirmbakW, confirmbakH, title, info]() {
+            SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
+                              Global::viewPort.h / 2 - confirmbakH / 2};
+            FreeTypeSys::setSize(13);
+            FreeTypeSys::setColor(240, 224, 104, 255);
+            FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 15,
+                                    title);
+            FreeTypeSys::setColor(255, 255, 255, 255);
+            FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 55,
+                                    info);
+          };
+          World::enterConfirm(confirmbakW, confirmbakH,
+                              ((uint8_t)Enum::SCNTYPE::POP));
+        }
+        break;
+      }
+      default: {
+        break;
+      }
       }
       return true;
     }

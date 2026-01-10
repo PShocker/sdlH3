@@ -4,7 +4,6 @@
 #include "SDL3/SDL_stdinc.h"
 #include <cstdint>
 #include <cstring>
-#include <map>
 #include <string>
 #include <vector>
 
@@ -13,22 +12,21 @@ static SDL_AudioStream *stream = NULL;
 static SDL_AudioSpec spec = {
     .format = SDL_AUDIO_S16, .channels = 2, .freq = 44100};
 
-static std::map<std::string, uint32_t> audioData;
 // AITheme0.wav
 // horse00.wav
 static void prepareAudio() {
   // switch (condition) {
 
   // }
-  if (!audioData.contains("AITheme0.wav")) {
-    audioData["AITheme0.wav"] = 0;
+  if (!Global::audioData.contains("AITheme0.wav")) {
+    Global::audioData["AITheme0.wav"] = 0;
   }
   if (Global::heroMove) {
-    if (!audioData.contains("horse00.wav")) {
-      audioData["horse00.wav"] = 0;
+    if (!Global::audioData.contains("horse00.wav")) {
+      Global::audioData["horse00.wav"] = 0;
     }
   } else {
-    audioData.erase("horse00.wav");
+    Global::audioData.erase("horse00.wav");
   }
 }
 
@@ -37,7 +35,7 @@ static bool playAudio() {
   if (SDL_GetAudioStreamQueued(stream) < minimum_audio) {
     uint8_t *data = (uint8_t *)SDL_stack_alloc(uint8_t, minimum_audio);
     SDL_memset(data, 0, minimum_audio * sizeof(uint8_t));
-    for (auto &[k, v] : audioData) {
+    for (auto &[k, v] : Global::audioData) {
       auto &pcmData = Global::pcmCache[k];
       if (v + minimum_audio <= pcmData.size()) {
         auto src = (pcmData.data() + v);
@@ -53,7 +51,7 @@ static bool playAudio() {
 }
 
 static void clearAudio() {
-  std::erase_if(audioData, [](const auto &item) {
+  std::erase_if(Global::audioData, [](const auto &item) {
     auto &pcmData = Global::pcmCache[item.first];
     return pcmData.size() < item.second;
   });

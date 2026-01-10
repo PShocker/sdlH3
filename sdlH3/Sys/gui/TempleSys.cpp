@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
 #include "Comp/TempleComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -93,7 +94,7 @@ bool TempleSys::run() {
   return true;
 }
 
-static bool clickMor(bool leftClick) {
+static bool clickMor(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
@@ -103,7 +104,7 @@ static bool clickMor(bool leftClick) {
   if (SDL_PointInRectFloat(&point, &posRect)) {
     auto &heroComp =
         World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-    HeroScrSys::showMorComfirm(leftClick, heroComp);
+    HeroScrSys::showMorComfirm(clickType, heroComp);
     return true;
   }
   return false;
@@ -113,17 +114,21 @@ bool TempleSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
-  if (clickMor(true)) {
+  if (clickMor(clickType)) {
     return false;
   }
   return true;
 }
 
 bool TempleSys::rightMouseDown(float x, float y) {
-  if (clickMor(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickMor(clickType)) {
     return false;
   }
   return true;

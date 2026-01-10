@@ -92,7 +92,9 @@ bool ConfirmSys::leftMouseUp(float x, float y) {
                       Global::viewPort.h / 2 - bakH / 2};
     SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
     auto v = buttonInfo();
-    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+    auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
       return false;
     }
   }

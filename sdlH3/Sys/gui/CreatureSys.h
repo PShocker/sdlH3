@@ -11,6 +11,6 @@ struct CreatureSys {
   static int32_t heroCreMor(uint8_t level,entt::entity heroEnt,uint16_t creId,uint8_t creType);
   static int32_t heroCreLuk(uint8_t level,entt::entity heroEnt,uint16_t creId,uint8_t creType);
 
-  static void showLukComfirm(bool leftClick);
-  static void showMorComfirm(bool leftClick);
+  static void showLukComfirm(uint8_t clickType);
+  static void showMorComfirm(uint8_t clickType);
 };

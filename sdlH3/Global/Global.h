@@ -165,6 +165,8 @@ struct Global {
 
   static inline uint8_t viewWorldScale;
 
+  static inline std::unordered_map<std::string, uint32_t> audioData;
+
   //   static inline std::unordered_map<std::string, std::any> stateCache;
   static inline std::unordered_map<std::string, std::vector<SDL_Texture *>>
       pcxCache;

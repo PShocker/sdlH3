@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
 #include "Comp/ArenaComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -129,7 +130,7 @@ bool ArenaSys::run() {
   return true;
 }
 
-static bool clickPrim(bool leftClick) {
+static bool clickPrim(uint8_t clickType) {
   if (!visited()) {
     SDL_FRect posRect;
     SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
@@ -140,10 +141,10 @@ static bool clickPrim(bool leftClick) {
       posRect.x += leftUp.x;
       posRect.y += leftUp.y;
       if (SDL_PointInRectFloat(&point, &posRect)) {
-        if (leftClick) {
+        if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
           Global::goalIndex = i;
         } else {
-          HeroScrSys::showPrimComfirm(leftClick, i);
+          HeroScrSys::showPrimComfirm(clickType, i);
         }
         return true;
       }
@@ -156,17 +157,21 @@ bool ArenaSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
-  if (clickPrim(true)) {
+  if (clickPrim(clickType)) {
     return false;
   }
   return true;
 }
 
 bool ArenaSys::rightMouseDown(float x, float y) {
-  if (clickPrim(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickPrim(clickType)) {
     return false;
   }
   return true;

@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
 #include "Comp/LearnStoneComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -114,7 +115,7 @@ bool LearnStoneSys::run() {
   return true;
 }
 
-static bool clickExp(bool leftClick) {
+static bool clickExp(uint8_t clickType) {
   if (!visited()) {
     SDL_FRect posRect;
     SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
@@ -123,9 +124,7 @@ static bool clickExp(bool leftClick) {
     posRect = {leftUp.x + primPosition.x, leftUp.y + primPosition.y,
                primPosition.w, primPosition.h};
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (!leftClick) {
-        HeroScrSys::showExpComfirm(leftClick);
-      }
+      HeroScrSys::showExpComfirm(clickType);
       return true;
     }
   }
@@ -136,14 +135,18 @@ bool LearnStoneSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool LearnStoneSys::rightMouseDown(float x, float y) {
-  if (clickExp(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickExp(clickType)) {
     return true;
   }
   return true;

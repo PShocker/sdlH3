@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "Cfg/SpellCfg.h"
 #include "Comp/HeroComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
@@ -65,8 +66,7 @@ static uint8_t learnIndex() {
 
 static void ok() {
   World::exitScrn();
-  World::enterHeroTrade(Global::heroEnt, Global::goalEnt,
-                        Global::goalLevel);
+  World::enterHeroTrade(Global::heroEnt, Global::goalEnt, Global::goalLevel);
 }
 
 static std::vector<Button> buttonInfo() {
@@ -137,7 +137,7 @@ bool LearnSys::run() {
   return true;
 }
 
-static bool clickSpell(bool leftClick) {
+static bool clickSpell(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
@@ -147,7 +147,7 @@ static bool clickSpell(bool leftClick) {
     if (i < v.size()) {
       posRect = {splSlot[i].x + leftUp.x, splSlot[i].x + leftUp.y, 78, 65};
       if (SDL_PointInRectFloat(&point, &posRect)) {
-        SpellSys::showSplComfirm(leftClick, v[i], 0);
+        SpellSys::showSplComfirm(clickType, v[i], 0);
         return true;
       }
     }
@@ -159,7 +159,9 @@ bool LearnSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   if (clickSpell(true)) {
@@ -172,7 +174,9 @@ bool LearnSys::rightMouseDown(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;

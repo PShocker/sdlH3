@@ -183,7 +183,7 @@ static std::vector<Button> buttonInfo() {
   return v;
 }
 
-static bool clickEquip(bool leftClick) {
+static bool clickEquip(uint8_t clickType) {
   const SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                           (Global::viewPort.h - 586) / 2};
   auto [level, ent] = Global::heroScnPair;
@@ -209,7 +209,8 @@ static bool clickEquip(bool leftClick) {
 
   uint8_t targetIndex = clickedBackpack ? backpackIndex : equipIndex;
   uint16_t targetArtId = clickedBackpack ? backpackArtId : equipArtId;
-  if (!leftClick && targetArtId != 0xffff) {
+  if (!(clickType == (uint8_t)Enum::CLICKTYPE::L_DOWN) &&
+      targetArtId != 0xffff) {
     HeroScrSys::showArtifactComfirm(targetArtId);
     return true;
   }
@@ -265,54 +266,82 @@ static bool clickEquip(bool leftClick) {
   return true;
 }
 
-static bool clickCre(bool leftClick) {
-  SDL_FRect posRect;
-  SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
-                    (Global::viewPort.h - 586) / 2};
-  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
-  auto [level, ent] = Global::heroScnPair;
-  auto heroComp = &World::registrys[level].get<HeroComp>(ent);
-  for (uint8_t i = 0; i < heroComp->creatures.size(); i++) {
-    auto [id, count] = heroComp->creatures[i];
-    posRect = {leftUp.x + 14 + i * 66, leftUp.y + 484, 58, 64};
-    if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (leftClick) {
-        if (Global::splitOn) {
-          auto crePtr = &heroComp->creatures.at(i);
-          if (Global::splitCre[0] != crePtr &&
-              (crePtr->second == 0 ||
-               crePtr->first == Global::splitCre[0]->first)) {
-            Global::splitCre[1] = crePtr;
-            World::enterSplitCre();
-            Global::splitOn = false;
-            Global::heroScnIndex = 0xff;
-          }
-        } else if (Global::heroScnIndex == i) {
-          World::enterCreature(Global::heroScnPair, heroComp->creatures[i],
-                               (uint8_t)Enum::CRETYPE::MOD_HERO);
-        } else if (Global::heroScnIndex == 0xff) {
-          if (count != 0) {
-            Global::heroScnIndex = i;
-          }
-        } else {
-          if (heroComp->creatures[i].second == 0 ||
-              heroComp->creatures[i].first !=
-                  heroComp->creatures[Global::heroScnIndex].first) {
-            std::swap(heroComp->creatures[i],
-                      heroComp->creatures[Global::heroScnIndex]);
-          } else {
-            heroComp->creatures[i].second +=
-                heroComp->creatures[Global::heroScnIndex].second;
-            heroComp->creatures[Global::heroScnIndex] = {0xffff, 0};
-          }
-          Global::heroScnIndex = 0xff;
-        }
-      } else {
-        World::enterCreature(Global::heroScnPair, heroComp->creatures[i],
-                             (uint8_t)Enum::CRETYPE::POP_HERO);
-      }
-      return true;
+static bool clickCre(uint8_t clickType) {
+  constexpr float CREATURE_WIDTH = 58.0f;
+  constexpr float CREATURE_HEIGHT = 64.0f;
+  constexpr float START_X = 14.0f;
+  constexpr float START_Y = 484.0f;
+  constexpr float SPACING = 66.0f;
+  constexpr uint8_t INVALID_INDEX = 0xFF;
+  constexpr uint8_t LEFT_CLICK = static_cast<uint8_t>(Enum::CLICKTYPE::L_UP);
+  constexpr uint8_t POP_HERO = static_cast<uint8_t>(Enum::CRETYPE::POP_HERO);
+  constexpr uint8_t MOD_HERO = static_cast<uint8_t>(Enum::CRETYPE::MOD_HERO);
+
+  const SDL_FPoint mousePos = {
+      static_cast<float>(static_cast<int>(Window::mouseX)),
+      static_cast<float>(static_cast<int>(Window::mouseY))};
+
+  const SDL_FPoint panelPos = {(Global::viewPort.w - 672.0f) * 0.5f,
+                               (Global::viewPort.h - 586.0f) * 0.5f};
+
+  const auto &[level, heroEnt] = Global::heroScnPair;
+  auto &heroComp = World::registrys[level].get<HeroComp>(heroEnt);
+  auto &creatures = heroComp.creatures;
+
+  for (uint8_t i = 0; i < creatures.size(); ++i) {
+    const SDL_FRect creatureRect = {panelPos.x + START_X + i * SPACING,
+                                    panelPos.y + START_Y, CREATURE_WIDTH,
+                                    CREATURE_HEIGHT};
+
+    if (!SDL_PointInRectFloat(&mousePos, &creatureRect)) {
+      continue;
     }
+
+    auto &currentCreature = creatures[i];
+
+    if (clickType == LEFT_CLICK) {
+      // 左键点击处理逻辑
+      if (Global::splitOn) {
+        auto *crePtr = &currentCreature;
+        if (Global::splitCre[0] != crePtr &&
+            (crePtr->second == 0 ||
+             crePtr->first == Global::splitCre[0]->first)) {
+          Global::splitCre[1] = crePtr;
+          World::enterSplitCre();
+          Global::splitOn = false;
+          Global::heroScnIndex = INVALID_INDEX;
+        }
+        return true;
+      }
+
+      if (Global::heroScnIndex == i) {
+        World::enterCreature(Global::heroScnPair, currentCreature, MOD_HERO);
+        Global::heroScnIndex = INVALID_INDEX;
+        return true;
+      }
+
+      if (Global::heroScnIndex == INVALID_INDEX) {
+        if (currentCreature.second != 0) {
+          Global::heroScnIndex = i;
+        }
+        return true;
+      }
+
+      // 交换或合并生物
+      auto &selectedCreature = creatures[Global::heroScnIndex];
+      if (currentCreature.second == 0 ||
+          currentCreature.first != selectedCreature.first) {
+        std::swap(currentCreature, selectedCreature);
+      } else {
+        currentCreature.second += selectedCreature.second;
+        selectedCreature = {0xFFFF, 0};
+      }
+      Global::heroScnIndex = INVALID_INDEX;
+    } else {
+      // 右键点击处理
+      World::enterCreature(Global::heroScnPair, currentCreature, POP_HERO);
+    }
+    return true;
   }
   return false;
 }
@@ -321,7 +350,7 @@ const static SDL_FRect lukPosition = {240, 184, 42, 38};
 
 const static SDL_FRect morPosition = {182, 184, 42, 38};
 
-static bool clickLuk(bool leftClick) {
+static bool clickLuk(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                     (Global::viewPort.h - 586) / 2};
@@ -331,13 +360,13 @@ static bool clickLuk(bool leftClick) {
   if (SDL_PointInRectFloat(&point, &posRect)) {
     auto [level, ent] = Global::heroScnPair;
     auto heroComp = &World::registrys[level].get<HeroComp>(ent);
-    HeroScrSys::showLukComfirm(leftClick, *heroComp);
+    HeroScrSys::showLukComfirm(clickType, *heroComp);
     return true;
   }
   return false;
 }
 
-static bool clickMor(bool leftClick) {
+static bool clickMor(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                     (Global::viewPort.h - 586) / 2};
@@ -347,13 +376,13 @@ static bool clickMor(bool leftClick) {
   if (SDL_PointInRectFloat(&point, &posRect)) {
     auto [level, ent] = Global::heroScnPair;
     auto heroComp = &World::registrys[level].get<HeroComp>(ent);
-    HeroScrSys::showMorComfirm(leftClick, *heroComp);
+    HeroScrSys::showMorComfirm(clickType, *heroComp);
     return true;
   }
   return false;
 }
 
-static bool clickSpe(bool leftClick) {
+static bool clickSpe(uint8_t clickType) {
 
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
@@ -363,13 +392,13 @@ static bool clickSpe(bool leftClick) {
   if (SDL_PointInRectFloat(&point, &posRect)) {
     auto [level, ent] = Global::heroScnPair;
     auto heroComp = &World::registrys[level].get<HeroComp>(ent);
-    HeroScrSys::showSpeConfirm(leftClick, heroComp->portrait);
+    HeroScrSys::showSpeConfirm(clickType, heroComp->portrait);
     return true;
   }
   return false;
 }
 
-static bool clickHeroLargePor(bool leftClick) {
+static bool clickHeroLargePor(uint8_t clickType) {
   SDL_FRect posRect;
   const SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                           (Global::viewPort.h - 586) / 2};
@@ -378,7 +407,7 @@ static bool clickHeroLargePor(bool leftClick) {
   if (SDL_PointInRectFloat(&point, &posRect)) {
     auto [level, ent] = Global::heroScnPair;
     auto heroComp = &World::registrys[level].get<HeroComp>(ent);
-    HeroScrSys::showHeroBiosComfirm(leftClick, heroComp->portrait);
+    HeroScrSys::showHeroBiosComfirm(clickType, heroComp->portrait);
     return true;
   }
   return false;
@@ -775,7 +804,7 @@ bool HeroScrSys::run() {
   return true;
 }
 
-static bool clickPrim(bool leftClick) {
+static bool clickPrim(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                     (Global::viewPort.h - 586) / 2};
@@ -787,14 +816,14 @@ static bool clickPrim(bool leftClick) {
     if (SDL_PointInRectFloat(&point, &posRect)) {
       auto [level, ent] = Global::heroScnPair;
       auto heroComp = &World::registrys[level].get<HeroComp>(ent);
-      HeroScrSys::showPrimComfirm(leftClick, i);
+      HeroScrSys::showPrimComfirm(clickType, i);
       return true;
     }
   }
   return false;
 }
 
-static bool clickSecSki(bool leftClick) {
+static bool clickSecSki(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                     (Global::viewPort.h - 586) / 2};
@@ -806,14 +835,14 @@ static bool clickSecSki(bool leftClick) {
                136, 44};
     auto [index, level] = heroComp->secSkills.at(i);
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      HeroScrSys::showSecSkiComfirm(leftClick, index, level);
+      HeroScrSys::showSecSkiComfirm(clickType, index, level);
       return true;
     }
   }
   return false;
 }
 
-static bool clickMana(bool leftClick) {
+static bool clickMana(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                     (Global::viewPort.h - 586) / 2};
@@ -823,13 +852,13 @@ static bool clickMana(bool leftClick) {
   if (SDL_PointInRectFloat(&point, &posRect)) {
     auto [level, ent] = Global::heroScnPair;
     auto heroComp = &World::registrys[level].get<HeroComp>(ent);
-    HeroScrSys::showManaComfirm(leftClick, *heroComp);
+    HeroScrSys::showManaComfirm(clickType, *heroComp);
     return true;
   }
   return false;
 }
 
-static bool clickExp(bool leftClick) {
+static bool clickExp(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                     (Global::viewPort.h - 586) / 2};
@@ -839,7 +868,7 @@ static bool clickExp(bool leftClick) {
   if (SDL_PointInRectFloat(&point, &posRect)) {
     auto [level, ent] = Global::heroScnPair;
     auto heroComp = &World::registrys[level].get<HeroComp>(ent);
-    HeroScrSys::showExpComfirm(leftClick, *heroComp);
+    HeroScrSys::showExpComfirm(clickType, *heroComp);
     return true;
   }
   return false;
@@ -860,32 +889,34 @@ bool HeroScrSys::leftMouseUp(float x, float y) {
     const SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                             (Global::viewPort.h - 586) / 2};
     auto v = buttonInfo();
-    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+    auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
       return false;
     }
 
-    if (clickCre(true)) {
+    if (clickCre(clickType)) {
       return false;
     }
-    if (clickPrim(true)) {
+    if (clickPrim(clickType)) {
       return false;
     }
-    if (clickHeroLargePor(true)) {
+    if (clickHeroLargePor(clickType)) {
       return false;
     }
-    if (clickSecSki(true)) {
+    if (clickSecSki(clickType)) {
       return false;
     }
-    if (clickMana(true)) {
+    if (clickMana(clickType)) {
       return false;
     }
-    if (clickExp(true)) {
+    if (clickExp(clickType)) {
       return false;
     }
-    if (clickLuk(true)) {
+    if (clickLuk(clickType)) {
       return false;
     }
-    if (clickMor(true)) {
+    if (clickMor(clickType)) {
       return false;
     }
     clickBackPage();
@@ -920,38 +951,40 @@ bool HeroScrSys::rightMouseDown(float x, float y) {
     const SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                             (Global::viewPort.h - 586) / 2};
     auto v = buttonInfo();
-    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, false)) {
+    auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
       return false;
     }
 
-    if (clickEquip(false)) {
+    if (clickEquip(clickType)) {
       return false;
     }
-    if (clickCre(false)) {
+    if (clickCre(clickType)) {
       return false;
     }
-    if (clickHeroLargePor(false)) {
+    if (clickHeroLargePor(clickType)) {
       return false;
     }
-    if (clickPrim(false)) {
+    if (clickPrim(clickType)) {
       return false;
     }
-    if (clickMana(false)) {
+    if (clickMana(clickType)) {
       return false;
     }
-    if (clickSpe(false)) {
+    if (clickSpe(clickType)) {
       return false;
     }
-    if (clickSecSki(false)) {
+    if (clickSecSki(clickType)) {
       return false;
     }
-    if (clickExp(false)) {
+    if (clickExp(clickType)) {
       return false;
     }
-    if (clickLuk(false)) {
+    if (clickLuk(clickType)) {
       return false;
     }
-    if (clickMor(false)) {
+    if (clickMor(clickType)) {
       return false;
     }
   }
@@ -1083,7 +1116,7 @@ int32_t HeroScrSys::heroSight(HeroComp &hComp) {
   return r;
 }
 
-void HeroScrSys::showResConfirm(bool leftClick, uint16_t i) {
+void HeroScrSys::showResConfirm(uint8_t clickType, uint16_t i) {
   auto confirmbakW = 400;
   auto confirmbakH = 140;
   Global::confirmdraw = [confirmbakW, confirmbakH, i]() {
@@ -1098,7 +1131,15 @@ void HeroScrSys::showResConfirm(bool leftClick, uint16_t i) {
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 40,
                             strPool[2240 + i]);
   };
-  World::enterConfirm(confirmbakW, confirmbakH, ((uint8_t)Enum::SCNTYPE::POP));
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+    Global::confirmOnlyOK = true;
+    Global::confirmCallBack = std::nullopt;
+    World::enterConfirm(confirmbakW, confirmbakH,
+                        ((uint8_t)Enum::SCNTYPE::MOD));
+  } else {
+    World::enterConfirm(confirmbakW, confirmbakH,
+                        ((uint8_t)Enum::SCNTYPE::POP));
+  }
 }
 
 void HeroScrSys::showArtifactComfirm(uint16_t i) {
@@ -1119,7 +1160,7 @@ void HeroScrSys::showArtifactComfirm(uint16_t i) {
   World::enterConfirm(confirmbakW, confirmbakH, ((uint8_t)Enum::SCNTYPE::POP));
 }
 
-void HeroScrSys::showPrimComfirm(bool leftClick, uint16_t i) {
+void HeroScrSys::showPrimComfirm(uint8_t clickType, uint16_t i) {
   auto confirmbakW = 400;
   auto confirmbakH = 160;
   Global::confirmdraw = [confirmbakW, confirmbakH, i]() {
@@ -1134,7 +1175,7 @@ void HeroScrSys::showPrimComfirm(bool leftClick, uint16_t i) {
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 40,
                             strPool[2201 + i]);
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,
@@ -1146,7 +1187,7 @@ void HeroScrSys::showPrimComfirm(bool leftClick, uint16_t i) {
   }
 }
 
-void HeroScrSys::showLukComfirm(bool leftClick, HeroComp &hComp) {
+void HeroScrSys::showLukComfirm(uint8_t clickType, HeroComp &hComp) {
   auto confirmbakW = 500;
   auto confirmbakH = 340;
   Global::confirmdraw = [confirmbakW, confirmbakH, &hComp]() {
@@ -1207,7 +1248,7 @@ void HeroScrSys::showLukComfirm(bool leftClick, HeroComp &hComp) {
       }
     }
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,
@@ -1219,7 +1260,7 @@ void HeroScrSys::showLukComfirm(bool leftClick, HeroComp &hComp) {
   }
 }
 
-void HeroScrSys::showLukComfirm(bool leftClick) {
+void HeroScrSys::showLukComfirm(uint8_t clickType) {
   auto confirmbakW = 400;
   auto confirmbakH = 200;
   Global::confirmdraw = [confirmbakW, confirmbakH]() {
@@ -1234,7 +1275,7 @@ void HeroScrSys::showLukComfirm(bool leftClick) {
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 60,
                             strPool[2222]);
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,
@@ -1246,7 +1287,7 @@ void HeroScrSys::showLukComfirm(bool leftClick) {
   }
 }
 
-void HeroScrSys::showMorComfirm(bool leftClick, HeroComp &hComp) {
+void HeroScrSys::showMorComfirm(uint8_t clickType, HeroComp &hComp) {
   auto confirmbakW = 500;
   auto confirmbakH = 340;
   Global::confirmdraw = [confirmbakW, confirmbakH, &hComp]() {
@@ -1307,7 +1348,7 @@ void HeroScrSys::showMorComfirm(bool leftClick, HeroComp &hComp) {
       }
     }
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,
@@ -1319,7 +1360,7 @@ void HeroScrSys::showMorComfirm(bool leftClick, HeroComp &hComp) {
   }
 }
 
-void HeroScrSys::showMorComfirm(bool leftClick) {
+void HeroScrSys::showMorComfirm(uint8_t clickType) {
   auto confirmbakW = 400;
   auto confirmbakH = 160;
   Global::confirmdraw = [confirmbakW, confirmbakH]() {
@@ -1334,7 +1375,7 @@ void HeroScrSys::showMorComfirm(bool leftClick) {
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 60,
                             strPool[2222]);
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,
@@ -1346,7 +1387,7 @@ void HeroScrSys::showMorComfirm(bool leftClick) {
   }
 }
 
-void HeroScrSys::showExpComfirm(bool leftClick) {
+void HeroScrSys::showExpComfirm(uint8_t clickType) {
   auto confirmbakW = 420;
   auto confirmbakH = 200;
   Global::confirmdraw = [confirmbakW, confirmbakH]() {
@@ -1361,7 +1402,7 @@ void HeroScrSys::showExpComfirm(bool leftClick) {
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 40,
                             strPool[2208]);
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,
@@ -1371,7 +1412,7 @@ void HeroScrSys::showExpComfirm(bool leftClick) {
                         ((uint8_t)Enum::SCNTYPE::POP));
   }
 }
-void HeroScrSys::showExpComfirm(bool leftClick, HeroComp &hComp) {
+void HeroScrSys::showExpComfirm(uint8_t clickType, HeroComp &hComp) {
   auto confirmbakW = 420;
   auto confirmbakH = 220;
   Global::confirmdraw = [confirmbakW, confirmbakH, hComp]() {
@@ -1396,7 +1437,7 @@ void HeroScrSys::showExpComfirm(bool leftClick, HeroComp &hComp) {
     str = strPool[2206] + FreeTypeSys::str(hComp.exp);
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 100, str);
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,
@@ -1408,7 +1449,7 @@ void HeroScrSys::showExpComfirm(bool leftClick, HeroComp &hComp) {
   }
 }
 
-void HeroScrSys::showManaComfirm(bool leftClick, HeroComp &hComp) {
+void HeroScrSys::showManaComfirm(uint8_t clickType, HeroComp &hComp) {
   auto confirmbakW = 430;
   auto confirmbakH = 160;
 
@@ -1424,7 +1465,7 @@ void HeroScrSys::showManaComfirm(bool leftClick, HeroComp &hComp) {
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 40,
                             strPool[2208]);
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,
@@ -1436,7 +1477,7 @@ void HeroScrSys::showManaComfirm(bool leftClick, HeroComp &hComp) {
   }
 }
 
-void HeroScrSys::showManaComfirm(bool leftClick) {
+void HeroScrSys::showManaComfirm(uint8_t clickType) {
   auto confirmbakW = 430;
   auto confirmbakH = 160;
 
@@ -1452,7 +1493,7 @@ void HeroScrSys::showManaComfirm(bool leftClick) {
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 40,
                             strPool[2207]);
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,
@@ -1464,7 +1505,7 @@ void HeroScrSys::showManaComfirm(bool leftClick) {
   }
 }
 
-void HeroScrSys::showSpeConfirm(bool leftClick, uint16_t i) {
+void HeroScrSys::showSpeConfirm(uint8_t clickType, uint16_t i) {
   auto confirmbakW = 430;
   auto confirmbakH = 160;
 
@@ -1480,7 +1521,7 @@ void HeroScrSys::showSpeConfirm(bool leftClick, uint16_t i) {
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 40,
                             strPool[2018 + i]);
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,
@@ -1491,7 +1532,7 @@ void HeroScrSys::showSpeConfirm(bool leftClick, uint16_t i) {
                         ((uint8_t)Enum::SCNTYPE::POP));
   }
 }
-void HeroScrSys::showSecSkiComfirm(bool leftClick, uint16_t id, uint16_t i) {
+void HeroScrSys::showSecSkiComfirm(uint8_t clickType, uint16_t id, uint16_t i) {
   auto confirmbakW = 600;
   auto confirmbakH = 360;
   Global::confirmdraw = [confirmbakW, confirmbakH, id, i]() {
@@ -1513,7 +1554,7 @@ void HeroScrSys::showSecSkiComfirm(bool leftClick, uint16_t id, uint16_t i) {
                               leftUp.y + 40 + m * 20, str);
     }
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,
@@ -1525,7 +1566,7 @@ void HeroScrSys::showSecSkiComfirm(bool leftClick, uint16_t id, uint16_t i) {
   }
 }
 
-void HeroScrSys::showHeroBiosComfirm(bool leftClick, uint16_t i) {
+void HeroScrSys::showHeroBiosComfirm(uint8_t clickType, uint16_t i) {
   auto confirmbakW = 600;
   auto confirmbakH = 360;
   Global::confirmdraw = [confirmbakW, confirmbakH, i]() {
@@ -1540,7 +1581,7 @@ void HeroScrSys::showHeroBiosComfirm(bool leftClick, uint16_t i) {
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 40,
                             strPool[1415 + i]);
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     World::enterConfirm(confirmbakW, confirmbakH,

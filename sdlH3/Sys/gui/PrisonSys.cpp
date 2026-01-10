@@ -125,7 +125,7 @@ bool PrisonSys::run() {
   return true;
 }
 
-static bool clickPor(bool leftClick) {
+static bool clickPor(uint8_t clickType) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
@@ -133,10 +133,10 @@ static bool clickPor(bool leftClick) {
                        porPosition.w, porPosition.h};
   if (SDL_PointInRectFloat(&point, &posRect)) {
 
-    if (leftClick) {
+    if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
       auto &heroComp =
           World::registrys[World::level].get<HeroComp>(Global::goalEnt);
-      HeroScrSys::showHeroBiosComfirm(leftClick, heroComp.portrait);
+      HeroScrSys::showHeroBiosComfirm(clickType, heroComp.portrait);
     } else {
       World::enterHeroScrn(World::level, Global::goalEnt,
                            (uint8_t)Enum::SCNTYPE::POP);
@@ -150,7 +150,9 @@ bool PrisonSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   if (clickPor(true)) {
@@ -160,7 +162,9 @@ bool PrisonSys::leftMouseUp(float x, float y) {
 }
 
 bool PrisonSys::rightMouseDown(float x, float y) {
-  if (clickPor(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickPor(clickType)) {
     return false;
   }
   return true;

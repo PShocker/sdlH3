@@ -36,7 +36,7 @@ struct Enum {
     COMBAT,    // set of various cursors for combat
     DEFAULT,   // default arrow and hourglass cursors
     SPELL,     // animated cursor for spellcasting
-    FADE,       // animated cursor for spellcasting
+    FADE,      // animated cursor for spellcasting
     HIDE       // hide
   };
   enum class CRADVNTR : uint8_t {
@@ -107,6 +107,13 @@ struct Enum {
     MOD_HERO,
     MOD_DWE,
     MOD_BAT,
+  };
+
+  enum class CLICKTYPE : uint8_t {
+    L_UP,
+    L_DOWN,
+    R_UP,
+    R_DOWN,
   };
 
   enum class LANG : uint8_t {

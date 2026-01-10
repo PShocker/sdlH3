@@ -161,7 +161,7 @@ bool TavernSys::keyUp(uint16_t key) {
   return true;
 }
 
-static bool clickHero(bool leftClick) {
+static bool clickHero(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
                     (Global::viewPort.h - 504) / 2};
@@ -171,7 +171,7 @@ static bool clickHero(bool leftClick) {
     posRect.x += leftUp.x;
     posRect.y += leftUp.y;
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (leftClick) {
+      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
         Global::goalIndex = i;
       } else {
         auto heroEnt = Global::tavernHeros[Global::playerId][i];
@@ -187,17 +187,21 @@ bool TavernSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
                     (Global::viewPort.h - 504) / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
-  if (clickHero(true)) {
+  if (clickHero(clickType)) {
     return false;
   }
   return true;
 }
 
 bool TavernSys::rightMouseDown(float x, float y) {
-  if (clickHero(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickHero(clickType)) {
     return false;
   }
   return true;

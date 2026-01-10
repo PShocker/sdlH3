@@ -1,6 +1,7 @@
 #include "CartographerSys.h"
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
@@ -118,7 +119,9 @@ bool CartographerSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;

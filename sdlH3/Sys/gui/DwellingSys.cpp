@@ -340,7 +340,7 @@ static bool clickSlider() {
   return false;
 }
 
-static bool clickCre(bool leftClick) {
+static bool clickCre(uint8_t clickType) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
@@ -355,7 +355,7 @@ static bool clickCre(bool leftClick) {
     auto p = pos[i];
     posRect = {leftUp.x + p.x, leftUp.y + p.y, 100, 130};
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (leftClick) {
+      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
         if (Global::dweIndex == i) {
           auto cre = creatures[i];
           World::enterCreature(cre, (uint8_t)Enum::CRETYPE::MOD_DWE);
@@ -378,13 +378,15 @@ bool DwellingSys::leftMouseUp(float x, float y) {
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   SDL_FRect posRect;
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   if (clickSlider()) {
     return false;
   }
-  if (clickCre(true)) {
+  if (clickCre(clickType)) {
     return false;
   }
   return true;
@@ -395,8 +397,10 @@ bool DwellingSys::rightMouseDown(float x, float y) {
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   SDL_FRect posRect;
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
   // click creature
-  if (clickCre(false)) {
+  if (clickCre(clickType)) {
     return false;
   }
   return true;

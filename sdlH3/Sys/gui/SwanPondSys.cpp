@@ -1,6 +1,7 @@
 #include "SwanPondSys.h"
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 
 #include "H3mLoader/H3mObject.h"
@@ -92,16 +93,14 @@ bool SwanPondSys::run() {
   return true;
 }
 
-static bool clickLuk(bool leftClick) {
+static bool clickLuk(uint8_t clickType) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   SDL_FRect posRect{leftUp.x + lukPosition.x, leftUp.y + lukPosition.y,
                     lukPosition.w, lukPosition.h};
   if (SDL_PointInRectFloat(&point, &posRect)) {
-    if (!leftClick) {
-      HeroScrSys::showLukComfirm(leftClick);
-    }
+    HeroScrSys::showLukComfirm(clickType);
     return true;
   }
   return false;
@@ -111,14 +110,18 @@ bool SwanPondSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool SwanPondSys::rightMouseDown(float x, float y) {
-  if (clickLuk(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickLuk(clickType)) {
     return true;
   }
   return true;

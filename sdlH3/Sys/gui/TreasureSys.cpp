@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
 #include "Comp/HeroComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -125,7 +126,7 @@ bool TreasureSys::run() {
   return true;
 }
 
-static bool clickTre(bool leftClick) {
+static bool clickTre(uint8_t clickType) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
@@ -135,15 +136,15 @@ static bool clickTre(bool leftClick) {
     posRect.x += leftUp.x;
     posRect.y += leftUp.y;
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (leftClick) {
+      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
         Global::goalIndex = i;
       } else {
         if (i == 0) {
-          HeroScrSys::showResConfirm(leftClick, 0);
+          HeroScrSys::showResConfirm(clickType, 0);
         } else {
           auto &registry = World::registrys[World::level];
           auto &heroComp = registry.get<HeroComp>(Global::heroEnt);
-          HeroScrSys::showExpComfirm(leftClick, heroComp);
+          HeroScrSys::showExpComfirm(clickType, heroComp);
         }
       }
       return false;
@@ -156,17 +157,21 @@ bool TreasureSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
-  if (clickTre(true)) {
+  if (clickTre(clickType)) {
     return false;
   }
   return true;
 }
 
 bool TreasureSys::rightMouseDown(float x, float y) {
-  if (clickTre(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickTre(clickType)) {
     return false;
   }
   return true;

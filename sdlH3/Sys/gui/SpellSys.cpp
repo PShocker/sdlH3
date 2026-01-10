@@ -317,7 +317,7 @@ static bool clickBottomButton() {
   return false;
 }
 
-static bool clickSpell(bool leftClick) {
+static bool clickSpell(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 620) / 2,
                     (Global::viewPort.h - 595) / 2};
@@ -334,14 +334,14 @@ static bool clickSpell(bool leftClick) {
     auto skillLevel = SpellSys::heroSplLevel(&heroComp, spelVal).second;
     auto manaCost = SpellCfg::SpellCost[spelVal][skillLevel];
     if (SDL_PointInRectFloat(&point, &posRect) && heroComp.mana >= manaCost) {
-      if (leftClick) {
+      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
         SpellCfg::SpellFunc.at(spelVal)(
             std::pair<entt::entity, uint8_t>{Global::heroEnt, skillLevel});
         if (spelVal > 9) {
           heroComp.mana -= manaCost;
         }
       } else {
-        SpellSys::showSplComfirm(leftClick, spelVal, skillLevel);
+        SpellSys::showSplComfirm(clickType, spelVal, skillLevel);
       }
       return true;
     }
@@ -351,6 +351,8 @@ static bool clickSpell(bool leftClick) {
 }
 
 bool SpellSys::leftMouseUp(float x, float y) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
   if (clickTabs()) {
     return false;
   }
@@ -360,14 +362,16 @@ bool SpellSys::leftMouseUp(float x, float y) {
   if (clickBottomButton()) {
     return false;
   }
-  if (clickSpell(true)) {
+  if (clickSpell(clickType)) {
     return false;
   }
   return true;
 }
 
 bool SpellSys::rightMouseDown(float x, float y) {
-  if (clickSpell(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickSpell(clickType)) {
     return false;
   }
   return true;
@@ -387,7 +391,7 @@ bool SpellSys::keyUp(uint16_t key) {
   return true;
 }
 
-void SpellSys::showSplComfirm(bool leftClick, uint16_t id, uint16_t i) {
+void SpellSys::showSplComfirm(uint8_t clickType, uint16_t id, uint16_t i) {
   auto confirmbakW = 480;
   auto confirmbakH = 230;
   Global::confirmdraw = [confirmbakW, confirmbakH, id, i]() {
@@ -405,7 +409,7 @@ void SpellSys::showSplComfirm(bool leftClick, uint16_t id, uint16_t i) {
     str = strPool[2497 + id * 5 + i + 1];
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 40, str);
   };
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     Global::confirmOnlyOK = true;
     Global::confirmCallBack = std::nullopt;
     auto type = ((uint8_t)Enum::SCNTYPE::MOD);

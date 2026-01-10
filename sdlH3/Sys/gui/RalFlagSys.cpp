@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
 #include "Comp/RalFlagComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 
 #include "H3mLoader/H3mObject.h"
@@ -100,7 +101,7 @@ bool RalFlagSys::run() {
   return true;
 }
 
-static bool clickMor(bool leftClick) {
+static bool clickMor(uint8_t clickType) {
   if (!visited()) {
     SDL_FRect posRect;
     SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
@@ -109,9 +110,7 @@ static bool clickMor(bool leftClick) {
     posRect = {leftUp.x + morPosition.x, leftUp.y + morPosition.y,
                morPosition.w, morPosition.h};
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (!leftClick) {
-        HeroScrSys::showMorComfirm(leftClick);
-      }
+      HeroScrSys::showMorComfirm(clickType);
       return true;
     }
   }
@@ -122,14 +121,18 @@ bool RalFlagSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool RalFlagSys::rightMouseDown(float x, float y) {
-  if (clickMor(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickMor(clickType)) {
     return true;
   }
   return true;

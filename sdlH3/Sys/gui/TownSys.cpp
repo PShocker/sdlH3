@@ -444,9 +444,9 @@ static void heroSwap() {
   townComp->heroEnt[1] = h0;
 }
 
-static void clickCapitol(bool leftClick) { World::enterTownHall(); }
+static void clickCapitol(uint8_t clickType) { World::enterTownHall(); }
 
-static void clickBlackSmith(bool leftClick) {
+static void clickBlackSmith(uint8_t clickType) {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
@@ -474,12 +474,12 @@ static void clickBlackSmith(bool leftClick) {
   }
 }
 
-static void clickDwe(bool leftClick) {
+static void clickDwe(uint8_t clickType) {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto buildId = mouseBuildId.value();
-  if (leftClick) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
     entt::entity srcEnt;
     auto goalEnt = townComp->buildings[buildId];
     if (townComp->heroEnt[0].has_value()) {
@@ -492,18 +492,18 @@ static void clickDwe(bool leftClick) {
   }
 }
 
-static void clickMageGuild(bool leftClick) {}
+static void clickMageGuild(uint8_t clickType) {}
 
-static bool clickBuild(bool leftClick) {
+static bool clickBuild(uint8_t clickType) {
   if (mouseBuildId.has_value()) {
     // 说明点击到了建筑上
     switch (mouseBuildId.value()) {
     case (uint8_t)TownCfg::Building::CAPITOL: {
-      clickCapitol(leftClick);
+      clickCapitol(clickType);
       break;
     }
     case (uint8_t)TownCfg::Building::BLACKSMITH: {
-      clickBlackSmith(leftClick);
+      clickBlackSmith(clickType);
       break;
     }
     case (uint8_t)TownCfg::Building::DWELLING_LEVEL_1:
@@ -520,7 +520,7 @@ static bool clickBuild(bool leftClick) {
     case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_5:
     case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6:
     case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_7: {
-      clickDwe(leftClick);
+      clickDwe(clickType);
       break;
     }
     case (uint8_t)TownCfg::Building::MAGE_GUILD_1:
@@ -528,7 +528,7 @@ static bool clickBuild(bool leftClick) {
     case (uint8_t)TownCfg::Building::MAGE_GUILD_3:
     case (uint8_t)TownCfg::Building::MAGE_GUILD_4:
     case (uint8_t)TownCfg::Building::MAGE_GUILD_5: {
-      clickMageGuild(leftClick);
+      clickMageGuild(clickType);
       break;
     }
     default: {
@@ -540,7 +540,7 @@ static bool clickBuild(bool leftClick) {
   return false;
 }
 
-static bool clickHeroCres(bool leftClick) {
+static bool clickHeroCres(uint8_t clickType) {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
   SDL_FPoint point = {static_cast<float>(static_cast<int>(Window::mouseX)),
@@ -572,7 +572,7 @@ static bool clickHeroCres(bool leftClick) {
   auto *townComp = &registry.get<TownComp>(townEnt);
 
   // 右键点击处理
-  if (!leftClick) {
+  if (!(clickType == (uint8_t)Enum::CLICKTYPE::L_UP)) {
     if (townComp->heroEnt[i].has_value()) {
       auto heroEnt = townComp->heroEnt[i].value();
       if (m == 0) {
@@ -713,13 +713,15 @@ bool TownSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
-  if (clickBuild(true)) {
+  if (clickBuild(clickType)) {
     return false;
   }
-  if (clickHeroCres(true)) {
+  if (clickHeroCres(clickType)) {
     return false;
   }
 
@@ -740,7 +742,9 @@ bool TownSys::rightMouseDown(float x, float y) {
   if (Global::townScnType == (uint8_t)Enum::SCNTYPE::POP) {
     return false;
   }
-  if (clickHeroCres(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickHeroCres(clickType)) {
     return false;
   }
   return true;

@@ -1,6 +1,7 @@
 #include "MermaidSys.h"
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -37,10 +38,10 @@ static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
   Button b;
 
-  b.textures=Global::defCache["iOKAY.def/0"];
-  b.r={bakW / 2 - 32, bakH - 60, 64, 30};
-  b.func=receive;
-  b.disable=false;
+  b.textures = Global::defCache["iOKAY.def/0"];
+  b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+  b.func = receive;
+  b.disable = false;
   v.push_back(b);
 
   return v;
@@ -93,13 +94,15 @@ bool MermaidSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
-static bool clickLuk(bool leftClick) {
+static bool clickLuk(uint8_t clickType) {
   if (!visited()) {
     SDL_FRect posRect;
     SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
@@ -108,9 +111,7 @@ static bool clickLuk(bool leftClick) {
     posRect = {leftUp.x + lukPosition.x, leftUp.y + lukPosition.y,
                lukPosition.w, lukPosition.h};
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (!leftClick) {
-        HeroScrSys::showLukComfirm(leftClick);
-      }
+      HeroScrSys::showLukComfirm(clickType);
       return true;
     }
   }
@@ -118,7 +119,9 @@ static bool clickLuk(bool leftClick) {
 }
 
 bool MermaidSys::rightMouseDown(float x, float y) {
-  if (clickLuk(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickLuk(clickType)) {
     return true;
   }
   return true;

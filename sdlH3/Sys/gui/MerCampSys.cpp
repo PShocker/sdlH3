@@ -4,6 +4,7 @@
 #include "Comp/MarketComp.h"
 #include "Comp/MarlettoComp.h"
 #include "Comp/MerCampComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -109,7 +110,7 @@ bool MerCampSys::run() {
   return true;
 }
 
-static bool clickAtk(bool leftClick) {
+static bool clickAtk(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
@@ -117,9 +118,8 @@ static bool clickAtk(bool leftClick) {
   posRect = {leftUp.x + primPosition.x, leftUp.y + primPosition.y,
              primPosition.w, primPosition.h};
   if (SDL_PointInRectFloat(&point, &posRect)) {
-    if (!leftClick) {
-      HeroScrSys::showPrimComfirm(leftClick, 0);
-    }
+    HeroScrSys::showPrimComfirm(clickType, 0);
+
     return true;
   }
   return false;
@@ -129,14 +129,18 @@ bool MerCampSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool MerCampSys::rightMouseDown(float x, float y) {
-  if (clickAtk(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickAtk(clickType)) {
     return true;
   }
   return true;

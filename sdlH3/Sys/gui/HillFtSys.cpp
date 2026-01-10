@@ -18,15 +18,14 @@ static void upgrade() {}
 
 static void close() { World::exitScrn(); }
 
-static std::vector<Button>
-buttonInfo() {
+static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
   Button b;
 
-  b.textures=Global::defCache["iOKAY.def/0"];
-  b.r={294, 278, 64, 30};
-  b.func=close;
-  b.disable=false;
+  b.textures = Global::defCache["iOKAY.def/0"];
+  b.r = {294, 278, 64, 30};
+  b.func = close;
+  b.disable = false;
   v.push_back(b);
 
   return v;
@@ -101,7 +100,7 @@ bool HillFtSys::run() {
   return true;
 }
 
-static bool clickCre(bool leftClick) {
+static bool clickCre(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
                     (Global::viewPort.h - 348) / 2};
@@ -115,11 +114,14 @@ static bool clickCre(bool leftClick) {
     }
     posRect = {leftUp.x + 107 + i * 76, leftUp.y + 60, 58, 64};
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (!leftClick) {
-        World::enterCreature({World::level, Global::heroEnt},
-                             heroComp->creatures[i],
-                             (uint8_t)Enum::CRETYPE::POP_HERO);
+      auto creature = heroComp->creatures[i];
+      uint8_t creType;
+      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+        creType = (uint8_t)Enum::CRETYPE::MOD_HERO;
+      } else {
+        creType = (uint8_t)Enum::CRETYPE::POP_HERO;
       }
+      World::enterCreature({World::level, Global::heroEnt}, creature, creType);
       return true;
     }
   }
@@ -130,13 +132,17 @@ bool HillFtSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
                     (Global::viewPort.h - 348) / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool HillFtSys::rightMouseDown(float x, float y) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
   if (clickCre(false)) {
     return false;
   }

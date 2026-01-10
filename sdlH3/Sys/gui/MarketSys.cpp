@@ -593,9 +593,10 @@ bool MarketSys::keyUp(uint16_t key) {
 }
 bool MarketSys::rightMouseUp(float x, float y) { return true; }
 
-static bool clickFunc(bool leftClick) {
+static bool clickFunc(uint8_t clickType) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 601) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 593) / 2)};
+  bool leftClick = clickType == (uint8_t)Enum::CLICKTYPE::L_UP;
   switch ((Enum::MARKET)Global::makType) {
   case Enum::MARKET::RES_BUY: {
     if (auto c = ResourcesPanelSys::click(leftUp.x + 38, leftUp.y + 180);
@@ -603,7 +604,7 @@ static bool clickFunc(bool leftClick) {
       if (leftClick) {
         Global::makIndex[0] = c;
       } else {
-        HeroScrSys::showResConfirm(leftClick, c);
+        HeroScrSys::showResConfirm(clickType, c);
       }
       return true;
     }
@@ -612,7 +613,7 @@ static bool clickFunc(bool leftClick) {
       if (leftClick) {
         Global::makIndex[1] = c;
       } else {
-        HeroScrSys::showResConfirm(leftClick, c);
+        HeroScrSys::showResConfirm(clickType, c);
       }
       return true;
     }
@@ -627,7 +628,7 @@ static bool clickFunc(bool leftClick) {
       if (leftClick) {
         Global::makIndex[0] = c;
       } else {
-        HeroScrSys::showResConfirm(leftClick, c);
+        HeroScrSys::showResConfirm(clickType, c);
       }
       return true;
     }
@@ -647,7 +648,7 @@ static bool clickFunc(bool leftClick) {
       if (leftClick) {
         Global::makIndex[0] = c;
       } else {
-        HeroScrSys::showResConfirm(leftClick, c);
+        HeroScrSys::showResConfirm(clickType, c);
       }
       return true;
     }
@@ -717,18 +718,22 @@ static bool clickFunc(bool leftClick) {
 bool MarketSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 601) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 593) / 2)};
-  if (clickFunc(true)) {
+
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+  auto v = buttonInfo();
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
-  auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  if (clickFunc(clickType)) {
     return false;
   }
   return true;
 }
 
 bool MarketSys::rightMouseDown(float x, float y) {
-  if (clickFunc(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickFunc(clickType)) {
     return true;
   }
   return true;

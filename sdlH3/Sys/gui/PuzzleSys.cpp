@@ -1,6 +1,7 @@
 #include "PuzzleSys.h"
 #include "AdvMapSys.h"
 #include "Cfg/PuzzleCfg.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 
 #include "SDL3/SDL_render.h"
@@ -101,7 +102,9 @@ bool PuzzleSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - 800 / 2,
                     Global::viewPort.h / 2 - 600 / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;

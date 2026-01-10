@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "Comp/HeroComp.h"
 #include "Comp/UniversComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -186,7 +187,7 @@ bool UniversitySys::run() {
   return true;
 }
 
-static bool clickSec(bool leftClick) {
+static bool clickSec(uint8_t clickType) {
   SDL_FPoint leftUp{(Global::viewPort.w - 465) / 2,
                     (Global::viewPort.h - 388) / 2};
   SDL_FRect posRect;
@@ -203,7 +204,7 @@ static bool clickSec(bool leftClick) {
     posRect.x += leftUp.x;
     posRect.y += leftUp.y;
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      if (leftClick) {
+      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
         int8_t canStudy = 1;
         if (heroSecMap.contains(universComp.secSkills[i].first)) {
           canStudy = 0;
@@ -217,8 +218,9 @@ static bool clickSec(bool leftClick) {
           Global::goalIndex = i;
         }
       } else {
-        HeroScrSys::showSecSkiComfirm(leftClick, universComp.secSkills[i].first,
-                                      universComp.secSkills[i].second);
+        auto id = universComp.secSkills[i].first;
+        auto lvl = universComp.secSkills[i].second;
+        HeroScrSys::showSecSkiComfirm(clickType, id, lvl);
       }
       return true;
     }
@@ -231,10 +233,12 @@ bool UniversitySys::leftMouseUp(float x, float y) {
                     (Global::viewPort.h - 388) / 2};
   SDL_FPoint point = {(float)(int)x, (float)(int)y};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
-  if (clickSec(true)) {
+  if (clickSec(clickType)) {
     return false;
   }
 
@@ -242,7 +246,9 @@ bool UniversitySys::leftMouseUp(float x, float y) {
 }
 
 bool UniversitySys::rightMouseDown(float x, float y) {
-  if (clickSec(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickSec(clickType)) {
     return false;
   }
   return true;

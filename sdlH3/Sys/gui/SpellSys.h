@@ -10,5 +10,5 @@ struct SpellSys {
 
   static std::pair<uint8_t, uint8_t> heroSplLevel(HeroComp *heroComp,
                                                   uint8_t spellId);
-  static void showSplComfirm(bool leftClick, uint16_t id, uint16_t i);
+  static void showSplComfirm(uint8_t clickType, uint16_t id, uint16_t i);
 };

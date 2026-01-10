@@ -1,6 +1,7 @@
 #include "ViewWorldSys.h"
 // VWorld.pcx
 #include "AdvMapSys.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_rect.h"
@@ -75,7 +76,9 @@ bool ViewWorldSys::run() {
 bool ViewWorldSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w - 190, Global::viewPort.h - 381};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;

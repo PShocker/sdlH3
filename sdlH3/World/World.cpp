@@ -117,6 +117,7 @@ void World::enterAdvScrn() {
   LMouseUpSys.push_back(AdvMapSys::leftMouseUp);
   LMouseUpSys.push_back(CursorSys::leftMouseUp);
 
+  LMouseDownSys.push_back(AdvMapSys::leftMouseDown);
   LMouseDownSys.push_back(CursorSys::leftMouseDown);
 
   RMouseDownSys.push_back(CursorSys::rightMouseDown);

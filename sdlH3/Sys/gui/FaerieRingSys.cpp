@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
 #include "Comp/FaerieRingComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
@@ -107,7 +108,7 @@ bool FaerieRingSys::run() {
   return true;
 }
 
-static bool clickLuk(bool leftClick) {
+static bool clickLuk(uint8_t clickType) {
   if (!visited()) {
     SDL_FRect posRect;
     SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
@@ -116,7 +117,7 @@ static bool clickLuk(bool leftClick) {
     posRect = {leftUp.x + lukPosition.x, leftUp.y + lukPosition.y,
                lukPosition.w, lukPosition.h};
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      HeroScrSys::showLukComfirm(leftClick);
+      HeroScrSys::showLukComfirm(clickType);
       return true;
     }
   }
@@ -127,14 +128,18 @@ bool FaerieRingSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool FaerieRingSys::rightMouseDown(float x, float y) {
-  if (clickLuk(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickLuk(clickType)) {
     return false;
   }
   return true;

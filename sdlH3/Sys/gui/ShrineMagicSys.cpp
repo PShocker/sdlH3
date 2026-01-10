@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
 #include "Comp/ShrineMagicComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "Lang/Lang.h"
@@ -123,7 +124,7 @@ bool ShrineMagicSys::run() {
   return true;
 }
 
-static bool clickSpl(bool leftClick) {
+static bool clickSpl(uint8_t clickType) {
   if (!visited()) {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                       Global::viewPort.h / 2 - bakH / 2};
@@ -133,7 +134,7 @@ static bool clickSpl(bool leftClick) {
     if (SDL_PointInRectFloat(&point, &posRect)) {
       auto &sComp =
           World::registrys[World::level].get<ShrineMagicComp>(Global::goalEnt);
-      SpellSys::showSplComfirm(leftClick, sComp.spellId, 0);
+      SpellSys::showSplComfirm(clickType, sComp.spellId, 0);
       return true;
     }
   }
@@ -144,17 +145,21 @@ bool ShrineMagicSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
-  if (clickSpl(true)) {
+  if (clickSpl(clickType)) {
     return true;
   }
   return true;
 }
 
 bool ShrineMagicSys::rightMouseDown(float x, float y) {
-  if (clickSpl(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickSpl(clickType)) {
     return true;
   }
   return true;

@@ -3,6 +3,7 @@
 #include "AdvPopSys.h"
 #include "Comp/HeroComp.h"
 #include "Comp/ScholarComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "Lang/Lang.h"
@@ -168,7 +169,7 @@ bool ScholarSys::run() {
   return true;
 }
 
-static bool clickBonuse(bool leftClick) {
+static bool clickBonuse(uint8_t clickType) {
   SDL_FRect pRect;
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
@@ -188,8 +189,7 @@ static bool clickBonuse(bool leftClick) {
   }
   posRect = {leftUp.x + pRect.x, leftUp.y + pRect.y, pRect.w, pRect.h};
   if (SDL_PointInRectFloat(&point, &posRect)) {
-    if (!leftClick) {
-    }
+
     return true;
   }
   return false;
@@ -199,14 +199,18 @@ bool ScholarSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
 bool ScholarSys::rightMouseDown(float x, float y) {
-  if (clickBonuse(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickBonuse(clickType)) {
     return true;
   }
   return true;

@@ -1,6 +1,7 @@
 #include "TownPortalSys.h"
 #include "AdvMapSys.h"
 #include "Comp/TownComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "SDL3/SDL_rect.h"
 #include "Window/Window.h"
@@ -91,7 +92,9 @@ bool TownPortalSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;

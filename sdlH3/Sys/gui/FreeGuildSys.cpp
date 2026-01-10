@@ -3,6 +3,7 @@
 #include "Cfg/CreatureCfg.h"
 #include "Comp/HeroComp.h"
 #include "Comp/PlayerIdComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_render.h"
@@ -82,7 +83,9 @@ bool FreeGuildSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
                     (Global::viewPort.h - 348) / 2};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;

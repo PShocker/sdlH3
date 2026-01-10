@@ -130,7 +130,9 @@ bool ShipyardSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 329) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 388) / 2)};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;

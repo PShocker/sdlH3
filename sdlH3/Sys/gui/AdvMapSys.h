@@ -24,12 +24,13 @@ struct AdvMapSys {
   static void townFocus(entt::entity townEnt, uint8_t level);
   static bool run();
   static bool leftMouseUp(float x, float y);
+  static bool leftMouseDown(float x, float y);
   static bool rightMouseDown(float x, float y);
   static bool keyUp(uint16_t key);
   static bool keyDown(uint16_t key);
   static void drawButtons(float x, float y, bool press, std::vector<Button> &v);
   static bool clickButtons(float x, float y, std::vector<Button> &v,
-                           bool leftClick);
+                           uint8_t clickType);
   static bool drawButtonsText(float x, float y, float pX, float pY,
                               std::vector<Button> &v);
 };

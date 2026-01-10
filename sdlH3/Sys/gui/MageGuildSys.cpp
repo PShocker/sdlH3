@@ -3,6 +3,7 @@
 #include "Cfg/TownCfg.h"
 #include "Comp/MageGuildComp.h"
 #include "Comp/TownComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "Lang/Lang.h"
@@ -104,13 +105,15 @@ bool MageGuildSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 800) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 600) / 2)};
   auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
+
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
   return true;
 }
 
-static bool clickSpells(bool leftClick) {
+static bool clickSpells(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 800) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 600) / 2)};
@@ -128,7 +131,7 @@ static bool clickSpells(bool leftClick) {
         posRect = {leftUp.x + spellPositions[m][i].x,
                    leftUp.y + spellPositions[m][i].y, 83, 61};
         if (SDL_PointInRectFloat(&point, &posRect)) {
-          SpellSys::showSplComfirm(leftClick, mComp->spells[i], 0);
+          SpellSys::showSplComfirm(clickType, mComp->spells[i], 0);
         }
       }
     }
@@ -137,7 +140,9 @@ static bool clickSpells(bool leftClick) {
 }
 
 bool MageGuildSys::rightMouseDown(float x, float y) {
-  if (clickSpells(false)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
+
+  if (clickSpells(clickType)) {
     return false;
   }
   return true;
