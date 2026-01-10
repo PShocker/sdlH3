@@ -78,6 +78,7 @@
 #include "Sys/gui/WarTombSys.h"
 #include "Sys/gui/WaterHoleSys.h"
 #include "Sys/gui/WaterWheelSys.h"
+#include "Sys/gui/WhirlPoolSys.h"
 #include "Sys/gui/WindMillSys.h"
 #include "Sys/gui/WitchHutSys.h"
 #include "Window/Window.h"
@@ -1042,6 +1043,22 @@ void World::enterHutMag(entt::entity heroEnt, entt::entity goalEnt) {
   Global::goalEnt = goalEnt;
 
   Global::hutMagIndex = -1;
+
+  Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+}
+
+void World::enterWhirlPool(entt::entity heroEnt, entt::entity goalEnt) {
+  enterScrn();
+  iterateSystems.pop_back();
+
+  iterateSystems.push_back(WhirlPoolSys::run);
+  iterateSystems.push_back(CursorSys::run);
+
+  LMouseUpSys.push_back(WhirlPoolSys::leftMouseUp);
+  keyUpSys.push_back(WhirlPoolSys::keyUp);
+
+  Global::heroEnt = heroEnt;
+  Global::goalEnt = goalEnt;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }

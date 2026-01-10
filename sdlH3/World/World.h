@@ -98,6 +98,7 @@ struct World {
   static void enterMerCamp(entt::entity heroEnt, entt::entity goalEnt);
   static void enterLibrary(entt::entity heroEnt, entt::entity goalEnt);
   static void enterHutMag(entt::entity heroEnt, entt::entity goalEnt);
+  static void enterWhirlPool(entt::entity heroEnt, entt::entity goalEnt);
   static void enterSirens(entt::entity heroEnt, entt::entity goalEnt);
   static void enterHillFt(entt::entity heroEnt, entt::entity goalEnt);
   static void enterFouYouth(entt::entity heroEnt, entt::entity goalEnt);

@@ -647,40 +647,6 @@ static void handleRedOb(entt::entity heroEnt, entt::entity goalEnt) {
   Global::advStats.clear();
 }
 
-static void handleWhirlpool(entt::entity heroEnt, entt::entity goalEnt) {
-
-  // Global::confirmOnlyOK = true;
-  // Global::confirmCallBack = std::nullopt;
-  // World::enterConfirm(confirmbakW, confirmbakH,
-  // ((uint8_t)Enum::SCNTYPE::MOD));
-
-  auto &registry = World::registrys[World::level];
-  auto &wComp = registry.get<WhirlpoolComp>(goalEnt);
-  if (wComp.goalEnt.empty()) {
-    return;
-  }
-  auto goalMono = wComp.goalEnt[std::rand() % wComp.goalEnt.size()];
-
-  World::iterateSystemsBak.push_back(World::iterateSystems);
-  World::iterateSystems.pop_back();
-
-  registry.get<HeroComp>(heroEnt).curEnt = goalMono;
-
-  auto goalX = registry.get<WhirlpoolComp>(goalMono).x;
-  auto goalY = registry.get<WhirlpoolComp>(goalMono).y;
-
-  World::iterateSystems.push_back([heroEnt, goalX, goalY]() {
-    HeroSys::heroTelePort(heroEnt, goalX, goalY);
-    CameraSys::focus(goalX * 32 + 16, goalY * 32 + 16);
-    Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
-    CursorSys::clearHeroPath();
-    return true;
-  });
-  Global::fadeRect = {0, 0, Global::viewPort.w - 199, Global::viewPort.h - 47};
-  World::iterateSystems.push_back(World::enterFadeScrn);
-  visitAudio((uint8_t)ObjectType::WHIRLPOOL);
-}
-
 static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
                              ObjectComp &objectComp) {
   auto &registry = World::registrys[World::level];
@@ -839,7 +805,9 @@ static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
   case ObjectType::CRYPT:
     break;
   case ObjectType::WHIRLPOOL:
-    handleWhirlpool(heroEnt, goalEnt);
+    World::enterWhirlPool(heroEnt, goalEnt);
+    visitAudio((uint8_t)ObjectType::WHIRLPOOL);
+    registry.get<HeroComp>(heroEnt).curEnt = goalEnt;
     break;
   case ObjectType::ARENA:
     World::enterArena(heroEnt, goalEnt);
