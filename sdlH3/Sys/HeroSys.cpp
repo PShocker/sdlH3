@@ -45,6 +45,26 @@
 #include <unordered_map>
 #include <vector>
 
+static void ambientAudio(uint8_t id) {}
+
+static void visitAudio(uint8_t id) {
+  auto &rAudio = AudioCfg::objectAudio.at(id)[AudioCfg::VISIT];
+  int randomIndex = std::rand() % rAudio.size();
+  auto audioStr = rAudio[randomIndex];
+  if (!Global::audioData.contains(audioStr)) {
+    Global::audioData[audioStr] = 0;
+  }
+}
+
+static void removeAudio(uint8_t id) {
+  auto &rAudio = AudioCfg::objectAudio.at(id)[AudioCfg::REMOVAL];
+  int randomIndex = std::rand() % rAudio.size();
+  auto audioStr = rAudio[randomIndex];
+  if (!Global::audioData.contains(audioStr)) {
+    Global::audioData[audioStr] = 0;
+  }
+}
+
 static bool checkAccessibility(ObjectType type, int heroX, int heroY,
                                int accessX, int accessY) {
   const bool isAccessibleType =
@@ -153,6 +173,7 @@ static void handleLand(entt::entity heroEnt, entt::entity goalEnt,
   Global::fadeRect = {0, 0, Global::viewPort.w - 199, Global::viewPort.h - 47};
   World::iterateSystems.push_back(World::enterFadeScrn);
   registry.erase<ObjectComp>(goalEnt);
+  removeAudio(0);
 }
 
 static void handleGate(entt::entity heroEnt, entt::entity goalEnt) {
@@ -208,9 +229,7 @@ static void handleGate(entt::entity heroEnt, entt::entity goalEnt) {
     Global::fadeRect = {0, 0, Global::viewPort.w - 199,
                         Global::viewPort.h - 47};
     World::iterateSystems.push_back(World::enterFadeScrn);
-    if (!Global::audioData.contains("CAVEHEAD.wav")) {
-      Global::audioData["CAVEHEAD.wav"] = 0;
-    }
+    visitAudio((uint8_t)ObjectType::SUBTERRANEAN_GATE);
   }
 }
 
@@ -274,11 +293,7 @@ static void handleResource(entt::entity goalEnt) {
 
         return true;
       };
-  auto &rAudio = AudioCfg::objectAudio.at(
-      (uint8_t)ObjectType::RESOURCE)[AudioCfg::REMOVAL];
-  int randomIndex = std::rand() % rAudio.size();
-  auto audioStr = rAudio[randomIndex];
-  Global::audioData[audioStr] = 0;
+  removeAudio((uint8_t)ObjectType::RESOURCE);
 }
 
 static void handleSeaChest(entt::entity heroEnt, entt::entity goalEnt) {
@@ -501,6 +516,7 @@ static void handleBoat(entt::entity heroEnt, entt::entity goalEnt) {
   });
   Global::fadeRect = {0, 0, Global::viewPort.w - 199, Global::viewPort.h - 47};
   World::iterateSystems.push_back(World::enterFadeScrn);
+  removeAudio(0);
 }
 
 static void handleMonster(entt::entity goalEnt) {
@@ -632,6 +648,12 @@ static void handleRedOb(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 static void handleWhirlpool(entt::entity heroEnt, entt::entity goalEnt) {
+
+  // Global::confirmOnlyOK = true;
+  // Global::confirmCallBack = std::nullopt;
+  // World::enterConfirm(confirmbakW, confirmbakH,
+  // ((uint8_t)Enum::SCNTYPE::MOD));
+
   auto &registry = World::registrys[World::level];
   auto &wComp = registry.get<WhirlpoolComp>(goalEnt);
   if (wComp.goalEnt.empty()) {
@@ -656,6 +678,7 @@ static void handleWhirlpool(entt::entity heroEnt, entt::entity goalEnt) {
   });
   Global::fadeRect = {0, 0, Global::viewPort.w - 199, Global::viewPort.h - 47};
   World::iterateSystems.push_back(World::enterFadeScrn);
+  visitAudio((uint8_t)ObjectType::WHIRLPOOL);
 }
 
 static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
@@ -766,6 +789,7 @@ static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
   case ObjectType::PRISON:
     World::enterPrison(heroEnt, goalEnt);
     registry.get<HeroComp>(heroEnt).curEnt = goalEnt;
+    visitAudio((uint8_t)ObjectType::PRISON);
     break;
   case ObjectType::WITCH_HUT:
     World::enterWitchHut(heroEnt, goalEnt);
@@ -815,7 +839,7 @@ static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
   case ObjectType::CRYPT:
     break;
   case ObjectType::WHIRLPOOL:
-    handleMono(heroEnt, goalEnt);
+    handleWhirlpool(heroEnt, goalEnt);
     break;
   case ObjectType::ARENA:
     World::enterArena(heroEnt, goalEnt);
@@ -913,13 +937,21 @@ static bool heroGoal(entt::entity heroEnt) {
   // 4. 计算位置
   const int heroCenterX = heroPos.point.x + 32;
   const int heroCenterY = heroPos.point.y + 32;
-  const int accessX = objectComp.x * 32 + objectComp.accessTiles[0].first * 32;
-  const int accessY = objectComp.y * 32 + objectComp.accessTiles[0].second * 32;
-  // 5. 检查可访问性
-  if (!checkAccessibility(static_cast<ObjectType>(objectComp.type), heroCenterX,
-                          heroCenterY, accessX, accessY)) {
+  bool access = false;
+  for (auto &pair : objectComp.accessTiles) {
+    const int accessX = objectComp.x * 32 + pair.first * 32;
+    const int accessY = objectComp.y * 32 + pair.second * 32;
+    // 5. 检查可访问性
+    if (checkAccessibility(static_cast<ObjectType>(objectComp.type),
+                           heroCenterX, heroCenterY, accessX, accessY)) {
+      access = true;
+      break;
+    }
+  }
+  if (!access) {
     return true;
   }
+
   // 6. 清理路径实体
   clearPathEntities(registry, heroComp);
   // 7. 根据不同类型处理目标

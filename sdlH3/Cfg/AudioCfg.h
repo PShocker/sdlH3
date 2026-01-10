@@ -30,6 +30,13 @@ struct AudioCfg {
   const static inline std::unordered_map<
       uint8_t, std::array<std::vector<std::string>, 3>>
       objectAudio = {
+          // land
+          {0,
+           {
+               std::vector<std::string>{},              // ambient
+               std::vector<std::string>{},              // visit
+               std::vector<std::string>{"killfade.wav"} // removal
+           }},
           // prison
           {62,
            {
