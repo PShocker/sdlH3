@@ -155,7 +155,7 @@ bool PrisonSys::leftMouseUp(float x, float y) {
   if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
-  if (clickPor(true)) {
+  if (clickPor(clickType)) {
     return false;
   }
   return true;

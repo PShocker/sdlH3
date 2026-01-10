@@ -1,4 +1,5 @@
 #include "HeroSys.h"
+#include "Cfg/AudioCfg.h"
 #include "Cfg/HeroCfg.h"
 #include "Cfg/TerrainCfg.h"
 #include "Comp/BoatComp.h"
@@ -207,6 +208,9 @@ static void handleGate(entt::entity heroEnt, entt::entity goalEnt) {
     Global::fadeRect = {0, 0, Global::viewPort.w - 199,
                         Global::viewPort.h - 47};
     World::iterateSystems.push_back(World::enterFadeScrn);
+    if (!Global::audioData.contains("CAVEHEAD.wav")) {
+      Global::audioData["CAVEHEAD.wav"] = 0;
+    }
   }
 }
 
@@ -270,6 +274,11 @@ static void handleResource(entt::entity goalEnt) {
 
         return true;
       };
+  auto &rAudio = AudioCfg::objectAudio.at(
+      (uint8_t)ObjectType::RESOURCE)[AudioCfg::REMOVAL];
+  int randomIndex = std::rand() % rAudio.size();
+  auto audioStr = rAudio[randomIndex];
+  Global::audioData[audioStr] = 0;
 }
 
 static void handleSeaChest(entt::entity heroEnt, entt::entity goalEnt) {
@@ -1083,6 +1092,17 @@ void HeroSys::heroTelePort(entt::entity heroEnt, uint8_t x, uint8_t y) {
   flagPositionComp->z = registry.get<PositionComp>(heroEnt).z;
   World::needSort = true;
 }
+
+static void heroAudio() {
+  if (Global::heroMove) {
+    if (!Global::audioData.contains("horse00.wav")) {
+      Global::audioData["horse00.wav"] = 0;
+    }
+  } else {
+    Global::audioData.erase("horse00.wav");
+  }
+}
+
 bool HeroSys::run() {
   bool r = true;
   Global::heroMove = false;
@@ -1105,6 +1125,7 @@ bool HeroSys::run() {
       Global::heroMove = true;
       heroDirect(heroEnt, false);
       if (!heroGoal(heroEnt)) {
+        Global::heroMove = false;
         r = false;
       }
       if (heroComp->pathEnts.empty()) {
@@ -1122,6 +1143,7 @@ bool HeroSys::run() {
                        heroPositionComp->point.y + 48);
       World::needSort = true;
     }
+    heroAudio();
   }
   return r;
 }

@@ -11,10 +11,6 @@ struct TownCfg {
   const static inline std::vector<std::vector<std::string>> creatureBackground =
       {{"TPCASCAS.pcx", "CRBKGCAS.pcx"}};
 
-  const static inline std::vector<std::string> musicThemeStr = {
-      "CstleTown", "Rampart", "TowerTown",  "InfernoTown",
-      "NecroTown", "Dungeon", "Stronghold", "FortressTown"};
-
   const static inline std::string tavernVideoStr = "TAVERN.BIK";
 
   const static inline std::vector<std::string> guildWindowStr = {

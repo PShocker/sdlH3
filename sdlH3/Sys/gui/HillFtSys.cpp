@@ -143,7 +143,7 @@ bool HillFtSys::leftMouseUp(float x, float y) {
 bool HillFtSys::rightMouseDown(float x, float y) {
   auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
 
-  if (clickCre(false)) {
+  if (clickCre(clickType)) {
     return false;
   }
   return true;

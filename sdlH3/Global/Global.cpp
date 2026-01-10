@@ -543,8 +543,10 @@ void loadDef() {
 }
 
 void loadAudio() {
-  const std::vector<std::string> filePaths = {"AITheme0.wav", "horse00.wav",
-                                              "button.wav"};
+  const std::vector<std::string> filePaths = {
+      "AITheme0.wav", "horse00.wav",  "button.wav",   "CAVEHEAD.wav",
+      "PICKUP01.wav", "PICKUP02.wav", "PICKUP03.wav", "PICKUP04.wav",
+      "PICKUP05.wav", "PICKUP06.wav", "PICKUP07.wav"};
   for (auto filePath : filePaths) {
     SDL_AudioSpec spec;
     uint8_t *wav_data = NULL;

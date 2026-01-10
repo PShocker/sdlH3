@@ -415,7 +415,8 @@ static bool clickHeroLargePor(uint8_t clickType) {
 
 bool HeroScrSys::leftMouseDown(float x, float y) {
   if (Global::heroScnType == (uint8_t)Enum::SCNTYPE::MOD) {
-    if (clickEquip(true)) {
+    auto clickType = (uint8_t)Enum::CLICKTYPE::L_DOWN;
+    if (clickEquip(clickType)) {
       return false;
     }
   }

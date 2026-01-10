@@ -488,7 +488,8 @@ static bool clickCre(uint8_t clickType) {
 }
 
 bool HeroTradeSys::leftMouseDown(float x, float y) {
-  if (clickEquip(true)) {
+  auto clickType = (uint8_t)Enum::CLICKTYPE::L_DOWN;
+  if (clickEquip(clickType)) {
     return false;
   }
   return true;

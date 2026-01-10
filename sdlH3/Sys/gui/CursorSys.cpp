@@ -944,7 +944,7 @@ void CursorSys::clearHeroPath() {
         }
       }
     }
-  } else if (heroComp->move == false) {
+  } else if (heroComp->move == false && !Global::heroMove) {
     for (auto pathEnt : heroComp->pathEnts) {
       registry.destroy(pathEnt);
     }

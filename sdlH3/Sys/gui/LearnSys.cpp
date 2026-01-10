@@ -164,7 +164,7 @@ bool LearnSys::leftMouseUp(float x, float y) {
   if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
-  if (clickSpell(true)) {
+  if (clickSpell(clickType)) {
     return false;
   }
   return true;
