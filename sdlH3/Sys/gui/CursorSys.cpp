@@ -36,6 +36,122 @@
 
 const int windowEdge = 30;
 
+static void drawMouseRect() {
+  if (Window::mouseX > Global::viewPort.w - 199 ||
+      Window::mouseY > Global::viewPort.h - 47) {
+    return;
+  }
+  if (Global::cursorType == (uint8_t)Enum::CURSOR::ADVENTURE) {
+    if (!Global::heroMove) {
+      SDL_FPoint point = {Global::viewPort.x + Window::mouseX,
+                          Global::viewPort.y + Window::mouseY};
+      auto [x, y] = CursorSys::goalPoint(point);
+      auto vX = x * 32 - Global::viewPort.x;
+      auto vY = y * 32 - Global::viewPort.y;
+      SDL_FRect posRect{(float)vX, vY, 32, 32};
+      SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 200); //
+      SDL_SetRenderDrawBlendMode(Window::renderer, SDL_BLENDMODE_BLEND);
+
+      SDL_RenderRect(Window::renderer, &posRect);
+    }
+  }
+}
+
+static uint8_t spell(uint8_t index) {
+  if (!(Window::mouseX + Global::viewPort.x < 0 ||
+        Window::mouseY + Global::viewPort.y < 0 ||
+        Window::mouseX + Global::viewPort.x >= Global::mapSize * 32 ||
+        Window::mouseY + Global::viewPort.y >= Global::mapSize * 32)) {
+    index = Global::cursorIndex;
+    auto &registry = World::registrys[World::level];
+    auto heroPair =
+        Global::heros[Global::playerId][Global::herosIndex[Global::playerId]];
+    auto heroEnt = heroPair.second;
+    auto positionComp = &registry.get<PositionComp>(heroEnt);
+    uint8_t heroX = (positionComp->point.x / 32.0) + 1;
+    uint8_t heroY = (positionComp->point.y / 32.0) + 1;
+    SDL_FPoint point = {Global::viewPort.x + Window::mouseX,
+                        Global::viewPort.y + Window::mouseY};
+    auto p = CursorSys::goalPoint(point);
+    uint8_t goalX = p.x;
+    uint8_t goalY = p.y;
+    switch ((Enum::CRADVNTR)Global::cursorIndex) {
+    case Enum::CRADVNTR::T1_SAIL: {
+      SDL_FRect posRect = {positionComp->point.x + 32 - 1 * 32,
+                           positionComp->point.y + 32 - 1 * 32, 96, 96};
+      if (!SDL_PointInRectFloat(&point, &posRect)) {
+        index = (uint8_t)Enum::CRADVNTR::POINTER;
+        break;
+      }
+      goalX = std::clamp(goalX, (uint8_t)(heroX - 1), (uint8_t)(heroX + 1));
+      goalY = std::clamp(goalY, (uint8_t)(heroY - 1), (uint8_t)(heroY + 1));
+      auto [_, ent] = CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
+                                        goalY * 32 - Global::viewPort.y);
+      if (ent != entt::null) {
+        index = (uint8_t)Enum::CRADVNTR::POINTER;
+        break;
+      }
+      auto goalPoint = goalX + goalY * Global::mapSize;
+      if (!Global::waterBlock[World::level].contains(goalPoint)) {
+        index = (uint8_t)Enum::CRADVNTR::POINTER;
+        break;
+      }
+      break;
+    }
+    case Enum::CRADVNTR::SCUTTLE_BOAT: {
+      SDL_FRect posRect = {positionComp->point.x + 32 - 1 * 32,
+                           positionComp->point.y + 32 - 1 * 32, 96, 96};
+      if (!SDL_PointInRectFloat(&point, &posRect)) {
+        index = (uint8_t)Enum::CRADVNTR::POINTER;
+        break;
+      }
+      goalX = std::clamp(goalX, (uint8_t)(heroX - 1), (uint8_t)(heroX + 1));
+      goalY = std::clamp(goalY, (uint8_t)(heroY - 1), (uint8_t)(heroY + 1));
+      auto [_, ent] = CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
+                                        goalY * 32 - Global::viewPort.y);
+      if (!registry.all_of<BoatComp>(ent)) {
+        index = (uint8_t)Enum::CRADVNTR::POINTER;
+        break;
+      }
+      break;
+    }
+    case Enum::CRADVNTR::TELEPORT: {
+      SDL_FRect posRect = {positionComp->point.x + 32 - 7 * 32,
+                           positionComp->point.y + 32 - 7 * 32, 15 * 32,
+                           15 * 32};
+      if (!SDL_PointInRectFloat(&point, &posRect)) {
+        index = (uint8_t)Enum::CRADVNTR::POINTER;
+        break;
+      }
+      uint8_t minX = std::max((int16_t)heroX - 7, 0);
+      uint8_t maxX = std::min((int16_t)heroX + 7, Global::mapSize);
+
+      uint8_t minY = std::max((int16_t)heroY - 7, 0);
+      uint8_t maxY = std::min((int16_t)heroY + 7, Global::mapSize);
+
+      goalX = std::clamp(goalX, minX, maxX);
+      goalY = std::clamp(goalY, minY, maxY);
+      auto goalPoint = goalX + goalY * Global::mapSize;
+      auto [_, ent] = CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
+                                        goalY * 32 - Global::viewPort.y);
+      if (ent != entt::null) {
+        index = (uint8_t)Enum::CRADVNTR::POINTER;
+        break;
+      }
+      if (Global::rockBlock[World::level].contains(goalPoint) ||
+          Global::waterBlock[World::level].contains(goalPoint)) {
+        index = (uint8_t)Enum::CRADVNTR::POINTER;
+        break;
+      }
+      break;
+    }
+    default:
+      break;
+    }
+  }
+  return index;
+}
+
 static bool cursorScrollUp() { return Window::mouseY <= windowEdge; }
 
 static bool cursorScrollDown() {
@@ -633,102 +749,9 @@ bool CursorSys::run() {
     break;
   }
   case Enum::CURSOR::SPELL: {
-    if (!(Window::mouseX + Global::viewPort.x < 0 ||
-          Window::mouseY + Global::viewPort.y < 0 ||
-          Window::mouseX + Global::viewPort.x >= Global::mapSize * 32 ||
-          Window::mouseY + Global::viewPort.y >= Global::mapSize * 32)) {
-      index = Global::cursorIndex;
-      auto &registry = World::registrys[World::level];
-      auto heroPair =
-          Global::heros[Global::playerId][Global::herosIndex[Global::playerId]];
-      auto heroEnt = heroPair.second;
-      auto positionComp = &registry.get<PositionComp>(heroEnt);
-      uint8_t heroX = (positionComp->point.x / 32.0) + 1;
-      uint8_t heroY = (positionComp->point.y / 32.0) + 1;
-      SDL_FPoint point = {Global::viewPort.x + Window::mouseX,
-                          Global::viewPort.y + Window::mouseY};
-      auto p = CursorSys::goalPoint(point);
-      uint8_t goalX = p.x;
-      uint8_t goalY = p.y;
-      switch ((Enum::CRADVNTR)Global::cursorIndex) {
-      case Enum::CRADVNTR::T1_SAIL: {
-        SDL_FRect posRect = {positionComp->point.x + 32 - 1 * 32,
-                             positionComp->point.y + 32 - 1 * 32, 96, 96};
-        if (!SDL_PointInRectFloat(&point, &posRect)) {
-          index = (uint8_t)Enum::CRADVNTR::POINTER;
-          break;
-        }
-        goalX = std::clamp(goalX, (uint8_t)(heroX - 1), (uint8_t)(heroX + 1));
-        goalY = std::clamp(goalY, (uint8_t)(heroY - 1), (uint8_t)(heroY + 1));
-        auto [_, ent] =
-            CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
-                              goalY * 32 - Global::viewPort.y);
-        if (ent != entt::null) {
-          index = (uint8_t)Enum::CRADVNTR::POINTER;
-          break;
-        }
-        auto goalPoint = goalX + goalY * Global::mapSize;
-        if (!Global::waterBlock[World::level].contains(goalPoint)) {
-          index = (uint8_t)Enum::CRADVNTR::POINTER;
-          break;
-        }
-        break;
-      }
-      case Enum::CRADVNTR::SCUTTLE_BOAT: {
-        SDL_FRect posRect = {positionComp->point.x + 32 - 1 * 32,
-                             positionComp->point.y + 32 - 1 * 32, 96, 96};
-        if (!SDL_PointInRectFloat(&point, &posRect)) {
-          index = (uint8_t)Enum::CRADVNTR::POINTER;
-          break;
-        }
-        goalX = std::clamp(goalX, (uint8_t)(heroX - 1), (uint8_t)(heroX + 1));
-        goalY = std::clamp(goalY, (uint8_t)(heroY - 1), (uint8_t)(heroY + 1));
-        auto [_, ent] =
-            CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
-                              goalY * 32 - Global::viewPort.y);
-        if (!registry.all_of<BoatComp>(ent)) {
-          index = (uint8_t)Enum::CRADVNTR::POINTER;
-          break;
-        }
-        break;
-      }
-      case Enum::CRADVNTR::TELEPORT: {
-        SDL_FRect posRect = {positionComp->point.x + 32 - 7 * 32,
-                             positionComp->point.y + 32 - 7 * 32, 15 * 32,
-                             15 * 32};
-        if (!SDL_PointInRectFloat(&point, &posRect)) {
-          index = (uint8_t)Enum::CRADVNTR::POINTER;
-          break;
-        }
-        uint8_t minX = std::max((int16_t)heroX - 7, 0);
-        uint8_t maxX = std::min((int16_t)heroX + 7, Global::mapSize);
-
-        uint8_t minY = std::max((int16_t)heroY - 7, 0);
-        uint8_t maxY = std::min((int16_t)heroY + 7, Global::mapSize);
-
-        goalX = std::clamp(goalX, minX, maxX);
-        goalY = std::clamp(goalY, minY, maxY);
-        auto goalPoint = goalX + goalY * Global::mapSize;
-        auto [_, ent] =
-            CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
-                              goalY * 32 - Global::viewPort.y);
-        if (ent != entt::null) {
-          index = (uint8_t)Enum::CRADVNTR::POINTER;
-          break;
-        }
-        if (Global::rockBlock[World::level].contains(goalPoint) ||
-            Global::waterBlock[World::level].contains(goalPoint)) {
-          index = (uint8_t)Enum::CRADVNTR::POINTER;
-          break;
-        }
-        break;
-      }
-      default:
-        break;
-      }
-      texture = textures[index];
-      break;
-    }
+    index = spell(index);
+    texture = textures[index];
+    break;
   }
   case Enum::CURSOR::FADE: {
     index = astar(false);
@@ -744,6 +767,7 @@ bool CursorSys::run() {
   SDL_FRect posRect{(float)Window::mouseX, (float)Window::mouseY,
                     (float)texture->w, (float)texture->h};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  // drawMouseRect();
   return true;
 }
 

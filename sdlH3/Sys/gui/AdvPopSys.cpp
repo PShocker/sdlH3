@@ -12,6 +12,7 @@
 #include "Comp/TownComp.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
+#include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
@@ -103,10 +104,31 @@ bool AdvPopSys::run() {
       SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
       auto strPool = *Lang::strPool[Global::langIndex];
-      FreeTypeSys::setSize(13);
+
+      FreeTypeSys::setSize(12);
       FreeTypeSys::setColor(255, 255, 255, 255);
+      FreeTypeSys::drawCenter(posRect.x + 75, posRect.y + 48,
+                              HeroScrSys::heroPrimAbility(*heroComp, 0));
+      FreeTypeSys::drawCenter(posRect.x + 102, posRect.y + 48,
+                              HeroScrSys::heroPrimAbility(*heroComp, 1));
+      FreeTypeSys::drawCenter(posRect.x + 130, posRect.y + 48,
+                              HeroScrSys::heroPrimAbility(*heroComp, 2));
+      FreeTypeSys::drawCenter(posRect.x + 157, posRect.y + 48,
+                              HeroScrSys::heroPrimAbility(*heroComp, 3));
+      FreeTypeSys::drawCenter(posRect.x + 155, posRect.y + 87, heroComp->mana);
+
       auto heroName = strPool[1258 + heroComp->portrait];
       FreeTypeSys::draw(posRect.x + 64, posRect.y, heroName);
+
+      auto mor = HeroScrSys::heroMor(*heroComp);
+      texture = Global::defCache["IMRL22.def/0"][mor];
+      posRect = {posRect.x + 3, posRect.y + 74, 22, 12};
+      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+      auto luk = HeroScrSys::heroLuk(*heroComp);
+      texture = Global::defCache["ILCK22.def/0"][luk];
+      posRect = {posRect.x, posRect.y + 17, 22, 12};
+      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
       drawCreature(heroComp->creatures, x, y);
       break;

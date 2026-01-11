@@ -35,8 +35,6 @@
 static std::optional<uint8_t> mouseBuildId;
 static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
 
-void TownSys::split() {}
-
 static std::unordered_set<uint8_t> townVisiableBuild() {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
@@ -67,22 +65,22 @@ static std::unordered_set<uint8_t> townVisiableBuild() {
     s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_7);
   }
   if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_5)) {
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_1);
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_2);
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_3);
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_4);
+    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_1);
+    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_2);
+    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_3);
+    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_4);
   }
   if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_4)) {
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_1);
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_2);
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_3);
+    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_1);
+    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_2);
+    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_3);
   }
   if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_3)) {
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_1);
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_2);
+    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_1);
+    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_2);
   }
   if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_2)) {
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_1);
+    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_1);
   }
   if (s.contains((uint8_t)TownCfg::Building::CAPITOL)) {
     s.erase((uint8_t)TownCfg::Building::TOWN_HALL);
@@ -107,6 +105,7 @@ static std::unordered_set<uint8_t> townVisiableBuild() {
 }
 
 static void close() {
+  Global::splitOn = false;
   World::enterAdvScrn();
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
@@ -115,6 +114,38 @@ static void close() {
     auto heroEnt = townComp->heroEnt[1].value();
     AdvMapSys::heroFocus(heroEnt, level);
   }
+}
+
+static std::pair<uint16_t, uint32_t> *cre() {
+  std::pair<uint16_t, uint32_t> *crePtr = nullptr;
+  auto [li, lm] = std::pair{Global::townScnIndex / 8, Global::townScnIndex % 8};
+  if (Global::townScnIndex == 0xff || lm == 0) {
+    return crePtr;
+  }
+  lm -= 1;
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  if (li == 0) {
+    if (townComp->heroEnt[0].has_value()) {
+      auto heroEnt = townComp->heroEnt[0].value();
+      auto &creatures = registry.get<HeroComp>(heroEnt).creatures;
+      crePtr = &creatures[lm];
+    } else {
+      auto &creatures = townComp->garCreatures;
+      crePtr = &creatures[lm];
+    }
+  } else {
+    auto heroEnt = townComp->heroEnt[1].value();
+    auto &creatures = registry.get<HeroComp>(heroEnt).creatures;
+    crePtr = &creatures[lm];
+  }
+  return crePtr;
+}
+
+static void split() {
+  Global::splitCre[0] = cre();
+  Global::splitOn = true;
 }
 
 static std::vector<Button> buttonInfo() {
@@ -127,8 +158,8 @@ static std::vector<Button> buttonInfo() {
   vec = {t[0], t[1], t[2]};
   b.textures = vec;
   b.r = {744, 382, 48, 28};
-  b.func = close;
-  b.disable = false;
+  b.func = split;
+  b.disable = cre() == nullptr ? true : false;
   v.push_back(b);
 
   vec = {t[4], t[5]};
@@ -247,12 +278,24 @@ void drawCreature(uint8_t i,
   SDL_FRect posRect;
   for (uint8_t m = 0; m < creature->size(); m++) {
     auto [id, count] = creature->at(m);
+    posRect = {leftUp.x + 304 + m * 62, leftUp.y + 387 + i * 96, 58, 64};
     if (count == 0) {
+      if (Global::splitOn) {
+        SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255);
+        SDL_RenderRect(Window::renderer, &posRect);
+      }
       continue;
     }
-    posRect = {leftUp.x + 304 + m * 62, leftUp.y + 387 + i * 96, 58, 64};
     auto texture = Global::defCache["TWCRPORT.def/0"][id + 2];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    if (Global::splitOn) {
+      std::pair<uint16_t, uint32_t> *crePtr = &creature->at(m);
+      if (Global::splitCre[0] != crePtr &&
+          crePtr->first == Global::splitCre[0]->first) {
+        SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255);
+        SDL_RenderRect(Window::renderer, &posRect);
+      }
+    }
 
     posRect.x += 58;
     posRect.y = posRect.y + 48;
@@ -293,7 +336,7 @@ static void drawHeroPor() {
       drawCreature(i, &townComp->garCreatures);
     }
   }
-  if (Global::townScnIndex != 0xff) {
+  if (Global::townScnIndex != 0xff && !Global::splitOn) {
     auto i = Global::townScnIndex / 8;
     auto m = Global::townScnIndex % 8;
     posRect = {leftUp.x + 242 + m * 62, leftUp.y + 387 + i * 96, 58, 64};
@@ -314,6 +357,49 @@ static void drawResbar() {
                     (Global::viewPort.h - 600) / 2};
   AdvMapSys::drawResBar(leftUp.x + 3, leftUp.y + 575);
 }
+
+static void drawBottomInfo() {
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
+  auto top = (*topFunc.target<bool (*)()>() == TownSys::run);
+  if (top) {
+    SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                      (Global::viewPort.h - 600) / 2};
+    SDL_FRect posRect;
+    auto [level, townEnt] = Global::townScnPair;
+    auto &registry = World::registrys[level];
+    auto townComp = &registry.get<TownComp>(townEnt);
+    SDL_FPoint point = {Window::mouseX, Window::mouseY};
+
+    FreeTypeSys::setSize(13);
+    FreeTypeSys::setColor(255, 255, 255, 255);
+    auto strPool = *Lang::strPool[Global::langIndex];
+    std::u16string s = u"";
+    for (auto i = 0; i <= 1; i++) {
+      std::vector<std::pair<uint16_t, uint32_t>> *creature;
+      if (townComp->heroEnt[i].has_value()) {
+        auto heroEnt = townComp->heroEnt[i].value();
+        auto heroComp = &registry.get<HeroComp>(heroEnt);
+        creature = &heroComp->creatures;
+        posRect = {leftUp.x + 242, leftUp.y + 387 + i * 96, 58, 64};
+        if (SDL_PointInRectFloat(&point, &posRect)) {
+          auto heroName = strPool[1262 + heroComp->portrait];
+          s += strPool[2862] + heroName + u"(" + strPool[2883 + i] + u")";
+          break;
+        }
+      } else if (i == 0) {
+        creature = &townComp->garCreatures;
+      }
+      for (uint8_t m = 0; m < creature->size(); m++) {
+        auto [id, count] = creature->at(m);
+        posRect = {leftUp.x + 304 + m * 62, leftUp.y + 387 + i * 96, 58, 64};
+        if (Global::splitOn) {
+        }
+      }
+    }
+    FreeTypeSys::drawCenter(leftUp.x + 400, leftUp.y + 554, s);
+  }
+}
+
 bool TownSys::run() {
   buildAnimate();
   drawScrn();
@@ -322,6 +408,7 @@ bool TownSys::run() {
   drawButton();
   drawHeroPor();
   drawResbar();
+  drawBottomInfo();
   return true;
 }
 
@@ -492,7 +579,10 @@ static void clickDwe(uint8_t clickType) {
   }
 }
 
-static void clickMageGuild(uint8_t clickType) {}
+static void clickMageGuild(uint8_t clickType) {
+  auto [level, townEnt] = Global::townScnPair;
+  World::enterMageGuild(level, townEnt);
+}
 
 static bool clickBuild(uint8_t clickType) {
   if (mouseBuildId.has_value()) {

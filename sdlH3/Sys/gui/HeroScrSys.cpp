@@ -107,6 +107,13 @@ static void dismiss() {
   World::enterConfirm(410, 200, ((uint8_t)Enum::SCNTYPE::MOD));
 }
 
+static void split() {
+  Global::splitOn = true;
+  auto [level, ent] = Global::heroScnPair;
+  auto heroComp = &World::registrys[level].get<HeroComp>(ent);
+  Global::splitCre[0] = &heroComp->creatures.at(Global::heroScnIndex);
+}
+
 static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
   Button b;
@@ -160,12 +167,7 @@ static std::vector<Button> buttonInfo() {
   // split
   b.textures = Global::defCache["hsbtns9.DEF/0"];
   b.r = {539, 519, 52, 36};
-  b.func = []() {
-    Global::splitOn = true;
-    auto [level, ent] = Global::heroScnPair;
-    auto heroComp = &World::registrys[level].get<HeroComp>(ent);
-    Global::splitCre[0] = &heroComp->creatures.at(Global::heroScnIndex);
-  };
+  b.func = split;
   if (Global::heroScnIndex != 0xff) {
     b.disable = false;
   } else {
@@ -309,6 +311,11 @@ static bool clickCre(uint8_t clickType) {
           Global::splitCre[1] = crePtr;
           World::enterSplitCre();
           Global::splitOn = false;
+          Global::heroScnIndex = INVALID_INDEX;
+        } else {
+          Global::splitOn = false;
+          auto &selectedCreature = creatures[Global::heroScnIndex];
+          std::swap(currentCreature, selectedCreature);
           Global::heroScnIndex = INVALID_INDEX;
         }
         return true;

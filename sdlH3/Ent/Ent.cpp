@@ -209,16 +209,24 @@ entt::entity Ent::loadBuild(uint8_t level, TownComp &townComp,
     dComp->creatures.push_back({creatures, 0});
     break;
   }
-  case (uint8_t)TownCfg::Building::MAGE_GUILD_1: {
+  case (uint8_t)TownCfg::Building::MAGE_GUILD_1:
+  case (uint8_t)TownCfg::Building::MAGE_GUILD_2:
+  case (uint8_t)TownCfg::Building::MAGE_GUILD_3:
+  case (uint8_t)TownCfg::Building::MAGE_GUILD_4:
+  case (uint8_t)TownCfg::Building::MAGE_GUILD_5: {
+    const uint8_t spellNums[] = {5, 4, 4, 3, 2};
+    auto level = buildId - (uint8_t)TownCfg::Building::MAGE_GUILD_1 + 1;
+    auto num = spellNums[level - 1];
     ent = registry.create();
     auto mComp = &registry.emplace<MageGuildComp>(ent);
-    mComp->level = 1;
-    auto s = SpellCfg::SpellLevels[1];
-    std::vector<uint8_t> result;
-    std::sample(s.begin(), s.end(), std::back_inserter(result), 5, Global::gen);
-    mComp->spells = result;
+    mComp->level = level;
+    auto s = SpellCfg::SpellLevels[level];
+    std::vector<uint8_t> r;
+    std::sample(s.begin(), s.end(), std::back_inserter(r), num, Global::gen);
+    mComp->spells = r;
     break;
   }
+
   default: {
     break;
   }

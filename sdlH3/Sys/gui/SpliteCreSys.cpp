@@ -18,19 +18,20 @@ static uint32_t creNum() {
   return Global::splitCre[0]->second + Global::splitCre[1]->second;
 }
 
+static void close() {
+  World::exitScrn();
+  for (auto &i : Global::splitCre) {
+    i = nullptr;
+  }
+}
+
 static void ok() {
   auto count = Global::splitSliderNum;
   Global::splitCre[0]->second = creNum() - count;
 
   Global::splitCre[1]->first = Global::splitCre[0]->first;
   Global::splitCre[1]->second = count;
-}
-
-static void close() {
-  World::exitScrn();
-  for (auto &i : Global::splitCre) {
-    i = nullptr;
-  }
+  close();
 }
 
 static std::vector<Button> buttonInfo() {
@@ -153,7 +154,7 @@ static void drawSlider() {
   auto count = creNum();
   if (count != 0) {
     SliderSys::drawHor(leftUp.x + 21, leftUp.y + 194, 257,
-                       Global::dweSliderNum / (float)count);
+                       Global::splitSliderNum / (float)count);
   } else {
     SliderSys::drawHor(leftUp.x + 21, leftUp.y + 194, 257, 0);
   }
@@ -169,6 +170,20 @@ bool SpliteCreSys::run() {
   return true;
 }
 
+static bool clickSlider() {
+  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
+                    static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
+  // click slider
+  auto count = creNum();
+  if (auto num = SliderSys::clickHor(leftUp.x + 21, leftUp.y + 194, 257,
+                                     Global::splitSliderNum, count);
+      num != Global::splitSliderNum) {
+    Global::splitSliderNum = num;
+    return true;
+  }
+  return false;
+}
+
 bool SpliteCreSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
@@ -176,6 +191,9 @@ bool SpliteCreSys::leftMouseUp(float x, float y) {
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
   if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+    return false;
+  }
+  if (clickSlider()) {
     return false;
   }
   return true;

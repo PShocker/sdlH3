@@ -12,7 +12,7 @@ static SDL_AudioSpec spec = {
     .format = SDL_AUDIO_S16, .channels = 2, .freq = 44100};
 
 static bool playAudio() {
-  const int minimum_audio = (int)(44100 * 0.05f) * 2 * 2;
+  const int minimum_audio = (int)(44100 * 0.02f) * 2 * 2;
   if (SDL_GetAudioStreamQueued(stream) < minimum_audio) {
     uint8_t *data = (uint8_t *)SDL_stack_alloc(uint8_t, minimum_audio);
     SDL_memset(data, 0, minimum_audio * sizeof(uint8_t));

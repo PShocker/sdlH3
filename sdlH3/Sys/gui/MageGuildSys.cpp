@@ -35,7 +35,7 @@ static void drawBackGround() {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 800) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 600) / 2)};
   posRect = {leftUp.x, leftUp.y, 800, 600};
-  auto texture = Global::pcxCache["TPMAGE.pcx"][Global::playerId];
+  auto texture = Global::pcxCache["TPMAGE.pcx"][0];
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
   return;
