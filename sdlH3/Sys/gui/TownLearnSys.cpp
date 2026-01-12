@@ -40,6 +40,7 @@ static std::vector<uint8_t> learnSpells() {
   addSpell((uint8_t)TownCfg::Building::MAGE_GUILD_4);
   addSpell((uint8_t)TownCfg::Building::MAGE_GUILD_5);
   // 智慧术
+  return r;
 }
 
 static void receive() {
@@ -92,21 +93,6 @@ static void draw() {
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(255, 255, 255, 255);
   auto strPool = *Lang::strPool[Global::langIndex];
-  if (!visited()) {
-    FreeTypeSys::drawCenter(leftUp.x + bakW / 2, leftUp.y + 40, strPool[721]);
-
-    auto texture = Global::defCache["PSKILL.def/0"][4];
-    posRect = {leftUp.x + primPosition.x, leftUp.y + primPosition.y,
-               primPosition.w, primPosition.h};
-    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
-    SDL_RenderRect(Window::renderer, &posRect);
-    FreeTypeSys::drawCenter(posRect.x + posRect.w / 2,
-                            posRect.y + posRect.h + 4, u"+1000 " + strPool[10]);
-
-  } else {
-    FreeTypeSys::drawCenter(leftUp.x + bakW / 2, leftUp.y + 40, strPool[722]);
-  }
 }
 
 static void drawButton() {
@@ -125,22 +111,6 @@ bool TownLearnSys::run() {
   return true;
 }
 
-static bool clickExp(uint8_t clickType) {
-  if (!visited()) {
-    SDL_FRect posRect;
-    SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                      Global::viewPort.h / 2 - bakH / 2};
-    SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
-    posRect = {leftUp.x + primPosition.x, leftUp.y + primPosition.y,
-               primPosition.w, primPosition.h};
-    if (SDL_PointInRectFloat(&point, &posRect)) {
-      HeroScrSys::showExpComfirm(clickType);
-      return true;
-    }
-  }
-  return false;
-}
-
 bool TownLearnSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
@@ -155,10 +125,6 @@ bool TownLearnSys::leftMouseUp(float x, float y) {
 
 bool TownLearnSys::rightMouseDown(float x, float y) {
   auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
-
-  if (clickExp(clickType)) {
-    return true;
-  }
   return true;
 }
 

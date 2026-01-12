@@ -480,15 +480,119 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     gateComp->y = object.position[1];
     gateComp->order = i;
     gateComp->level = 255;
+    break;
   }
-  case ObjectType::RANDOM_MONSTER:
-  case ObjectType::RANDOM_MONSTER_L1:
-  case ObjectType::RANDOM_MONSTER_L2:
-  case ObjectType::RANDOM_MONSTER_L3:
-  case ObjectType::RANDOM_MONSTER_L4: {
+  case ObjectType::RANDOM_MONSTER: {
+    static std::vector<uint8_t> creatures;
+    if (creatures.empty()) {
+      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+        if (CreatureCfg::creatureLevel[i] <= 7 &&
+            CreatureCfg::creatureLevel[i] >= 1) {
+          creatures.push_back(i);
+        }
+      }
+    }
+    int randomIndex = std::rand() % creatures.size();
     auto monsterComp = &registry.emplace<MonsterComp>(ent);
-    monsterComp->id = object.subId;
-    monsterComp->id = object.subId;
+
+    break;
+  }
+  case ObjectType::RANDOM_MONSTER_L1: {
+    static std::vector<uint8_t> creatures;
+    if (creatures.empty()) {
+      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+        if (CreatureCfg::creatureLevel[i] == 1) {
+          creatures.push_back(i);
+        }
+      }
+    }
+    int randomIndex = std::rand() % creatures.size();
+    texturePath = CreatureCfg::creatureGraphicsMini[0] + "/" + "0";
+    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+    break;
+  }
+  case ObjectType::RANDOM_MONSTER_L2: {
+    static std::vector<uint8_t> creatures;
+    if (creatures.empty()) {
+      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+        if (CreatureCfg::creatureLevel[i] == 2) {
+          creatures.push_back(i);
+        }
+      }
+    }
+    int randomIndex = std::rand() % creatures.size();
+    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+
+    break;
+  }
+  case ObjectType::RANDOM_MONSTER_L3: {
+    static std::vector<uint8_t> creatures;
+    if (creatures.empty()) {
+      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+        if (CreatureCfg::creatureLevel[i] == 3) {
+          creatures.push_back(i);
+        }
+      }
+    }
+    int randomIndex = std::rand() % creatures.size();
+    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+
+    break;
+  }
+  case ObjectType::RANDOM_MONSTER_L4: {
+    static std::vector<uint8_t> creatures;
+    if (creatures.empty()) {
+      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+        if (CreatureCfg::creatureLevel[i] == 4) {
+          creatures.push_back(i);
+        }
+      }
+    }
+    int randomIndex = std::rand() % creatures.size();
+    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+
+    break;
+  }
+  case ObjectType::RANDOM_MONSTER_L5: {
+    static std::vector<uint8_t> creatures;
+    if (creatures.empty()) {
+      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+        if (CreatureCfg::creatureLevel[i] == 5) {
+          creatures.push_back(i);
+        }
+      }
+    }
+    int randomIndex = std::rand() % creatures.size();
+    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+
+    break;
+  }
+  case ObjectType::RANDOM_MONSTER_L6: {
+    static std::vector<uint8_t> creatures;
+    if (creatures.empty()) {
+      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+        if (CreatureCfg::creatureLevel[i] == 6) {
+          creatures.push_back(i);
+        }
+      }
+    }
+    int randomIndex = std::rand() % creatures.size();
+    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+
+    break;
+  }
+  case ObjectType::RANDOM_MONSTER_L7: {
+    static std::vector<uint8_t> creatures;
+    if (creatures.empty()) {
+      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+        if (CreatureCfg::creatureLevel[i] == 7) {
+          creatures.push_back(i);
+        }
+      }
+    }
+    int randomIndex = std::rand() % creatures.size();
+    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+    break;
   }
 
   case ObjectType::MONSTER: {

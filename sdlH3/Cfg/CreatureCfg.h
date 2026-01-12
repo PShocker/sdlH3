@@ -574,6 +574,44 @@ struct CreatureCfg {
       "CGDRAG.DEF", // 绿龙 (greenDragon)
       "CDDRAG.DEF", // 金龙 (goldDragon)
   };
+
+  const static inline std::vector<std::string> creatureGraphicsMini = {
+      "AvWPike.def",  "AVWpikx0.def", "AvWLCrs.def",  "AvWHCrs.def",
+      "AvWGrif.def",  "AVWgrix0.def", "AVWswrd0.def", "AVWswrx0.def",
+      "AvWMonk.def",  "AVWmonx0.def", "AVWcvlr0.def", "AVWcvlx0.def",
+      "AvWAngl.def",  "AvWArch.def",  "AVWcent0.def", "AVWcenx0.def",
+      "AVWdwrf0.def", "AVWdwrx0.def", "AVWelfw0.def", "AVWelfx0.def",
+      "AVWpega0.def", "AVWpegx0.def", "AVWtree0.def", "AVWtrex0.def",
+      "AVWunic0.def", "AVWunix0.def", "AVWdrag0.def", "AVWdrax0.def",
+      "AVWgrem0.def", "AVWgrex0.def", "AVWgarg0.def", "AVWgarx0.def",
+      "AVWgolm0.def", "AVWgolx0.def", "AVWmage0.def", "AVWmagx0.def",
+      "AVWgeni0.def", "AVWgenx0.def", "AVWnaga0.def", "AVWnagx0.def",
+      "AVWtitn0.def", "AVWtitx0.def", "AVWimp0.def",  "AVWimpx0.def",
+      "AVWgog0.def",  "AVWgogx0.def", "AVWhoun0.def", "AVWhoux0.def",
+      "AVWdemn0.def", "AVWdemx0.def", "AVWpitf0.def", "AVWpitx0.def",
+      "AVWefre0.def", "AVWefrx0.def", "AVWdevl0.def", "AVWdevx0.def",
+      "AVWskel0.def", "AVWskex0.def", "AVWzomb0.def", "AVWzomx0.def",
+      "AvWWigh.def",  "AVWwigx0.def", "AVWvamp0.def", "AVWvamx0.def",
+      "AVWlich0.def", "AVWlicx0.def", "AVWbkni0.def", "AVWbknx0.def",
+      "AVWbone0.def", "AVWbonx0.def", "AVWtrog0.def", "AvWInfr.def",
+      "AVWharp0.def", "AVWharx0.def", "AVWbehl0.def", "AVWbehx0.def",
+      "AvWMeds.def",  "AVWmedx0.def", "AvWMino.def",  "AVWminx0.def",
+      "AVWmant0.def", "AVWmanx0.def", "AvWRDrg.def",  "AVWddrx0.def",
+      "AVWgobl0.def", "AVWgobx0.def", "AVWwolf0.def", "AVWwolx0.def",
+      "AVWorc0.def",  "AVWorcx0.def", "AVWogre0.def", "AVWogrx0.def",
+      "AVWroc0.def",  "AVWrocx0.def", "AVWcycl0.def", "AVWcycx0.def",
+      "AVWbhmt0.def", "AVWbhmx0.def", "AVWgnll0.def", "AVWgnlx0.def",
+      "AvWLizr.def",  "AVWlizx0.def", "AvWDFly.def",  "AvWDFir.def",
+      "AvWBasl.def",  "AvWGBas.def",  "AvWGorg.def",  "AVWgorx0.def",
+      "AvWWyvr.def",  "AVWwyvx0.def", "AvWHydr.def",  "AVWhydx0.def",
+      "AVWpixie.def", "AVWsprit.def", "AVWelmw0.def", "AVWicee.def",
+      "AVWelme0.def", "AVWstone.def", "AVWelma0.def", "AVWstorm.def",
+      "AVWelmf0.def", "AVWnrg.def",   "AVWpsye.def",  "AVWmagel.def",
+      "AVWfbird.def", "AVWphx.def",   "AVWglmg0.def", "AVWglmd0.def",
+      "AVWazure.def", "AVWcdrg.def",  "AVWfdrg.def",  "AVWrust.def",
+      "AVWench.def",  "AVWsharp.def", "AVWhalf.def",  "AVWpeas.def",
+      "AVWboar.def",  "AVWmumy.def",  "AVWnomd.def",  "AVWrog.def",
+      "AVWtrll.def"};
   const static inline std::vector<int8_t> creatureTowns = {
       // 城堡 (Castle) - 16个兵种
       0, // 枪兵
