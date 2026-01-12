@@ -193,6 +193,182 @@ struct CreatureCfg {
     ARROW_TOWER = 149,
   };
 
+  const static inline std::vector<int8_t> creatureLevel = {
+      // 城堡 (0-13)
+      1, // PIKEMAN
+      1, // HALBERDIER
+      2, // ARCHER
+      2, // MARKSMAN
+      3, // GRIFFIN
+      3, // ROYAL_GRIFFIN
+      4, // SWORDSMAN
+      4, // CRUSADER
+      5, // MONK
+      5, // ZEALOT
+      6, // CAVALIER
+      6, // CHAMPION
+      7, // ANGEL
+      7, // ARCHANGEL
+
+      // 壁垒 (14-27)
+      1, // CENTAUR
+      1, // CENTAUR_CAPTAIN
+      2, // DWARF
+      2, // BATTLE_DWARF
+      3, // WOOD_ELF
+      3, // GRAND_ELF
+      4, // PEGASUS
+      4, // SILVER_PEGASUS
+      5, // DENDROID_GUARD
+      5, // DENDROID_SOLDIER
+      6, // UNICORN
+      6, // WAR_UNICORN
+      7, // GREEN_DRAGON
+      7, // GOLD_DRAGON
+
+      // 塔楼 (28-41)
+      1, // GREMLIN
+      1, // MASTER_GREMLIN
+      2, // STONE_GARGOYLE
+      2, // OBSIDIAN_GARGOYLE
+      3, // STONE_GOLEM
+      3, // IRON_GOLEM
+      4, // MAGE
+      4, // ARCH_MAGE
+      5, // GENIE
+      5, // MASTER_GENIE
+      6, // NAGA
+      6, // NAGA_QUEEN
+      7, // GIANT
+      7, // TITAN
+
+      // 地狱 (42-55)
+      1, // IMP
+      1, // FAMILIAR
+      2, // GOG
+      2, // MAGOG
+      3, // HELL_HOUND
+      3, // CERBERUS
+      4, // DEMON
+      4, // HORNED_DEMON
+      5, // PIT_FIEND
+      5, // PIT_LORD
+      6, // EFREETI
+      6, // EFREET_SULTAN
+      7, // DEVIL
+      7, // ARCH_DEVIL
+
+      // 墓园 (56-69)
+      1, // SKELETON
+      1, // SKELETON_WARRIOR
+      2, // WALKING_DEAD
+      2, // ZOMBIE
+      3, // WIGHT
+      3, // WRAITH
+      4, // VAMPIRE
+      4, // VAMPIRE_LORD
+      5, // LICH
+      5, // POWER_LICH
+      6, // BLACK_KNIGHT
+      6, // DREAD_KNIGHT
+      7, // BONE_DRAGON
+      7, // GHOST_DRAGON
+
+      // 地牢 (70-83)
+      1, // TROGLODYTE
+      1, // INFERNAL_TROGLODYTE
+      2, // HARPY
+      2, // HARPY_HAG
+      3, // BEHOLDER
+      3, // EVIL_EYE
+      4, // MEDUSA
+      4, // MEDUSA_QUEEN
+      5, // MINOTAUR
+      5, // MINOTAUR_KING
+      6, // MANTICORE
+      6, // SCORPICORE
+      7, // RED_DRAGON
+      7, // BLACK_DRAGON
+
+      // 据点 (84-97)
+      1, // GOBLIN
+      1, // HOBGOBLIN
+      2, // WOLF_RIDER
+      2, // WOLF_RAIDER
+      3, // ORC
+      3, // ORC_CHIEFTAIN
+      4, // OGRE
+      4, // OGRE_MAGE
+      5, // ROC
+      5, // THUNDERBIRD
+      6, // CYCLOPS
+      6, // CYCLOPS_KING
+      7, // BEHEMOTH
+      7, // ANCIENT_BEHEMOTH
+
+      // 要塞 (98-111)
+      1, // GNOLL
+      1, // GNOLL_MARAUDER
+      2, // LIZARDMAN
+      2, // LIZARD_WARRIOR
+      3, // GORGON
+      3, // MIGHTY_GORGON
+      4, // SERPENT_FLY
+      4, // DRAGON_FLY
+      5, // BASILISK
+      5, // GREATER_BASILISK
+      6, // WYVERN
+      6, // WYVERN_MONARCH
+      7, // HYDRA
+      7, // CHAOS_HYDRA
+
+      // 元素生物1 (112-117) - 中立生物
+      2, // AIR_ELEMENTAL
+      2, // EARTH_ELEMENTAL
+      2, // FIRE_ELEMENTAL
+      2, // WATER_ELEMENTAL
+      5, // GOLD_GOLEM
+      5, // DIAMOND_GOLEM
+
+      // 元素生物2 (118-131) - 中立生物
+      1, // PIXIE
+      1, // SPRITE
+      5, // PSYCHIC_ELEMENTAL
+      6, // MAGIC_ELEMENTAL
+      0, // NOT_USED_1 (占位符)
+      4, // ICE_ELEMENTAL
+      0, // NOT_USED_2 (占位符)
+      4, // MAGMA_ELEMENTAL
+      0, // NOT_USED_3 (占位符)
+      5, // STORM_ELEMENTAL
+      0, // NOT_USED_4 (占位符)
+      5, // ENERGY_ELEMENTAL
+      7, // FIREBIRD
+      7, // PHOENIX
+
+      // 特殊生物1 (132-144) - 中立生物
+      10, // AZURE_DRAGON (特殊10级生物)
+      10, // CRYSTAL_DRAGON (特殊10级生物)
+      10, // FAERIE_DRAGON
+      10, // RUST_DRAGON (8级生物)
+      2,  // ENCHANTER
+      2,  // SHARPSHOOTER
+      1,  // HALFLING
+      1,  // PEASANT
+      2,  // BOAR
+      5,  // MUMMY
+      5,  // NOMAD
+      4,  // ROGUE
+      5,  // TROLL
+
+      // 战争机器 (145-149) - 特殊单位
+      0, // CATAPULT (战争机器)
+      0, // BALLISTA (战争机器)
+      0, // FIRST_AID_TENT (战争机器)
+      0, // AMMO_CART (战争机器)
+      0, // ARROW_TOWER (战争机器)
+  };
+
   // 141个兵种的可升级目标，-1表示无升级目标，正数表示可升级到该ID
   const static inline std::vector<int16_t> creatureUpgradeTo = {
       // 城堡 (Castle) - 14个兵种

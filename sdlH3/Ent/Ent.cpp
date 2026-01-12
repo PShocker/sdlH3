@@ -481,6 +481,16 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     gateComp->order = i;
     gateComp->level = 255;
   }
+  case ObjectType::RANDOM_MONSTER:
+  case ObjectType::RANDOM_MONSTER_L1:
+  case ObjectType::RANDOM_MONSTER_L2:
+  case ObjectType::RANDOM_MONSTER_L3:
+  case ObjectType::RANDOM_MONSTER_L4: {
+    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+    monsterComp->id = object.subId;
+    monsterComp->id = object.subId;
+  }
+
   case ObjectType::MONSTER: {
     auto monsterComp = &registry.emplace<MonsterComp>(ent);
     monsterComp->id = object.subId;
