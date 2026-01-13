@@ -1113,14 +1113,12 @@ int32_t HeroScrSys::heroSight(HeroComp &hComp) {
   for (const auto &pair : v) {
     r += pair.second;
   }
+  int8_t scout = HeroScrSys::heroSecLevel(
+      hComp, (uint8_t)HeroCfg::SecondarySkill::SCOUTING);
   // 辅助技能
-  for (auto p : hComp.secSkills) {
-    if (p.first == (uint8_t)HeroCfg::SecondarySkill::SCOUTING) {
-      r += p.second + 1;
-      break;
-    }
+  if (scout != -1) {
+    r += scout + 1;
   }
-
   return r;
 }
 
@@ -1599,4 +1597,14 @@ void HeroScrSys::showHeroBiosComfirm(uint8_t clickType, uint16_t i) {
     World::enterConfirm(confirmbakW, confirmbakH,
                         ((uint8_t)Enum::SCNTYPE::POP));
   }
+}
+
+int8_t HeroScrSys::heroSecLevel(HeroComp &hComp, uint8_t i) {
+  int8_t r = -1;
+  for (auto secPair : hComp.secSkills) {
+    if (secPair.first == i) {
+      r = secPair.second;
+    }
+  }
+  return r;
 }

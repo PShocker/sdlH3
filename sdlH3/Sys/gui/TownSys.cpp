@@ -749,23 +749,33 @@ static bool clickHeroCres(uint8_t clickType) {
     // 双击生物
     else if (secondClick.creature && firstClick.creature && i == li &&
              m == lm) {
-      if (townComp->heroEnt[i].has_value()) {
-        auto heroEnt = townComp->heroEnt[i].value();
-        World::enterCreature({level, heroEnt}, *secondClick.creature,
-                             static_cast<uint8_t>(Enum::CRETYPE::MOD_HERO));
-      } else {
-        World::enterCreature(*secondClick.creature,
-                             static_cast<uint8_t>(Enum::CRETYPE::MOD_HERO));
+      if (!Global::splitOn) {
+        if (townComp->heroEnt[i].has_value()) {
+          auto heroEnt = townComp->heroEnt[i].value();
+          World::enterCreature({level, heroEnt}, *secondClick.creature,
+                               static_cast<uint8_t>(Enum::CRETYPE::MOD_HERO));
+        } else {
+          World::enterCreature(*secondClick.creature,
+                               static_cast<uint8_t>(Enum::CRETYPE::MOD_HERO));
+        }
+        processed = true;
       }
-      processed = true;
     }
     // 交换/合并生物
     else if (secondClick.creature && firstClick.creature) {
       if (secondClick.creature->first == firstClick.creature->first) {
-        secondClick.creature->second += firstClick.creature->second;
-        *firstClick.creature = {0xFF, 0};
+        if (Global::splitOn) {
+          Global::splitCre[1] = secondClick.creature;
+          World::enterSplitCre();
+          Global::splitOn = false;
+        } else {
+          secondClick.creature->second += firstClick.creature->second;
+          *firstClick.creature = {0xFF, 0};
+        }
+
       } else {
         std::swap(*secondClick.creature, *firstClick.creature);
+        Global::splitOn = false;
       }
       processed = true;
     }

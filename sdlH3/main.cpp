@@ -40,7 +40,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   }
   std::srand(std::time(0));
 
-  H3mData data("./Maps/Untitled.h3m");
+  H3mData data("./Maps/Good to Go.h3m");
   data.init();
   Global::mapW = data.header.width * 32;
   Global::mapH = data.header.height * 32;

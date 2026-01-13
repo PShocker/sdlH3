@@ -1,9 +1,11 @@
 #include "LearnSys.h"
 #include "AdvMapSys.h"
+#include "Cfg/HeroCfg.h"
 #include "Cfg/SpellCfg.h"
 #include "Comp/HeroComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
+#include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "SpellSys.h"
@@ -17,40 +19,65 @@
 static float bakW = 480;
 static float bakH = 300;
 
-static std::vector<uint8_t> learnSpells() {
+static std::set<uint8_t> learnSpells() {
+  std::set<uint8_t> r;
+
   auto level0 = World::level;
   auto level1 = Global::goalLevel;
-  auto hComp0 = &World::registrys[level0].get<HeroComp>(Global::heroEnt);
-  auto hComp1 = &World::registrys[level1].get<HeroComp>(Global::goalEnt);
+  auto &hComp0 = World::registrys[level0].get<HeroComp>(Global::heroEnt);
+  auto &hComp1 = World::registrys[level1].get<HeroComp>(Global::goalEnt);
   int8_t learnLevel = -1;
   // 判断有没有学术
-  for (auto v2 : {hComp0->secSkills, hComp1->secSkills}) {
-    for (auto v1 : v2) {
-      if (v1.first == 21) {
-        learnLevel = std::max(learnLevel, (int8_t)v1.second);
-      }
+  auto l1 = HeroScrSys::heroSecLevel(
+      hComp0, (uint8_t)HeroCfg::SecondarySkill::LEARNING);
+  auto l2 = HeroScrSys::heroSecLevel(
+      hComp1, (uint8_t)HeroCfg::SecondarySkill::LEARNING);
+  learnLevel = std::max(l1, l2);
+  if (learnLevel == -1) {
+    return r;
+  }
+
+  auto studyLevel = learnLevel + 2;
+  std::set<uint8_t> r0;
+
+  for (auto &s : {hComp0.spells, hComp1.spells}) {
+    for (uint8_t i = 0; i <= studyLevel; i++) {
+      r0.insert(SpellCfg::SpellLevels[i].begin(),
+                SpellCfg::SpellLevels[i].end());
     }
   }
-  auto studyLevel = learnLevel + 2;
-  std::vector<uint8_t> r0;
-  std::vector<uint8_t> r1;
-  for (uint8_t i = 0; i <= studyLevel; i++) {
-    auto v = SpellCfg::SpellLevels[i];
-    std::ranges::sort(v);
-    std::ranges::set_intersection(hComp0->spells, v, std::back_inserter(r0));
-  }
-  for (uint8_t i = 0; i <= studyLevel; i++) {
-    auto v = SpellCfg::SpellLevels[i];
-    std::ranges::sort(v);
-    std::ranges::set_intersection(hComp1->spells, v, std::back_inserter(r1));
-  }
-  std::vector<uint8_t> result;
+  std::set<uint8_t> intersection;
+  HeroComp *hComp = nullptr;
   if (Global::goalIndex == 0) {
-    std::ranges::set_difference(r0, r1, std::back_inserter(result));
+    hComp = &hComp0;
   } else {
-    std::ranges::set_difference(r1, r0, std::back_inserter(result));
+    hComp = &hComp1;
   }
-  return result;
+  auto w = HeroScrSys::heroSecLevel(*hComp,
+                                    (uint8_t)HeroCfg::SecondarySkill::WISDOM);
+  if (w == -1) {
+    std::set<uint8_t> s;
+    auto v1 = SpellCfg::SpellLevels[1];
+    auto v2 = SpellCfg::SpellLevels[2];
+
+    s.insert(v1.begin(), v1.end());
+    s.insert(v2.begin(), v2.end());
+
+    std::ranges::set_intersection(
+        r0, s, std::inserter(intersection, intersection.begin()));
+
+  } else {
+    std::set<uint8_t> s;
+    for (auto i = 1; i <= w + 3; i++) {
+      auto v = SpellCfg::SpellLevels[i];
+      s.insert(v.begin(), v.end());
+    }
+    std::ranges::set_intersection(
+        r0, s, std::inserter(intersection, intersection.begin()));
+  }
+  std::ranges::set_difference(intersection, hComp->spells,
+                              std::inserter(r, r.begin()));
+  return r;
 }
 
 static uint8_t learnIndex() {
@@ -60,7 +87,10 @@ static uint8_t learnIndex() {
   auto v0 = learnSpells();
   Global::goalIndex = 1;
   auto v1 = learnSpells();
-
+  Global::goalIndex=n;
+  if (v0.) {
+  
+  }
   return 0xff;
 }
 

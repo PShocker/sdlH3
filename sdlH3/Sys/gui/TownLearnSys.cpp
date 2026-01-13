@@ -1,7 +1,10 @@
 #include "TownLearnSys.h"
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
+#include "Cfg/HeroCfg.h"
+#include "Cfg/SpellCfg.h"
 #include "Cfg/TownCfg.h"
+#include "Comp/HeroComp.h"
 #include "Comp/LearnStoneComp.h"
 #include "Comp/MageGuildComp.h"
 #include "Comp/TownComp.h"
@@ -22,24 +25,55 @@
 static float bakW = 450;
 static float bakH = 340;
 
-static std::vector<uint8_t> learnSpells() {
-  std::vector<uint8_t> r;
+static std::set<uint8_t> learnSpells(uint8_t i) {
+  std::set<uint8_t> r;
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
-  const auto addSpell = [&](uint8_t id) {
+  const auto insertSpell = [&](uint8_t id) {
     if (townComp->buildings.contains(id)) {
       auto mEnt = townComp->buildings[id];
-      auto mComp = registry.get<MageGuildComp>(mEnt);
-      r.insert(r.end(), mComp.spells.begin(), mComp.spells.end());
+      auto &mComp = registry.get<MageGuildComp>(mEnt);
+      r.insert(mComp.spells.begin(), mComp.spells.end());
     }
   };
-  addSpell((uint8_t)TownCfg::Building::MAGE_GUILD_1);
-  addSpell((uint8_t)TownCfg::Building::MAGE_GUILD_2);
-  addSpell((uint8_t)TownCfg::Building::MAGE_GUILD_3);
-  addSpell((uint8_t)TownCfg::Building::MAGE_GUILD_4);
-  addSpell((uint8_t)TownCfg::Building::MAGE_GUILD_5);
+  insertSpell((uint8_t)TownCfg::Building::MAGE_GUILD_1);
+  insertSpell((uint8_t)TownCfg::Building::MAGE_GUILD_2);
+  insertSpell((uint8_t)TownCfg::Building::MAGE_GUILD_3);
+  insertSpell((uint8_t)TownCfg::Building::MAGE_GUILD_4);
+  insertSpell((uint8_t)TownCfg::Building::MAGE_GUILD_5);
   // 智慧术
+  if (townComp->heroEnt[i].has_value()) {
+    auto heroEnt = townComp->heroEnt[i].value();
+    auto &heroComp = registry.get<HeroComp>(heroEnt);
+    int8_t wisdom = HeroScrSys::heroSecLevel(
+        heroComp, (uint8_t)HeroCfg::SecondarySkill::WISDOM);
+    std::set<uint8_t> intersection;
+    if (wisdom == -1) {
+      std::set<uint8_t> s;
+      // 只能学习1-2级技能
+      auto v1 = SpellCfg::SpellLevels[1];
+      auto v2 = SpellCfg::SpellLevels[2];
+
+      s.insert(v1.begin(), v1.end());
+      s.insert(v2.begin(), v2.end());
+
+      std::ranges::set_intersection(
+          r, s, std::inserter(intersection, intersection.begin()));
+
+    } else {
+      std::set<uint8_t> s;
+      for (auto i = 1; i <= wisdom + 3; i++) {
+        auto v = SpellCfg::SpellLevels[i];
+        s.insert(v.begin(), v.end());
+      }
+      std::ranges::set_intersection(
+          r, s, std::inserter(intersection, intersection.begin()));
+    }
+    r.clear();
+    std::ranges::set_difference(intersection, heroComp.spells,
+                                std::inserter(r, r.begin()));
+  }
   return r;
 }
 

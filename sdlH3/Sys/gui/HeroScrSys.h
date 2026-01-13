@@ -19,6 +19,8 @@ struct HeroScrSys {
   static int32_t heroLuk(HeroComp &hComp);
   static int32_t heroSight(HeroComp &hComp);
 
+  static int8_t heroSecLevel(HeroComp &hComp,uint8_t i);
+
   static void showResConfirm(uint8_t clickType, uint16_t i);
   static void showArtifactComfirm(uint16_t i);
   static void showPrimComfirm(uint8_t clickType, uint16_t i);

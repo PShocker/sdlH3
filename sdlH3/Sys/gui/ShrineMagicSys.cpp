@@ -1,10 +1,12 @@
 #include "ShrineMagicSys.h"
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
+#include "Cfg/HeroCfg.h"
 #include "Comp/ShrineMagicComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
+#include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "SpellSys.h"
 #include "Sys/FreeTypeSys.h"
@@ -26,12 +28,8 @@ static bool visited() {
   auto &smComp =
       World::registrys[World::level].get<ShrineMagicComp>(Global::goalEnt);
   // 获取智慧术等级
-  int8_t wisdom = -1;
-  for (auto secPair : heroComp.secSkills) {
-    if (secPair.first == 7) {
-      wisdom = secPair.second;
-    }
-  }
+  int8_t wisdom = HeroScrSys::heroSecLevel(
+      heroComp, (uint8_t)HeroCfg::SecondarySkill::WISDOM);
   if (smComp.level >= 2 && wisdom < 0) {
     return true;
   }
