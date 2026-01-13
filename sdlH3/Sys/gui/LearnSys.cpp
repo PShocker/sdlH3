@@ -15,11 +15,12 @@
 #include "World/World.h"
 #include <cstdint>
 #include <cstdlib>
+#include <iterator>
 
 static float bakW = 480;
 static float bakH = 300;
 
-static std::set<uint8_t> learnSpells() {
+static std::set<uint8_t> swapSpel(uint8_t i) {
   std::set<uint8_t> r;
 
   auto level0 = World::level;
@@ -48,7 +49,7 @@ static std::set<uint8_t> learnSpells() {
   }
   std::set<uint8_t> intersection;
   HeroComp *hComp = nullptr;
-  if (Global::goalIndex == 0) {
+  if (i == 0) {
     hComp = &hComp0;
   } else {
     hComp = &hComp1;
@@ -80,18 +81,17 @@ static std::set<uint8_t> learnSpells() {
   return r;
 }
 
-static uint8_t learnIndex() {
-  uint8_t r = 0;
-  auto n = Global::goalIndex;
-  Global::goalIndex = 0;
-  auto v0 = learnSpells();
-  Global::goalIndex = 1;
-  auto v1 = learnSpells();
-  Global::goalIndex=n;
-  if (v0.) {
-  
+static uint8_t swapIndex() {
+  uint8_t r = 0xff;
+  auto s0 = swapSpel(0);
+  auto s1 = swapSpel(1);
+  if (!s0.empty()) {
+    r = 0;
   }
-  return 0xff;
+  if (!s1.empty()) {
+    r = 1;
+  }
+  return r;
 }
 
 static void ok() {
@@ -139,15 +139,19 @@ static void drawSpell() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto v = learnSpells();
+  auto index = swapIndex();
+  auto s = swapSpel(index);
   auto strPool = *Lang::strPool[Global::langIndex];
-  for (uint8_t i = 0; i < 8; i++) {
-    if (i < v.size()) {
-      auto texture = Global::defCache["SpellScr.def/0"][v[i]];
-      posRect = {splSlot[i].x + leftUp.x, splSlot[i].x + leftUp.y, 78, 65};
-      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-      FreeTypeSys::drawCenter(leftUp.x + bakW / 2, leftUp.y + 40, strPool[709]);
+  uint8_t i = 0;
+  for (auto spelId : s) {
+    if (i >= std::size(splSlot)) {
+      break;
     }
+    auto texture = Global::defCache["SpellScr.def/0"][spelId];
+    posRect = {splSlot[i].x + leftUp.x, splSlot[i].x + leftUp.y, 78, 65};
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    FreeTypeSys::drawCenter(leftUp.x + bakW / 2, leftUp.y + 40, strPool[709]);
+    i++;
   }
 }
 
@@ -171,16 +175,20 @@ static bool clickSpell(uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto v = learnSpells();
+  auto index = swapIndex();
+  auto s = swapSpel(index);
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
-  for (uint8_t i = 0; i < 8; i++) {
-    if (i < v.size()) {
-      posRect = {splSlot[i].x + leftUp.x, splSlot[i].x + leftUp.y, 78, 65};
-      if (SDL_PointInRectFloat(&point, &posRect)) {
-        SpellSys::showSplComfirm(clickType, v[i], 0);
-        return true;
-      }
+  uint8_t i = 0;
+  for (auto spelId : s) {
+    if (i >= std::size(splSlot)) {
+      break;
     }
+    posRect = {splSlot[i].x + leftUp.x, splSlot[i].x + leftUp.y, 78, 65};
+    if (SDL_PointInRectFloat(&point, &posRect)) {
+      SpellSys::showSplComfirm(clickType, spelId, 0);
+      return true;
+    }
+    i++;
   }
   return false;
 }

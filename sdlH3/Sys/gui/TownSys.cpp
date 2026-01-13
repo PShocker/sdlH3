@@ -21,6 +21,7 @@
 #include "Sys/gui/AdvMapSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
+#include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
 #include <functional>
@@ -234,7 +235,8 @@ static void drawBuilds() {
     }
   }
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
-  auto top = (*topFunc.target<bool (*)()>() == TownSys::run);
+  auto funcPtr = topFunc.target<bool (*)()>();
+  auto top = (funcPtr && *topFunc.target<bool (*)()>() == TownSys::run);
   for (auto build : sortBuild) {
     auto textures =
         Global::defCache[TownCfg::townBuilds[townComp->id].at(build) + "/0"];
@@ -267,7 +269,8 @@ static void drawButton() {
                     (Global::viewPort.h - 600) / 2};
   auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
-  auto top = (*topFunc.target<bool (*)()>() == TownSys::run);
+  auto funcPtr = topFunc.target<bool (*)()>();
+  auto top = (funcPtr && *topFunc.target<bool (*)()>() == TownSys::run);
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
 }
 
@@ -360,7 +363,8 @@ static void drawResbar() {
 
 static void drawBottomInfo() {
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
-  auto top = (*topFunc.target<bool (*)()>() == TownSys::run);
+  auto funcPtr = topFunc.target<bool (*)()>();
+  auto top = (funcPtr && *topFunc.target<bool (*)()>() == TownSys::run);
   if (top) {
     SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                       (Global::viewPort.h - 600) / 2};
@@ -587,7 +591,22 @@ static void clickMageGuild(uint8_t clickType) {
 static bool clickBuild(uint8_t clickType) {
   if (mouseBuildId.has_value()) {
     // 说明点击到了建筑上
-    switch (mouseBuildId.value()) {
+    auto buildId = mouseBuildId.value();
+    auto [level, townEnt] = Global::townScnPair;
+    auto &registry = World::registrys[level];
+    auto townComp = &registry.get<TownComp>(townEnt);
+    auto factionId = townComp->id;
+
+    switch (buildId) {
+    case (uint8_t)TownCfg::Building::SPECIAL_19: {
+      switch (factionId) {
+      case (uint8_t)TownCfg::Faction::CASTLE: {
+        auto goalEnt = townComp->buildings[(uint8_t)TownCfg::Building::TAVERN];
+        World::enterTavern(entt::null, goalEnt);
+      }
+      }
+      break;
+    }
     case (uint8_t)TownCfg::Building::CAPITOL: {
       clickCapitol(clickType);
       break;
@@ -758,8 +777,9 @@ static bool clickHeroCres(uint8_t clickType) {
           World::enterCreature(*secondClick.creature,
                                static_cast<uint8_t>(Enum::CRETYPE::MOD_HERO));
         }
-        processed = true;
       }
+      Global::splitOn = false;
+      processed = true;
     }
     // 交换/合并生物
     else if (secondClick.creature && firstClick.creature) {
@@ -774,7 +794,12 @@ static bool clickHeroCres(uint8_t clickType) {
         }
 
       } else {
-        std::swap(*secondClick.creature, *firstClick.creature);
+        if (Global::splitOn) {
+          Global::splitCre[1] = secondClick.creature;
+          World::enterSplitCre();
+        } else {
+          std::swap(*secondClick.creature, *firstClick.creature);
+        }
         Global::splitOn = false;
       }
       processed = true;

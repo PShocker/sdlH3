@@ -18,10 +18,11 @@
 
 static bool canBuy() {
   auto &r = Global::resources[Global::playerId][6];
-  if (r >= 2500) {
-    return true;
-  }
-  return false;
+  return true;
+  // if (r >= 2500) {
+  //   return true;
+  // }
+  // return false;
 }
 
 static void close() { World::exitScrn(); }

@@ -27,6 +27,19 @@ struct TownCfg {
       "HALLCSTL.DEF", "HALLRAMP.DEF", "HALLTOWR.DEF", "HALLINFR.DEF",
       "HALLNECR.DEF", "HALLDUNG.DEF", "HALLSTRN.DEF", "HALLFORT.DEF"};
 
+  enum class Faction : uint8_t {
+    CASTLE,
+    RAMPART,
+    TOWER,
+    INFERNO,
+    NECROPOLIS,
+    DUNGEON,
+    STRONGHOLD,
+    FORTRESS,
+    CONFLUX,
+    NEUTRAL,
+  };
+
   enum class Building : uint8_t {
     // 通用建筑
     TOWN_HALL = 0,
