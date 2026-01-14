@@ -99,11 +99,13 @@
 #include <utility>
 #include <vector>
 
-entt::entity Ent::loadBuild(uint8_t level, TownComp &townComp,
+entt::entity Ent::loadBuild(uint8_t level, entt::entity townEnt,
                             uint8_t buildId) {
-  auto townId = townComp.id;
   entt::entity ent = entt::null;
   auto &registry = World::registrys[level];
+  auto townComp = registry.get<TownComp>(townEnt);
+  auto townId = townComp.id;
+
   switch (buildId) {
   case (uint8_t)TownCfg::Building::BLACKSMITH: {
     ent = registry.create();
@@ -226,7 +228,14 @@ entt::entity Ent::loadBuild(uint8_t level, TownComp &townComp,
     mComp->spells = r;
     break;
   }
-
+  case (uint8_t)TownCfg::Building::TAVERN: {
+    registry.emplace<TavernComp>(ent);
+    auto oComp = &registry.emplace<ObjectComp>(ent);
+    auto toComp = &registry.get<ObjectComp>(townEnt);
+    oComp->x = toComp->x;
+    oComp->y = toComp->y;
+    break;
+  }
   default: {
     break;
   }
@@ -414,7 +423,7 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
         std::any_cast<std::set<uint8_t>>(object.data["builtBuildings"]);
     std::unordered_map<uint8_t, entt::entity> builds;
     for (auto i : buildings) {
-      builds[i] = Ent::loadBuild(level, *townComp, i);
+      builds[i] = Ent::loadBuild(level, ent, i);
     }
     townComp->buildings = builds;
 
