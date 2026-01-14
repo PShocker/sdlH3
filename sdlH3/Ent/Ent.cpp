@@ -229,11 +229,8 @@ entt::entity Ent::loadBuild(uint8_t level, entt::entity townEnt,
     break;
   }
   case (uint8_t)TownCfg::Building::TAVERN: {
+    ent = registry.create();
     registry.emplace<TavernComp>(ent);
-    auto oComp = &registry.emplace<ObjectComp>(ent);
-    auto toComp = &registry.get<ObjectComp>(townEnt);
-    oComp->x = toComp->x;
-    oComp->y = toComp->y;
     break;
   }
   default: {
@@ -299,6 +296,18 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
   auto textureComp = &registry.emplace<TextureComp>(ent);
   std::string texturePath = object.name + "/0";
   uint8_t flip = SDL_FLIP_NONE;
+
+  auto objectComp = &registry.emplace<ObjectComp>(ent);
+  objectComp->type = object.id;
+  objectComp->x = object.position[0];
+  objectComp->y = object.position[1];
+  objectComp->blockTiles = loadBlockTiles(object);
+  if ((ObjectType)object.id == ObjectType::MONSTER) {
+    objectComp->accessTiles = loadMonsterAccessTiles();
+  } else {
+    objectComp->accessTiles = loadAccessTiles(object);
+  }
+
   switch ((ObjectType)object.id) {
   case ObjectType::RANDOM_HERO: {
     auto hero = std::any_cast<H3mHero>(object.data["hero"]);
@@ -1120,16 +1129,6 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
   }
   textureComp->path = texturePath;
 
-  auto objectComp = &registry.emplace<ObjectComp>(ent);
-  objectComp->type = object.id;
-  objectComp->x = object.position[0];
-  objectComp->y = object.position[1];
-  objectComp->blockTiles = loadBlockTiles(object);
-  if ((ObjectType)object.id == ObjectType::MONSTER) {
-    objectComp->accessTiles = loadMonsterAccessTiles();
-  } else {
-    objectComp->accessTiles = loadAccessTiles(object);
-  }
   auto texture = Global::defCache.at(texturePath)[0];
 
   auto positionComp = &registry.emplace<PositionComp>(ent);

@@ -3,6 +3,7 @@
 #include "Cfg/HeroCfg.h"
 #include "Comp/HeroComp.h"
 #include "Comp/ObjectComp.h"
+#include "Comp/TownComp.h"
 #include "Ent/Ent.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
@@ -14,15 +15,27 @@
 #include "Window/Window.h"
 #include "World/World.h"
 #include "entt/entity/entity.hpp"
+#include "entt/entity/fwd.hpp"
 #include <cstdint>
 
 static bool canBuy() {
-  auto &r = Global::resources[Global::playerId][6];
-  return true;
-  // if (r >= 2500) {
-  //   return true;
-  // }
-  // return false;
+  bool r = false;
+  auto &gold = Global::resources[Global::playerId][6];
+  if (gold >= 2500) {
+    r = true;
+  }
+  if (Global::goalIndex == 0xff) {
+    r = false;
+  }
+  if (Global::heroEnt == entt::null) {
+    auto [level, townEnt] = Global::townScnPair;
+    auto &registry = World::registrys[level];
+    auto &tComp = registry.get<TownComp>(townEnt);
+    if (tComp.heroEnt[1].has_value()) {
+      r = false;
+    }
+  }
+  return r;
 }
 
 static void close() { World::exitScrn(); }
@@ -45,16 +58,34 @@ static void buy() {
   World::iterateSystems.push_back([registry]() {
     auto ent = Global::tavernHeros[Global::playerId][Global::goalIndex];
     auto hComp = World::registrys[0].get<HeroComp>(ent);
-    auto heroEnt = Ent::loadHero(
-        hComp, Global::playerId, registry->get<ObjectComp>(Global::goalEnt).x,
-        registry->get<ObjectComp>(Global::goalEnt).y, World::level, 2, 0);
+    entt::entity heroEnt;
+    if (Global::heroEnt == entt::null) {
+      auto [level, townEnt] = Global::townScnPair;
+      auto &registry = World::registrys[level];
+      auto oComp = registry.get<ObjectComp>(townEnt);
+      auto x = oComp.x + oComp.accessTiles[0].first + 1;
+      auto y = oComp.y + oComp.accessTiles[0].second;
+      heroEnt =
+          Ent::loadHero(hComp, Global::playerId, x, y, World::level, 2, 0);
+      auto &tComp = registry.get<TownComp>(townEnt);
+      tComp.heroEnt[1] = heroEnt;
+      SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                        (Global::viewPort.h - 600) / 2};
+      Global::fadeRect = {leftUp.x, leftUp.y, 800, 600};
+    } else {
+      auto x = registry->get<ObjectComp>(Global::goalEnt).x;
+      auto y = registry->get<ObjectComp>(Global::goalEnt).y;
+      heroEnt =
+          Ent::loadHero(hComp, Global::playerId, x, y, World::level, 2, 0);
+      Global::fadeRect = {0, 0, Global::viewPort.w - 199,
+                          Global::viewPort.h - 47};
+    }
     Global::heros[Global::playerId].push_back({World::level, heroEnt});
     Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
 
     World::registrys[0].destroy(ent);
     return true;
   });
-  Global::fadeRect = {0, 0, Global::viewPort.w - 199, Global::viewPort.h - 47};
   World::iterateSystems.push_back(World::enterFadeScrn);
   return;
 }
@@ -66,11 +97,7 @@ static std::vector<Button> buttonInfo() {
   b.textures = Global::defCache["TPTAV01.DEF/0"];
   b.r = {272, 355, 96, 54};
   b.func = buy;
-  if (!canBuy()) {
-    b.disable = true;
-  } else {
-    b.disable = false;
-  }
+  b.disable = !canBuy();
   v.push_back(b);
 
   b.textures = Global::defCache["ICANCEL.DEF/0"];

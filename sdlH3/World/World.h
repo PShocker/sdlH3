@@ -43,6 +43,7 @@ struct World {
 
   static void enterAdvScrn();
   static void enterTownScrn(uint8_t level, entt::entity ent, uint8_t type);
+  static void enterTownLearn();
   static bool enterFadeScrn();
   static bool enterAdvPop();
   static bool enterHeroScrn(uint8_t level, entt::entity ent, uint8_t type);

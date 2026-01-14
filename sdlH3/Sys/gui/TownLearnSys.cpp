@@ -25,7 +25,7 @@
 static float bakW = 450;
 static float bakH = 340;
 
-static std::set<uint8_t> learnSpells(uint8_t i) {
+static std::set<uint8_t> studySpel(uint8_t i) {
   std::set<uint8_t> r;
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
@@ -140,7 +140,10 @@ static void drawButton() {
 
 bool TownLearnSys::run() {
   drawBackGround();
-  draw();
+  drawSpel();
+  drawPrim();
+  drawExp();
+  drawMana();
   drawButton();
   return true;
 }

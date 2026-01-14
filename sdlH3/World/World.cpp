@@ -68,6 +68,7 @@
 #include "Sys/gui/TavernSys.h"
 #include "Sys/gui/TempleSys.h"
 #include "Sys/gui/TownHallSys.h"
+#include "Sys/gui/TownLearnSys.h"
 #include "Sys/gui/TownPortalSys.h"
 #include "Sys/gui/TownSys.h"
 #include "Sys/gui/TreasureSys.h"
@@ -146,6 +147,21 @@ void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
   Global::townScnType = type;
   Global::goalIndex = 0xff;
   Global::townScnIndex = 0xff;
+
+  Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+  enterTownLearn();
+}
+
+void World::enterTownLearn() {
+  enterScrn();
+
+  iterateSystems.pop_back();
+  iterateSystems.push_back(TownLearnSys::run);
+  iterateSystems.push_back(CursorSys::run);
+
+  LMouseUpSys.push_back(TownLearnSys::leftMouseUp);
+  RMouseDownSys.push_back(TownLearnSys::rightMouseDown);
+  keyUpSys.push_back(TownLearnSys::keyUp);
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
