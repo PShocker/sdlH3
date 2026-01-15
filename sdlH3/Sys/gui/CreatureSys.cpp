@@ -129,7 +129,7 @@ static void drawCreatures() {
   auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) + "/" +
                                    std::to_string(group)];
   DwellingSys::drawCreatureBak(leftUp.x + 20, leftUp.y + 47, id, group,
-                               Global::creFrameIndex % textures.size(), 0);
+                               Global::creFrameIndex % textures.size(), 0xff);
 }
 
 static void drawButton() {

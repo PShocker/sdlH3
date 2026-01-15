@@ -149,7 +149,7 @@ void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
   Global::townScnIndex = 0xff;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
-  enterTownLearn();
+  // enterTownLearn();
 }
 
 void World::enterTownLearn() {

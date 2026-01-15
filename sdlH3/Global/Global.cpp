@@ -15,6 +15,7 @@
 #include "Comp/TownComp.h"
 #include "Comp/WhirlpoolComp.h"
 #include "Def/Def.h"
+#include "Ent/Ent.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "Pal/PlayerPal.h"
@@ -935,10 +936,50 @@ void Global::startGame() {
     }
   };
   const auto loadTavernHero = []() {
-    auto ent = World::registrys[0].create();
-    auto hComp = &World::registrys[0].emplace<HeroComp>(ent);
-    Global::tavernHeros[Global::playerId][0] =
-        Global::tavernHeros[Global::playerId][1] = ent;
+    int arr[101];
+    for (int i = 0; i <= 100; ++i) {
+      arr[i] = i;
+    }
+    std::set<int> numbers(arr, arr + 101);
+    for (auto m : {0, 1}) {
+      auto &registry = World::registrys[m];
+      for (auto ent : registry.view<HeroComp>()) {
+        auto hComp = registry.get<HeroComp>(ent);
+        numbers.erase(hComp.portrait);
+      }
+    }
+    for (auto n : {0, 1}) {
+      if (numbers.size() > 0) {
+        int random = rand() % numbers.size();
+        auto it = std::next(numbers.begin(), random);
+
+        auto heroEnt = World::registrys[0].create();
+        auto &hComp = World::registrys[0].emplace<HeroComp>(heroEnt);
+        hComp.portrait = *it;
+        auto secSkills = HeroCfg::heroSecSkills.at(hComp.portrait);
+        hComp.secSkills = secSkills;
+        hComp.level = 1;
+        hComp.primSkills = HeroCfg::heroPrimarySkills.at(0);
+
+        for (auto pair : HeroCfg::heroCreatures[hComp.portrait]) {
+          switch (pair.first) {
+          case (uint16_t)CreatureCfg::Creature::CATAPULT:
+          case (uint16_t)CreatureCfg::Creature::BALLISTA:
+          case (uint16_t)CreatureCfg::Creature::FIRST_AID_TENT:
+          case (uint16_t)CreatureCfg::Creature::AMMO_CART: {
+            break;
+          }
+          default: {
+            hComp.creatures.push_back(pair);
+            break;
+          }
+          }
+        }
+
+        numbers.erase(it);
+        Global::tavernHeros[Global::playerId][n] = heroEnt;
+      }
+    }
   };
   // loadObelisk();
   // loadPuzzle();

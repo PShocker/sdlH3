@@ -218,7 +218,9 @@ void DwellingSys::drawCreatureBak(float x, float y, uint16_t id, uint16_t group,
   } else {
     SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
   }
-  SDL_RenderRect(Window::renderer, &posRect);
+  if (colorType != 0xff) {
+    SDL_RenderRect(Window::renderer, &posRect);
+  }
   drawCreature(x, y, id, group, index,
                (uint8_t)CreatureCfg::OV_COLOR::TRANSPARENCY);
 }
