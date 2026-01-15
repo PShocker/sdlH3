@@ -19,11 +19,27 @@
 #include "Window/Window.h"
 #include "World/World.h"
 #include <cstdint>
+#include <iterator>
 #include <map>
+#include <utility>
 #include <vector>
 
 static float bakW = 450;
 static float bakH = 340;
+
+static bool visitBuild(uint8_t i, uint8_t bId) {
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  if (townComp->heroEnt[i].has_value()) {
+    auto heroEnt = townComp->heroEnt[i].value();
+    auto &heroComp = registry.get<HeroComp>(heroEnt);
+    if (townComp->visitHeros[bId].contains(heroComp.portrait)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 static std::set<uint8_t> studySpel(uint8_t i) {
   std::set<uint8_t> r;
@@ -77,6 +93,47 @@ static std::set<uint8_t> studySpel(uint8_t i) {
   return r;
 }
 
+static std::pair<uint8_t, uint8_t> studyPrim(uint8_t i) {
+  uint8_t r0 = 0xff;
+  uint8_t r1 = 0xff;
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  if (townComp->heroEnt[i].has_value()) {
+    auto heroEnt = townComp->heroEnt[i].value();
+    auto &heroComp = registry.get<HeroComp>(heroEnt);
+    switch (townComp->id) {
+    case (uint8_t)TownCfg::Faction::CONFLUX: {
+      if (!townComp->visitHeros[0].contains(heroComp.portrait)) {
+        r0 = 0;
+        r1 = 1;
+        townComp->visitHeros[0].insert(heroComp.portrait);
+      }
+      break;
+    }
+    }
+  }
+  return {r0, r1};
+}
+
+static uint32_t studyExp(uint8_t i) {
+  uint32_t r = 0xff;
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  if (townComp->heroEnt[i].has_value()) {
+    auto heroEnt = townComp->heroEnt[i].value();
+    auto &heroComp = registry.get<HeroComp>(heroEnt);
+    switch (townComp->id) {
+    case (uint8_t)TownCfg::Faction::CONFLUX: {
+      r = 0;
+      break;
+    }
+    }
+  }
+  return r;
+}
+
 static void receive() {
   World::exitScrn();
   auto &heroComp =
@@ -118,8 +175,6 @@ static void drawBackGround() {
   return;
 }
 
-const SDL_FRect primPosition = {bakW / 2 - 41, bakH / 3, 82, 93};
-
 static void draw() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
@@ -137,6 +192,37 @@ static void drawButton() {
   auto top = (*topFunc.target<bool (*)()>() == TownLearnSys::run);
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
 }
+
+const SDL_FRect spelPos[] = {{}, {}, {}, {}};
+
+static bool drawSpel() {
+  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
+                    Global::viewPort.h / 2 - bakH / 2};
+  auto s = studySpel(1);
+  if (!s.empty()) {
+    uint8_t i = 0;
+    for (auto sId : s) {
+      if (i > std::size(spelPos)) {
+        break;
+      }
+      auto posRect = spelPos[i];
+      posRect.x += leftUp.x;
+      posRect.y += leftUp.y;
+      auto textures = Global::defCache["Spells.DEF/0"];
+      auto texture = textures[sId];
+      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+      i++;
+    }
+    return true;
+  }
+  return false;
+}
+
+static void drawPrim() {}
+
+static void drawExp() {}
+
+static void drawMana() {}
 
 bool TownLearnSys::run() {
   drawBackGround();

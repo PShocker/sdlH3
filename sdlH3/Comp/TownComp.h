@@ -6,6 +6,7 @@
 #include <optional>
 #include <set>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 struct TownComp {
   uint8_t id;
@@ -20,4 +21,6 @@ struct TownComp {
   std::set<uint8_t> forbidBuildings;
   std::set<uint8_t> obligatorySpells;
   std::set<uint8_t> possibleSpells;
+
+  std::unordered_map<uint8_t, std::unordered_set<uint8_t>> visitHeros;
 };
