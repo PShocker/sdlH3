@@ -73,7 +73,7 @@ static void drawBackGround() {
   return;
 }
 
-const SDL_FRect primPosition = {bakW / 2 - 41, bakH / 3, 82, 93};
+const SDL_FRect expPos = {bakW / 2 - 41, bakH / 3, 82, 93};
 
 static void draw() {
   SDL_FRect posRect;
@@ -84,10 +84,8 @@ static void draw() {
   auto strPool = *Lang::strPool[Global::langIndex];
   if (!visited()) {
     FreeTypeSys::drawCenter(leftUp.x + bakW / 2, leftUp.y + 40, strPool[721]);
-
     auto texture = Global::defCache["PSKILL.def/0"][4];
-    posRect = {leftUp.x + primPosition.x, leftUp.y + primPosition.y,
-               primPosition.w, primPosition.h};
+    posRect = {leftUp.x + expPos.x, leftUp.y + expPos.y, expPos.w, expPos.h};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
     SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
     SDL_RenderRect(Window::renderer, &posRect);
@@ -121,8 +119,7 @@ static bool clickExp(uint8_t clickType) {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                       Global::viewPort.h / 2 - bakH / 2};
     SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
-    posRect = {leftUp.x + primPosition.x, leftUp.y + primPosition.y,
-               primPosition.w, primPosition.h};
+    posRect = {leftUp.x + expPos.x, leftUp.y + expPos.y, expPos.w, expPos.h};
     if (SDL_PointInRectFloat(&point, &posRect)) {
       HeroScrSys::showExpComfirm(clickType);
       return true;

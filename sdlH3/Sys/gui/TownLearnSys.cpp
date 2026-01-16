@@ -13,6 +13,7 @@
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
+#include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/LevelUpSys.h"
@@ -100,14 +101,11 @@ static std::pair<uint8_t, uint8_t> studyPrim(uint8_t i) {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   if (townComp->heroEnt[i].has_value()) {
-    auto heroEnt = townComp->heroEnt[i].value();
-    auto &heroComp = registry.get<HeroComp>(heroEnt);
     switch (townComp->id) {
     case (uint8_t)TownCfg::Faction::CONFLUX: {
-      if (!townComp->visitHeros[0].contains(heroComp.portrait)) {
+      if (visitBuild(1, (uint8_t)TownCfg::Building::SPECIAL_10)) {
         r0 = 0;
         r1 = 1;
-        townComp->visitHeros[0].insert(heroComp.portrait);
       }
       break;
     }
@@ -117,22 +115,37 @@ static std::pair<uint8_t, uint8_t> studyPrim(uint8_t i) {
 }
 
 static uint32_t studyExp(uint8_t i) {
-  uint32_t r = 0xff;
+  uint32_t r = 0;
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   if (townComp->heroEnt[i].has_value()) {
-    auto heroEnt = townComp->heroEnt[i].value();
-    auto &heroComp = registry.get<HeroComp>(heroEnt);
     switch (townComp->id) {
     case (uint8_t)TownCfg::Faction::CONFLUX: {
-      r = 0;
+      r = 1000;
       break;
     }
     }
   }
   return r;
 }
+
+static uint32_t studyMana(uint8_t i) {
+  uint32_t r = 0;
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  if (townComp->heroEnt[i].has_value()) {
+    switch (townComp->id) {
+    case (uint8_t)TownCfg::Faction::CONFLUX: {
+      r = 1000;
+      break;
+    }
+    }
+  }
+  return r;
+}
+static void close() { World::exitScrn(); }
 
 static void receive() {
   World::exitScrn();
@@ -175,15 +188,6 @@ static void drawBackGround() {
   return;
 }
 
-static void draw() {
-  SDL_FRect posRect;
-  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                    Global::viewPort.h / 2 - bakH / 2};
-  FreeTypeSys::setSize(13);
-  FreeTypeSys::setColor(255, 255, 255, 255);
-  auto strPool = *Lang::strPool[Global::langIndex];
-}
-
 static void drawButton() {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
@@ -218,19 +222,88 @@ static bool drawSpel() {
   return false;
 }
 
-static void drawPrim() {}
+const SDL_FRect primPos = {bakW / 2 - 41, bakH / 3, 82, 93};
 
-static void drawExp() {}
+static bool drawPrim() {
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
+                    Global::viewPort.h / 2 - bakH / 2};
+  auto p = studyPrim(1);
+  if (p.first != 0xff) {
+    auto id = p.first;
+    auto val = p.second;
+    auto texture = Global::defCache["PSKILL.def/0"][id];
+    posRect = {leftUp.x + primPos.x, leftUp.y + primPos.y, primPos.w,
+               primPos.h};
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
+    SDL_RenderRect(Window::renderer, &posRect);
+    FreeTypeSys::drawCenter(posRect.x + posRect.w / 2,
+                            posRect.y + posRect.h + 4, val);
+    return true;
+  }
+  return false;
+}
 
-static void drawMana() {}
+static bool drawExp() {
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
+                    Global::viewPort.h / 2 - bakH / 2};
+  auto e = studyExp(1);
+  if (e != 0) {
+    auto texture = Global::defCache["PSKILL.def/0"][4];
+    posRect = {leftUp.x + primPos.x, leftUp.y + primPos.y, primPos.w,
+               primPos.h};
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
+    SDL_RenderRect(Window::renderer, &posRect);
+    FreeTypeSys::drawCenter(posRect.x + posRect.w / 2,
+                            posRect.y + posRect.h + 4, e);
+    return true;
+  }
+  return false;
+}
+
+static bool drawMana() {
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
+                    Global::viewPort.h / 2 - bakH / 2};
+  auto m = studyMana(1);
+  if (m != 0) {
+    auto texture = Global::defCache["PSKILL.def/0"][5];
+    posRect = {leftUp.x + primPos.x, leftUp.y + primPos.y, primPos.w,
+               primPos.h};
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
+    SDL_RenderRect(Window::renderer, &posRect);
+    FreeTypeSys::drawCenter(posRect.x + posRect.w / 2,
+                            posRect.y + posRect.h + 4, m);
+    return true;
+  }
+  return false;
+}
 
 bool TownLearnSys::run() {
   drawBackGround();
-  drawSpel();
-  drawPrim();
-  drawExp();
-  drawMana();
+  uint8_t r = 0;
+  if (drawSpel()) {
+    r++;
+  }
+  if (drawPrim()) {
+    r++;
+  }
+  if (drawExp()) {
+    r++;
+  }
+  if (drawMana()) {
+    r++;
+  }
   drawButton();
+  if (r == 0) {
+    close();
+    return false;
+  }
+
   return true;
 }
 

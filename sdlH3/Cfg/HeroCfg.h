@@ -8,6 +8,47 @@
 #include <vector>
 struct HeroCfg {
 
+  enum class Specialty : uint8_t {
+    // 技能类特长
+    SECONDARY_SKILL,      // 对应二级技能 (如：archery, armorer, logistics等)
+    SPECIFIC_SPELL_POWER, // 特定法术效果增强 (firstAid, resurrection等)
+    SPECIAL_SPELL_LEV,    // 特定法术等级提升 (frostRing, chainLightning等)
+    SPECIAL_PECULIAR_ENCHANT,    // 特殊附魔效果 (weakness, prayer, stoneSkin等)
+    SPECIAL_FIXED_VALUE_ENCHANT, // 固定值附魔 (fortune等)
+
+    // 生物类特长
+    CREATURE, // 特定生物增强
+
+    // 属性类特长
+    PRIMARY_SKILL,                 // 主要属性 (攻击、防御)
+    GENERAL_DAMAGE_PREMY,          // 通用伤害加成
+    GENERAL_DAMAGE_REDUCTION,      // 通用伤害减免
+    MAGIC_RESISTANCE,              // 魔法抗性
+    MANA_REGENERATION,             // 法力恢复
+    MANA_PER_KNOWLEDGE_PERCENTAGE, // 知识百分比增加法力
+    LEARN_BATTLE_SPELL_CHANCE,     // 战斗中学法术几率
+    SPELL_DAMAGE,                  // 法术伤害
+    UNDEAD_RAISE_PERCENTAGE,       // 亡灵召唤百分比
+    STACKS_SPEED,                  // 部队速度
+    MOVEMENT,                      // 移动力
+    PERCENTAGE_DAMAGE_BOOST,       // 百分比伤害提升
+
+    // 资源类特长
+    GENERATE_RESOURCE, // 资源生成 (gold, mercury, sulfur等)
+    ESTATES,           // 理财术相关
+
+    // 特殊类特长
+    SPECIAL_UPGRADE,           // 特殊升级 (如：archer升级为sharpshooter)
+    SPECIFIC_SPELL_DAMAGE,     // 特定法术伤害 (fireWall, magicArrow等)
+    SPECIAL_ADD_VALUE_ENCHANT, // 特殊数值附加附魔 (disruptingRay等)
+    CREATURE_DAMAGE,           // 生物伤害
+
+    // 复合类特长
+    COMPOSITE, // 复合特长 (多个效果组合)
+
+    NONE, // 无特长
+  };
+
   enum class SecondarySkill : uint8_t {
     PATHFINDING = 0,
     ARCHERY = 1,
@@ -37,6 +78,33 @@ struct HeroCfg {
     SORCERY = 25,
     RESISTANCE = 26,
     FIRST_AID = 27
+  };
+
+  const static inline std::vector<std::pair<uint8_t, std::vector<uint8_t>>>
+      heroSpec = {
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::ARCHERY, 5}},
+  };
+
+  enum class Pro : uint8_t {
+    KNIGHT = 0,
+    CLERIC = 1,
+    RANGER = 2,
+    DRUID = 3,
+    ALCHEMIST = 4,
+    WIZARD = 5,
+    DEMON = 6,
+    HERETIC = 7,
+    DEATH_KNIGHT = 8,
+    NECROMANCER = 9,
+    OVERLORD = 10,
+    WARLOCK = 11,
+    BARBARIAN = 12,
+    BATTLE_MAGE = 13,
+    BEASTMASTER = 14,
+    WITCH = 15,
+    ELEMENTALIST = 16,
+    PLANESWALKER = 17,
   };
 
   enum class SecondaryLevel : uint8_t { BASIC = 0, ADVANCED = 1, EXPERT = 2 };
@@ -552,6 +620,166 @@ struct HeroCfg {
             (uint8_t)SecondaryLevel::BASIC},
            {(uint8_t)SecondarySkill::TACTICS,
             (uint8_t)SecondaryLevel::BASIC}} // 155
+  };
+
+  const static inline std::vector<uint8_t> heroPro = {
+      (uint8_t)Pro::KNIGHT,       // orrin (index: 0)
+      (uint8_t)Pro::KNIGHT,       // valeska (index: 1)
+      (uint8_t)Pro::KNIGHT,       // edric (index: 2)
+      (uint8_t)Pro::KNIGHT,       // sylvia (index: 3)
+      (uint8_t)Pro::KNIGHT,       // lordHaart (index: 4)
+      (uint8_t)Pro::KNIGHT,       // sorsha (index: 5)
+      (uint8_t)Pro::KNIGHT,       // christian (index: 6)
+      (uint8_t)Pro::KNIGHT,       // tyris (index: 7)
+      (uint8_t)Pro::CLERIC,       // rion (index: 8)
+      (uint8_t)Pro::CLERIC,       // adela (index: 9)
+      (uint8_t)Pro::CLERIC,       // cuthbert (index: 10)
+      (uint8_t)Pro::CLERIC,       // adelaide (index: 11)
+      (uint8_t)Pro::CLERIC,       // ingham (index: 12)
+      (uint8_t)Pro::CLERIC,       // sanya (index: 13)
+      (uint8_t)Pro::CLERIC,       // loynis (index: 14)
+      (uint8_t)Pro::CLERIC,       // caitlin (index: 15)
+      (uint8_t)Pro::RANGER,       // mephala (index: 16)
+      (uint8_t)Pro::RANGER,       // ufretin (index: 17)
+      (uint8_t)Pro::RANGER,       // jenova (index: 18)
+      (uint8_t)Pro::RANGER,       // ryland (index: 19)
+      (uint8_t)Pro::RANGER,       // thorgrim (index: 20)
+      (uint8_t)Pro::RANGER,       // ivor (index: 21)
+      (uint8_t)Pro::RANGER,       // clancy (index: 22)
+      (uint8_t)Pro::RANGER,       // kyrre (index: 23)
+      (uint8_t)Pro::DRUID,        // coronius (index: 24)
+      (uint8_t)Pro::DRUID,        // uland (index: 25)
+      (uint8_t)Pro::DRUID,        // elleshar (index: 26)
+      (uint8_t)Pro::DRUID,        // gem (index: 27)
+      (uint8_t)Pro::DRUID,        // malcom (index: 28)
+      (uint8_t)Pro::DRUID,        // melodia (index: 29)
+      (uint8_t)Pro::DRUID,        // alagar (index: 30)
+      (uint8_t)Pro::DRUID,        // aeris (index: 31)
+      (uint8_t)Pro::ALCHEMIST,    // piquedram (index: 32)
+      (uint8_t)Pro::ALCHEMIST,    // thane (index: 33)
+      (uint8_t)Pro::ALCHEMIST,    // josephine (index: 34)
+      (uint8_t)Pro::ALCHEMIST,    // neela (index: 35)
+      (uint8_t)Pro::ALCHEMIST,    // torosar (index: 36)
+      (uint8_t)Pro::ALCHEMIST,    // fafner (index: 37)
+      (uint8_t)Pro::ALCHEMIST,    // rissa (index: 38)
+      (uint8_t)Pro::ALCHEMIST,    // iona (index: 39)
+      (uint8_t)Pro::WIZARD,       // astral (index: 40)
+      (uint8_t)Pro::WIZARD,       // halon (index: 41)
+      (uint8_t)Pro::WIZARD,       // serena (index: 42)
+      (uint8_t)Pro::WIZARD,       // daremyth (index: 43)
+      (uint8_t)Pro::WIZARD,       // theodorus (index: 44)
+      (uint8_t)Pro::WIZARD,       // solmyr (index: 45)
+      (uint8_t)Pro::WIZARD,       // cyra (index: 46)
+      (uint8_t)Pro::WIZARD,       // aine (index: 47)
+      (uint8_t)Pro::DEMON,        // fiona (index: 48)
+      (uint8_t)Pro::DEMON,        // rashka (index: 49)
+      (uint8_t)Pro::DEMON,        // marius (index: 50)
+      (uint8_t)Pro::DEMON,        // ignatius (index: 51)
+      (uint8_t)Pro::DEMON,        // octavia (index: 52)
+      (uint8_t)Pro::DEMON,        // calh (index: 53)
+      (uint8_t)Pro::DEMON,        // pyre (index: 54)
+      (uint8_t)Pro::DEMON,        // nymus (index: 55)
+      (uint8_t)Pro::HERETIC,      // ayden (index: 56)
+      (uint8_t)Pro::HERETIC,      // xyron (index: 57)
+      (uint8_t)Pro::HERETIC,      // axsis (index: 58)
+      (uint8_t)Pro::HERETIC,      // olema (index: 59)
+      (uint8_t)Pro::HERETIC,      // calid (index: 60)
+      (uint8_t)Pro::HERETIC,      // ash (index: 61)
+      (uint8_t)Pro::HERETIC,      // zydar (index: 62)
+      (uint8_t)Pro::HERETIC,      // xarfax (index: 63)
+      (uint8_t)Pro::DEATH_KNIGHT, // straker (index: 64)
+      (uint8_t)Pro::DEATH_KNIGHT, // vokial (index: 65)
+      (uint8_t)Pro::DEATH_KNIGHT, // moandor (index: 66)
+      (uint8_t)Pro::DEATH_KNIGHT, // charna (index: 67)
+      (uint8_t)Pro::DEATH_KNIGHT, // tamika (index: 68)
+      (uint8_t)Pro::DEATH_KNIGHT, // isra (index: 69)
+      (uint8_t)Pro::DEATH_KNIGHT, // clavius (index: 70)
+      (uint8_t)Pro::DEATH_KNIGHT, // galthran (index: 71)
+      (uint8_t)Pro::NECROMANCER,  // septienna (index: 72)
+      (uint8_t)Pro::NECROMANCER,  // aislinn (index: 73)
+      (uint8_t)Pro::NECROMANCER,  // sandro (index: 74)
+      (uint8_t)Pro::NECROMANCER,  // nimbus (index: 75)
+      (uint8_t)Pro::NECROMANCER,  // thant (index: 76)
+      (uint8_t)Pro::NECROMANCER,  // xsi (index: 77)
+      (uint8_t)Pro::NECROMANCER,  // vidomina (index: 78)
+      (uint8_t)Pro::NECROMANCER,  // nagash (index: 79)
+      (uint8_t)Pro::OVERLORD,     // lorelei (index: 80)
+      (uint8_t)Pro::OVERLORD,     // arlach (index: 81)
+      (uint8_t)Pro::OVERLORD,     // dace (index: 82)
+      (uint8_t)Pro::OVERLORD,     // ajit (index: 83)
+      (uint8_t)Pro::OVERLORD,     // damacon (index: 84)
+      (uint8_t)Pro::OVERLORD,     // gunnar (index: 85)
+      (uint8_t)Pro::OVERLORD,     // synca (index: 86)
+      (uint8_t)Pro::OVERLORD,     // shakti (index: 87)
+      (uint8_t)Pro::WARLOCK,      // alamar (index: 88)
+      (uint8_t)Pro::WARLOCK,      // jaegar (index: 89)
+      (uint8_t)Pro::WARLOCK,      // malekith (index: 90)
+      (uint8_t)Pro::WARLOCK,      // jeddite (index: 91)
+      (uint8_t)Pro::WARLOCK,      // geon (index: 92)
+      (uint8_t)Pro::WARLOCK,      // deemer (index: 93)
+      (uint8_t)Pro::WARLOCK,      // sephinroth (index: 94)
+      (uint8_t)Pro::WARLOCK,      // darkstorn (index: 95)
+      (uint8_t)Pro::BARBARIAN,    // yog (index: 96)
+      (uint8_t)Pro::BARBARIAN,    // gurnisson (index: 97)
+      (uint8_t)Pro::BARBARIAN,    // jabarkas (index: 98)
+      (uint8_t)Pro::BARBARIAN,    // shiva (index: 99)
+      (uint8_t)Pro::BARBARIAN,    // gretchin (index: 100)
+      (uint8_t)Pro::BARBARIAN,    // krellion (index: 101)
+      (uint8_t)Pro::BARBARIAN,    // cragHack (index: 102)
+      (uint8_t)Pro::BARBARIAN,    // tyraxor (index: 103)
+      (uint8_t)Pro::BATTLE_MAGE,  // gird (index: 104)
+      (uint8_t)Pro::BATTLE_MAGE,  // vey (index: 105)
+      (uint8_t)Pro::BATTLE_MAGE,  // dessa (index: 106)
+      (uint8_t)Pro::BATTLE_MAGE,  // terek (index: 107)
+      (uint8_t)Pro::BATTLE_MAGE,  // zubin (index: 108)
+      (uint8_t)Pro::BATTLE_MAGE,  // gundula (index: 109)
+      (uint8_t)Pro::BATTLE_MAGE,  // oris (index: 110)
+      (uint8_t)Pro::BATTLE_MAGE,  // saurug (index: 111)
+      (uint8_t)Pro::BEASTMASTER,  // bron (index: 112)
+      (uint8_t)Pro::BEASTMASTER,  // drakon (index: 113)
+      (uint8_t)Pro::BEASTMASTER,  // wystan (index: 114)
+      (uint8_t)Pro::BEASTMASTER,  // tazar (index: 115)
+      (uint8_t)Pro::BEASTMASTER,  // alkin (index: 116)
+      (uint8_t)Pro::BEASTMASTER,  // korbac (index: 117)
+      (uint8_t)Pro::BEASTMASTER,  // gerwulf (index: 118)
+      (uint8_t)Pro::BEASTMASTER,  // broghild (index: 119)
+      (uint8_t)Pro::WITCH,        // mirlanda (index: 120)
+      (uint8_t)Pro::WITCH,        // rosic (index: 121)
+      (uint8_t)Pro::WITCH,        // voy (index: 122)
+      (uint8_t)Pro::WITCH,        // verdish (index: 123)
+      (uint8_t)Pro::WITCH,        // merist (index: 124)
+      (uint8_t)Pro::WITCH,        // styg (index: 125)
+      (uint8_t)Pro::WITCH,        // andra (index: 126)
+      (uint8_t)Pro::WITCH,        // tiva (index: 127)
+      (uint8_t)Pro::PLANESWALKER, // pasis (index: 128)
+      (uint8_t)Pro::PLANESWALKER, // thunar (index: 129)
+      (uint8_t)Pro::PLANESWALKER, // ignissa (index: 130)
+      (uint8_t)Pro::PLANESWALKER, // lacus (index: 131)
+      (uint8_t)Pro::PLANESWALKER, // monere (index: 132)
+      (uint8_t)Pro::PLANESWALKER, // erdamon (index: 133)
+      (uint8_t)Pro::PLANESWALKER, // fiur (index: 134)
+      (uint8_t)Pro::PLANESWALKER, // kalt (index: 135)
+      (uint8_t)Pro::ELEMENTALIST, // luna (index: 136)
+      (uint8_t)Pro::ELEMENTALIST, // brissa (index: 137)
+      (uint8_t)Pro::ELEMENTALIST, // ciele (index: 138)
+      (uint8_t)Pro::ELEMENTALIST, // labetha (index: 139)
+      (uint8_t)Pro::ELEMENTALIST, // inteus (index: 140)
+      (uint8_t)Pro::ELEMENTALIST, // aenain (index: 141)
+      (uint8_t)Pro::ELEMENTALIST, // gelare (index: 142)
+      (uint8_t)Pro::ELEMENTALIST, // grindan (index: 143)
+      (uint8_t)Pro::KNIGHT,       // sirMullich (index: 144) - class: knight
+      (uint8_t)Pro::WITCH,        // adrienne (index: 145) - class: witch
+      (uint8_t)Pro::KNIGHT,       // catherine (index: 146) - class: knight
+      (uint8_t)Pro::WIZARD,       // dracon (index: 147) - class: wizard
+      (uint8_t)Pro::RANGER,       // gelu (index: 148) - class: ranger
+      (uint8_t)Pro::BARBARIAN,    // kilgor (index: 149) - class: barbarian
+      (uint8_t)
+          Pro::DEATH_KNIGHT,   // undeadHaart (index: 150) - class: deathknight
+      (uint8_t)Pro::OVERLORD,  // mutare (index: 151) - class: overlord
+      (uint8_t)Pro::KNIGHT,    // roland (index: 152) - class: knight
+      (uint8_t)Pro::OVERLORD,  // mutareDrake (index: 153) - class: overlord
+      (uint8_t)Pro::BARBARIAN, // boragus (index: 154) - class: barbarian
+      (uint8_t)Pro::DEMON,     // xeron (index: 155) - class: demoniac
   };
 
   // HCTRAITS.TXT
