@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Cfg/CreatureCfg.h"
+#include "Cfg/SpellCfg.h"
 #include <array>
 #include <cstdint>
 #include <string>
@@ -80,10 +81,83 @@ struct HeroCfg {
     FIRST_AID = 27
   };
 
-  const static inline std::vector<std::pair<uint8_t, std::vector<uint8_t>>>
+  const static inline std::vector<std::pair<uint8_t, std::vector<int32_t>>>
       heroSpec = {
           {(uint8_t)Specialty::SECONDARY_SKILL,
            {(uint8_t)SecondarySkill::ARCHERY, 5}},
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::ARCHER,
+            (uint8_t)CreatureCfg::Creature::MARKSMAN, 5}},
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::GRIFFIN,
+            (uint8_t)CreatureCfg::Creature::ROYAL_GRIFFIN, 5}},
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::NAVIGATION, 5}},
+          {(uint8_t)Specialty::GENERATE_RESOURCE,
+           {(uint8_t)6, 350}}, // lordHaart
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::SWORDSMAN,
+            (uint8_t)CreatureCfg::Creature::CRUSADER, 5}}, // sorsha
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::BALLISTA, 5}}, // christian
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::CAVALIER,
+            (uint8_t)CreatureCfg::Creature::CHAMPION, 5}}, // tyris
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::FIRST_AID, 5}}, // tyris
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Bless, 5}}, // adela
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Weakness, 5}}, // cuthbert
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::FrostRing, 5}}, // adelaide
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::MONK,
+            (uint8_t)CreatureCfg::Creature::ZEALOT, 5}}, // ingham
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::EAGLE_EYE, 5}}, // sanya
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Prayer, 5}},                    // loynis
+          {(uint8_t)Specialty::GENERATE_RESOURCE, {(uint8_t)6, 350}}, // caitlin
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::ARMORER, 5}}, // mephala
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::DWARF,
+            (uint8_t)CreatureCfg::Creature::BATTLE_DWARF, 5}},        // ufretin
+          {(uint8_t)Specialty::GENERATE_RESOURCE, {(uint8_t)6, 350}}, // jenova
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::DENDROID_GUARD,
+            (uint8_t)CreatureCfg::Creature::DENDROID_SOLDIER, 5}}, // ryland
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::RESISTANCE, 5}}, // thorgrim
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::WOOD_ELF,
+            (uint8_t)CreatureCfg::Creature::GRAND_ELF, 5}}, // ivor
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::UNICORN,
+            (uint8_t)CreatureCfg::Creature::WAR_UNICORN, 5}}, // clancy
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::LOGISTICS, 5}}, // kyrre
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Slayer, 5}}, // cuthbert
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Cure, 5}}, // uland
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::INTELLIGENCE, 5}}, // elleshar
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::FIRST_AID, 5}}, // gem
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::EAGLE_EYE, 5}}, // malcom
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Fortune, 5}}, // melodia
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::IceBolt, 5}}, // alagar
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::PEGASUS,
+            (uint8_t)CreatureCfg::Creature::SILVER_PEGASUS, 5}}, // aeris
+             {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::STONE_GARGOYLE,
+            (uint8_t)CreatureCfg::Creature::OBSIDIAN_GARGOYLE, 5}}, // piquedram
   };
 
   enum class Pro : uint8_t {

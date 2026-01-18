@@ -11,4 +11,7 @@ struct TownSys {
   static bool rightMouseUp(float x, float y);
   static bool rightMouseDown(float x, float y);
   static bool keyUp(uint16_t key);
+
+  static void heroVisit();
+  static uint8_t visitBuild(uint8_t bId);
 };

@@ -105,6 +105,10 @@ struct TownCfg {
     HORDE_2_UPGR = 242,
   };
 
+  const static inline std::vector<uint8_t> townForceVisit[] = {
+      {(uint8_t)Building::SPECIAL_10},
+  };
+
   const static inline std::unordered_map<uint8_t, std::string> townBorder[] = {
       {// 城堡 (0)
        {(uint8_t)Building::MAGE_GUILD_1, "TOCSMAG1.pcx"},

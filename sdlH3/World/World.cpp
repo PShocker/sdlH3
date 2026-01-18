@@ -1,4 +1,5 @@
 #include "World.h"
+#include "Cfg/TownCfg.h"
 #include "Comp/PositionComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
@@ -68,7 +69,6 @@
 #include "Sys/gui/TavernSys.h"
 #include "Sys/gui/TempleSys.h"
 #include "Sys/gui/TownHallSys.h"
-#include "Sys/gui/TownLearnSys.h"
 #include "Sys/gui/TownPortalSys.h"
 #include "Sys/gui/TownSys.h"
 #include "Sys/gui/TreasureSys.h"
@@ -82,6 +82,11 @@
 #include "Sys/gui/WhirlPoolSys.h"
 #include "Sys/gui/WindMillSys.h"
 #include "Sys/gui/WitchHutSys.h"
+#include "Sys/gui/building/Special10Sys.h"
+#include "Sys/gui/building/Special18Sys.h"
+#include "Sys/gui/building/Special19Sys.h"
+#include "Sys/gui/building/Special20Sys.h"
+#include "Sys/gui/building/Special21Sys.h"
 #include "Window/Window.h"
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
@@ -149,21 +154,37 @@ void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
   Global::townScnIndex = 0xff;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
-  // enterTownLearn();
+  TownSys::heroVisit();
 }
 
-void World::enterTownLearn() {
+void World::enterSpecBuild(uint8_t bId) {
   enterScrn();
-
   iterateSystems.pop_back();
-  iterateSystems.push_back(TownLearnSys::run);
-  iterateSystems.push_back(CursorSys::run);
-
-  LMouseUpSys.push_back(TownLearnSys::leftMouseUp);
-  RMouseDownSys.push_back(TownLearnSys::rightMouseDown);
-  keyUpSys.push_back(TownLearnSys::keyUp);
-
-  Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+  switch (bId) {
+  case (uint8_t)TownCfg::Building::SPECIAL_10: {
+    iterateSystems.push_back(Special10Sys::run);
+    break;
+  }
+  case (uint8_t)TownCfg::Building::SPECIAL_18: {
+    iterateSystems.push_back(Special18Sys::run);
+    break;
+  }
+  case (uint8_t)TownCfg::Building::SPECIAL_19: {
+    iterateSystems.push_back(Special19Sys::run);
+    break;
+  }
+  case (uint8_t)TownCfg::Building::SPECIAL_20: {
+    iterateSystems.push_back(Special20Sys::run);
+    break;
+  }
+  case (uint8_t)TownCfg::Building::SPECIAL_21: {
+    iterateSystems.push_back(Special21Sys::run);
+    break;
+  }
+  default: {
+    break;
+  }
+  }
 }
 
 void World::enterTownHall() {

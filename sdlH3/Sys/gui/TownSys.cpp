@@ -2,8 +2,10 @@
 #include "BMPFont/BMPFont.h"
 #include "CameraSys.h"
 #include "Cfg/HeroCfg.h"
+#include "Cfg/SpellCfg.h"
 #include "Cfg/TownCfg.h"
 #include "Comp/HeroComp.h"
+#include "Comp/MageGuildComp.h"
 #include "Comp/ObjectComp.h"
 #include "Comp/PlayerIdComp.h"
 #include "Comp/PositionComp.h"
@@ -12,6 +14,7 @@
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
+#include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "Pcx/Pcx.h"
 #include "SDL3/SDL_rect.h"
@@ -35,6 +38,79 @@
 
 static std::optional<uint8_t> mouseBuildId;
 static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
+
+uint8_t TownSys::visitBuild(uint8_t bId) {
+  uint8_t r = 0xff;
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  for (auto i : {0, 1}) {
+    if (townComp->heroEnt[i].has_value()) {
+      auto heroEnt = townComp->heroEnt[i].value();
+      auto &heroComp = registry.get<HeroComp>(heroEnt);
+      if (townComp->visitHeros[bId].contains(heroComp.portrait)) {
+        return i;
+      }
+    }
+  }
+  return r;
+}
+
+static std::set<uint8_t> studySpel(uint8_t i) {
+  std::set<uint8_t> r;
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  for (auto i : {(uint8_t)TownCfg::Building::MAGE_GUILD_1,
+                 (uint8_t)TownCfg::Building::MAGE_GUILD_2,
+                 (uint8_t)TownCfg::Building::MAGE_GUILD_3,
+                 (uint8_t)TownCfg::Building::MAGE_GUILD_4,
+                 (uint8_t)TownCfg::Building::MAGE_GUILD_5}) {
+    if (townComp->buildings.contains(i)) {
+      auto mEnt = townComp->buildings[i];
+      auto &mComp = registry.get<MageGuildComp>(mEnt);
+      r.insert(mComp.spells.begin(), mComp.spells.end());
+    }
+  }
+  // 智慧术
+  if (townComp->heroEnt[i].has_value()) {
+    auto heroEnt = townComp->heroEnt[i].value();
+    auto &heroComp = registry.get<HeroComp>(heroEnt);
+    int8_t wisdom = HeroScrSys::heroSecLevel(
+        heroComp, (uint8_t)HeroCfg::SecondarySkill::WISDOM);
+    std::set<uint8_t> s;
+    if (wisdom == -1) {
+      // 只能学习1-2级技能
+      auto v1 = SpellCfg::SpellLevels[1];
+      auto v2 = SpellCfg::SpellLevels[2];
+
+      s.insert(v1.begin(), v1.end());
+      s.insert(v2.begin(), v2.end());
+
+    } else {
+      for (auto i = 1; i <= wisdom + 3; i++) {
+        auto v = SpellCfg::SpellLevels[i];
+        s.insert(v.begin(), v.end());
+      }
+    }
+    heroComp.spells.insert(s.begin(), s.end());
+  }
+  return r;
+}
+
+void TownSys::heroVisit() {
+  studySpel(0);
+  studySpel(1);
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto id = townComp->id;
+  for (auto bId : TownCfg::townForceVisit[id]) {
+    if (visitBuild(bId) != 0xff) {
+      World::enterSpecBuild(bId);
+    }
+  }
+}
 
 static std::unordered_set<uint8_t> townVisiableBuild() {
   auto [level, townEnt] = Global::townScnPair;

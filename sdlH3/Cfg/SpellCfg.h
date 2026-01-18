@@ -7,7 +7,7 @@
 
 void SummonBoat(std::any data);
 void ScuttleBoat(std::any data);
-void ViewAir(std::any data);
+void Visions(std::any data);
 void ViewEarth(std::any data);
 void Disguise(std::any data);
 void ViewAir(std::any data);
@@ -77,6 +77,85 @@ void SummonWaterElemental(std::any data);
 void SummonAirElemental(std::any data);
 
 struct SpellCfg {
+
+ enum class Spell : uint8_t {
+    SummonBoat = 0,            // 0: 召船术
+    ScuttleBoat = 1,           // 1: 摧毁船只
+    Visions = 2,               // 2: 透视之眼
+    ViewEarth = 3,             // 3: 透视大地
+    Disguise = 4,              // 4: 伪装大法
+    ViewAir = 5,              // 5: 透视大气 (复用ViewAir函数)
+    Fly = 6,                   // 6: 飞行奇术
+    WaterWalk = 7,             // 7: 凌波微步
+    DimensionDoor = 8,         // 8: 异次元之门
+    TownPortal = 9,            // 9: 时空之门
+    
+    Quicksand = 10,            // 10: 流沙陷阱
+    LandMine = 11,             // 11: 埋设地雷
+    ForceField = 12,           // 12: 大力神盾
+    FireWall = 13,             // 13: 烈火魔墙
+    Earthquake = 14,           // 14: 地动山摇
+    MagicArrow = 15,           // 15: 魔法神箭
+    IceBolt = 16,              // 16: 霹雳寒冰
+    LightningBolt = 17,        // 17: 霹雳闪电
+    Implosion = 18,            // 18: 雷鸣爆弹
+    ChainLightning = 19,       // 19: 连锁闪电
+    
+    FrostRing = 20,            // 20: 寒冰魔环
+    Fireball = 21,             // 21: 连珠火球
+    Inferno = 22,              // 22: 地狱烈焰
+    MeteorShower = 23,         // 23: 流星火雨
+    DeathRipple = 24,          // 24: 死亡波纹
+    DestroyUndead = 25,        // 25: 亡灵杀手
+    Armageddon = 26,           // 26: 末日审判
+    Shield = 27,               // 27: 护体神盾
+    AirShield = 28,            // 28: 大气神盾
+    FireShield = 29,           // 29: 烈火神盾
+    
+    ProtectionfromAir = 30,    // 30: 御气奇术
+    ProtectionfromFire = 31,   // 31: 御火奇术
+    ProtectionfromWater = 32,  // 32: 御水奇术
+    ProtectionfromEarth = 33,  // 33: 御土奇术
+    AntiMagic = 34,            // 34: 抗魔大法
+    Dispel = 35,               // 35: 驱魔大法
+    MagicMirror = 36,          // 36: 魔法神镜
+    Cure = 37,                 // 37: 疗伤
+    Resurrection = 38,         // 38: 转世重生
+    AnimateDead = 39,          // 39: 聚灵奇术
+    
+    Sacrifice = 40,            // 40: 牺牲
+    Bless = 41,                // 41: 圣灵佑佐
+    Curse = 42,                // 42: 恶咒附身
+    Bloodlust = 43,            // 43: 嗜血奇术
+    Precision = 44,            // 44: 百发百中
+    Weakness = 45,             // 45: 虚弱无力
+    StoneSkin = 46,            // 46: 护体石肤
+    DisruptingRay = 47,        // 47: 毁灭之光
+    Prayer = 48,               // 48: 祈祷
+    Mirth = 49,                // 49: 欢欣鼓舞
+    
+    Sorrow = 50,               // 50: 悲痛欲绝
+    Fortune = 51,              // 51: 幸运之神
+    Misfortune = 52,           // 52: 大难临头
+    Haste = 53,                // 53: 攻击加速
+    Slow = 54,                 // 54: 迟缓大法
+    Slayer = 55,               // 55: 屠戮成性
+    Frenzy = 56,               // 56: 孤注一掷
+    TitansLightningBolt = 57,  // 57: 泰坦之箭
+    Counterstrike = 58,        // 58: 反戈一击
+    Berserk = 59,              // 59: 丧心病狂
+    
+    Hypnotize = 60,            // 60: 蛊惑人心
+    Forgetfulness = 61,        // 61: 失忆大法
+    Blind = 62,                // 62: 双目失明
+    Teleport = 63,             // 63: 瞬间移动
+    RemoveObstacle = 64,       // 64: 驱除障碍
+    MirrorImage = 65,          // 65: 镜像大法
+    SummonFireElemental = 66,  // 66: 召唤火元素
+    SummonEarthElemental = 67, // 67: 召唤土元素
+    SummonWaterElemental = 68, // 68: 召唤水元素
+    SummonAirElemental = 69    // 69: 召唤气元素
+};
 
   const static inline std::vector<std::vector<bool>> SpellSchool = {
       // 0: 召船术 (Summon Boat)
@@ -406,10 +485,10 @@ struct SpellCfg {
   const static inline std::vector<void (*)(std::any)> SpellFunc = {
       &SummonBoat,    // 0: 召船术
       &ScuttleBoat,   // 1: 摧毁船只
-      &ViewAir,       // 2: 透视之眼
+      &Visions,       // 2: 透视之眼
       &ViewEarth,     // 3: 透视大地
       &Disguise,      // 4: 伪装大法
-      &ViewAir,       // 5: 透视大气 (复用ViewAir函数)
+      &ViewAir,       // 5: 透视大气 
       &Fly,           // 6: 飞行奇术
       &WaterWalk,     // 7: 凌波微步
       &DimensionDoor, // 8: 异次元之门
