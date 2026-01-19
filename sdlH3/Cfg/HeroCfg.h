@@ -2,6 +2,7 @@
 
 #include "Cfg/CreatureCfg.h"
 #include "Cfg/SpellCfg.h"
+#include "Enum/Enum.h"
 #include <array>
 #include <cstdint>
 #include <string>
@@ -94,7 +95,7 @@ struct HeroCfg {
           {(uint8_t)Specialty::SECONDARY_SKILL,
            {(uint8_t)SecondarySkill::NAVIGATION, 5}},
           {(uint8_t)Specialty::GENERATE_RESOURCE,
-           {(uint8_t)6, 350}}, // lordHaart
+           {(uint8_t)Enum::RESTYPE::GOLD, 350}}, // lordHaart
           {(uint8_t)Specialty::CREATURE,
            {(uint8_t)CreatureCfg::Creature::SWORDSMAN,
             (uint8_t)CreatureCfg::Creature::CRUSADER, 5}}, // sorsha
@@ -155,9 +156,201 @@ struct HeroCfg {
           {(uint8_t)Specialty::CREATURE,
            {(uint8_t)CreatureCfg::Creature::PEGASUS,
             (uint8_t)CreatureCfg::Creature::SILVER_PEGASUS, 5}}, // aeris
-             {(uint8_t)Specialty::CREATURE,
+          {(uint8_t)Specialty::CREATURE,
            {(uint8_t)CreatureCfg::Creature::STONE_GARGOYLE,
             (uint8_t)CreatureCfg::Creature::OBSIDIAN_GARGOYLE, 5}}, // piquedram
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::GENIE,
+            (uint8_t)CreatureCfg::Creature::MASTER_GENIE, 5}}, // thane
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::IRON_GOLEM,
+            (uint8_t)CreatureCfg::Creature::STONE_GOLEM, 5}}, // josephine
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::ARMORER, 5}}, // neela
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::BALLISTA, 5}}, // torosar
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::NAGA,
+            (uint8_t)CreatureCfg::Creature::NAGA_QUEEN, 5}}, // fafner
+          {(uint8_t)Specialty::GENERATE_RESOURCE,
+           {(uint8_t)Enum::RESTYPE::MERCURY, 1}}, // rissa
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::GENIE,
+            (uint8_t)CreatureCfg::Creature::MASTER_GENIE, 5}}, // iona
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Hypnotize, 5}}, // cuthbert
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::MYSTICISM, 5}}, // halon
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::EAGLE_EYE, 5}}, // serena
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Fortune, 5}}, // daremyth
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::MAGE,
+            (uint8_t)CreatureCfg::Creature::ARCH_MAGE, 5}}, // theodorus
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::ChainLightning, 5}}, // daremyth
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Haste, 5}}, // cyra
+          {(uint8_t)Specialty::GENERATE_RESOURCE,
+           {(uint8_t)Enum::RESTYPE::GOLD, 350}}, // aine
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::HELL_HOUND,
+            (uint8_t)CreatureCfg::Creature::CERBERUS, 5}}, // fiona
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::EFREETI,
+            (uint8_t)CreatureCfg::Creature::EFREET_SULTAN, 5}}, // rashka
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::DEMON,
+            (uint8_t)CreatureCfg::Creature::HORNED_DEMON, 5}}, // marius
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::IMP,
+            (uint8_t)CreatureCfg::Creature::FAMILIAR, 5}}, // ignatius
+          {(uint8_t)Specialty::GENERATE_RESOURCE,
+           {(uint8_t)Enum::RESTYPE::GOLD, 350}}, // octavia
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::GOG,
+            (uint8_t)CreatureCfg::Creature::MAGOG, 5}}, // ignatius
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::BALLISTA, 5}}, // pyre
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::PIT_FIEND,
+            (uint8_t)CreatureCfg::Creature::PIT_LORD, 5}}, // nymus
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::INTELLIGENCE, 5}}, // ayden
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Inferno, 5}}, // xyron
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::MYSTICISM, 5}}, // axsis
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Weakness, 5}}, // olema
+          {(uint8_t)Specialty::GENERATE_RESOURCE,
+           {(uint8_t)Enum::RESTYPE::SULFUR, 1}}, // calid
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Bloodlust, 5}}, // olema
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::SORCERY, 5}}, // zydar
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Fireball, 5}}, // xarfax
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::WALKING_DEAD,
+            (uint8_t)CreatureCfg::Creature::ZOMBIE, 5}}, // straker
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::VAMPIRE,
+            (uint8_t)CreatureCfg::Creature::VAMPIRE_LORD, 5}}, // straker
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::LICH,
+            (uint8_t)CreatureCfg::Creature::POWER_LICH, 5}}, // moandor
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::WIGHT,
+            (uint8_t)CreatureCfg::Creature::WRAITH, 5}}, // charna
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::BLACK_KNIGHT,
+            (uint8_t)CreatureCfg::Creature::DREAD_KNIGHT, 5}}, // tamika
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::NECROMANCY, 5}}, // zydar
+          {(uint8_t)Specialty::GENERATE_RESOURCE,
+           {(uint8_t)Enum::RESTYPE::GOLD, 350}}, // clavius
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::SKELETON,
+            (uint8_t)CreatureCfg::Creature::SKELETON_WARRIOR, 5}}, // tamika
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::DeathRipple, 5}}, // daremyth
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::MeteorShower, 5}}, // daremyth
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::SORCERY, 5}}, // sandro
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::EAGLE_EYE, 5}}, // sandro
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::AnimateDead, 5}}, // daremyth
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::StoneSkin, 5}}, // daremyth
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::NECROMANCY, 5}}, // sandro
+          {(uint8_t)Specialty::GENERATE_RESOURCE,
+           {(uint8_t)Enum::RESTYPE::GOLD, 350}}, // clavius
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::HARPY,
+            (uint8_t)CreatureCfg::Creature::HARPY_HAG, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::BALLISTA, 5}}, // arlach
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::MINOTAUR,
+            (uint8_t)CreatureCfg::Creature::MINOTAUR_KING, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::BEHOLDER,
+            (uint8_t)CreatureCfg::Creature::EVIL_EYE, 5}}, // lorelei
+          {(uint8_t)Specialty::GENERATE_RESOURCE,
+           {(uint8_t)Enum::RESTYPE::GOLD, 350}}, // clavius
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::LOGISTICS, 5}}, // sandro
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::MANTICORE,
+            (uint8_t)CreatureCfg::Creature::SCORPICORE, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::MANTICORE,
+            (uint8_t)CreatureCfg::Creature::SCORPICORE, 5}}, // lorelei
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Resurrection, 5}}, // daremyth
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::MYSTICISM, 5}}, // sandro
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::SORCERY, 5}}, // sandro
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Resurrection, 5}}, // daremyth
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::EAGLE_EYE, 5}}, // sandro
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::MeteorShower, 5}}, // daremyth
+          {(uint8_t)Specialty::GENERATE_RESOURCE,
+           {(uint8_t)Enum::RESTYPE::CRYSTAL, 1}}, // clavius
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::StoneSkin, 5}}, // daremyth
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::CYCLOPS,
+            (uint8_t)CreatureCfg::Creature::CYCLOPS_KING, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::BALLISTA, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::ORC,
+            (uint8_t)CreatureCfg::Creature::ORC_CHIEFTAIN, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::ROC,
+            (uint8_t)CreatureCfg::Creature::THUNDERBIRD, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::GOBLIN,
+            (uint8_t)CreatureCfg::Creature::HOBGOBLIN, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::OGRE,
+            (uint8_t)CreatureCfg::Creature::OGRE_MAGE, 5}}, // lorelei
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::OFFENCE, 5}}, // sandro
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::WOLF_RIDER,
+            (uint8_t)CreatureCfg::Creature::WOLF_RAIDER, 5}}, // lorelei
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::SORCERY, 5}}, // sandro
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::OGRE,
+            (uint8_t)CreatureCfg::Creature::OGRE_MAGE, 5}}, // lorelei
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::LOGISTICS, 5}}, // sandro
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Haste, 5}}, // daremyth
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Precision, 5}}, // daremyth
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::OFFENCE, 5}}, // sandro
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::EAGLE_EYE, 5}}, // sandro
+          {(uint8_t)Specialty::GENERATE_RESOURCE,
+           {(uint8_t)Enum::RESTYPE::GEM, 1}}, // clavius
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::BALLISTA, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::GNOLL,
+            (uint8_t)CreatureCfg::Creature::GNOLL_MARAUDER, 5}}, // lorelei
   };
 
   enum class Pro : uint8_t {

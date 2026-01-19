@@ -95,6 +95,16 @@ struct Enum {
     UPLEFT = 16,
   };
 
+  enum class RESTYPE : uint8_t {
+    CRYSTAL = 0,
+    GEM = 1,
+    MERCURY = 2,
+    ORE = 3,
+    SULFUR = 4,
+    WOOD = 5,
+    GOLD = 6,
+  };
+
   enum class SCNTYPE : uint8_t {
     MOD,
     POP,
