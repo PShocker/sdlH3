@@ -6,14 +6,14 @@
 #include <cstring>
 #include <vector>
 
-static SDL_AudioStream *stream = NULL;
-
 static SDL_AudioSpec spec = {
     .format = SDL_AUDIO_S16, .channels = 2, .freq = 44100};
 
 static bool playAudio() {
+  auto audio = Global::audio;
+
   const int minimum_audio = (int)(44100 * 0.02f) * 2 * 2;
-  if (SDL_GetAudioStreamQueued(stream) < minimum_audio) {
+  if (SDL_GetAudioStreamQueued(audio) < minimum_audio) {
     uint8_t *data = (uint8_t *)SDL_stack_alloc(uint8_t, minimum_audio);
     SDL_memset(data, 0, minimum_audio * sizeof(uint8_t));
     for (auto &[k, v] : Global::audioData) {
@@ -24,7 +24,7 @@ static bool playAudio() {
       }
       v += minimum_audio;
     }
-    SDL_PutAudioStreamData(stream, data, minimum_audio);
+    SDL_PutAudioStreamData(audio, data, minimum_audio);
     SDL_stack_free(data);
     return true;
   }
@@ -39,9 +39,10 @@ static void clearAudio() {
 }
 
 void AudioSys::init() {
-  stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec,
-                                     NULL, NULL);
-  SDL_ResumeAudioStreamDevice(stream);
+  auto audio = Global::audio;
+  audio = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec,
+                                    NULL, NULL);
+  SDL_ResumeAudioStreamDevice(audio);
   return;
 }
 
