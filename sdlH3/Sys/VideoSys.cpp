@@ -3,14 +3,17 @@
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_timer.h"
 #include "Window/Window.h"
+#include <cstddef>
 #include <cstdint>
 
+extern "C" {
+#include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/avutil.h>
 #include <libavutil/mastering_display_metadata.h>
 #include <libavutil/pixdesc.h>
 #include <libswscale/swscale.h>
-#include <libavcodec/avcodec.h>
+}
 #include <string>
 
 static uint64_t video_start;
@@ -29,17 +32,6 @@ static double first_pts = -1.0;
 struct SwsContextContainer {
   struct SwsContext *context;
 };
-
-static SDL_Colorspace GetFrameColorspace(AVFrame *frame) {
-  SDL_Colorspace colorspace = SDL_COLORSPACE_SRGB;
-
-  if (frame && frame->colorspace != AVCOL_SPC_RGB) {
-    colorspace = (SDL_Colorspace)SDL_DEFINE_COLORSPACE(
-        SDL_COLOR_TYPE_YCBCR, frame->color_range, frame->color_primaries,
-        frame->color_trc, frame->colorspace, frame->chroma_location);
-  }
-  return colorspace;
-}
 
 static SDL_PixelFormat GetTextureFormat(enum AVPixelFormat format) {
   switch (format) {
@@ -90,6 +82,17 @@ static SDL_PixelFormat GetTextureFormat(enum AVPixelFormat format) {
   default:
     return SDL_PIXELFORMAT_UNKNOWN;
   }
+}
+
+static SDL_Colorspace GetFrameColorspace(AVFrame *frame) {
+  SDL_Colorspace colorspace = SDL_COLORSPACE_SRGB;
+
+  if (frame && frame->colorspace != AVCOL_SPC_RGB) {
+    colorspace = (SDL_Colorspace)SDL_DEFINE_COLORSPACE(
+        SDL_COLOR_TYPE_YCBCR, frame->color_range, frame->color_primaries,
+        frame->color_trc, frame->colorspace, frame->chroma_location);
+  }
+  return colorspace;
 }
 
 static SDL_PropertiesID CreateVideoTextureProperties(AVFrame *frame,
@@ -149,15 +152,6 @@ static SDL_PropertiesID CreateVideoTextureProperties(AVFrame *frame,
   SDL_SetNumberProperty(props, SDL_PROP_TEXTURE_CREATE_HEIGHT_NUMBER, height);
 
   return props;
-}
-
-static void SDLCALL FreeSwsContextContainer(void *userdata, void *value) {
-  struct SwsContextContainer *sws_container =
-      (struct SwsContextContainer *)value;
-  if (sws_container->context) {
-    sws_freeContext(sws_container->context);
-  }
-  SDL_free(sws_container);
 }
 
 static bool GetTextureForMemoryFrame(AVFrame *frame, SDL_Texture **texture) {
@@ -221,6 +215,14 @@ static bool GetTextureForMemoryFrame(AVFrame *frame, SDL_Texture **texture) {
       if (!sws_container) {
         return false;
       }
+      auto FreeSwsContextContainer = [](void *userdata, void *value) {
+        struct SwsContextContainer *sws_container =
+            (struct SwsContextContainer *)value;
+        if (sws_container->context) {
+          sws_freeContext(sws_container->context);
+        }
+        SDL_free(sws_container);
+      };
       SDL_SetPointerPropertyWithCleanup(props, SWS_CONTEXT_CONTAINER_PROPERTY,
                                         sws_container, FreeSwsContextContainer,
                                         NULL);
@@ -282,8 +284,8 @@ static AVCodecContext *OpenVideoStream(AVFormatContext *ic, int stream,
   AVStream *st = ic->streams[stream];
   AVCodecParameters *codecpar = st->codecpar;
   AVCodecContext *context;
-  const AVCodecHWConfig *config;
-  int i;
+  const AVCodecHWConfig *config = nullptr;
+  int i = 0;
   int result;
 
   SDL_Log("Video stream: %s %dx%d", avcodec_get_name(codec->id),
@@ -305,27 +307,6 @@ static AVCodecContext *OpenVideoStream(AVFormatContext *ic, int stream,
     return NULL;
   }
   context->pkt_timebase = ic->streams[stream]->time_base;
-
-  result = av_hwdevice_ctx_create(&context->hw_device_ctx, config->device_type,
-                                  NULL, NULL, 0);
-  if (result < 0) {
-    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                 "Couldn't create %s hardware device context: %s",
-                 av_hwdevice_get_type_name(config->device_type),
-                 av_err2str(result));
-  } else {
-    SDL_Log("Using %s hardware acceleration with pixel format %s",
-            av_hwdevice_get_type_name(config->device_type),
-            av_get_pix_fmt_name(config->pix_fmt));
-  }
-
-  if (codecpar->codec_id == AV_CODEC_ID_VVC) {
-    context->strict_std_compliance = -2;
-
-    /* Enable threaded decoding, VVC decode is slow */
-    context->thread_count = SDL_GetNumLogicalCPUCores();
-    context->thread_type = (FF_THREAD_FRAME | FF_THREAD_SLICE);
-  }
 
   result = avcodec_open2(context, codec, NULL);
   if (result < 0) {
@@ -375,7 +356,7 @@ static AVCodecContext *OpenAudioStream(AVFormatContext *ic, int stream,
   return context;
 }
 
-static void init(const std::string &path) {
+void VideoSys::init(const std::string &path) {
   auto result = avformat_open_input(&ic, path.c_str(), NULL, NULL);
   if (result < 0) {
     std::abort();
@@ -407,7 +388,62 @@ static void init(const std::string &path) {
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "av_frame_alloc failed");
     std::abort();
   }
+
+  result = av_read_frame(ic, pkt);
+  if (result < 0) {
+    SDL_Log("End of stream, finishing decode");
+    if (audio_context) {
+      avcodec_flush_buffers(audio_context);
+    }
+    if (video_context) {
+      avcodec_flush_buffers(video_context);
+    }
+  } else {
+    if (pkt->stream_index == audio_stream) {
+      result = avcodec_send_packet(audio_context, pkt);
+      if (result < 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "avcodec_send_packet(audio_context) failed: %s",
+                     av_err2str(result));
+      }
+    } else if (pkt->stream_index == video_stream) {
+      result = avcodec_send_packet(video_context, pkt);
+      if (result < 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "avcodec_send_packet(video_context) failed: %s",
+                     av_err2str(result));
+      }
+    }
+    av_packet_unref(pkt);
+  }
 }
+
+static bool GetTextureForFrame(AVFrame *frame, SDL_Texture **texture) {
+  return GetTextureForMemoryFrame(frame, texture);
+}
+
+static void DisplayVideoTexture(AVFrame *frame) {
+  /* Update the video texture */
+  if (!GetTextureForFrame(frame, &video_texture)) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                 "Couldn't get texture for frame: %s", SDL_GetError());
+    return;
+  }
+
+  SDL_FRect src;
+  src.x = 0.0f;
+  src.y = 0.0f;
+  src.w = (float)frame->width;
+  src.h = (float)frame->height;
+  if (frame->linesize[0] < 0) {
+    SDL_RenderTextureRotated(Window::renderer, video_texture, &src, NULL, 0.0,
+                             NULL, SDL_FLIP_VERTICAL);
+  } else {
+    SDL_RenderTexture(Window::renderer, video_texture, &src, NULL);
+  }
+}
+
+static void DisplayVideoFrame(AVFrame *frame) { DisplayVideoTexture(frame); }
 
 static void HandleVideoFrame(AVFrame *frame, double pts) {
   /* Quick and dirty PTS handling */
@@ -419,7 +455,7 @@ static void HandleVideoFrame(AVFrame *frame, double pts) {
     // SDL_DelayPrecise((uint64_t)((pts - now) * SDL_NS_PER_SECOND));
     return;
   }
-  //   DisplayVideoFrame(frame);
+  DisplayVideoFrame(frame);
 
   //   FinishFrameRendering(frame);
 }

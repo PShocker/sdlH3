@@ -13,6 +13,7 @@
 #include "Sys/FogSys.h"
 #include "Sys/HeroSys.h"
 #include "Sys/RenderSys.h"
+#include "Sys/VideoSys.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/AdvOptionSys.h"
 #include "Sys/gui/AdvPopSys.h"
@@ -109,7 +110,6 @@ void World::enterAdvScrn() {
 
   iterateSystems.clear();
   iterateSystems.push_back(AnimateSys::run);
-  iterateSystems.push_back(AudioSys::run);
   iterateSystems.push_back(CameraSys::run);
   iterateSystems.push_back(World::run);
   iterateSystems.push_back(RenderSys::run);
@@ -117,6 +117,8 @@ void World::enterAdvScrn() {
   iterateSystems.push_back(BorderSys::run);
   iterateSystems.push_back(AdvMapSys::run);
   iterateSystems.push_back(HeroSys::run);
+  iterateSystems.push_back(AudioSys::run);
+  iterateSystems.push_back(VideoSys::run);
   iterateSystems.push_back(CursorSys::run);
 
   RMouseUpSys.push_back(CursorSys::rightMouseUp);

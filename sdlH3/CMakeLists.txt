@@ -23,7 +23,7 @@ target_link_libraries(main PRIVATE SDL3)
 # target_link_libraries(main PRIVATE SDL3::SDL3)
 target_link_libraries(main PRIVATE freetype)
 
-target_link_libraries(main PRIVATE avformat avcodec avutil swscale swresample)
+target_link_libraries(main PRIVATE avcodec avformat avutil swscale swresample)
 
 if (MSVC)
     add_compile_options(/WX)  # MSVC 的 "警告视为错误"
