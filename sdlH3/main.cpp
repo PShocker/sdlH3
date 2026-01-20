@@ -41,7 +41,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   }
   std::srand(std::time(0));
 
-  H3mData data("./Maps/Good to Go.h3m");
+  H3mData data("./Maps/Untitled.h3m");
   data.init();
   Global::mapW = data.header.width * 32;
   Global::mapH = data.header.height * 32;
@@ -56,7 +56,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   Ent::load(data);
   Global::startGame();
   FreeTypeSys::init(1);
-  VideoSys::init("./Video/TAVERN.BIK");
+  VideoSys::init("./Video/WIN3.BIK");
 
   World::enterAdvScrn();
 

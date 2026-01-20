@@ -385,7 +385,7 @@ static void drawButton() {
   for (auto &b : v) {
     b.r.x = Global::viewPort.w - b.r.x;
   }
-  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 3];
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 5];
   auto top = (*topFunc.target<bool (*)()>() == AdvMapSys::run);
   AdvMapSys::drawButtons(0, 0, top, v);
 }

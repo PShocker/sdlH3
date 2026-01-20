@@ -29,6 +29,9 @@ static AVPacket *pkt = NULL;
 static AVFrame *frame = NULL;
 static double first_pts = -1.0;
 
+static int audio_stream;
+static int video_stream;
+
 struct SwsContextContainer {
   struct SwsContext *context;
 };
@@ -361,7 +364,7 @@ void VideoSys::init(const std::string &path) {
   if (result < 0) {
     std::abort();
   }
-  auto video_stream =
+  video_stream =
       av_find_best_stream(ic, AVMEDIA_TYPE_VIDEO, -1, -1, &video_codec, 0);
   if (video_stream >= 0) {
     video_context = OpenVideoStream(ic, video_stream, video_codec);
@@ -369,8 +372,8 @@ void VideoSys::init(const std::string &path) {
       std::abort();
     }
   }
-  auto audio_stream = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1,
-                                          video_stream, &audio_codec, 0);
+  audio_stream = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, video_stream,
+                                     &audio_codec, 0);
   if (audio_stream >= 0) {
     audio_context = OpenAudioStream(ic, audio_stream, audio_codec);
     if (!audio_context) {
@@ -400,14 +403,14 @@ void VideoSys::init(const std::string &path) {
     }
   } else {
     if (pkt->stream_index == audio_stream) {
-      result = avcodec_send_packet(audio_context, pkt);
+      auto result = avcodec_send_packet(audio_context, pkt);
       if (result < 0) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "avcodec_send_packet(audio_context) failed: %s",
                      av_err2str(result));
       }
     } else if (pkt->stream_index == video_stream) {
-      result = avcodec_send_packet(video_context, pkt);
+      auto result = avcodec_send_packet(video_context, pkt);
       if (result < 0) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "avcodec_send_packet(video_context) failed: %s",
@@ -423,23 +426,16 @@ static bool GetTextureForFrame(AVFrame *frame, SDL_Texture **texture) {
 }
 
 static void DisplayVideoTexture(AVFrame *frame) {
-  /* Update the video texture */
-  if (!GetTextureForFrame(frame, &video_texture)) {
-    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                 "Couldn't get texture for frame: %s", SDL_GetError());
-    return;
-  }
-
-  SDL_FRect src;
-  src.x = 0.0f;
-  src.y = 0.0f;
-  src.w = (float)frame->width;
-  src.h = (float)frame->height;
+  SDL_FRect dst;
+  dst.x = 0.0f;
+  dst.y = 0.0f;
+  dst.w = (float)frame->width;
+  dst.h = (float)frame->height;
   if (frame->linesize[0] < 0) {
-    SDL_RenderTextureRotated(Window::renderer, video_texture, &src, NULL, 0.0,
+    SDL_RenderTextureRotated(Window::renderer, video_texture, NULL, &dst, 0.0,
                              NULL, SDL_FLIP_VERTICAL);
   } else {
-    SDL_RenderTexture(Window::renderer, video_texture, &src, NULL);
+    SDL_RenderTexture(Window::renderer, video_texture, NULL, &dst);
   }
 }
 
@@ -451,12 +447,15 @@ static void HandleVideoFrame(AVFrame *frame, double pts) {
     video_start = SDL_GetTicks();
   }
   double now = (double)(SDL_GetTicks() - video_start) / 1000.0;
-  if (now < pts) {
-    // SDL_DelayPrecise((uint64_t)((pts - now) * SDL_NS_PER_SECOND));
-    return;
+  if (now >= pts) {
+    /* Update the video texture */
+    if (!GetTextureForFrame(frame, &video_texture)) {
+      SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                   "Couldn't get texture for frame: %s", SDL_GetError());
+      return;
+    }
   }
   DisplayVideoFrame(frame);
-
   //   FinishFrameRendering(frame);
 }
 
@@ -535,16 +534,35 @@ static void HandleAudioFrame(AVFrame *frame) {
   }
 }
 
+static void reset() {
+  avcodec_flush_buffers(video_context);
+  if (audio_context) {
+    avcodec_flush_buffers(audio_context);
+  }
+
+  // 重置播放位置
+  av_seek_frame(ic, -1, 0, AVSEEK_FLAG_BACKWARD);
+
+  // 重置时间戳
+  video_start = 0;
+  first_pts = -1.0;
+
+  // 发送一个flush包重新开始解码
+  // avcodec_send_packet(video_context, nullptr);
+  return;
+}
+
 bool VideoSys::run() {
-  bool flushing = false;
 
   if (audio_context) {
-    while (avcodec_receive_frame(audio_context, frame) >= 0) {
+    auto r = avcodec_receive_frame(audio_context, frame);
+    if (r >= 0) {
       HandleAudioFrame(frame);
     }
   }
   if (video_context) {
-    while (avcodec_receive_frame(video_context, frame) >= 0) {
+    auto r = avcodec_receive_frame(video_context, frame);
+    if (r >= 0) {
       double pts = ((double)frame->pts * video_context->pkt_timebase.num) /
                    video_context->pkt_timebase.den;
       if (first_pts < 0.0) {
@@ -553,6 +571,8 @@ bool VideoSys::run() {
       pts -= first_pts;
 
       HandleVideoFrame(frame, pts);
+    } else if (r == AVERROR_EOF) {
+      int c = 0;
     }
   }
   return true;
