@@ -351,6 +351,47 @@ struct HeroCfg {
           {(uint8_t)Specialty::CREATURE,
            {(uint8_t)CreatureCfg::Creature::GNOLL,
             (uint8_t)CreatureCfg::Creature::GNOLL_MARAUDER, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::LIZARDMAN,
+            (uint8_t)CreatureCfg::Creature::LIZARD_WARRIOR, 5}}, // lorelei
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::ARMORER, 5}}, // sandro
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::GORGON,
+            (uint8_t)CreatureCfg::Creature::MIGHTY_GORGON, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::SERPENT_FLY,
+            (uint8_t)CreatureCfg::Creature::DRAGON_FLY, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::BALLISTA, 5}}, // lorelei
+          {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::SERPENT_FLY,
+            (uint8_t)CreatureCfg::Creature::DRAGON_FLY, 5}}, // lorelei
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::Weakness, 5}}, // daremyth
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::MYSTICISM, 5}}, // sandro
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::NAVIGATION, 5}}, // sandro
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::FIRST_AID, 5}}, // sandro
+          {(uint8_t)Specialty::SPECIFIC_SPELL_POWER,
+           {(uint8_t)SpellCfg::Spell::StoneSkin, 5}}, // daremyth
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::SORCERY, 5}}, // sandro
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::INTELLIGENCE, 5}}, // sandro
+          {(uint8_t)Specialty::SECONDARY_SKILL,
+           {(uint8_t)SecondarySkill::EAGLE_EYE, 5}}, // sandro
+              {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::PSYCHIC_ELEMENTAL,
+            (uint8_t)CreatureCfg::Creature::MAGIC_ELEMENTAL, 5}}, // lorelei
+            {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::EARTH_ELEMENTAL,
+            (uint8_t)CreatureCfg::Creature::MAGMA_ELEMENTAL, 5}}, // lorelei
+            {(uint8_t)Specialty::CREATURE,
+           {(uint8_t)CreatureCfg::Creature::FIRE_ELEMENTAL,
+            (uint8_t)CreatureCfg::Creature::ENERGY_ELEMENTAL, 5}}, // lorelei
   };
 
   enum class Pro : uint8_t {
