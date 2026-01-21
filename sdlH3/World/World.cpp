@@ -112,13 +112,12 @@ void World::enterAdvScrn() {
   iterateSystems.push_back(AnimateSys::run);
   iterateSystems.push_back(CameraSys::run);
   iterateSystems.push_back(World::run);
-  // iterateSystems.push_back(RenderSys::run);
-  // iterateSystems.push_back(FogSys::run);
-  // iterateSystems.push_back(BorderSys::run);
-  // iterateSystems.push_back(AdvMapSys::run);
+  iterateSystems.push_back(RenderSys::run);
+  iterateSystems.push_back(FogSys::run);
+  iterateSystems.push_back(BorderSys::run);
+  iterateSystems.push_back(AdvMapSys::run);
   iterateSystems.push_back(HeroSys::run);
   iterateSystems.push_back(AudioSys::run);
-  iterateSystems.push_back(VideoSys::run);
   iterateSystems.push_back(CursorSys::run);
 
   RMouseUpSys.push_back(CursorSys::rightMouseUp);
@@ -619,6 +618,13 @@ void World::enterLvlup(entt::entity heroEnt) {
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
+void World::enterVideo(const std::string &path, float x, float y) {
+  iterateSystems.pop_back();
+  iterateSystems.push_back(VideoSys::run);
+  iterateSystems.push_back(CursorSys::run);
+  VideoSys::init(path.c_str(), x, y);
+}
+
 void World::enterTavern(entt::entity heroEnt, entt::entity goalEnt) {
   enterScrn();
   iterateSystems.pop_back();
@@ -633,6 +639,9 @@ void World::enterTavern(entt::entity heroEnt, entt::entity goalEnt) {
   Global::goalEnt = goalEnt;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+  auto leftX = (Global::viewPort.w - 395) / 2 + 70;
+  auto leftY = (Global::viewPort.h - 504) / 2 + 56;
+  enterVideo("./Video/TAVERN.BIK", leftX, leftY);
 }
 
 void World::enterGarrison(entt::entity heroEnt, entt::entity goalEnt) {

@@ -6,11 +6,7 @@
 #include <cstring>
 #include <vector>
 
-static SDL_AudioSpec spec = {
-    .format = SDL_AUDIO_S16, .channels = 2, .freq = 44100};
-
 static bool playAudio() {
-
   const int minimum_audio = (int)(44100 * 0.02f) * 2 * 2;
   if (SDL_GetAudioStreamQueued(Global::audio) < minimum_audio) {
     uint8_t *data = (uint8_t *)SDL_stack_alloc(uint8_t, minimum_audio);
@@ -30,7 +26,6 @@ static bool playAudio() {
   return false;
 }
 
-
 static void clearAudio() {
   std::erase_if(Global::audioData, [](const auto &item) {
     auto &pcmData = Global::pcmCache[item.first];
@@ -39,6 +34,7 @@ static void clearAudio() {
 }
 
 void AudioSys::init() {
+  SDL_AudioSpec spec = {.format = SDL_AUDIO_S16, .channels = 2, .freq = 44100};
   Global::audio = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK,
                                             &spec, NULL, NULL);
   SDL_ResumeAudioStreamDevice(Global::audio);

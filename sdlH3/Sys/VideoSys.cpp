@@ -363,7 +363,10 @@ static AVCodecContext *OpenAudioStream(AVFormatContext *ic, int stream,
   return context;
 }
 
-void VideoSys::init(const std::string &path) {
+void VideoSys::init(const std::string &path, float x, float y) {
+  dst.x = x;
+  dst.y = y;
+
   auto result = avformat_open_input(&ic, path.c_str(), NULL, NULL);
   if (result < 0) {
     std::abort();
@@ -383,6 +386,7 @@ void VideoSys::init(const std::string &path) {
                                      &audio_codec, 0);
   if (audio_stream >= 0) {
     audio_context = OpenAudioStream(ic, audio_stream, audio_codec);
+    Global::audioData.clear();
     if (!audio_context) {
       std::abort();
     }
@@ -398,6 +402,27 @@ void VideoSys::init(const std::string &path) {
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "av_frame_alloc failed");
     std::abort();
   }
+}
+
+void VideoSys::close() {
+  if (video_context) {
+    video_start = 0;
+    f_pts = -1;
+  }
+  if (video_texture) {
+    SDL_DestroyTexture(video_texture);
+    video_texture = nullptr;
+  }
+  if (audio_context) {
+    SDL_AudioSpec spec = {
+        .format = SDL_AUDIO_S16, .channels = 2, .freq = 44100};
+    SDL_SetAudioStreamFormat(Global::audio, &spec, NULL);
+  }
+  av_frame_free(&frame);
+  av_packet_free(&pkt);
+  avcodec_free_context(&audio_context);
+  avcodec_free_context(&video_context);
+  avformat_close_input(&ic);
 }
 
 static bool GetTextureForFrame(AVFrame *frame, SDL_Texture **texture) {
@@ -416,8 +441,6 @@ static void DisplayVideoTexture() {
 static void DisplayVideoFrame() { DisplayVideoTexture(); }
 
 static void SetVideoFrame(AVFrame *frame) {
-  dst.x = 0.0f;
-  dst.y = 0.0f;
   dst.w = (float)frame->width;
   dst.h = (float)frame->height;
   if (frame->linesize[0] < 0) {
@@ -501,17 +524,16 @@ static SDL_AudioFormat GetAudioFormat(int format) {
 }
 
 static void HandleAudioFrame(AVFrame *frame) {
-  auto audio = Global::audio;
-  if (audio) {
+  if (Global::audio) {
     SDL_AudioSpec spec = {GetAudioFormat(frame->format),
                           frame->ch_layout.nb_channels, frame->sample_rate};
-    SDL_SetAudioStreamFormat(audio, &spec, NULL);
+    SDL_SetAudioStreamFormat(Global::audio, &spec, NULL);
 
     if (frame->ch_layout.nb_channels > 1 &&
         IsPlanarAudioFormat(frame->format)) {
       InterleaveAudio(frame, &spec);
     } else {
-      SDL_PutAudioStreamData(audio, frame->data[0],
+      SDL_PutAudioStreamData(Global::audio, frame->data[0],
                              frame->nb_samples * SDL_AUDIO_FRAMESIZE(spec));
     }
   }
@@ -519,7 +541,7 @@ static void HandleAudioFrame(AVFrame *frame) {
 
 bool VideoSys::run() {
   double now = (double)(SDL_GetTicks() - video_start) / 1000.0;
-  if (now >= g_pts) {
+  if (now >= g_pts && ic != NULL) {
     auto result = av_read_frame(ic, pkt);
     if (result >= 0) {
       if (pkt->stream_index == audio_stream) {

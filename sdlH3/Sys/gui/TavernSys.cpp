@@ -11,6 +11,7 @@
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
 #include "Sys/FreeTypeSys.h"
+#include "Sys/VideoSys.h"
 #include "Sys/gui/CursorSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
@@ -38,7 +39,10 @@ static bool canBuy() {
   return r;
 }
 
-static void close() { World::exitScrn(); }
+static void close() {
+  VideoSys::close();
+  World::exitScrn();
+}
 
 static void buy() {
   auto registry = &World::registrys[World::level];
@@ -165,7 +169,7 @@ static void drawButton() {
   SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
                     (Global::viewPort.h - 504) / 2};
   auto v = buttonInfo();
-  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 3];
   auto top = (*topFunc.target<bool (*)()>() == TavernSys::run);
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
 }

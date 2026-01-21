@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <functional>
 #include <optional>
+#include <string>
 #include <vector>
 
 struct World {
@@ -60,6 +61,7 @@ struct World {
   static void enterViewWorld();
   static void enterSpecBuild(uint8_t bId);
   static void enterMageGuild(uint8_t level, entt::entity ent);
+  static void enterVideo(const std::string &path, float x, float y);
 
   static void enterTreasure(entt::entity heroEnt, entt::entity goalEnt);
   static void enterWindMill(entt::entity goalEnt);

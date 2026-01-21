@@ -56,11 +56,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   Ent::load(data);
   Global::startGame();
   FreeTypeSys::init(1);
-  VideoSys::init("./Video/WIN3.BIK");
+  AudioSys::init();
 
   World::enterAdvScrn();
 
-  // AudioSys::init();
 
   SDL_HideCursor();
 
