@@ -27,7 +27,8 @@ static AVCodecContext *audio_context = NULL;
 static AVCodecContext *video_context = NULL;
 static AVPacket *pkt = NULL;
 static AVFrame *frame = NULL;
-static double first_pts = -1.0;
+static double f_pts = -1.0;
+static double g_pts = -1.0;
 
 static int audio_stream;
 static int video_stream;
@@ -426,19 +427,16 @@ static void SetVideoFrame(AVFrame *frame) {
   }
 }
 
-static void HandleVideoFrame(AVFrame *frame, double pts) {
+static void HandleVideoFrame(AVFrame *frame) {
   /* Quick and dirty PTS handling */
   if (!video_start) {
     video_start = SDL_GetTicks();
   }
-  double now = (double)(SDL_GetTicks() - video_start) / 1000.0;
-  if (now > pts) {
-    /* Update the video texture */
-    if (!GetTextureForFrame(frame, &video_texture)) {
-      SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                   "Couldn't get texture for frame: %s", SDL_GetError());
-      return;
-    }
+  /* Update the video texture */
+  if (!GetTextureForFrame(frame, &video_texture)) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                 "Couldn't get texture for frame: %s", SDL_GetError());
+    return;
   }
   SetVideoFrame(frame);
   DisplayVideoFrame();
@@ -520,32 +518,27 @@ static void HandleAudioFrame(AVFrame *frame) {
 }
 
 bool VideoSys::run() {
-  auto result = av_read_frame(ic, pkt);
-  if (result >= 0) {
-    if (pkt->stream_index == audio_stream) {
-      result = avcodec_send_packet(audio_context, pkt);
-      if (result < 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "avcodec_send_packet(audio_context) failed: %s",
-                     av_err2str(result));
+  double now = (double)(SDL_GetTicks() - video_start) / 1000.0;
+  if (now >= g_pts) {
+    auto result = av_read_frame(ic, pkt);
+    if (result >= 0) {
+      if (pkt->stream_index == audio_stream) {
+        avcodec_send_packet(audio_context, pkt);
+      } else if (pkt->stream_index == video_stream) {
+        avcodec_send_packet(video_context, pkt);
       }
-    } else if (pkt->stream_index == video_stream) {
-      result = avcodec_send_packet(video_context, pkt);
-      if (result < 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "avcodec_send_packet(video_context) failed: %s",
-                     av_err2str(result));
+      av_packet_unref(pkt);
+    } else if (result == AVERROR_EOF) {
+      if (audio_context) {
+        avcodec_flush_buffers(audio_context);
       }
+      if (video_context) {
+        avcodec_flush_buffers(video_context);
+        video_start = 0;
+        f_pts = -1;
+      }
+      int ret = av_seek_frame(ic, -1, 0, AVSEEK_FLAG_BACKWARD);
     }
-    av_packet_unref(pkt);
-  } else if (result == AVERROR_EOF) {
-    if (audio_context) {
-      avcodec_flush_buffers(audio_context);
-    }
-    if (video_context) {
-      avcodec_flush_buffers(video_context);
-    }
-    int ret = av_seek_frame(ic, -1, 0, AVSEEK_FLAG_BACKWARD);
   }
 
   if (audio_context) {
@@ -557,14 +550,14 @@ bool VideoSys::run() {
   if (video_context) {
     bool render = false;
     while (avcodec_receive_frame(video_context, frame) >= 0) {
-      double pts = ((double)frame->pts * video_context->pkt_timebase.num) /
-                   video_context->pkt_timebase.den;
-      if (first_pts < 0.0) {
-        first_pts = pts;
+      g_pts = ((double)frame->pts * video_context->pkt_timebase.num) /
+              video_context->pkt_timebase.den;
+      if (f_pts < 0.0) {
+        f_pts = g_pts;
       }
-      pts -= first_pts;
+      g_pts -= f_pts;
 
-      HandleVideoFrame(frame, pts);
+      HandleVideoFrame(frame);
       render = true;
     }
     if (!render) {
