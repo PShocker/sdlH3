@@ -3,6 +3,7 @@
 #include "Comp/PositionComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
+#include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_surface.h"
@@ -639,6 +640,14 @@ void World::enterTavern(entt::entity heroEnt, entt::entity goalEnt) {
   Global::goalEnt = goalEnt;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+
+  // 定义分布范围 [2886, 3158]
+  std::uniform_int_distribution<int> dist(2886, 3158);
+  // 生成随机数
+  auto r = dist(Global::gen);
+  auto strPool = *Lang::strPool[Global::langIndex];
+  Global::tavernStr = strPool[r];
+
   auto leftX = (Global::viewPort.w - 395) / 2 + 70;
   auto leftY = (Global::viewPort.h - 504) / 2 + 56;
   enterVideo("./Video/TAVERN.BIK", leftX, leftY);

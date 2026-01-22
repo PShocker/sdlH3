@@ -132,6 +132,12 @@ static void drawBackGround() {
   FreeTypeSys::setColor(240, 224, 104, 255);
   FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
                           strPool[926 + (uint8_t)ObjectType::TAVERN]);
+
+  FreeTypeSys::setColor(248,240,216, 255);
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 190,
+                          strPool[2885]);
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 210,
+                          Global::tavernStr);
 }
 
 const static std::vector<SDL_FRect> PorPosition = {

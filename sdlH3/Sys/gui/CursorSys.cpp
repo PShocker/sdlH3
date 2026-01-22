@@ -290,6 +290,7 @@ uint8_t CursorSys::astar(bool click) {
     }
   }
   if (block.contains(goalPoint)) {
+    Global::cursorIndex = (uint8_t)Enum::CRADVNTR::POINTER;
     return (uint8_t)Enum::CRADVNTR::POINTER;
   }
   for (auto ent : registry.view<ObjectComp>(entt::exclude<HeroComp>)) {

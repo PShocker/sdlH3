@@ -150,6 +150,7 @@ struct Global {
   static inline uint8_t townScnIndex;
 
   static inline std::array<std::array<entt::entity, 2>, 8> tavernHeros;
+  static inline std::u16string tavernStr;
 
   static inline std::optional<std::u16string> IMEText;
   static inline std::optional<std::u16string> IMETextBak;
