@@ -25,20 +25,6 @@ static void receive() {
   auto townComp = &registry.get<TownComp>(townEnt);
   auto id = townComp->id;
   switch (id) {
-  case (uint8_t)TownCfg::Faction::CASTLE: {
-    auto bId = (uint8_t)TownCfg::Building::SPECIAL_10;
-    auto i = TownSys::visitBuild(bId);
-    if (i != 0xff) {
-      auto heroEnt = townComp->heroEnt[i].value();
-      auto heroComp = registry.get<HeroComp>(heroEnt);
-      heroComp.primSkills[0] += 1;
-      townComp->visitHeros[bId].insert(heroComp.portrait);
-    }
-    i = TownSys::visitBuild(bId);
-    if (i == 0xff) {
-      close();
-    }
-  }
   default: {
     break;
   }
@@ -65,18 +51,6 @@ static void draw() {
   auto townComp = &registry.get<TownComp>(townEnt);
   auto id = townComp->id;
   switch (id) {
-  case (uint8_t)TownCfg::Faction::CASTLE: {
-    auto [bakW, bakH] = bakWH();
-    auto x = Global::viewPort.w / 2;
-    auto y = Global::viewPort.h / 2;
-    AdvPopSys::drawBackGround(x, y, bakW, bakH, Global::playerId);
-
-    FreeTypeSys::setSize(13);
-    FreeTypeSys::setColor(240, 224, 104, 255);
-    auto strPool = *Lang::strPool[Global::langIndex];
-    std::u16string s = strPool[928];
-    FreeTypeSys::drawCenter(x, y - bakH / 2 + 15, s);
-  }
   default: {
     break;
   }

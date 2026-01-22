@@ -390,6 +390,9 @@ void VideoSys::init(const std::string &path, float x, float y) {
     if (!audio_context) {
       std::abort();
     }
+    // 设置多线程解码
+    audio_context->thread_count = SDL_GetNumLogicalCPUCores();
+    audio_context->thread_type = FF_THREAD_FRAME;
   }
 
   pkt = av_packet_alloc();

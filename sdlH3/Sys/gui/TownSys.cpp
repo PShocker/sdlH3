@@ -656,12 +656,24 @@ static void clickDwe(uint8_t clickType) {
     }
     World::enterDwe(srcEnt, goalEnt);
   } else {
+    auto confirmbakW = 450;
+    auto confirmbakH = 130;
+    Global::confirmdraw = [=]() {
+      SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
+                        Global::viewPort.h / 2 - confirmbakH / 2};
+                        
+    };
+    World::enterConfirm(confirmbakW, confirmbakH,
+                        ((uint8_t)Enum::SCNTYPE::POP));
   }
 }
 
 static void clickMageGuild(uint8_t clickType) {
-  auto [level, townEnt] = Global::townScnPair;
-  World::enterMageGuild(level, townEnt);
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+    auto [level, townEnt] = Global::townScnPair;
+    World::enterMageGuild(level, townEnt);
+  } else {
+  }
 }
 
 static bool clickBuild(uint8_t clickType) {
@@ -946,6 +958,9 @@ bool TownSys::rightMouseDown(float x, float y) {
   auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
 
   if (clickHeroCres(clickType)) {
+    return false;
+  }
+  if (clickBuild(clickType)) {
     return false;
   }
   return true;

@@ -2,6 +2,7 @@
 
 #include "CreatureCfg.h"
 #include "SDL3/SDL_rect.h"
+#include <array>
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -107,6 +108,551 @@ struct TownCfg {
 
   const static inline std::vector<uint8_t> townForceVisit[] = {
       {(uint8_t)Building::SPECIAL_10},
+  };
+
+  const static inline std::unordered_map<uint8_t, std::array<uint16_t, 7>>
+      townBuildCost[] = {
+          // 0 - 城堡 (Castle)
+          {
+              // 魔法行会
+              {(uint8_t)Building::MAGE_GUILD_1, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::MAGE_GUILD_2, {5, 4, 5, 4, 4, 4, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_3, {5, 6, 5, 6, 6, 6, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_4, {5, 8, 5, 8, 8, 8, 1000}},
+
+              // 通用建筑
+              {(uint8_t)Building::TAVERN, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::SHIPYARD, {20, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::FORT, {20, 0, 20, 0, 0, 0, 5000}},
+              {(uint8_t)Building::CITADEL, {0, 0, 5, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CASTLE, {10, 0, 10, 0, 0, 0, 5000}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 10000}},
+              {(uint8_t)Building::MARKETPLACE, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::RESOURCE_SILO, {0, 0, 5, 0, 0, 0, 5000}},
+              {(uint8_t)Building::BLACKSMITH, {5, 0, 0, 0, 0, 0, 1000}},
+
+              // 特殊建筑
+              {(uint8_t)Building::SPECIAL_10,
+               {0, 0, 10, 0, 0, 0, 2000}}, // 灯塔
+              {(uint8_t)Building::SPECIAL_18,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 狮鹫宝屋
+              {(uint8_t)Building::SPECIAL_19,
+               {0, 0, 0, 0, 0, 0, 1000}},                       // 皇家狮鹫宝屋
+              {(uint8_t)Building::SHIP, {0, 0, 0, 0, 0, 0, 0}}, // 船
+              {(uint8_t)Building::SPECIAL_20,
+               {10, 0, 0, 0, 0, 0, 2000}}, // 马厩
+              {(uint8_t)Building::SPECIAL_21,
+               {5, 0, 0, 0, 0, 0, 500}}, // 升级版酒馆
+
+              // 圣杯
+              {(uint8_t)Building::GRAIL, {0, 0, 0, 0, 0, 0, 0}},
+
+              // 生物巢穴
+              {(uint8_t)Building::DWELLING_LEVEL_1, {0, 0, 10, 0, 0, 0, 500}},
+              {(uint8_t)Building::DWELLING_LEVEL_2, {5, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_3, {0, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_4, {0, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_LEVEL_5, {5, 2, 5, 2, 2, 2, 3000}},
+              {(uint8_t)Building::DWELLING_LEVEL_6, {20, 0, 0, 0, 0, 0, 5000}},
+              {(uint8_t)Building::DWELLING_LEVEL_7,
+               {0, 10, 0, 10, 10, 10, 20000}},
+
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {0, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {5, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {0, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {0, 0, 5, 0, 5, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {2, 2, 2, 2, 2, 2, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {10, 0, 0, 0, 0, 0, 3000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {0, 10, 0, 10, 10, 10, 20000}},
+          },
+
+          // 1 - 壁垒 (Rampart)
+          {
+              {(uint8_t)Building::MAGE_GUILD_1, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::MAGE_GUILD_2, {5, 4, 5, 4, 4, 4, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_3, {5, 6, 5, 6, 6, 6, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_4, {5, 8, 5, 8, 8, 8, 1000}},
+
+              {(uint8_t)Building::TAVERN, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::SHIPYARD, {20, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::FORT, {20, 0, 20, 0, 0, 0, 5000}},
+              {(uint8_t)Building::CITADEL, {0, 0, 5, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CASTLE, {10, 0, 10, 0, 0, 0, 5000}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 10000}},
+              {(uint8_t)Building::MARKETPLACE, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::RESOURCE_SILO, {0, 0, 5, 0, 0, 0, 5000}},
+              {(uint8_t)Building::BLACKSMITH, {5, 0, 0, 0, 0, 0, 1000}},
+
+              {(uint8_t)Building::SPECIAL_10,
+               {2, 2, 2, 2, 2, 2, 2000}}, // 神秘花园
+              {(uint8_t)Building::SPECIAL_18,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 矮人宝屋
+              {(uint8_t)Building::SPECIAL_19,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 战斗矮人宝屋
+              {(uint8_t)Building::SPECIAL_20,
+               {0, 0, 0, 0, 10, 0, 1500}}, // 彩虹
+              {(uint8_t)Building::SPECIAL_21,
+               {5, 0, 10, 0, 0, 0, 5000}}, // 金库
+              {(uint8_t)Building::HORDE_4,
+               {0, 0, 0, 0, 0, 0, 2000}}, // 树人宝屋
+              {(uint8_t)Building::HORDE_1_UPGR,
+               {0, 0, 0, 0, 0, 0, 2000}}, // 枯木战士宝屋
+
+              {(uint8_t)Building::DWELLING_LEVEL_1, {10, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::DWELLING_LEVEL_2, {5, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_3, {10, 0, 0, 0, 0, 0, 1500}},
+              {(uint8_t)Building::DWELLING_LEVEL_4, {0, 0, 0, 0, 10, 0, 2000}},
+              {(uint8_t)Building::DWELLING_LEVEL_5, {0, 0, 0, 0, 0, 0, 2500}},
+              {(uint8_t)Building::DWELLING_LEVEL_6, {5, 0, 5, 0, 0, 10, 4000}},
+              {(uint8_t)Building::DWELLING_LEVEL_7,
+               {0, 0, 30, 0, 20, 0, 10000}},
+
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {5, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {5, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {10, 0, 0, 0, 0, 0, 1500}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {0, 0, 0, 0, 5, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {0, 0, 0, 0, 0, 0, 1500}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {0, 0, 0, 0, 0, 5, 3000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {0, 0, 30, 0, 20, 0, 20000}},
+          },
+
+          // 2 - 塔楼 (Tower)
+          {
+              {(uint8_t)Building::MAGE_GUILD_1, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::MAGE_GUILD_2, {5, 4, 5, 4, 4, 4, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_3, {5, 6, 5, 6, 6, 6, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_4, {5, 8, 5, 8, 8, 8, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_5, {5, 10, 5, 10, 10, 10, 1000}},
+
+              {(uint8_t)Building::TAVERN, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::FORT, {20, 0, 20, 0, 0, 0, 5000}},
+              {(uint8_t)Building::CITADEL, {0, 0, 5, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CASTLE, {10, 0, 10, 0, 0, 0, 5000}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 10000}},
+              {(uint8_t)Building::MARKETPLACE, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::RESOURCE_SILO, {0, 0, 5, 0, 0, 0, 5000}},
+              {(uint8_t)Building::BLACKSMITH, {5, 0, 0, 0, 0, 0, 1000}},
+
+              {(uint8_t)Building::SPECIAL_10,
+               {0, 0, 0, 0, 0, 0, 10000}}, // 宝物商店
+              {(uint8_t)Building::SPECIAL_18,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 石像鬼宝屋
+              {(uint8_t)Building::SPECIAL_19,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 黑曜石像鬼宝屋
+              {(uint8_t)Building::SPECIAL_20,
+               {5, 0, 0, 0, 0, 0, 1000}}, // 瞭望塔
+              {(uint8_t)Building::SPECIAL_21,
+               {5, 5, 5, 5, 5, 5, 1500}}, // 图书馆
+              {(uint8_t)Building::HORDE_3,
+               {0, 0, 5, 0, 0, 0, 1000}}, // 符文知识之墙
+
+              {(uint8_t)Building::GRAIL, {0, 0, 0, 0, 0, 0, 0}},
+
+              {(uint8_t)Building::DWELLING_LEVEL_1, {5, 0, 5, 0, 0, 0, 300}},
+              {(uint8_t)Building::DWELLING_LEVEL_2, {0, 0, 10, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_3, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_LEVEL_4, {5, 5, 5, 5, 5, 5, 2500}},
+              {(uint8_t)Building::DWELLING_LEVEL_5, {5, 0, 5, 0, 6, 6, 3000}},
+              {(uint8_t)Building::DWELLING_LEVEL_6, {5, 2, 5, 2, 2, 2, 4000}},
+              {(uint8_t)Building::DWELLING_LEVEL_7,
+               {10, 0, 10, 0, 0, 10, 5000}},
+
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {0, 0, 5, 0, 0, 0, 1500}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {5, 5, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {5, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {5, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {0, 3, 0, 3, 3, 3, 3000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {5, 0, 5, 0, 0, 30, 25000}},
+          },
+
+          // 3 - 地狱 (Inferno)
+          {
+              {(uint8_t)Building::MAGE_GUILD_1, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::MAGE_GUILD_2, {5, 4, 5, 4, 4, 4, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_3, {5, 6, 5, 6, 6, 6, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_4, {5, 8, 5, 8, 8, 8, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_5, {5, 10, 5, 10, 10, 10, 1000}},
+
+              {(uint8_t)Building::TAVERN, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::FORT, {20, 0, 20, 0, 0, 0, 5000}},
+              {(uint8_t)Building::CITADEL, {0, 0, 5, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CASTLE, {10, 0, 10, 0, 0, 0, 5000}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 10000}},
+              {(uint8_t)Building::MARKETPLACE, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::RESOURCE_SILO, {0, 0, 5, 0, 0, 0, 5000}},
+              {(uint8_t)Building::BLACKSMITH, {5, 0, 0, 0, 0, 0, 1000}},
+
+              {(uint8_t)Building::SPECIAL_18,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 玛格宝屋
+              {(uint8_t)Building::SPECIAL_19,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 地狱犬宝屋
+              {(uint8_t)Building::HORDE_2_UPGR,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 三首猎犬宝屋
+              {(uint8_t)Building::SPECIAL_20,
+               {0, 0, 0, 5, 0, 0, 1000}}, // 硫磺风暴云
+              {(uint8_t)Building::SPECIAL_21,
+               {5, 0, 5, 0, 0, 0, 10000}}, // 城堡大门
+              {(uint8_t)Building::SPECIAL_10,
+               {5, 0, 0, 0, 0, 0, 1000}}, // 烈火殿堂
+
+              {(uint8_t)Building::GRAIL, {0, 0, 0, 0, 0, 0, 0}},
+
+              {(uint8_t)Building::DWELLING_LEVEL_1, {5, 0, 5, 0, 0, 0, 300}},
+              {(uint8_t)Building::DWELLING_LEVEL_2, {0, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_3, {10, 0, 0, 0, 0, 0, 1500}},
+              {(uint8_t)Building::DWELLING_LEVEL_4, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_LEVEL_5, {0, 0, 0, 0, 0, 0, 3000}},
+              {(uint8_t)Building::DWELLING_LEVEL_6, {0, 3, 10, 3, 0, 3, 4000}},
+              {(uint8_t)Building::DWELLING_LEVEL_7,
+               {10, 20, 10, 0, 0, 0, 15000}},
+
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {0, 5, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {0, 0, 0, 5, 0, 0, 1500}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {0, 5, 0, 5, 0, 0, 3000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {0, 5, 5, 5, 0, 5, 3000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {5, 20, 5, 0, 0, 0, 20000}},
+          },
+
+          // 4 - 墓园 (Necropolis)
+          {
+              {(uint8_t)Building::MAGE_GUILD_1, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::MAGE_GUILD_2, {5, 4, 5, 4, 4, 4, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_3, {5, 6, 5, 6, 6, 6, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_4, {5, 8, 5, 8, 8, 8, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_5, {5, 10, 5, 10, 10, 10, 1000}},
+
+              {(uint8_t)Building::TAVERN, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::SHIPYARD, {20, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::FORT, {20, 0, 20, 0, 0, 0, 5000}},
+              {(uint8_t)Building::CITADEL, {0, 0, 5, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CASTLE, {10, 0, 10, 0, 0, 0, 5000}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 10000}},
+              {(uint8_t)Building::MARKETPLACE, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::RESOURCE_SILO, {0, 0, 5, 0, 0, 0, 5000}},
+              {(uint8_t)Building::BLACKSMITH, {5, 0, 0, 0, 0, 0, 1000}},
+
+              {(uint8_t)Building::SPECIAL_10,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 黑暗天幕
+              {(uint8_t)Building::SPECIAL_18,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 骷髅宝屋
+              {(uint8_t)Building::SPECIAL_19,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 骷髅战士宝屋
+              {(uint8_t)Building::SHIP, {0, 0, 0, 0, 0, 0, 0}},
+              {(uint8_t)Building::SPECIAL_20,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 招魂术增幅器
+              {(uint8_t)Building::SPECIAL_21,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 骷髅转换器
+
+              {(uint8_t)Building::GRAIL, {0, 0, 0, 0, 0, 0, 0}},
+              {(uint8_t)Building::EXTRA_TOWN_HALL, {0, 0, 0, 0, 0, 0, 0}},
+              {(uint8_t)Building::EXTRA_CITY_HALL, {0, 0, 0, 0, 0, 0, 0}},
+              {(uint8_t)Building::EXTRA_CAPITOL, {0, 0, 0, 0, 0, 0, 0}},
+
+              {(uint8_t)Building::DWELLING_LEVEL_1, {5, 0, 5, 0, 0, 0, 400}},
+              {(uint8_t)Building::DWELLING_LEVEL_2, {0, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_3, {5, 0, 5, 0, 0, 0, 1500}},
+              {(uint8_t)Building::DWELLING_LEVEL_4, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_LEVEL_5, {0, 0, 10, 10, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_LEVEL_6, {10, 0, 10, 0, 0, 0, 6000}},
+              {(uint8_t)Building::DWELLING_LEVEL_7, {5, 5, 5, 5, 5, 5, 10000}},
+
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {5, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {5, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {0, 5, 0, 0, 0, 0, 1500}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {5, 0, 0, 0, 10, 10, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {0, 0, 5, 5, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {5, 2, 5, 2, 2, 2, 3000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {5, 20, 5, 0, 0, 0, 15000}},
+          },
+
+          // 5 - 地下城 (Dungeon)
+          {
+              {(uint8_t)Building::MAGE_GUILD_1, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::MAGE_GUILD_2, {5, 4, 5, 4, 4, 4, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_3, {5, 6, 5, 6, 6, 6, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_4, {5, 8, 5, 8, 8, 8, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_5, {5, 10, 5, 10, 10, 10, 1000}},
+
+              {(uint8_t)Building::TAVERN, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::FORT, {20, 0, 20, 0, 0, 0, 5000}},
+              {(uint8_t)Building::CITADEL, {0, 0, 5, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CASTLE, {10, 0, 10, 0, 0, 0, 5000}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 10000}},
+              {(uint8_t)Building::MARKETPLACE, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::RESOURCE_SILO, {0, 0, 5, 0, 0, 0, 5000}},
+              {(uint8_t)Building::BLACKSMITH, {5, 0, 0, 0, 0, 0, 1000}},
+
+              {(uint8_t)Building::SPECIAL_10,
+               {0, 0, 0, 0, 0, 0, 10000}}, // 宝物商店
+              {(uint8_t)Building::SPECIAL_18,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 洞穴人宝屋
+              {(uint8_t)Building::SPECIAL_19,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 地狱洞穴人宝屋
+              {(uint8_t)Building::SPECIAL_20,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 魔力漩涡
+              {(uint8_t)Building::SPECIAL_21,
+               {0, 0, 5, 0, 0, 0, 2500}}, // 召唤之门
+              {(uint8_t)Building::HORDE_5,
+               {5, 0, 5, 0, 0, 0, 1000}}, // 战斗学院
+
+              {(uint8_t)Building::GRAIL, {0, 0, 0, 0, 0, 0, 0}},
+
+              {(uint8_t)Building::DWELLING_LEVEL_1, {10, 0, 0, 0, 0, 0, 400}},
+              {(uint8_t)Building::DWELLING_LEVEL_2, {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_3, {1, 1, 1, 1, 1, 1, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_4, {5, 0, 10, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_LEVEL_5, {0, 0, 10, 0, 0, 10, 4000}},
+              {(uint8_t)Building::DWELLING_LEVEL_6, {5, 5, 5, 5, 0, 0, 5000}},
+              {(uint8_t)Building::DWELLING_LEVEL_7,
+               {15, 0, 15, 20, 0, 0, 15000}},
+
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {5, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {0, 0, 0, 2, 2, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {1, 1, 1, 1, 1, 1, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {5, 0, 0, 0, 0, 0, 1500}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {0, 0, 5, 0, 0, 5, 3000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {5, 5, 5, 5, 0, 0, 3000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {15, 0, 15, 20, 0, 0, 15000}},
+          },
+
+          // 6 - 据点 (Stronghold)
+          {
+              {(uint8_t)Building::MAGE_GUILD_1, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::MAGE_GUILD_2, {5, 4, 5, 4, 4, 4, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_3, {5, 6, 5, 6, 6, 6, 1000}},
+
+              {(uint8_t)Building::TAVERN, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::FORT, {20, 0, 20, 0, 0, 0, 5000}},
+              {(uint8_t)Building::CITADEL, {0, 0, 5, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CASTLE, {10, 0, 10, 0, 0, 0, 5000}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 10000}},
+              {(uint8_t)Building::MARKETPLACE, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::RESOURCE_SILO, {0, 0, 5, 0, 0, 0, 5000}},
+              {(uint8_t)Building::BLACKSMITH, {5, 0, 0, 0, 0, 0, 1000}},
+
+              {(uint8_t)Building::SPECIAL_10,
+               {5, 0, 5, 0, 0, 0, 2000}}, // 逃生隧道
+              {(uint8_t)Building::SPECIAL_18,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 大耳怪宝屋
+              {(uint8_t)Building::SPECIAL_19,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 大耳怪王宝屋
+              {(uint8_t)Building::SPECIAL_20,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 雇佣兵营地
+              {(uint8_t)Building::SPECIAL_21,
+               {5, 0, 0, 0, 0, 0, 1000}}, // 弩车工坊
+              {(uint8_t)Building::HORDE_4, {0, 0, 0, 0, 0, 0, 1000}}, // 英烈祠
+
+              {(uint8_t)Building::GRAIL, {0, 0, 0, 0, 0, 0, 0}},
+
+              {(uint8_t)Building::DWELLING_LEVEL_1, {5, 0, 5, 0, 0, 0, 200}},
+              {(uint8_t)Building::DWELLING_LEVEL_2, {10, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_3, {5, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_4, {20, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_LEVEL_5, {0, 0, 10, 0, 0, 0, 2500}},
+              {(uint8_t)Building::DWELLING_LEVEL_6, {0, 0, 20, 0, 20, 0, 3500}},
+              {(uint8_t)Building::DWELLING_LEVEL_7,
+               {10, 0, 10, 0, 10, 0, 10000}},
+
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {5, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {5, 0, 5, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {2, 0, 2, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {5, 0, 5, 0, 0, 5, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {5, 0, 5, 0, 0, 0, 3000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {10, 0, 10, 0, 20, 0, 15000}},
+          },
+
+          // 7 - 要塞 (Fortress)
+          {
+              {(uint8_t)Building::MAGE_GUILD_1, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::MAGE_GUILD_2, {5, 4, 5, 4, 4, 4, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_3, {5, 6, 5, 6, 6, 6, 1000}},
+
+              {(uint8_t)Building::TAVERN, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::SHIPYARD, {20, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::FORT, {20, 0, 20, 0, 0, 0, 5000}},
+              {(uint8_t)Building::CITADEL, {0, 0, 5, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CASTLE, {10, 0, 10, 0, 0, 0, 5000}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 10000}},
+              {(uint8_t)Building::MARKETPLACE, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::RESOURCE_SILO, {0, 0, 5, 0, 0, 0, 5000}},
+              {(uint8_t)Building::BLACKSMITH, {5, 0, 0, 0, 0, 0, 1000}},
+
+              {(uint8_t)Building::SPECIAL_10,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 防御围栏
+              {(uint8_t)Building::SPECIAL_18,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 狼人宝屋
+              {(uint8_t)Building::SPECIAL_19,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 狼人斗士宝屋
+              {(uint8_t)Building::SHIP, {0, 0, 0, 0, 0, 0, 0}},
+              {(uint8_t)Building::SPECIAL_20,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 防御术
+              {(uint8_t)Building::SPECIAL_21,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 攻城术
+
+              {(uint8_t)Building::GRAIL, {0, 0, 0, 0, 0, 0, 0}},
+              {(uint8_t)Building::EXTRA_CAPITOL, {0, 0, 0, 0, 0, 0, 0}},
+
+              {(uint8_t)Building::DWELLING_LEVEL_1, {10, 0, 0, 0, 0, 0, 400}},
+              {(uint8_t)Building::DWELLING_LEVEL_2, {5, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_3, {5, 2, 0, 2, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_LEVEL_4, {5, 0, 10, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_LEVEL_5, {10, 5, 10, 5, 0, 0, 2500}},
+              {(uint8_t)Building::DWELLING_LEVEL_6, {15, 0, 0, 0, 0, 0, 3500}},
+              {(uint8_t)Building::DWELLING_LEVEL_7,
+               {10, 0, 10, 10, 0, 0, 10000}},
+
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {10, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {5, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {0, 2, 0, 2, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {10, 10, 0, 0, 0, 0, 3000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {10, 0, 10, 20, 0, 0, 15000}},
+          },
+
+          // 8 - 元素城 (Conflux)
+          {
+              {(uint8_t)Building::MAGE_GUILD_1, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::MAGE_GUILD_2, {5, 4, 5, 4, 4, 4, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_3, {5, 6, 5, 6, 6, 6, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_4, {5, 8, 5, 8, 8, 8, 1000}},
+              {(uint8_t)Building::MAGE_GUILD_5, {5, 10, 5, 10, 10, 10, 1000}},
+
+              {(uint8_t)Building::TAVERN, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::SHIPYARD, {20, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::FORT, {20, 0, 20, 0, 0, 0, 5000}},
+              {(uint8_t)Building::CITADEL, {0, 0, 5, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CASTLE, {10, 0, 10, 0, 0, 0, 5000}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2500}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 10000}},
+              {(uint8_t)Building::MARKETPLACE, {5, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::RESOURCE_SILO, {0, 0, 5, 0, 0, 0, 5000}},
+              {(uint8_t)Building::BLACKSMITH, {5, 0, 0, 0, 0, 0, 1000}},
+
+              {(uint8_t)Building::SPECIAL_10,
+               {0, 0, 0, 0, 0, 0, 10000}}, // 宝物商店
+              {(uint8_t)Building::SPECIAL_18,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 精灵宝屋
+              {(uint8_t)Building::SPECIAL_19,
+               {0, 0, 0, 0, 0, 0, 1000}}, // 精灵宝屋升级
+              {(uint8_t)Building::SHIP, {0, 0, 0, 0, 0, 0, 0}},
+              {(uint8_t)Building::SPECIAL_20,
+               {10, 0, 10, 0, 0, 0, 5000}}, // 魔法学院
+
+              {(uint8_t)Building::GRAIL, {0, 0, 0, 0, 0, 0, 0}},
+              {(uint8_t)Building::EXTRA_TOWN_HALL, {0, 0, 0, 0, 0, 0, 0}},
+              {(uint8_t)Building::EXTRA_CITY_HALL, {0, 0, 0, 0, 0, 0, 0}},
+              {(uint8_t)Building::EXTRA_CAPITOL, {0, 0, 0, 0, 0, 0, 0}},
+
+              {(uint8_t)Building::DWELLING_LEVEL_1, {5, 0, 5, 0, 0, 0, 300}},
+              {(uint8_t)Building::DWELLING_LEVEL_2, {0, 0, 5, 0, 0, 0, 1500}},
+              {(uint8_t)Building::DWELLING_LEVEL_3, {0, 0, 5, 0, 0, 0, 1500}},
+              {(uint8_t)Building::DWELLING_LEVEL_4, {5, 0, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_LEVEL_5, {0, 0, 10, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_LEVEL_6, {5, 2, 5, 2, 2, 2, 3000}},
+              {(uint8_t)Building::DWELLING_LEVEL_7,
+               {10, 10, 10, 0, 0, 0, 10000}},
+
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {2, 2, 0, 0, 0, 2, 1500}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {0, 5, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {0, 5, 5, 0, 0, 0, 2000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {0, 0, 0, 5, 0, 0, 1000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {0, 3, 0, 3, 3, 3, 3000}},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {10, 20, 10, 0, 0, 0, 15000}},
+          }};
+
+  const static inline std::unordered_map<uint8_t, std::vector<uint8_t>>
+      townBuildReq[] = {
+          // 0 - 城堡 (Castle)
+          {
+              {(uint8_t)Building::SPECIAL_19, {(uint8_t)Building::SPECIAL_18}},
+
+          },
   };
 
   const static inline std::unordered_map<uint8_t, std::string> townBorder[] = {
