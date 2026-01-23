@@ -638,11 +638,12 @@ void World::enterTavern(entt::entity heroEnt, entt::entity goalEnt) {
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
+  Global::goalIndex = 0;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 
   // 定义分布范围 [2886, 3158]
-  std::uniform_int_distribution<int> dist(2886, 3158);
+  std::uniform_int_distribution<int> dist(2886, 3036);
   // 生成随机数
   auto r = dist(Global::gen);
   auto strPool = *Lang::strPool[Global::langIndex];

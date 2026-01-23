@@ -26,6 +26,28 @@ struct ArtifactCfg {
   //     "MISC5"       // 18
   // };
 
+  enum class artSlot : uint8_t {
+    HEAD,
+    SHOULDERS,
+    NECK,
+    RIGHT_HAND,
+    LEFT_HAND,
+    TORSO,
+    RIGHT_RING,
+    LEFT_RING,
+    FEET,
+    MISC1,
+    MISC2,
+    MISC3,
+    MISC4,
+    MACH1,
+    MACH2,
+    MACH3,
+    MACH4,
+    SPELLBOOK,
+    MISC5,
+  };
+
   const static inline std::vector<uint32_t> artCost = {
       // 0-10
       0,    // 0: 魔法书

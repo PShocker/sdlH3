@@ -1,5 +1,6 @@
 #include "TavernSys.h"
 #include "AdvMapSys.h"
+#include "Cfg/ArtifactCfg.h"
 #include "Cfg/HeroCfg.h"
 #include "Comp/HeroComp.h"
 #include "Comp/ObjectComp.h"
@@ -128,16 +129,20 @@ static void drawBackGround() {
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
   auto strPool = *Lang::strPool[Global::langIndex];
-  FreeTypeSys::setSize(13);
+  FreeTypeSys::setSize(16);
   FreeTypeSys::setColor(240, 224, 104, 255);
   FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
-                          strPool[926 + (uint8_t)ObjectType::TAVERN]);
-
-  FreeTypeSys::setColor(248,240,216, 255);
+                          strPool[927 + (uint8_t)ObjectType::TAVERN]);
+  FreeTypeSys::setSize(17);
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2 - 50, leftUp.y + 272,
+                          strPool[3037]);
+  FreeTypeSys::setSize(13);
+  FreeTypeSys::setColor(248, 240, 216, 255);
   FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 190,
                           strPool[2885]);
   FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 210,
                           Global::tavernStr);
+  FreeTypeSys::drawCenter(leftUp.x + 320, leftUp.y + 317, 2500);
 }
 
 const static std::vector<SDL_FRect> PorPosition = {
@@ -166,6 +171,32 @@ static void drawPortraits() {
       SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255);
       SDL_SetRenderDrawBlendMode(Window::renderer, SDL_BLENDMODE_BLEND);
       SDL_RenderRect(Window::renderer, &posRect);
+
+      auto strPool = *Lang::strPool[Global::langIndex];
+
+      FreeTypeSys::setSize(13);
+      FreeTypeSys::setColor(248, 240, 216, 255);
+      auto str = strPool[1262 + heroComp->portrait] + strPool[3038] +
+                 FreeTypeSys::str(heroComp->level) + strPool[2177] +
+                 strPool[2178 + heroComp->subId] + u",";
+      FreeTypeSys::drawCenter(Global::viewPort.w / 2 - 45, leftUp.y + 370, str);
+
+      auto equipNum = 0;
+      for (auto i = 0; i < heroComp->artifacts.size(); i++) {
+        if (i == (uint8_t)ArtifactCfg::artSlot::SPELLBOOK ||
+            i == (uint8_t)ArtifactCfg::artSlot::MACH1 ||
+            i == (uint8_t)ArtifactCfg::artSlot::MACH2 ||
+            i == (uint8_t)ArtifactCfg::artSlot::MACH3 ||
+            i == (uint8_t)ArtifactCfg::artSlot::MACH4) {
+          continue;
+        }
+        if (heroComp->artifacts[i] != 0xffff) {
+          equipNum++;
+        }
+      }
+      equipNum += heroComp->artifactsInBackpack.size();
+      str = strPool[3039] + FreeTypeSys::str(equipNum) + strPool[3040];
+      FreeTypeSys::drawCenter(Global::viewPort.w / 2 - 45, leftUp.y + 388, str);
     }
   }
 }

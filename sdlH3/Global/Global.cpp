@@ -960,6 +960,7 @@ void Global::startGame() {
         hComp.secSkills = secSkills;
         hComp.level = 1;
         hComp.primSkills = HeroCfg::heroPrimarySkills.at(0);
+        hComp.subId = HeroCfg::heroPro[hComp.portrait];
 
         for (auto pair : HeroCfg::heroCreatures[hComp.portrait]) {
           switch (pair.first) {
