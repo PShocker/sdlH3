@@ -544,6 +544,7 @@ static void HandleAudioFrame(AVFrame *frame) {
 
 bool VideoSys::run() {
   double now = (double)(SDL_GetTicks() - video_start) / 1000.0;
+  // pts控制帧率
   if (now >= g_pts && ic != NULL) {
     auto result = av_read_frame(ic, pkt);
     if (result >= 0) {

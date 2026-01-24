@@ -655,6 +655,123 @@ struct TownCfg {
           },
   };
 
+  const static inline std::unordered_map<uint8_t, std::vector<uint8_t>>
+      townBuildUpgrade[] = {
+          // 0 - 城堡 (Castle)
+          {
+              {(uint8_t)Building::SPECIAL_19,
+               {
+                   (uint8_t)Building::TAVERN,
+               }},
+              {(uint8_t)Building::HORDE_1_UPGR,
+               {
+                   (uint8_t)Building::HORDE_1,
+                   (uint8_t)Building::DWELLING_LEVEL_3,
+                   (uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               }},
+              {(uint8_t)Building::HORDE_1,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_3,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_1,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_2,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_3,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_4,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_5,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_6,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_7,
+               }},
+          },
+  };
+
+  const static inline std::unordered_map<uint8_t, std::vector<uint8_t>>
+      townBuildUpgradeCommon = {
+          {
+              (uint8_t)Building::MAGE_GUILD_5,
+              {
+                  (uint8_t)Building::MAGE_GUILD_4,
+                  (uint8_t)Building::MAGE_GUILD_3,
+                  (uint8_t)Building::MAGE_GUILD_2,
+                  (uint8_t)Building::MAGE_GUILD_1,
+              },
+          },
+          {
+              (uint8_t)Building::MAGE_GUILD_4,
+              {
+                  (uint8_t)Building::MAGE_GUILD_3,
+                  (uint8_t)Building::MAGE_GUILD_2,
+                  (uint8_t)Building::MAGE_GUILD_1,
+              },
+          },
+          {
+              (uint8_t)Building::MAGE_GUILD_3,
+              {
+                  (uint8_t)Building::MAGE_GUILD_2,
+                  (uint8_t)Building::MAGE_GUILD_1,
+              },
+          },
+          {
+              (uint8_t)Building::MAGE_GUILD_2,
+              {
+                  (uint8_t)Building::MAGE_GUILD_1,
+              },
+          },
+          {
+              (uint8_t)Building::CAPITOL,
+              {
+                  (uint8_t)Building::TOWN_HALL,
+                  (uint8_t)Building::CITY_HALL,
+                  (uint8_t)Building::VILLAGE_HALL,
+              },
+          },
+          {
+              (uint8_t)Building::CITY_HALL,
+              {
+                  (uint8_t)Building::TOWN_HALL,
+                  (uint8_t)Building::VILLAGE_HALL,
+              },
+          },
+          {
+              (uint8_t)Building::TOWN_HALL,
+              {
+                  (uint8_t)Building::VILLAGE_HALL,
+              },
+          },
+          {
+              (uint8_t)Building::CASTLE,
+              {
+                  (uint8_t)Building::FORT,
+                  (uint8_t)Building::CITADEL,
+              },
+          },
+          {
+              (uint8_t)Building::CITADEL,
+              {
+                  (uint8_t)Building::FORT,
+              },
+          },
+  };
+
   const static inline std::unordered_map<uint8_t, std::string> townBorder[] = {
       {// 城堡 (0)
        {(uint8_t)Building::MAGE_GUILD_1, "TOCSMAG1.pcx"},

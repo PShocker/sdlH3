@@ -116,69 +116,21 @@ static std::unordered_set<uint8_t> townVisiableBuild() {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
-  auto s = TownCfg::townDefaultAni[townComp->id];
+  auto builds = TownCfg::townDefaultAni[townComp->id];
   for (const auto &pair : townComp->buildings) {
-    s.insert(pair.first);
+    builds.insert(pair.first);
   }
-  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1)) {
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_1);
+  auto upG = TownCfg::townBuildUpgrade[townComp->id];
+  auto upGC = TownCfg::townBuildUpgradeCommon;
+  upG.insert(upGC.begin(), upGC.end());
+  for (auto [k, v] : upG) {
+    if (builds.contains(k)) {
+      for (auto r : v) {
+        builds.erase(r);
+      }
+    }
   }
-  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_2)) {
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_2);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_3)) {
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_3);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_4)) {
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_4);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_5)) {
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_5);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6)) {
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_6);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_7)) {
-    s.erase((uint8_t)TownCfg::Building::DWELLING_LEVEL_7);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_5)) {
-    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_1);
-    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_2);
-    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_3);
-    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_4);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_4)) {
-    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_1);
-    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_2);
-    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_3);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_3)) {
-    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_1);
-    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_2);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::MAGE_GUILD_2)) {
-    s.erase((uint8_t)TownCfg::Building::MAGE_GUILD_1);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::CAPITOL)) {
-    s.erase((uint8_t)TownCfg::Building::TOWN_HALL);
-    s.erase((uint8_t)TownCfg::Building::CITY_HALL);
-    s.erase((uint8_t)TownCfg::Building::VILLAGE_HALL);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::CITY_HALL)) {
-    s.erase((uint8_t)TownCfg::Building::TOWN_HALL);
-    s.erase((uint8_t)TownCfg::Building::VILLAGE_HALL);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::TOWN_HALL)) {
-    s.erase((uint8_t)TownCfg::Building::VILLAGE_HALL);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::CASTLE)) {
-    s.erase((uint8_t)TownCfg::Building::FORT);
-    s.erase((uint8_t)TownCfg::Building::CITADEL);
-  }
-  if (s.contains((uint8_t)TownCfg::Building::CITADEL)) {
-    s.erase((uint8_t)TownCfg::Building::FORT);
-  }
-  return s;
+  return builds;
 }
 
 static void close() {
@@ -479,6 +431,16 @@ static void drawBottomInfo() {
     FreeTypeSys::drawCenter(leftUp.x + 400, leftUp.y + 554, s);
   }
 }
+static void drawTownList() {
+    SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+}
+
+static void drawTownIcon() {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+
+}
 
 bool TownSys::run() {
   buildAnimate();
@@ -661,7 +623,6 @@ static void clickDwe(uint8_t clickType) {
     Global::confirmdraw = [=]() {
       SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                         Global::viewPort.h / 2 - confirmbakH / 2};
-                        
     };
     World::enterConfirm(confirmbakW, confirmbakH,
                         ((uint8_t)Enum::SCNTYPE::POP));
@@ -882,7 +843,7 @@ static bool clickHeroCres(uint8_t clickType) {
         }
 
       } else {
-        if (Global::splitOn) {
+        if (Global::splitOn && secondClick.creature->second == 0) {
           Global::splitCre[1] = secondClick.creature;
           World::enterSplitCre();
         } else {
