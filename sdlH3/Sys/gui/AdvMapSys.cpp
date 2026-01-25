@@ -31,6 +31,8 @@
 #include "Sys/gui/CursorSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
+#include "base/HeroListSys.h"
+#include "base/TownListSys.h"
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include <algorithm>
@@ -220,53 +222,6 @@ static std::vector<Button> buttonInfo() {
   b.func = viewAdvSet;
   v.push_back(b);
 
-  // iam012
-  b.textures =
-      Global::defCache["IAM012.DEF/" + std::to_string(Global::playerId)];
-  if (Global::advPages[Global::playerId].first > 0) {
-    b.disable = false;
-  } else {
-    b.disable = true;
-  }
-  b.r = {191, 196, 64, 16};
-  b.func = []() { Global::advPages[Global::playerId].first -= 1; };
-  v.push_back(b);
-
-  b.textures =
-      Global::defCache["IAM013.DEF/" + std::to_string(Global::playerId)];
-  if (Global::advPages[Global::playerId].first + 5 <
-      Global::heros[Global::playerId].size()) {
-    b.disable = false;
-  } else {
-    b.disable = true;
-  }
-  b.r = {191, 372, 64, 16};
-  b.func = []() { Global::advPages[Global::playerId].first += 1; };
-  v.push_back(b);
-
-  b.textures =
-      Global::defCache["IAM014.DEF/" + std::to_string(Global::playerId)];
-  if (Global::advPages[Global::playerId].second > 0) {
-    b.disable = false;
-  } else {
-    b.disable = true;
-  }
-  b.r = {52, 196, 48, 16};
-  b.func = []() { Global::advPages[Global::playerId].second -= 1; };
-  v.push_back(b);
-
-  b.textures =
-      Global::defCache["IAM015.DEF/" + std::to_string(Global::playerId)];
-  if (Global::advPages[Global::playerId].second + 5 <
-      Global::towns[Global::playerId].size()) {
-    b.disable = false;
-  } else {
-    b.disable = true;
-  }
-  b.r = {52, 372, 64, 16};
-  b.func = []() { Global::advPages[Global::playerId].second += 1; };
-  v.push_back(b);
-
   return v;
 }
 
@@ -385,52 +340,11 @@ static void drawButton() {
   for (auto &b : v) {
     b.r.x = Global::viewPort.w - b.r.x;
   }
-  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 5];
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 4];
   auto top = (*topFunc.target<bool (*)()>() == AdvMapSys::run);
   AdvMapSys::drawButtons(0, 0, top, v);
 }
 
-static void drawPortrait() {
-  SDL_FRect posRect;
-  // render small hero PortraitsSmall
-  posRect = {(float)Global::viewPort.w - 183, 212, 48, 32};
-  for (uint8_t i = 0; i < 5; i++) {
-    auto index = i + Global::advPages[Global::playerId].first;
-    if (index >= Global::heros[Global::playerId].size()) {
-      break;
-    }
-    auto &[level, heroEnt] = Global::heros[Global::playerId][index];
-    auto &registry = World::registrys[level];
-    auto heroComp = &registry.get<HeroComp>(heroEnt);
-    auto texture =
-        Global::pcxCache[HeroCfg::heroSmallPor[heroComp->portrait]][0];
-    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-    if (index == Global::herosIndex[Global::playerId]) {
-      SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
-      SDL_RenderRect(Window::renderer, &posRect);
-    }
-    posRect.y += 32;
-  }
-
-  // render small town PortraitsSmall
-  posRect = {(float)Global::viewPort.w - 53, 212, 48, 32};
-  for (uint8_t i = 0; i < 5; i++) {
-    auto index = i + Global::advPages[Global::playerId].second;
-    if (index >= Global::towns[Global::playerId].size()) {
-      break;
-    }
-    auto &[level, townEnt] = Global::towns[Global::playerId][index];
-    auto &registry = World::registrys[level];
-    auto townComp = &registry.get<TownComp>(townEnt);
-    auto texture = Global::defCache["ITPA.DEF/0"][2 + 2 * townComp->id];
-    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-    if (index == Global::townsIndex[Global::playerId]) {
-      SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
-      SDL_RenderRect(Window::renderer, &posRect);
-    }
-    posRect.y += 32;
-  }
-}
 static void drawAgem() {
   SDL_FRect posRect = {6, 6, 46, 46};
   auto texture = Global::defCache["agemUL.def/0"][Global::playerId];
@@ -444,30 +358,6 @@ static void drawAgem() {
   posRect = {Global::viewPort.w - 244, Global::viewPort.h - 92, 46, 46};
   texture = Global::defCache["agemLR.def/0"][Global::playerId];
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-}
-
-static void drawIM() {
-  SDL_FRect posRect = {(float)Global::viewPort.w - 189, 212, 6, 30};
-
-  for (uint8_t i = 0; i < 5; i++) {
-    auto index = i + Global::advPages[Global::playerId].first;
-    if (index >= Global::heros[Global::playerId].size()) {
-      break;
-    }
-    auto &[level, heroEnt] = Global::heros[Global::playerId][index];
-    auto &registry = World::registrys[level];
-    auto heroComp = &registry.get<HeroComp>(heroEnt);
-    auto texture =
-        Global::defCache["IMOBIL.def/0"]
-                        [std::min((int)heroComp->movement / 100, 25)];
-    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-    posRect.x = (float)Global::viewPort.w - 135;
-    texture =
-        Global::defCache["IMANA.def/0"][std::min((int)heroComp->mana / 5, 25)];
-    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-    posRect.x = Global::viewPort.w - 189;
-    posRect.y += 32;
-  }
 }
 
 static void drawMiniMap() {
@@ -907,6 +797,23 @@ static void drawBottomInfo() {
                             (Global::viewPort.h - 46), s);
   }
 }
+static void drawHeroList() {
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 4];
+  auto top = (*topFunc.target<bool (*)()>() == AdvMapSys::run);
+  auto i = Global::herosIndex[Global::playerId];
+  auto page = Global::advHeroPage[Global::playerId];
+  HeroListSys::draw(Global::viewPort.w - 191, 196, 5, page, i, Global::playerId,
+                    top);
+}
+
+static void drawTownList() {
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 4];
+  auto top = (*topFunc.target<bool (*)()>() == AdvMapSys::run);
+  auto i = Global::townsIndex[Global::playerId];
+  auto page = Global::advTownPage[Global::playerId];
+  TownListSys::draw(Global::viewPort.w - 52, 196, 5, page, i, Global::playerId,
+                    top);
+}
 
 static void drawIME() {
   if (Global::IMEText.has_value()) {
@@ -922,8 +829,8 @@ bool AdvMapSys::run() {
   drawSpellMask();
   drawAdvMap();
   drawButton();
-  drawPortrait();
-  drawIM();
+  drawHeroList();
+  drawTownList();
   drawMiniMap();
   drawAgem();
   drawResBar(3, Global::viewPort.h - 25);
@@ -1062,64 +969,51 @@ static bool clickStat(uint8_t clickType) {
   return true;
 }
 
-static bool clickHeroPor(uint8_t clickType) {
-  // click small hero PortraitsSmall
-  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
-  SDL_FRect posRect;
-  posRect = {(float)Global::viewPort.w - 183, 212, 48, 32};
+static bool clickHeroList(uint8_t clickType) {
+  uint8_t i = 0xff;
+  auto r = HeroListSys::click(Global::viewPort.w - 191, 196, 5,
+                              Global::advHeroPage[Global::playerId], i,
+                              Global::playerId, clickType);
+  if (i != 0xff) {
+    auto page = Global::advHeroPage[Global::playerId];
+    auto index = i + page;
+    if (clickType == static_cast<uint8_t>(Enum::CLICKTYPE::L_UP)) {
 
-  for (uint8_t i = 0; i < 5; i++) {
-    auto index = i + Global::advPages[Global::playerId].first;
-    if (index >= Global::heros[Global::playerId].size()) {
-      break;
-    }
-    if (SDL_PointInRectFloat(&point, &posRect)) {
-      auto &[level, heroEnt] = Global::heros[Global::playerId][index];
-      auto &registry = World::registrys[level];
-      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
-        if (Global::herosIndex[Global::playerId] == index) {
-          World::enterHeroScrn(level, heroEnt, (uint8_t)Enum::SCNTYPE::MOD);
-        } else {
-          CursorSys::clearHeroPath();
-          Global::advCreIndex = 0xff;
-        }
-        AdvMapSys::heroFocus(heroEnt, level);
-      } else {
-        World::enterHeroScrn(level, heroEnt, (uint8_t)Enum::SCNTYPE::POP);
+      auto pair = Global::heros[Global::playerId][index];
+      auto level = pair.first;
+      auto heroEnt = pair.second;
+
+      if (Global::herosIndex[Global::playerId] == index) {
+        World::enterHeroScrn(level, heroEnt, (uint8_t)Enum::SCNTYPE::MOD);
       }
-      return true;
+      AdvMapSys::heroFocus(heroEnt, level);
     }
-    posRect.y += 32;
   }
-  return false;
+  return r;
 }
 
-static bool clickTownPor(uint8_t clickType) {
-  // click small town PortraitsSmall
-  SDL_FRect posRect;
-  SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
-  posRect = {(float)Global::viewPort.w - 53, 212, 48, 32};
-  for (uint8_t i = 0; i < 5; i++) {
-    auto index = i + Global::advPages[Global::playerId].second;
-    if (index >= Global::towns[Global::playerId].size()) {
-      break;
-    }
-    if (SDL_PointInRectFloat(&point, &posRect)) {
-      auto &[level, townEnt] = Global::towns[Global::playerId][index];
-      auto &registry = World::registrys[level];
-      if (clickType == static_cast<uint8_t>(Enum::CLICKTYPE::L_UP)) {
-        if (Global::townsIndex[Global::playerId] == index) {
-          World::enterTownScrn(level, townEnt, (uint8_t)Enum::SCNTYPE::MOD);
-        }
-        AdvMapSys::townFocus(townEnt, level);
-      } else {
-        World::enterTownScrn(level, townEnt, (uint8_t)Enum::SCNTYPE::POP);
+static bool clickTownList(uint8_t clickType) {
+  uint8_t i = 0xff;
+  auto r = TownListSys::click(Global::viewPort.w - 52, 196, 5,
+                              Global::advTownPage[Global::playerId], i,
+                              Global::playerId, clickType);
+  if (i != 0xff) {
+    auto page = Global::advTownPage[Global::playerId];
+    auto index = i + page;
+
+    if (clickType == static_cast<uint8_t>(Enum::CLICKTYPE::L_UP)) {
+
+      auto pair = Global::towns[Global::playerId][index];
+      auto level = pair.first;
+      auto townEnt = pair.second;
+
+      if (Global::townsIndex[Global::playerId] == index) {
+        World::enterTownScrn(level, townEnt, (uint8_t)Enum::SCNTYPE::MOD);
       }
-      return true;
+      AdvMapSys::townFocus(townEnt, level);
     }
-    posRect.y += 32;
   }
-  return false;
+  return r;
 }
 
 bool AdvMapSys::leftMouseUp(float x, float y) {
@@ -1134,10 +1028,10 @@ bool AdvMapSys::leftMouseUp(float x, float y) {
   if (AdvMapSys::clickButtons(0, 0, button, clickType)) {
     return false;
   }
-  if (clickHeroPor(clickType)) {
+  if (clickHeroList(clickType)) {
     return false;
   }
-  if (clickTownPor(clickType)) {
+  if (clickTownList(clickType)) {
     return false;
   }
   if (clickStat(clickType)) {
@@ -1166,10 +1060,10 @@ bool AdvMapSys::rightMouseDown(float x, float y) {
     return true;
   }
   auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
-  if (clickHeroPor(clickType)) {
+  if (clickHeroList(clickType)) {
     return false;
   }
-  if (clickTownPor(clickType)) {
+  if (clickTownList(clickType)) {
     return false;
   }
   if (clickStat(clickType)) {
@@ -1369,10 +1263,10 @@ void AdvMapSys::heroFocus(entt::entity heroEnt, uint8_t level) {
       auto positionComp = &registry.get<PositionComp>(heroEnt);
       CameraSys::focus(positionComp->point.x + 48, positionComp->point.y + 48);
 
-      if (i >= Global::advPages[Global::playerId].first + 5) {
-        Global::advPages[Global::playerId].first = i - 4;
-      } else if (i < Global::advPages[Global::playerId].first) {
-        Global::advPages[Global::playerId].first = i;
+      if (i >= Global::advHeroPage[Global::playerId] + 5) {
+        Global::advHeroPage[Global::playerId] = i - 4;
+      } else if (i < Global::advHeroPage[Global::playerId]) {
+        Global::advHeroPage[Global::playerId] = i;
       }
 
       break;
@@ -1393,10 +1287,10 @@ void AdvMapSys::townFocus(entt::entity townEnt, uint8_t level) {
       Global::townsIndex[Global::playerId] = i;
       CameraSys::focus(positionComp->point.x + 112,
                        positionComp->point.y + 144);
-      if (i >= Global::advPages[Global::playerId].second + 5) {
-        Global::advPages[Global::playerId].second = i - 4;
-      } else if (i < Global::advPages[Global::playerId].second) {
-        Global::advPages[Global::playerId].second = i;
+      if (i >= Global::advTownPage[Global::playerId] + 5) {
+        Global::advTownPage[Global::playerId] = i - 4;
+      } else if (i < Global::advTownPage[Global::playerId]) {
+        Global::advTownPage[Global::playerId] = i;
       }
       break;
     }

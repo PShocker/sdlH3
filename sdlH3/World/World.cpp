@@ -91,6 +91,7 @@
 #include "Sys/gui/building/Special21Sys.h"
 #include "Window/Window.h"
 #include "entt/entity/fwd.hpp"
+#include <algorithm>
 #include <cstdint>
 #include <utility>
 
@@ -155,8 +156,25 @@ void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
   Global::goalIndex = 0xff;
   Global::townScnIndex = 0xff;
 
+  auto pId = Global::playerId;
+  for (uint8_t i = 0; i < Global::towns[pId].size(); i++) {
+    auto pair = Global::towns[pId][i];
+    if (pair.first == level && pair.second == ent) {
+      if (i == 0) {
+        Global::townScnPage = 0;
+      } else if (i == Global::towns[pId].size() - 1) {
+        Global::townScnPage = i - 2;
+      } else {
+        Global::townScnPage = i - 1;
+      }
+      break;
+    }
+  }
+
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
-  TownSys::heroVisit();
+  if (type == (uint8_t)Enum::SCNTYPE::MOD) {
+    TownSys::heroVisit();
+  }
 }
 
 void World::enterSpecBuild(uint8_t bId) {

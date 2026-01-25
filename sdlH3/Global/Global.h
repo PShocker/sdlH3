@@ -54,13 +54,15 @@ struct Global {
   static inline int mapH;
   static inline int mapW;
 
-  static inline std::array<std::pair<uint8_t, uint8_t>, 8> advPages;
   static inline uint8_t advCreIndex;
   static inline std::vector<std::pair<SDL_Texture *, std::u16string>> advStats;
   static inline uint64_t advStatTime;
   static inline std::vector<std::tuple<SDL_Point, SDL_Color, std::u16string>>
       advStrs;
   static inline std::array<std::array<std::set<entt::entity>, 2>, 8> advVisted;
+
+  static inline std::array<uint8_t, 8> advHeroPage;
+  static inline std::array<uint8_t, 8> advTownPage;
 
   static inline uint8_t cursorType;
   static inline uint8_t cursorIndex;
@@ -148,6 +150,7 @@ struct Global {
   static inline std::pair<uint8_t, entt::entity> townScnPair;
   static inline uint8_t townScnType;
   static inline uint8_t townScnIndex;
+  static inline uint8_t townScnPage;
 
   static inline std::array<std::array<entt::entity, 2>, 8> tavernHeros;
   static inline std::u16string tavernStr;

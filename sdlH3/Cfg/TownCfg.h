@@ -108,6 +108,7 @@ struct TownCfg {
 
   const static inline std::vector<uint8_t> townForceVisit[] = {
       {(uint8_t)Building::SPECIAL_10},
+      {},
   };
 
   const static inline std::unordered_map<uint8_t, std::array<uint16_t, 7>>
@@ -702,6 +703,8 @@ struct TownCfg {
                    (uint8_t)Building::DWELLING_LEVEL_7,
                }},
           },
+          // 1
+          {},
   };
 
   const static inline std::unordered_map<uint8_t, std::vector<uint8_t>>

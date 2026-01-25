@@ -24,6 +24,7 @@
 #include "Sys/gui/AdvMapSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
+#include "base/TownListSys.h"
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
@@ -432,14 +433,19 @@ static void drawBottomInfo() {
   }
 }
 static void drawTownList() {
-    SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
+  auto funcPtr = topFunc.target<bool (*)()>();
+  auto top = (funcPtr && *topFunc.target<bool (*)()>() == TownSys::run);
+  auto i = Global::townsIndex[Global::playerId];
+  TownListSys::draw(leftUp.x + 744, leftUp.y + 415, 3, Global::townScnPage, i,
+                    Global::playerId, top);
 }
 
 static void drawTownIcon() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-
 }
 
 bool TownSys::run() {
@@ -449,6 +455,7 @@ bool TownSys::run() {
   drawBorder();
   drawButton();
   drawHeroPor();
+  drawTownList();
   drawResbar();
   drawBottomInfo();
   return true;
@@ -880,6 +887,24 @@ static bool clickHeroCres(uint8_t clickType) {
   return true;
 }
 
+static bool clickTownList(uint8_t clickType) {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  uint8_t i = 0xff;
+  auto r =
+      TownListSys::click(leftUp.x + 744, leftUp.y + 415, 3, Global::townScnPage,
+                         i, Global::playerId, clickType);
+  if (i != 0xff) {
+    auto index = Global::townScnPage + i;
+    auto [level, townEnt] = Global::towns[Global::playerId][index];
+    AdvMapSys::townFocus(townEnt, level);
+    Global::townScnPair = Global::towns[Global::playerId][index];
+    Global::goalIndex = 0xff;
+    Global::townScnIndex = 0xff;
+  }
+  return r;
+}
+
 bool TownSys::leftMouseUp(float x, float y) {
   if (Global::townScnType == (uint8_t)Enum::SCNTYPE::POP) {
     return false;
@@ -898,7 +923,9 @@ bool TownSys::leftMouseUp(float x, float y) {
   if (clickHeroCres(clickType)) {
     return false;
   }
-
+  if (clickTownList(clickType)) {
+    return false;
+  }
   return true;
 }
 

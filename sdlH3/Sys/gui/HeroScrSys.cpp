@@ -91,8 +91,8 @@ static void dismiss() {
       World::registrys[World::level].destroy(heroEnt);
       World::needSort = true;
       Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
-      if (Global::advPages[Global::playerId].first > 0) {
-        Global::advPages[Global::playerId].first -= 1;
+      if (Global::advHeroPage[Global::playerId] > 0) {
+        Global::advHeroPage[Global::playerId] -= 1;
       }
       return true;
     });
