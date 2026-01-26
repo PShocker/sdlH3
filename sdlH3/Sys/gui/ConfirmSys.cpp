@@ -15,8 +15,9 @@ static void drawBackGround() {
 
   auto bakW = Global::confirmBakW;
   auto bakH = Global::confirmBakH;
-
-  AdvPopSys::drawBackGround(x, y, bakW, bakH, Global::playerId);
+  if (bakW > 0 && bakH > 0) {
+    AdvPopSys::drawBackGround(x, y, bakW, bakH, Global::playerId);
+  }
 }
 
 static void close() { World::exitScrn(); }

@@ -1,4 +1,5 @@
 #include "AdvMapSys.h"
+#include "AdvPopSys.h"
 #include "CameraSys.h"
 #include "Cfg/HeroCfg.h"
 #include "Cfg/TownCfg.h"
@@ -977,16 +978,22 @@ static bool clickHeroList(uint8_t clickType) {
   if (i != 0xff) {
     auto page = Global::advHeroPage[Global::playerId];
     auto index = i + page;
-    if (clickType == static_cast<uint8_t>(Enum::CLICKTYPE::L_UP)) {
 
-      auto pair = Global::heros[Global::playerId][index];
-      auto level = pair.first;
-      auto heroEnt = pair.second;
+    auto pair = Global::heros[Global::playerId][index];
+    auto level = pair.first;
+    auto heroEnt = pair.second;
+
+    if (clickType == static_cast<uint8_t>(Enum::CLICKTYPE::L_UP)) {
 
       if (Global::herosIndex[Global::playerId] == index) {
         World::enterHeroScrn(level, heroEnt, (uint8_t)Enum::SCNTYPE::MOD);
       }
       AdvMapSys::heroFocus(heroEnt, level);
+    } else {
+      Global::confirmdraw = [level, heroEnt]() {
+        AdvPopSys::drawHeroInfo(0, 0, level, heroEnt);
+      };
+      World::enterConfirm(0, 0, ((uint8_t)Enum::SCNTYPE::POP));
     }
   }
   return r;
@@ -1001,16 +1008,20 @@ static bool clickTownList(uint8_t clickType) {
     auto page = Global::advTownPage[Global::playerId];
     auto index = i + page;
 
+    auto pair = Global::towns[Global::playerId][index];
+    auto level = pair.first;
+    auto townEnt = pair.second;
     if (clickType == static_cast<uint8_t>(Enum::CLICKTYPE::L_UP)) {
-
-      auto pair = Global::towns[Global::playerId][index];
-      auto level = pair.first;
-      auto townEnt = pair.second;
-
       if (Global::townsIndex[Global::playerId] == index) {
         World::enterTownScrn(level, townEnt, (uint8_t)Enum::SCNTYPE::MOD);
       }
       AdvMapSys::townFocus(townEnt, level);
+    } else {
+      Global::confirmdraw = [level, townEnt, i]() {
+        AdvPopSys::drawTownInfo(Global::viewPort.w - 104, 196 + i * 32, level,
+                                townEnt);
+      };
+      World::enterConfirm(0, 0, ((uint8_t)Enum::SCNTYPE::POP));
     }
   }
   return r;

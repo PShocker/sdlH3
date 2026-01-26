@@ -81,6 +81,115 @@ static void drawCreature(std::vector<std::pair<uint16_t, uint32_t>> creatures,
   }
 }
 
+void AdvPopSys::drawHeroInfo(float x, float y, uint8_t level,
+                             entt::entity heroEnt) {
+  auto &registrys = World::registrys[level];
+  auto playerId = registrys.get<PlayerIdComp>(heroEnt).id;
+  auto w = 196;
+  auto h = 190;
+  drawBackGround(x, y, w, h, playerId);
+  x = x - w / 2;
+  y = y - h / 2;
+  SDL_FRect posRect = {x + 10, y + 16, 176, 166};
+  SDL_Texture *texture = Global::pcxCache["ADSTATHR.pcx"][0];
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  auto heroComp = &registrys.get<HeroComp>(heroEnt);
+  texture = Global::pcxCache[HeroCfg::heroLargePor[heroComp->portrait]][0];
+  posRect = {x + 12, y + 17, 58, 64};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  auto strPool = *Lang::strPool[Global::langIndex];
+
+  FreeTypeSys::setSize(12);
+  FreeTypeSys::setColor(255, 255, 255, 255);
+  FreeTypeSys::drawCenter(posRect.x + 75, posRect.y + 48,
+                          HeroScrSys::heroPrimAbility(*heroComp, 0));
+  FreeTypeSys::drawCenter(posRect.x + 102, posRect.y + 48,
+                          HeroScrSys::heroPrimAbility(*heroComp, 1));
+  FreeTypeSys::drawCenter(posRect.x + 130, posRect.y + 48,
+                          HeroScrSys::heroPrimAbility(*heroComp, 2));
+  FreeTypeSys::drawCenter(posRect.x + 157, posRect.y + 48,
+                          HeroScrSys::heroPrimAbility(*heroComp, 3));
+  FreeTypeSys::drawCenter(posRect.x + 155, posRect.y + 87, heroComp->mana);
+
+  auto heroName = strPool[1258 + heroComp->portrait];
+  FreeTypeSys::draw(posRect.x + 64, posRect.y, heroName);
+
+  auto mor = HeroScrSys::heroMor(*heroComp);
+  texture = Global::defCache["IMRL22.def/0"][mor];
+  posRect = {posRect.x + 3, posRect.y + 74, 22, 12};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  auto luk = HeroScrSys::heroLuk(*heroComp);
+  texture = Global::defCache["ILCK22.def/0"][luk];
+  posRect = {posRect.x, posRect.y + 17, 22, 12};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  drawCreature(heroComp->creatures, x, y);
+}
+
+void AdvPopSys::drawTownInfo(float x, float y, uint8_t level,
+                             entt::entity townEnt) {
+  auto &registrys = World::registrys[level];
+  auto playerId = registrys.get<PlayerIdComp>(townEnt).id;
+  auto w = 196;
+  auto h = 190;
+  drawBackGround(x, y, w, h, playerId);
+  x = x - w / 2;
+  y = y - h / 2;
+  SDL_FRect posRect = {x + 10, y + 16, 176, 166};
+  SDL_Texture *texture = Global::pcxCache["ADSTATCS.pcx"][0];
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  auto townComp = &registrys.get<TownComp>(townEnt);
+  if (townComp->hasBuild) {
+    texture = Global::defCache["itpt.def/0"][townComp->id * 2 + 1];
+  } else {
+    texture = Global::defCache["itpt.def/0"][townComp->id * 2];
+  }
+  posRect = {x + 12, y + 17, 58, 64};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  auto strPool = *Lang::strPool[Global::langIndex];
+  FreeTypeSys::setSize(13);
+  FreeTypeSys::setColor(255, 255, 255, 255);
+  auto townName = strPool[774 + townComp->id * 16 + townComp->nameIndex];
+  FreeTypeSys::draw(posRect.x + 64, posRect.y, townName);
+
+  if (townComp->buildings.contains((uint8_t)TownCfg::Building::TOWN_HALL)) {
+    texture = Global::defCache["ITMTLS.def/0"][1];
+  } else if (townComp->buildings.contains(
+                 (uint8_t)TownCfg::Building::CITY_HALL)) {
+    texture = Global::defCache["ITMTLS.def/0"][2];
+  } else if (townComp->buildings.contains(
+                 (uint8_t)TownCfg::Building::CAPITOL)) {
+    texture = Global::defCache["ITMTLS.def/0"][3];
+  } else {
+    texture = Global::defCache["ITMTLS.def/0"][0];
+  }
+
+  posRect = {x + 78, y + 48, 34, 34};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  if (townComp->buildings.contains((uint8_t)TownCfg::Building::FORT)) {
+    texture = Global::defCache["ITMCLS.def/0"][0];
+  } else if (townComp->buildings.contains(
+                 (uint8_t)TownCfg::Building::CITADEL)) {
+    texture = Global::defCache["ITMCLS.def/0"][1];
+  } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CASTLE)) {
+    texture = Global::defCache["ITMCLS.def/0"][2];
+  } else {
+    texture = Global::defCache["ITMCLS.def/0"][3];
+  }
+  posRect = {x + 114, y + 48, 34, 34};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  if (townComp->heroEnt[0].has_value()) {
+    texture = Global::pcxCache["TOWNQKGH.pcx"][0];
+    posRect = {x + 158, y + 90, 22, 30};
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  }
+
+  drawCreature(townComp->garCreatures, x, y);
+}
+
 bool AdvPopSys::run() {
   auto x = Global::cursorPoint.x;
   auto y = Global::cursorPoint.y;
@@ -89,109 +198,11 @@ bool AdvPopSys::run() {
     auto objectComp = World::registrys[World::level].get<ObjectComp>(ent);
     switch ((ObjectType)objectComp.type) {
     case ObjectType::HERO: {
-      auto playerId = World::registrys[World::level].get<PlayerIdComp>(ent).id;
-      auto w = 196;
-      auto h = 190;
-      drawBackGround(x, y, w, h, playerId);
-      x = x - w / 2;
-      y = y - h / 2;
-      SDL_FRect posRect = {x + 10, y + 16, 176, 166};
-      SDL_Texture *texture = Global::pcxCache["ADSTATHR.pcx"][0];
-      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-      auto heroComp = &World::registrys[World::level].get<HeroComp>(ent);
-      texture = Global::pcxCache[HeroCfg::heroLargePor[heroComp->portrait]][0];
-      posRect = {x + 12, y + 17, 58, 64};
-      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-
-      auto strPool = *Lang::strPool[Global::langIndex];
-
-      FreeTypeSys::setSize(12);
-      FreeTypeSys::setColor(255, 255, 255, 255);
-      FreeTypeSys::drawCenter(posRect.x + 75, posRect.y + 48,
-                              HeroScrSys::heroPrimAbility(*heroComp, 0));
-      FreeTypeSys::drawCenter(posRect.x + 102, posRect.y + 48,
-                              HeroScrSys::heroPrimAbility(*heroComp, 1));
-      FreeTypeSys::drawCenter(posRect.x + 130, posRect.y + 48,
-                              HeroScrSys::heroPrimAbility(*heroComp, 2));
-      FreeTypeSys::drawCenter(posRect.x + 157, posRect.y + 48,
-                              HeroScrSys::heroPrimAbility(*heroComp, 3));
-      FreeTypeSys::drawCenter(posRect.x + 155, posRect.y + 87, heroComp->mana);
-
-      auto heroName = strPool[1258 + heroComp->portrait];
-      FreeTypeSys::draw(posRect.x + 64, posRect.y, heroName);
-
-      auto mor = HeroScrSys::heroMor(*heroComp);
-      texture = Global::defCache["IMRL22.def/0"][mor];
-      posRect = {posRect.x + 3, posRect.y + 74, 22, 12};
-      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-
-      auto luk = HeroScrSys::heroLuk(*heroComp);
-      texture = Global::defCache["ILCK22.def/0"][luk];
-      posRect = {posRect.x, posRect.y + 17, 22, 12};
-      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-
-      drawCreature(heroComp->creatures, x, y);
+      drawHeroInfo(x, y, World::level, ent);
       break;
     }
     case ObjectType::TOWN: {
-      auto playerId = World::registrys[World::level].get<PlayerIdComp>(ent).id;
-      auto w = 196;
-      auto h = 190;
-      drawBackGround(x, y, w, h, playerId);
-      x = x - w / 2;
-      y = y - h / 2;
-      SDL_FRect posRect = {x + 10, y + 16, 176, 166};
-      SDL_Texture *texture = Global::pcxCache["ADSTATCS.pcx"][0];
-      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-      auto townComp = &World::registrys[World::level].get<TownComp>(ent);
-      if (townComp->hasBuild) {
-        texture = Global::defCache["itpt.def/0"][townComp->id * 2 + 1];
-      } else {
-        texture = Global::defCache["itpt.def/0"][townComp->id * 2];
-      }
-      posRect = {x + 12, y + 17, 58, 64};
-      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-
-      auto strPool = *Lang::strPool[Global::langIndex];
-      FreeTypeSys::setSize(13);
-      FreeTypeSys::setColor(255, 255, 255, 255);
-      auto townName = strPool[774 + townComp->id * 16 + townComp->nameIndex];
-      FreeTypeSys::draw(posRect.x + 64, posRect.y, townName);
-
-      if (townComp->buildings.contains((uint8_t)TownCfg::Building::TOWN_HALL)) {
-        texture = Global::defCache["ITMTLS.def/0"][1];
-      } else if (townComp->buildings.contains(
-                     (uint8_t)TownCfg::Building::CITY_HALL)) {
-        texture = Global::defCache["ITMTLS.def/0"][2];
-      } else if (townComp->buildings.contains(
-                     (uint8_t)TownCfg::Building::CAPITOL)) {
-        texture = Global::defCache["ITMTLS.def/0"][3];
-      } else {
-        texture = Global::defCache["ITMTLS.def/0"][0];
-      }
-
-      posRect = {x + 78, y + 48, 34, 34};
-      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-      if (townComp->buildings.contains((uint8_t)TownCfg::Building::FORT)) {
-        texture = Global::defCache["ITMCLS.def/0"][0];
-      } else if (townComp->buildings.contains(
-                     (uint8_t)TownCfg::Building::CITADEL)) {
-        texture = Global::defCache["ITMCLS.def/0"][1];
-      } else if (townComp->buildings.contains(
-                     (uint8_t)TownCfg::Building::CASTLE)) {
-        texture = Global::defCache["ITMCLS.def/0"][2];
-      } else {
-        texture = Global::defCache["ITMCLS.def/0"][3];
-      }
-      posRect = {x + 114, y + 48, 34, 34};
-      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-      if (townComp->heroEnt[0].has_value()) {
-        texture = Global::pcxCache["TOWNQKGH.pcx"][0];
-        posRect = {x + 158, y + 90, 22, 30};
-        SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-      }
-
-      drawCreature(townComp->garCreatures, x, y);
+      drawTownInfo(x, y, World::level, ent);
       break;
     }
     case ObjectType::MONSTER: {
