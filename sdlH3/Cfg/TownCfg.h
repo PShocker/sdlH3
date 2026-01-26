@@ -112,6 +112,16 @@ struct TownCfg {
   };
 
   const static inline std::unordered_map<uint8_t, std::array<uint16_t, 7>>
+      townBuildInCome[] = {
+          // 0 - 城堡 (Castle)
+          {
+              {(uint8_t)Building::VILLAGE_HALL, {0, 0, 0, 0, 0, 0, 500}},
+
+          },
+          //   1
+  };
+
+  const static inline std::unordered_map<uint8_t, std::array<uint16_t, 7>>
       townBuildCost[] = {
           // 0 - 城堡 (Castle)
           {

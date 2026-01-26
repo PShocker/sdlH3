@@ -198,6 +198,7 @@ static uint8_t scroll() {
   if (cursorScrollLeft() && cursorScrollDown()) {
     return (uint8_t)Enum::CRADVNTR::SCROLL_SOUTHWEST;
   }
+  CameraSys::fixViewPort();
   return index;
 }
 

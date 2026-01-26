@@ -22,6 +22,7 @@
 #include "SDL3/SDL_scancode.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/AdvMapSys.h"
+#include "Sys/gui/AdvPopSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include "base/TownListSys.h"
@@ -39,6 +40,24 @@
 
 static std::optional<uint8_t> mouseBuildId;
 static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
+
+std::array<uint16_t, 7> TownSys::townInCome(uint8_t lvl, entt::entity townEnt) {
+  std::array<uint16_t, 7> r;
+  r.fill(0);
+  auto &registry = World::registrys[lvl];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto townId = townComp->id;
+  for (const auto &pair : townComp->buildings) {
+    auto bId = pair.first;
+    if (TownCfg::townBuildInCome[townId].contains(bId)) {
+      auto income = TownCfg::townBuildInCome[townId].at(bId);
+      for (auto i = 0; i < 7; ++i) {
+        r[i] = r[i] + income[i];
+      }
+    }
+  }
+  return r;
+}
 
 uint8_t TownSys::visitBuild(uint8_t bId) {
   uint8_t r = 0xff;
@@ -220,6 +239,16 @@ static void drawScrn() {
   posRect = {leftUp.x, leftUp.y + 374, 800, 226};
   texture = Global::pcxCache["townScrn.pcx"][Global::playerId];
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  auto strPool = *Lang::strPool[Global::langIndex];
+  FreeTypeSys::setSize(13);
+  FreeTypeSys::setColor(255, 255, 255, 255);
+  auto townName = strPool[774 + townComp->id * 16 + townComp->nameIndex];
+  FreeTypeSys::draw(leftUp.x + 85, leftUp.y + 387, townName);
+
+  auto inCome = TownSys::townInCome(level, townEnt);
+  FreeTypeSys::setColor(248, 240, 216, 255);
+  FreeTypeSys::drawCenter(leftUp.x + 195, leftUp.y + 433, inCome[6]);
 }
 
 static void drawBuilds() {
@@ -441,11 +470,6 @@ static void drawTownList() {
   auto i = Global::townsIndex[Global::playerId];
   TownListSys::draw(leftUp.x + 744, leftUp.y + 415, 3, Global::townScnPage, i,
                     Global::playerId, top);
-}
-
-static void drawTownIcon() {
-  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
-                    (Global::viewPort.h - 600) / 2};
 }
 
 bool TownSys::run() {
@@ -897,10 +921,18 @@ static bool clickTownList(uint8_t clickType) {
   if (i != 0xff) {
     auto index = Global::townScnPage + i;
     auto [level, townEnt] = Global::towns[Global::playerId][index];
-    AdvMapSys::townFocus(townEnt, level);
-    Global::townScnPair = Global::towns[Global::playerId][index];
-    Global::goalIndex = 0xff;
-    Global::townScnIndex = 0xff;
+    if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+      AdvMapSys::townFocus(townEnt, level);
+      Global::townScnPair = Global::towns[Global::playerId][index];
+      Global::goalIndex = 0xff;
+      Global::townScnIndex = 0xff;
+    } else {
+      Global::confirmdraw = [level, townEnt, i, leftUp]() {
+        AdvPopSys::drawTownInfo(leftUp.x + 700, leftUp.y + 430 + i * 32, level,
+                                townEnt);
+      };
+      World::enterConfirm(0, 0, ((uint8_t)Enum::SCNTYPE::POP));
+    }
   }
   return r;
 }
@@ -949,6 +981,9 @@ bool TownSys::rightMouseDown(float x, float y) {
     return false;
   }
   if (clickBuild(clickType)) {
+    return false;
+  }
+  if (clickTownList(clickType)) {
     return false;
   }
   return true;

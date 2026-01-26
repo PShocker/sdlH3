@@ -1,6 +1,7 @@
 #pragma once
 
 #include "entt/entity/fwd.hpp"
+#include <array>
 #include <cstdint>
 #include <vector>
 struct TownSys {
@@ -14,4 +15,5 @@ struct TownSys {
 
   static void heroVisit();
   static uint8_t visitBuild(uint8_t bId);
+  static std::array<uint16_t, 7> townInCome(uint8_t lvl, entt::entity townEnt);
 };

@@ -990,8 +990,9 @@ static bool clickHeroList(uint8_t clickType) {
       }
       AdvMapSys::heroFocus(heroEnt, level);
     } else {
-      Global::confirmdraw = [level, heroEnt]() {
-        AdvPopSys::drawHeroInfo(0, 0, level, heroEnt);
+      Global::confirmdraw = [level, heroEnt, i]() {
+        AdvPopSys::drawHeroInfo(Global::viewPort.w - 194, 196 + i * 32, level,
+                                heroEnt);
       };
       World::enterConfirm(0, 0, ((uint8_t)Enum::SCNTYPE::POP));
     }
