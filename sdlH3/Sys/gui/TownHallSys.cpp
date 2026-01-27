@@ -6,6 +6,7 @@
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "SDL3/SDL_rect.h"
+#include "Window/Window.h"
 #include "World/World.h"
 #include <cstdint>
 
@@ -43,10 +44,12 @@ static void drawBackGround() {
   auto townComp = &registry.get<TownComp>(townEnt);
   auto playerIdComp = &registry.get<PlayerIdComp>(townEnt);
 
-  posRect = {leftUp.x, leftUp.y, 800, 600};
-  // auto texture = Global::defCache[TownCfg::hallBackgroundStr[]];
+  auto texture = Global::pcxCache["ThCsAng1.PCX"][0];
+  posRect = {leftUp.x, leftUp.y, static_cast<float>(texture->w),
+             static_cast<float>(texture->h)};
+
   // auto texture = TownGui::hallBackgrounds[playerIdComp->id][townComp->id];
-  // SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 }
 
 static void drawBuildIcon() {
