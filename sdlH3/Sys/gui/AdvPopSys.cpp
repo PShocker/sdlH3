@@ -18,6 +18,7 @@
 #include "SDL3/SDL_render.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/CursorSys.h"
+#include "TownSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include "entt/entity/entity.hpp"
@@ -152,7 +153,7 @@ void AdvPopSys::drawTownInfo(float x, float y, uint8_t level,
   auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(255, 255, 255, 255);
-  auto townName = strPool[774 + townComp->id * 16 + townComp->nameIndex];
+  auto townName = TownSys::townName(level,townEnt);
   FreeTypeSys::draw(posRect.x + 64, posRect.y, townName);
 
   if (townComp->buildings.contains((uint8_t)TownCfg::Building::TOWN_HALL)) {

@@ -62,6 +62,19 @@ static std::unordered_set<uint8_t> townUpGradeBuild() {
   return builds;
 }
 
+std::u16string TownSys::townName(uint8_t lvl, entt::entity townEnt) {
+  std::u16string str;
+  auto &registry = World::registrys[lvl];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  if (!townComp->name.empty()) {
+    str = std::u16string(townComp->name.begin(), townComp->name.end());
+  } else {
+    auto strPool = *Lang::strPool[Global::langIndex];
+    str = strPool[774 + townComp->id * 16 + townComp->nameIndex];
+  }
+  return str;
+}
+
 std::array<uint16_t, 7> TownSys::townInCome(uint8_t lvl, entt::entity townEnt) {
   std::array<uint16_t, 7> r;
   r.fill(0);
@@ -243,7 +256,7 @@ static void drawScrn() {
   auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(255, 255, 255, 255);
-  auto townName = strPool[774 + townComp->id * 16 + townComp->nameIndex];
+  auto townName = TownSys::townName(level, townEnt);
   FreeTypeSys::draw(leftUp.x + 85, leftUp.y + 387, townName);
 
   auto inCome = TownSys::townInCome(level, townEnt);

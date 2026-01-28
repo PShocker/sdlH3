@@ -111,6 +111,18 @@ struct TownCfg {
       {},
   };
 
+  const static inline std::unordered_map<uint8_t, std::string> townBuildIcon[] =
+      {
+          // 0 - 城堡 (Castle)
+          {
+              {(uint8_t)Building::VILLAGE_HALL, ""},
+              {(uint8_t)Building::TOWN_HALL, ""},
+              {(uint8_t)Building::CITY_HALL, ""},
+              {(uint8_t)Building::CAPITOL, ""},
+
+          },
+  };
+
   const static inline std::unordered_map<uint8_t, std::array<uint16_t, 7>>
       townBuildInCome[] = {
           // 0 - 城堡 (Castle)
@@ -802,7 +814,7 @@ struct TownCfg {
                    (uint8_t)Building::DWELLING_LEVEL_7,
                }},
           },
-           // 2
+          // 2
           {
               {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
                {
@@ -833,7 +845,7 @@ struct TownCfg {
                    (uint8_t)Building::DWELLING_LEVEL_7,
                }},
           },
-           // 3
+          // 3
           {
               {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
                {
@@ -864,7 +876,7 @@ struct TownCfg {
                    (uint8_t)Building::DWELLING_LEVEL_7,
                }},
           },
-           // 4
+          // 4
           {
               {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
                {

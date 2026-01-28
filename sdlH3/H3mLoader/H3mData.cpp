@@ -792,10 +792,12 @@ void H3mData::readObjects() {
         auto playerId = reader.readU8();
         object.data["playerId"] = playerId;
         bool hasName = reader.readU8();
-        std::string name;
+        std::string name = "";
         if (hasName) {
           name = reader.readString();
         }
+        object.data["name"] = name;
+
         bool hasGarrison = reader.readU8();
         H3mCreatureSet creatureSet;
         if (hasGarrison) {

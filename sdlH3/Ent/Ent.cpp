@@ -402,12 +402,14 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
       townComp->garCreatures.assign(7, {0xffff, 0});
     }
 
+    townComp->name = std::any_cast<std::string>(object.data["name"]);
     townComp->forbidBuildings =
         std::any_cast<std::set<uint8_t>>(object.data["forbidBuildings"]);
     townComp->obligatorySpells =
         std::any_cast<std::set<uint8_t>>(object.data["obligatorySpells"]);
     townComp->possibleSpells =
         std::any_cast<std::set<uint8_t>>(object.data["possibleSpells"]);
+
 
     auto playerIdComp = &registry.emplace<PlayerIdComp>(ent);
     playerIdComp->id = std::any_cast<uint8_t>(object.data["playerId"]);
@@ -417,7 +419,7 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     for (auto i : {0, 1}) {
       auto &r = World::registrys[i];
       for (auto [e, tComp] : r.view<TownComp>().each()) {
-        if (e == ent) {
+        if (e == ent || !tComp.name.empty()) {
           continue;
         }
         if (tComp.id == townComp->id) {
