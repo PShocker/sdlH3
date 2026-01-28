@@ -41,6 +41,54 @@
 static std::optional<uint8_t> mouseBuildId;
 static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
 
+static uint8_t fortLevel(uint8_t lvl, entt::entity townEnt) {
+  auto &registry = World::registrys[lvl];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto &buildings = townComp->buildings;
+
+  if (buildings.contains((uint8_t)TownCfg::Building::CASTLE))
+    return 2;
+  if (buildings.contains((uint8_t)TownCfg::Building::CITADEL))
+    return 1;
+  if (buildings.contains((uint8_t)TownCfg::Building::FORT))
+    return 0;
+  return 0xff;
+}
+
+static uint8_t hallLevel(uint8_t lvl, entt::entity townEnt) {
+  auto &registry = World::registrys[lvl];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto &buildings = townComp->buildings;
+
+  if (buildings.contains((uint8_t)TownCfg::Building::CAPITOL))
+    return 3;
+  if (buildings.contains((uint8_t)TownCfg::Building::CITY_HALL))
+    return 2;
+  if (buildings.contains((uint8_t)TownCfg::Building::TOWN_HALL))
+    return 1;
+  if (buildings.contains((uint8_t)TownCfg::Building::VILLAGE_HALL))
+    return 0;
+  return 0xff;
+}
+
+static uint8_t mageGuildLevel(uint8_t lvl, entt::entity townEnt) {
+  auto &registry = World::registrys[lvl];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto &buildings = townComp->buildings;
+
+  if (buildings.contains((uint8_t)TownCfg::Building::MAGE_GUILD_5))
+    return 5;
+  if (buildings.contains((uint8_t)TownCfg::Building::MAGE_GUILD_4))
+    return 4;
+  if (buildings.contains((uint8_t)TownCfg::Building::MAGE_GUILD_3))
+    return 3;
+  if (buildings.contains((uint8_t)TownCfg::Building::MAGE_GUILD_2))
+    return 2;
+  if (buildings.contains((uint8_t)TownCfg::Building::MAGE_GUILD_1))
+    return 1;
+  return 0;
+}
+
 static std::unordered_set<uint8_t> townUpGradeBuild() {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
@@ -227,6 +275,15 @@ static std::vector<Button> buttonInfo() {
   return v;
 }
 
+static void drawTownInfo() {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto l = townComp->buildings
+}
+
 static void drawScrn() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
@@ -249,6 +306,15 @@ static void drawScrn() {
   auto inCome = TownSys::townInCome(level, townEnt);
   FreeTypeSys::setColor(248, 240, 216, 255);
   FreeTypeSys::drawCenter(leftUp.x + 195, leftUp.y + 433, inCome[6]);
+
+  if (townComp->hasBuild) {
+    texture = Global::defCache["itpt.def/0"][townComp->id * 2 + 1];
+  } else {
+    texture = Global::defCache["itpt.def/0"][townComp->id * 2];
+  }
+  posRect = {leftUp.x + 15, leftUp.y + 387, static_cast<float>(texture->w),
+             static_cast<float>(texture->h)};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 }
 
 static void drawBuilds() {
