@@ -687,6 +687,9 @@ static bool clickBuild(uint8_t clickType) {
       }
       break;
     }
+    case (uint8_t)TownCfg::Building::VILLAGE_HALL:
+    case (uint8_t)TownCfg::Building::CITY_HALL:
+    case (uint8_t)TownCfg::Building::TOWN_HALL:
     case (uint8_t)TownCfg::Building::CAPITOL: {
       clickCapitol(clickType);
       break;
