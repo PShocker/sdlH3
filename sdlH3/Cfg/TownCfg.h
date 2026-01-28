@@ -116,9 +116,67 @@ struct TownCfg {
           // 0 - 城堡 (Castle)
           {
               {(uint8_t)Building::VILLAGE_HALL, {0, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 4000}},
 
           },
           //   1
+          {
+              {(uint8_t)Building::VILLAGE_HALL, {0, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 4000}},
+
+          },
+          //   2
+          {
+              {(uint8_t)Building::VILLAGE_HALL, {0, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 4000}},
+
+          },
+          //   3
+          {
+              {(uint8_t)Building::VILLAGE_HALL, {0, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 4000}},
+
+          },
+          //   4
+          {
+              {(uint8_t)Building::VILLAGE_HALL, {0, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 4000}},
+
+          },
+          //   5
+          {
+              {(uint8_t)Building::VILLAGE_HALL, {0, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 4000}},
+
+          },
+          //   6
+          {
+              {(uint8_t)Building::VILLAGE_HALL, {0, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 4000}},
+
+          },
+          //   7
+          {
+              {(uint8_t)Building::VILLAGE_HALL, {0, 0, 0, 0, 0, 0, 500}},
+              {(uint8_t)Building::TOWN_HALL, {0, 0, 0, 0, 0, 0, 1000}},
+              {(uint8_t)Building::CITY_HALL, {0, 0, 0, 0, 0, 0, 2000}},
+              {(uint8_t)Building::CAPITOL, {0, 0, 0, 0, 0, 0, 4000}},
+
+          },
   };
 
   const static inline std::unordered_map<uint8_t, std::array<uint16_t, 7>>
@@ -714,7 +772,222 @@ struct TownCfg {
                }},
           },
           // 1
-          {},
+          {
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_1,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_2,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_3,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_4,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_5,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_6,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_7,
+               }},
+          },
+           // 2
+          {
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_1,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_2,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_3,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_4,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_5,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_6,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_7,
+               }},
+          },
+           // 3
+          {
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_1,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_2,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_3,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_4,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_5,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_6,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_7,
+               }},
+          },
+           // 4
+          {
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_1,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_2,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_3,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_4,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_5,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_6,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_7,
+               }},
+          },
+          // 5
+          {
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_1,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_2,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_3,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_4,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_5,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_6,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_7,
+               }},
+          },
+          // 6
+          {
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_1,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_2,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_3,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_4,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_5,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_6,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_7,
+               }},
+          },
+          // 7
+          {
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_1,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_2,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_3,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_4,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_5,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_6,
+               }},
+              {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
+               {
+                   (uint8_t)Building::DWELLING_LEVEL_7,
+               }},
+          },
   };
 
   const static inline std::unordered_map<uint8_t, std::vector<uint8_t>>

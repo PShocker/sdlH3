@@ -16,4 +16,5 @@ struct TownSys {
   static void heroVisit();
   static uint8_t visitBuild(uint8_t bId);
   static std::array<uint16_t, 7> townInCome(uint8_t lvl, entt::entity townEnt);
+  static std::array<uint16_t, 7> townName(uint8_t lvl, entt::entity townEnt);
 };

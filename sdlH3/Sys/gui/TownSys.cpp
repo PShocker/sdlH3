@@ -41,14 +41,35 @@
 static std::optional<uint8_t> mouseBuildId;
 static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
 
+static std::unordered_set<uint8_t> townUpGradeBuild() {
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto builds = TownCfg::townDefaultAni[townComp->id];
+  for (const auto &pair : townComp->buildings) {
+    builds.insert(pair.first);
+  }
+  auto upG = TownCfg::townBuildUpgrade[townComp->id];
+  auto upGC = TownCfg::townBuildUpgradeCommon;
+  upG.insert(upGC.begin(), upGC.end());
+  for (auto [k, v] : upG) {
+    if (builds.contains(k)) {
+      for (auto r : v) {
+        builds.erase(r);
+      }
+    }
+  }
+  return builds;
+}
+
 std::array<uint16_t, 7> TownSys::townInCome(uint8_t lvl, entt::entity townEnt) {
   std::array<uint16_t, 7> r;
   r.fill(0);
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto townId = townComp->id;
-  for (const auto &pair : townComp->buildings) {
-    auto bId = pair.first;
+  auto builds = townUpGradeBuild();
+  for (const auto bId : builds) {
     if (TownCfg::townBuildInCome[townId].contains(bId)) {
       auto income = TownCfg::townBuildInCome[townId].at(bId);
       for (auto i = 0; i < 7; ++i) {
@@ -130,27 +151,6 @@ void TownSys::heroVisit() {
       World::enterSpecBuild(bId);
     }
   }
-}
-
-static std::unordered_set<uint8_t> townVisiableBuild() {
-  auto [level, townEnt] = Global::townScnPair;
-  auto &registry = World::registrys[level];
-  auto townComp = &registry.get<TownComp>(townEnt);
-  auto builds = TownCfg::townDefaultAni[townComp->id];
-  for (const auto &pair : townComp->buildings) {
-    builds.insert(pair.first);
-  }
-  auto upG = TownCfg::townBuildUpgrade[townComp->id];
-  auto upGC = TownCfg::townBuildUpgradeCommon;
-  upG.insert(upGC.begin(), upGC.end());
-  for (auto [k, v] : upG) {
-    if (builds.contains(k)) {
-      for (auto r : v) {
-        builds.erase(r);
-      }
-    }
-  }
-  return builds;
 }
 
 static void close() {
@@ -261,7 +261,7 @@ static void drawBuilds() {
   auto townComp = &registry.get<TownComp>(townEnt);
   SDL_FPoint mousePoint = {Window::mouseX, Window::mouseY};
 
-  auto builds = townVisiableBuild();
+  auto builds = townUpGradeBuild();
   mouseBuildId = std::nullopt;
   std::vector<uint8_t> sortBuild;
   for (auto build : TownCfg::townZ[townComp->id]) {
