@@ -14,6 +14,8 @@ struct Audio {
 
 struct AudioSys {
   static void push(std::string path, float volume, float fadeSpeed, bool cycle);
+  static void fade(std::string path, float fadeSpeed);
+  static bool has(std::string path);
   static void init();
   static bool run();
 };

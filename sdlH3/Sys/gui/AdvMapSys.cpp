@@ -27,6 +27,7 @@
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
+#include "Sys/AudioSys.h"
 #include "Sys/BorderSys.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/CursorSys.h"
@@ -988,6 +989,7 @@ static bool clickHeroList(uint8_t clickType) {
       if (Global::herosIndex[Global::playerId] == index) {
         World::enterHeroScrn(level, heroEnt, (uint8_t)Enum::SCNTYPE::MOD);
       }
+      CursorSys::clearHeroPath();
       AdvMapSys::heroFocus(heroEnt, level);
     } else {
       Global::confirmdraw = [level, heroEnt, i]() {
@@ -1209,7 +1211,7 @@ bool AdvMapSys::clickButtons(float x, float y, std::vector<Button> &v,
       case (uint8_t)Enum::CLICKTYPE::L_UP: {
         if (!v[i].disable) {
           v[i].func();
-          Global::audioData["button.wav"] = 0;
+          AudioSys::push("button.wav", 1, 0, false);
         }
         break;
       }

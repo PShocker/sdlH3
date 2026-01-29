@@ -1,4 +1,5 @@
 #include "HeroSys.h"
+#include "AudioSys.h"
 #include "Cfg/AudioCfg.h"
 #include "Cfg/HeroCfg.h"
 #include "Cfg/TerrainCfg.h"
@@ -51,18 +52,14 @@ static void visitAudio(uint8_t id) {
   auto &rAudio = AudioCfg::objectAudio.at(id)[AudioCfg::VISIT];
   int randomIndex = std::rand() % rAudio.size();
   auto audioStr = rAudio[randomIndex];
-  if (!Global::audioData.contains(audioStr)) {
-    Global::audioData[audioStr] = 0;
-  }
+  AudioSys::push(audioStr, 1, 0, false);
 }
 
 static void removeAudio(uint8_t id) {
   auto &rAudio = AudioCfg::objectAudio.at(id)[AudioCfg::REMOVAL];
   int randomIndex = std::rand() % rAudio.size();
   auto audioStr = rAudio[randomIndex];
-  if (!Global::audioData.contains(audioStr)) {
-    Global::audioData[audioStr] = 0;
-  }
+  AudioSys::push(audioStr, 1, 0, false);
 }
 
 static bool checkAccessibility(ObjectType type, int heroX, int heroY,
@@ -1095,11 +1092,11 @@ void HeroSys::heroTelePort(entt::entity heroEnt, uint8_t x, uint8_t y) {
 
 static void heroAudio() {
   if (Global::heroMove) {
-    if (!Global::audioData.contains("horse00.wav")) {
-      Global::audioData["horse00.wav"] = 0;
+    if (!AudioSys::has("horse00.wav")) {
+      AudioSys::push("horse00.wav", 1, 0, false);
     }
   } else {
-    Global::audioData.erase("horse00.wav");
+    AudioSys::fade("horse00.wav", 0.005);
   }
 }
 

@@ -294,7 +294,23 @@ static void drawTownInfo() {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
-  auto l = townComp->buildings
+  auto hLevel = hallLevel(level, townEnt);
+  auto textures = Global::defCache["ITMTL.def/0"];
+  auto texture = textures[hLevel];
+  SDL_FRect posRect = {leftUp.x + 80, leftUp.y + 413,
+                       static_cast<float>(texture->w),
+                       static_cast<float>(texture->h)};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  auto fLevel = fortLevel(level, townEnt);
+  if (fLevel != 0xff) {
+    textures = Global::defCache["itmcl.def/0"];
+    texture = textures[fLevel];
+    SDL_FRect posRect = {leftUp.x + 122, leftUp.y + 413,
+                         static_cast<float>(texture->w),
+                         static_cast<float>(texture->h)};
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  }
 }
 
 static void drawScrn() {
@@ -558,6 +574,7 @@ bool TownSys::run() {
   drawBorder();
   drawButton();
   drawHeroPor();
+  drawTownInfo();
   drawTownList();
   drawResbar();
   drawBottomInfo();
@@ -1017,6 +1034,12 @@ static bool clickTownList(uint8_t clickType) {
     }
   }
   return r;
+}
+
+static bool clickTownInfo(uint8_t clickType) {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+                    
 }
 
 bool TownSys::leftMouseUp(float x, float y) {
