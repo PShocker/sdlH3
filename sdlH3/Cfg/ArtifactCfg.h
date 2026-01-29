@@ -4,28 +4,6 @@
 #include <utility>
 #include <vector>
 struct ArtifactCfg {
-  // const static inline std::string artClasses[] = {
-  //     "HEAD",       // 0
-  //     "SHOULDERS",  // 1
-  //     "NECK",       // 2
-  //     "RIGHT_HAND", // 3
-  //     "LEFT_HAND",  // 4
-  //     "TORSO",      // 5
-  //     "RIGHT_RING", // 6
-  //     "LEFT_RING",  // 7
-  //     "FEET",       // 8
-  //     "MISC1",      // 9
-  //     "MISC2",      // 10
-  //     "MISC3",      // 11
-  //     "MISC4",      // 12
-  //     "MACH1",      // 13
-  //     "MACH2",      // 14
-  //     "MACH3",      // 15
-  //     "MACH4",      // 16
-  //     "SPELLBOOK",  // 17
-  //     "MISC5"       // 18
-  // };
-
   enum class artSlot : uint8_t {
     HEAD,
     SHOULDERS,

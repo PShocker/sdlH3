@@ -2,22 +2,43 @@
 #include "Global/Global.h"
 #include "SDL3/SDL_audio.h"
 #include "SDL3/SDL_stdinc.h"
+#include "Window/Window.h"
 #include <cstdint>
 #include <cstring>
 #include <vector>
+
+void AudioSys::push(std::string path, float volume, float fadeSpeed,
+                    bool cycle) {
+  Audio audio;
+  audio.path = path;
+  audio.current = 0;
+  audio.cycle = cycle;
+  audio.fadeSpeed = fadeSpeed;
+  audio.pause = false;
+  Global::audioData.push_back(audio);
+}
 
 static bool playAudio() {
   const int minimum_audio = (int)(44100 * 0.02f) * 2 * 2;
   if (SDL_GetAudioStreamQueued(Global::audio) < minimum_audio) {
     uint8_t *data = (uint8_t *)SDL_stack_alloc(uint8_t, minimum_audio);
     SDL_memset(data, 0, minimum_audio * sizeof(uint8_t));
-    for (auto &[k, v] : Global::audioData) {
-      auto &pcmData = Global::pcmCache[k];
-      if (v + minimum_audio <= pcmData.size()) {
-        auto src = (pcmData.data() + v);
-        SDL_MixAudio(data, src, SDL_AUDIO_S16, minimum_audio, 1.0f);
+    // 删除所有偶数
+    auto &v = Global::audioData;
+    for (auto it = v.begin(); it != v.end();) {
+      auto &audio = *it;
+      if (!audio.pause) {
+        auto &pcmData = Global::pcmCache[audio.path];
+        auto src = (pcmData.data() + audio.current);
+        auto len = (int32_t)pcmData.size() - (int32_t)audio.current;
+        auto num = std::min({0, len, minimum_audio});
+        SDL_MixAudio(data, src, SDL_AUDIO_S16, num, audio.volume);
+        if ((num <= len && !audio.cycle) || audio.volume <= 0) {
+          it = v.erase(it);
+          continue;
+        }
       }
-      v += minimum_audio;
+      it++;
     }
     SDL_PutAudioStreamData(Global::audio, data, minimum_audio);
     SDL_stack_free(data);
@@ -26,11 +47,12 @@ static bool playAudio() {
   return false;
 }
 
-static void clearAudio() {
-  std::erase_if(Global::audioData, [](const auto &item) {
-    auto &pcmData = Global::pcmCache[item.first];
-    return pcmData.size() < item.second;
-  });
+static void fadeAudio() {
+  auto &v = Global::audioData;
+  for (auto it = v.begin(); it != v.end();) {
+    auto &audio = *it;
+    audio.volume -= audio.fadeSpeed * Window::deltaTime;
+  }
 }
 
 void AudioSys::init() {
@@ -43,6 +65,6 @@ void AudioSys::init() {
 
 bool AudioSys::run() {
   playAudio();
-  clearAudio();
+  fadeAudio();
   return true;
 }

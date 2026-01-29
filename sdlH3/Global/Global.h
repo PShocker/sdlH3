@@ -3,6 +3,7 @@
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Sys/AudioSys.h"
 #include "entt/entity/fwd.hpp"
 #include <array>
 #include <cstdint>
@@ -169,7 +170,7 @@ struct Global {
 
   static inline uint8_t viewWorldScale;
 
-  static inline std::unordered_map<std::string, uint32_t> audioData;
+  static inline std::vector<Audio> audioData;
   static inline SDL_AudioStream *audio;
 
   //   static inline std::unordered_map<std::string, std::any> stateCache;
