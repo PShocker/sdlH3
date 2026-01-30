@@ -20,6 +20,33 @@
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
 
+void TavernSys::refreshHero(uint8_t playerId, uint8_t index) {
+  int arr[101];
+  for (int i = 0; i <= 100; ++i) {
+    arr[i] = i;
+  }
+  std::set<int> numbers(arr, arr + 101);
+  for (auto m : {0, 1}) {
+    auto &registry = World::registrys[m];
+    for (auto ent : registry.view<HeroComp>()) {
+      auto hComp = registry.get<HeroComp>(ent);
+      numbers.erase(hComp.portrait);
+    }
+  }
+  if (numbers.size() > 0) {
+    int random = rand() % numbers.size();
+    auto it = std::next(numbers.begin(), random);
+
+    auto heroEnt = World::registrys[0].create();
+    auto hId = *it;
+    auto hComp = Ent::loadDefaultHeroComp(hId);
+    World::registrys[0].emplace<HeroComp>(heroEnt, hComp);
+
+    numbers.erase(it);
+    Global::tavernHeros[playerId][index] = heroEnt;
+  }
+}
+
 static bool canBuy() {
   bool r = false;
   auto &gold = Global::resources[Global::playerId][6];
@@ -89,6 +116,7 @@ static void buy() {
     Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
 
     World::registrys[0].destroy(ent);
+    TavernSys::refreshHero(Global::playerId, Global::goalIndex);
     return true;
   });
   World::iterateSystems.push_back(World::enterFadeScrn);

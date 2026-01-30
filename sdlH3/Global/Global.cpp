@@ -24,6 +24,7 @@
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_stdinc.h"
 #include "Sys/gui/LevelUpSys.h"
+#include "Sys/gui/TavernSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include "entt/entity/entity.hpp"
@@ -937,51 +938,8 @@ void Global::startGame() {
     }
   };
   const auto loadTavernHero = []() {
-    int arr[101];
-    for (int i = 0; i <= 100; ++i) {
-      arr[i] = i;
-    }
-    std::set<int> numbers(arr, arr + 101);
-    for (auto m : {0, 1}) {
-      auto &registry = World::registrys[m];
-      for (auto ent : registry.view<HeroComp>()) {
-        auto hComp = registry.get<HeroComp>(ent);
-        numbers.erase(hComp.portrait);
-      }
-    }
-    for (auto n : {0, 1}) {
-      if (numbers.size() > 0) {
-        int random = rand() % numbers.size();
-        auto it = std::next(numbers.begin(), random);
-
-        auto heroEnt = World::registrys[0].create();
-        auto &hComp = World::registrys[0].emplace<HeroComp>(heroEnt);
-        hComp.portrait = *it;
-        auto secSkills = HeroCfg::heroSecSkills.at(hComp.portrait);
-        hComp.secSkills = secSkills;
-        hComp.level = 1;
-        hComp.primSkills = HeroCfg::heroPrimarySkills.at(0);
-        hComp.subId = HeroCfg::heroPro[hComp.portrait];
-
-        for (auto pair : HeroCfg::heroCreatures[hComp.portrait]) {
-          switch (pair.first) {
-          case (uint16_t)CreatureCfg::Creature::CATAPULT:
-          case (uint16_t)CreatureCfg::Creature::BALLISTA:
-          case (uint16_t)CreatureCfg::Creature::FIRST_AID_TENT:
-          case (uint16_t)CreatureCfg::Creature::AMMO_CART: {
-            break;
-          }
-          default: {
-            hComp.creatures.push_back(pair);
-            break;
-          }
-          }
-        }
-
-        numbers.erase(it);
-        Global::tavernHeros[Global::playerId][n] = heroEnt;
-      }
-    }
+    TavernSys::refreshHero(Global::playerId, 0);
+    TavernSys::refreshHero(Global::playerId, 1);
   };
   // loadObelisk();
   // loadPuzzle();

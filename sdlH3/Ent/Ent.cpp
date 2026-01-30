@@ -99,6 +99,39 @@
 #include <utility>
 #include <vector>
 
+HeroComp Ent::loadDefaultHeroComp(uint8_t hId) {
+  HeroComp heroComp;
+  heroComp.subId = HeroCfg::heroPro[hId];
+  heroComp.portrait = hId;
+  heroComp.movement = 65535;
+  heroComp.mana = 500;
+  heroComp.exp = 0;
+  heroComp.level = 1;
+  heroComp.moveType = 0;
+  heroComp.artifacts.assign(19, 0xffff);
+
+  auto secSkills = HeroCfg::heroSecSkills.at(heroComp.portrait);
+  heroComp.secSkills = secSkills;
+
+  for (auto pair : HeroCfg::heroCreatures[heroComp.portrait]) {
+    switch (pair.first) {
+    case (uint16_t)CreatureCfg::Creature::CATAPULT:
+    case (uint16_t)CreatureCfg::Creature::BALLISTA:
+    case (uint16_t)CreatureCfg::Creature::FIRST_AID_TENT:
+    case (uint16_t)CreatureCfg::Creature::AMMO_CART: {
+      break;
+    }
+    default: {
+      heroComp.creatures.push_back(pair);
+      break;
+    }
+    }
+  }
+  heroComp.creatures.resize(7, {0xffff, 0});
+  heroComp.artifacts.assign(19, 0xffff);
+  return heroComp;
+}
+
 entt::entity Ent::loadBuild(uint8_t level, entt::entity townEnt,
                             uint8_t buildId) {
   entt::entity ent = entt::null;
@@ -317,71 +350,52 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     object.id = (uint32_t)ObjectType::HERO;
   }
   case ObjectType::HERO: {
-    auto direct = std::any_cast<uint8_t>(object.data["direct"]);
-    texturePath = std::format("AH{:02d}_.def/{}", object.subId, direct);
-    flip = std::any_cast<uint8_t>(object.data["flip"]);
-    auto heroComp = &registry.emplace<HeroComp>(ent);
-    if (object.data.contains("moveType")) {
-      heroComp->moveType = std::any_cast<uint8_t>(object.data["moveType"]);
-    }
     auto hero = std::any_cast<H3mHero>(object.data["hero"]);
-    auto playerIdComp = &registry.emplace<PlayerIdComp>(ent);
-    playerIdComp->id = hero.playerId;
-    heroComp->subId = object.subId;
-    heroComp->portrait = hero.portrait == 0xff ? hero.subId : hero.portrait;
-    heroComp->movement = 65535;
-    heroComp->mana = 500;
-    heroComp->exp = hero.exp;
-    heroComp->level = 1;
-    if (hero.secSkills.empty()) {
-      auto secSkills = HeroCfg::heroSecSkills.at(heroComp->portrait);
-      heroComp->secSkills = secSkills;
+    uint8_t hId = 0;
+    if (hero.portrait == 0xff) {
+      hId = hero.subId;
     } else {
-      heroComp->secSkills = hero.secSkills;
-      for (auto &p : heroComp->secSkills) {
+      hId = hero.portrait;
+    }
+    auto hComp = Ent::loadDefaultHeroComp(hId);
+    if (object.data.contains("moveType")) {
+      hComp.moveType = std::any_cast<uint8_t>(object.data["moveType"]);
+    }
+    hComp.exp = hero.exp;
+    if (!hero.secSkills.empty()) {
+      hComp.secSkills = hero.secSkills;
+      for (auto &p : hComp.secSkills) {
         p.second -= 1;
       }
     }
-    heroComp->creatures = hero.creatureSet.creatures;
-    if (heroComp->creatures.empty()) {
-      //
-      for (auto pair : HeroCfg::heroCreatures[heroComp->portrait]) {
-        switch (pair.first) {
-        case (uint16_t)CreatureCfg::Creature::CATAPULT:
-        case (uint16_t)CreatureCfg::Creature::BALLISTA:
-        case (uint16_t)CreatureCfg::Creature::FIRST_AID_TENT:
-        case (uint16_t)CreatureCfg::Creature::AMMO_CART: {
-          break;
-        }
-        default: {
-          heroComp->creatures.push_back(pair);
-          break;
-        }
-        }
-      }
-    }
-    heroComp->creatures.resize(7, {0xffff, 0});
-
-    heroComp->spells = hero.spells;
-    heroComp->artifactsInBackpack = hero.artifactsInBackpack;
-    heroComp->artifacts = hero.artifacts;
-    if (heroComp->artifacts.empty()) {
-      heroComp->artifacts.assign(19, 0xffff);
-    }
-    if (object.data.contains("heroDefaultPrimSkills")) {
-      heroComp->primSkills = HeroCfg::heroPrimarySkills.at(object.subId);
-    } else {
-      heroComp->primSkills = hero.primSkills;
+    if (!hero.creatureSet.creatures.empty()) {
+      hComp.creatures = hero.creatureSet.creatures;
+      hComp.creatures.resize(7, {0xffff, 0});
     }
 
-    heroComp->flagEnt = registry.create();
-    auto flagEnt = heroComp->flagEnt;
+    hComp.spells = hero.spells;
+    hComp.artifactsInBackpack = hero.artifactsInBackpack;
+    hComp.artifacts = hero.artifacts;
+
+    if (!object.data.contains("heroDefaultPrimSkills")) {
+      hComp.primSkills = hero.primSkills;
+    }
+    registry.emplace<HeroComp>(ent, hComp);
+
+    auto direct = std::any_cast<uint8_t>(object.data["direct"]);
+    texturePath = std::format("AH{:02d}_.def/{}", object.subId, direct);
+
+    auto playerIdComp = &registry.emplace<PlayerIdComp>(ent);
+    playerIdComp->id = hero.playerId;
+
+    hComp.flagEnt = registry.create();
+    auto flagEnt = hComp.flagEnt;
     auto flagPositionComp = &registry.emplace<PositionComp>(flagEnt);
     auto flagTextureComp = &registry.emplace<TextureComp>(flagEnt);
     flagPositionComp->point =
         SDL_FPoint{static_cast<float>((object.position[0] - 2) * 32),
                    static_cast<float>((object.position[1] - 1) * 32)};
-    flagPositionComp->flip = flip;
+    flagPositionComp->flip = std::any_cast<uint8_t>(object.data["flip"]);
     flagPositionComp->z = Ent::loadZorder(i, object);
     flagTextureComp->path =
         std::format("AF0{}.def/{}", playerIdComp->id, direct);
@@ -409,7 +423,6 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
         std::any_cast<std::set<uint8_t>>(object.data["obligatorySpells"]);
     townComp->possibleSpells =
         std::any_cast<std::set<uint8_t>>(object.data["possibleSpells"]);
-
 
     auto playerIdComp = &registry.emplace<PlayerIdComp>(ent);
     playerIdComp->id = std::any_cast<uint8_t>(object.data["playerId"]);

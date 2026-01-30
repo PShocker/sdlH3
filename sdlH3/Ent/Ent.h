@@ -8,6 +8,7 @@
 #include <string>
 
 struct Ent {
+  static HeroComp loadDefaultHeroComp(uint8_t hId);
   static entt::entity loadHero(HeroComp &heroComp, uint8_t playerId, uint8_t x,
                                uint8_t y, uint8_t level, uint8_t direct,
                                uint8_t flip);

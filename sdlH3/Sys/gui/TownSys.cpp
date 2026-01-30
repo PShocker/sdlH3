@@ -549,10 +549,35 @@ static void drawBottomInfo() {
       for (uint8_t m = 0; m < creature->size(); m++) {
         auto [id, count] = creature->at(m);
         posRect = {leftUp.x + 304 + m * 62, leftUp.y + 387 + i * 96, 58, 64};
-        if (Global::splitOn) {
+        if (SDL_PointInRectFloat(&point, &posRect)) {
+          if (Global::splitOn) {
+            auto *crePtr = &creature->at(m);
+            if (Global::splitCre[0]->first == id ||
+                count == 0 && crePtr != Global::splitCre[0]) {
+              s = strPool[2868];
+            } else {
+              s = strPool[2862];
+            }
+          } else {
+            s = strPool[2862];
+          }
         }
       }
     }
+
+    auto hLevel = hallLevel(level, townEnt);
+    posRect = {leftUp.x + 80, leftUp.y + 413, 38, 38};
+    if (SDL_PointInRectFloat(&point, &posRect)) {
+      s = strPool[2862];
+    }
+    auto fLevel = fortLevel(level, townEnt);
+    if (fLevel != 0xff) {
+      posRect = {leftUp.x + 122, leftUp.y + 413, 38, 38};
+      if (SDL_PointInRectFloat(&point, &posRect)) {
+        s = strPool[2862];
+      }
+    }
+
     FreeTypeSys::drawCenter(leftUp.x + 400, leftUp.y + 554, s);
   }
 }
@@ -565,6 +590,11 @@ static void drawTownList() {
   auto i = Global::townsIndex[Global::playerId];
   TownListSys::draw(leftUp.x + 744, leftUp.y + 415, 3, Global::townScnPage, i,
                     Global::playerId, top);
+}
+
+static void drawCreInc() {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
 }
 
 bool TownSys::run() {
@@ -1039,7 +1069,29 @@ static bool clickTownList(uint8_t clickType) {
 static bool clickTownInfo(uint8_t clickType) {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-                    
+
+  SDL_FPoint point = {static_cast<float>(Window::mouseX),
+                      static_cast<float>(Window::mouseY)};
+
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto hLevel = hallLevel(level, townEnt);
+  SDL_FRect posRect = {leftUp.x + 80, leftUp.y + 413, 38, 38};
+  if (SDL_PointInRectFloat(&point, &posRect)) {
+    if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+    } else {
+    }
+  }
+  auto fLevel = fortLevel(level, townEnt);
+  if (fLevel != 0xff) {
+    posRect = {leftUp.x + 122, leftUp.y + 413, 38, 38};
+    if (SDL_PointInRectFloat(&point, &posRect)) {
+      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+      } else {
+      }
+    }
+  }
 }
 
 bool TownSys::leftMouseUp(float x, float y) {
