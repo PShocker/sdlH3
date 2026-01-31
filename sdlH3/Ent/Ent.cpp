@@ -380,7 +380,6 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     if (!object.data.contains("heroDefaultPrimSkills")) {
       hComp.primSkills = hero.primSkills;
     }
-    registry.emplace<HeroComp>(ent, hComp);
 
     auto direct = std::any_cast<uint8_t>(object.data["direct"]);
     texturePath = std::format("AH{:02d}_.def/{}", object.subId, direct);
@@ -399,6 +398,8 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     flagPositionComp->z = Ent::loadZorder(i, object);
     flagTextureComp->path =
         std::format("AF0{}.def/{}", playerIdComp->id, direct);
+    registry.emplace<HeroComp>(ent, hComp);
+
     break;
   }
   case ObjectType::RANDOM_TOWN: {

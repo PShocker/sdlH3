@@ -1,15 +1,19 @@
 #include "TownSys.h"
 #include "BMPFont/BMPFont.h"
 #include "CameraSys.h"
+#include "Cfg/ArtifactCfg.h"
+#include "Cfg/CreatureCfg.h"
 #include "Cfg/HeroCfg.h"
 #include "Cfg/SpellCfg.h"
 #include "Cfg/TownCfg.h"
+#include "Comp/DwellingComp.h"
 #include "Comp/HeroComp.h"
 #include "Comp/MageGuildComp.h"
 #include "Comp/ObjectComp.h"
 #include "Comp/PlayerIdComp.h"
 #include "Comp/PositionComp.h"
 #include "Comp/TownComp.h"
+#include "Comp/TownDweIncComp.h"
 #include "Ent/Ent.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
@@ -89,9 +93,9 @@ static uint8_t mageGuildLevel(uint8_t lvl, entt::entity townEnt) {
   return 0;
 }
 
-static std::unordered_set<uint8_t> townUpGradeBuild() {
-  auto [level, townEnt] = Global::townScnPair;
-  auto &registry = World::registrys[level];
+static std::unordered_set<uint8_t> townUpGradeBuild(uint8_t lvl,
+                                                    entt::entity townEnt) {
+  auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto builds = TownCfg::townDefaultAni[townComp->id];
   for (const auto &pair : townComp->buildings) {
@@ -108,6 +112,115 @@ static std::unordered_set<uint8_t> townUpGradeBuild() {
     }
   }
   return builds;
+}
+
+std::vector<TownDweInc> TownSys::townDweInc(uint8_t lvl, entt::entity townEnt,
+                                            uint8_t bId) {
+  std::vector<TownDweInc> r;
+  uint8_t dweLevel = 0;
+  switch (bId) {
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_1:
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1: {
+    dweLevel = 1;
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_2:
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_2: {
+    dweLevel = 2;
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_3:
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_3: {
+    dweLevel = 3;
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_4:
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_4: {
+    dweLevel = 4;
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_5:
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_5: {
+    dweLevel = 5;
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_6:
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6: {
+    dweLevel = 6;
+    break;
+  }
+  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_7:
+  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_7: {
+    dweLevel = 7;
+    break;
+  }
+  }
+  auto &registry = World::registrys[lvl];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  for (auto [k, v] : townComp->buildings) {
+    if (auto iComp = registry.try_get<TownDweIncComp>(v); iComp != nullptr) {
+      if (iComp->level == dweLevel) {
+        TownDweInc t;
+        t.id = (uint8_t)Enum::DWEINCTYPE::BUILD;
+        t.subId = k;
+        t.num = iComp->num;
+        r.push_back(t);
+      }
+    }
+  }
+  if (townComp->heroEnt[0].has_value()) {
+    auto heroEnt = townComp->heroEnt[0];
+    auto &hComp = registry.get<HeroComp>(townEnt);
+    auto i = (uint8_t)ArtifactCfg::BONUSE::CREATURE_GROWTH_2 + dweLevel - 2;
+    auto v = HeroScrSys::heroArtifactAbility(hComp, i);
+    for (auto &pair : v) {
+      TownDweInc t;
+      t.id = (uint8_t)Enum::DWEINCTYPE::ARTIFACT;
+      t.subId = pair.first;
+      t.num = pair.second;
+      r.push_back(t);
+    }
+  }
+  auto buildEnt = townComp->buildings[bId];
+  auto dComp = registry.get<DwellingComp>(buildEnt);
+  auto creatureId = dComp.creatures.back().first.back();
+  auto baseNum = CreatureCfg::creatureGrowth[creatureId];
+  TownDweInc t;
+  t.id = (uint8_t)Enum::DWEINCTYPE::BASE;
+  t.subId = 0;
+  t.num = baseNum;
+  r.push_back(t);
+
+  auto fortLvl = fortLevel(lvl, townEnt);
+  if (fortLvl != 0xff) {
+    t.id = (uint8_t)Enum::DWEINCTYPE::BUILD;
+    t.subId = (uint8_t)TownCfg::Building::FORT + fortLvl;
+    t.num = baseNum * fortLvl * 0.5;
+    r.push_back(t);
+  }
+
+  return r;
+}
+
+std::vector<TownDwe> TownSys::townDweBuilds(uint8_t lvl, entt::entity townEnt) {
+  std::vector<TownDwe> r;
+  std::vector<TownDwe> rSpecial;
+  auto &registry = World::registrys[lvl];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto os = townUpGradeBuild(lvl, townEnt);
+  std::set<uint8_t> s(os.begin(), os.end());
+  for (auto bId : s) {
+    auto buildEnt = townComp->buildings[bId];
+    if (registry.all_of<DwellingComp>(buildEnt)) {
+      if (bId <= 21) {
+        rSpecial.push_back({bId, buildEnt});
+      } else {
+        r.push_back({bId, buildEnt});
+      }
+    }
+  }
+  r.insert(r.end(), rSpecial.begin(), rSpecial.end());
+  return r;
 }
 
 std::u16string TownSys::townName(uint8_t lvl, entt::entity townEnt) {
@@ -129,7 +242,7 @@ std::array<uint16_t, 7> TownSys::townInCome(uint8_t lvl, entt::entity townEnt) {
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto townId = townComp->id;
-  auto builds = townUpGradeBuild();
+  auto builds = townUpGradeBuild(lvl, townEnt);
   for (const auto bId : builds) {
     if (TownCfg::townBuildInCome[townId].contains(bId)) {
       auto income = TownCfg::townBuildInCome[townId].at(bId);
@@ -356,7 +469,7 @@ static void drawBuilds() {
   auto townComp = &registry.get<TownComp>(townEnt);
   SDL_FPoint mousePoint = {Window::mouseX, Window::mouseY};
 
-  auto builds = townUpGradeBuild();
+  auto builds = townUpGradeBuild(level, townEnt);
   mouseBuildId = std::nullopt;
   std::vector<uint8_t> sortBuild;
   for (auto build : TownCfg::townZ[townComp->id]) {
@@ -592,9 +705,37 @@ static void drawTownList() {
                     Global::playerId, top);
 }
 
-static void drawCreInc() {
+static void drawCres() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
+  SDL_FRect posRect;
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto builds = TownSys::townDweBuilds(level, townEnt);
+  const SDL_FRect posRects[] = {
+      // 第一行（i = 0, 1, 2）
+      {static_cast<float>(22), static_cast<float>(459), 32, 32},
+      {static_cast<float>(77), static_cast<float>(459), 32, 32},
+      {static_cast<float>(132), static_cast<float>(459), 32, 32},
+      {static_cast<float>(187), static_cast<float>(459), 32, 32},
+      // 第二行
+      {static_cast<float>(22), static_cast<float>(507), 32, 32},
+      {static_cast<float>(77), static_cast<float>(507), 32, 32},
+      {static_cast<float>(132), static_cast<float>(507), 32, 32},
+      {static_cast<float>(187), static_cast<float>(507), 32, 32}};
+  uint8_t i = 0;
+  for (auto &dwe : builds) {
+    auto dComp = registry.get<DwellingComp>(dwe.ent);
+    auto creatureId = dComp.creatures.back().first.back() + 2;
+    auto textures = Global::defCache["CPRSMALL.def/0"];
+    auto texture = textures[creatureId];
+    posRect = posRects[i];
+    posRect.x += leftUp.x;
+    posRect.y += leftUp.y;
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    i++;
+  }
 }
 
 bool TownSys::run() {
@@ -606,6 +747,7 @@ bool TownSys::run() {
   drawHeroPor();
   drawTownInfo();
   drawTownList();
+  drawCres();
   drawResbar();
   drawBottomInfo();
   return true;

@@ -83,6 +83,8 @@ static void buy() {
     Global::cursorBack.pop_back();
     return true;
   };
+  VideoSys::close();
+  World::iterateSystems.pop_back();
   World::iterateSystems.pop_back();
   World::iterateSystems.pop_back();
   World::iterateSystemsBak.push_back(World::iterateSystems);

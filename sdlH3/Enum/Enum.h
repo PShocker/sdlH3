@@ -2,6 +2,12 @@
 
 #include <cstdint>
 struct Enum {
+  enum class DWEINCTYPE : uint8_t {
+    BASE,
+    BUILD,
+    ARTIFACT,
+  };
+
   enum class GAMESET : uint8_t {
     MY_HERO_SPEED,
     OTHER_HERO_SPEED,
