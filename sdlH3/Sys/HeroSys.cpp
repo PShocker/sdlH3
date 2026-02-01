@@ -897,12 +897,15 @@ static bool heroGoal(entt::entity heroEnt) {
     objectComp.y = posComp.point.y / 32;
     objectComp.accessTiles = {{0, 0}};
   }
-  auto &objectComp = registry.get<ObjectComp>(goalEnt);
+  auto objectComp = registry.get<ObjectComp>(goalEnt);
   auto &heroPos = registry.get<PositionComp>(heroEnt);
   // 4. 计算位置
   const int heroCenterX = heroPos.point.x + 32;
   const int heroCenterY = heroPos.point.y + 32;
   bool access = false;
+  if (objectComp.type == (int16_t)ObjectType::MONSTER) {
+    objectComp.accessTiles = {{0, 0}};
+  }
   for (auto &pair : objectComp.accessTiles) {
     const int accessX = objectComp.x * 32 + pair.first * 32;
     const int accessY = objectComp.y * 32 + pair.second * 32;
