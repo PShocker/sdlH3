@@ -111,18 +111,6 @@ struct TownCfg {
       {},
   };
 
-  const static inline std::unordered_map<uint8_t, std::string> townBuildIcon[] =
-      {
-          // 0 - 城堡 (Castle)
-          {
-              {(uint8_t)Building::VILLAGE_HALL, ""},
-              {(uint8_t)Building::TOWN_HALL, ""},
-              {(uint8_t)Building::CITY_HALL, ""},
-              {(uint8_t)Building::CAPITOL, ""},
-
-          },
-  };
-
   const static inline std::unordered_map<uint8_t, std::array<uint16_t, 7>>
       townBuildInCome[] = {
           // 0 - 城堡 (Castle)
@@ -1068,6 +1056,53 @@ struct TownCfg {
                   (uint8_t)Building::FORT,
               },
           },
+  };
+
+  const static inline std::unordered_map<uint8_t, std::string> townBuildIcon[] =
+      {
+          {// 城堡 (0)
+           {(uint8_t)Building::MAGE_GUILD_1, "ThCsMAG1.pcx"},
+           {(uint8_t)Building::MAGE_GUILD_2, "ThCsMAG2.pcx"},
+           {(uint8_t)Building::MAGE_GUILD_3, "ThCsM301.pcx"},
+           {(uint8_t)Building::MAGE_GUILD_4, "ThCsM401.pcx"},
+           {(uint8_t)Building::TAVERN, "ThCsTAV1.pcx"},
+           {(uint8_t)Building::SHIPYARD, "ThCsDKMS.pcx"},
+           {(uint8_t)Building::FORT, "ThCsCAS1.pcx"},
+           {(uint8_t)Building::CITADEL, "ThCsCAS2.pcx"},
+           {(uint8_t)Building::CASTLE, "ThCsCAS3.pcx"},
+           {(uint8_t)Building::VILLAGE_HALL, "ThCsH101.pcx"},
+           {(uint8_t)Building::TOWN_HALL, "ThCsH201.pcx"},
+           {(uint8_t)Building::CITY_HALL, "ThCsH301.pcx"},
+           {(uint8_t)Building::CAPITOL, "ThCsH401.pcx"},
+           {(uint8_t)Building::MARKETPLACE, "ThCsMRK1.pcx"},
+           {(uint8_t)Building::RESOURCE_SILO, "ThCsMRK2.pcx"},
+           {(uint8_t)Building::BLACKSMITH, "ThCsBLAK.pcx"},
+           {(uint8_t)Building::SPECIAL_18,
+            "ThCsLT01.pcx"}, // special1 for castle
+           {(uint8_t)Building::HORDE_1, "ThCsGR1H.pcx"},
+           {(uint8_t)Building::HORDE_1_UPGR, "ThCsGR2H.pcx"},
+           {(uint8_t)Building::SHIP, "ThCsDKMN.pcx"},
+           {(uint8_t)Building::SPECIAL_20,
+            "ThCsCAVM.pcx"}, // special2 for castle
+           {(uint8_t)Building::SPECIAL_19,
+            "ThCsTAV2.pcx"}, // special3 for castle
+           {(uint8_t)Building::GRAIL, "ThCsHOLY.pcx"},
+           {(uint8_t)Building::DWELLING_LEVEL_1, "ThCsPIK1.pcx"},
+           {(uint8_t)Building::DWELLING_LEVEL_2, "ThCsCRS1.pcx"},
+           {(uint8_t)Building::DWELLING_LEVEL_3, "ThCsGR1N.pcx"},
+           {(uint8_t)Building::DWELLING_LEVEL_4, "ThCsSWD1.pcx"},
+           {(uint8_t)Building::DWELLING_LEVEL_5, "ThCsMON1.pcx"},
+           {(uint8_t)Building::DWELLING_LEVEL_6, "ThCsC101.pcx"},
+           {(uint8_t)Building::DWELLING_LEVEL_7, "ThCsANG1.pcx"},
+           {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1, "ThCsPIK2.pcx"},
+           {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2, "ThCsCRS2.pcx"},
+           {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3, "ThCsGR2N.pcx"},
+           {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4, "ThCsSWD2.pcx"},
+           {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5, "ThCsMON2.pcx"},
+           {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6, "ThCsCAV2.pcx"},
+           {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7, "ThCsANG2.pcx"}},
+          //    1
+          {},
   };
 
   const static inline std::unordered_map<uint8_t, std::string> townBorder[] = {
