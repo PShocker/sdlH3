@@ -39,6 +39,15 @@
 void loadPcx() {
   const auto loadCommon = []() {
     const std::vector<std::string> filePaths = {
+        "ThCsMAG1.pcx", "ThCsMAG2.pcx", "ThCsMAG3.pcx", "ThCsMAG4.pcx",
+        "ThCsTAV1.pcx", "ThCsDock.pcx", "ThCsCAS1.pcx", "ThCsCAS2.pcx",
+        "ThCsCAS3.pcx", "ThCsHal1.pcx", "ThCsHal2.pcx", "ThCsHal3.pcx",
+        "ThCsHal4.pcx", "ThCsMRK1.pcx", "ThCsMRK2.pcx", "ThCsBLAK.pcx",
+        "ThCsLite.pcx", "ThCsGR1H.pcx", "ThCsGR2H.pcx", "ThCsCv2S.pcx",
+        "ThCsTAV2.pcx", "ThCsHOLY.pcx", "ThCsPIK1.pcx", "ThCsCRS1.pcx",
+        "ThCsGR1.pcx", "ThCsSWD1.pcx", "ThCsMON1.pcx", "ThCsCv1.pcx",
+        "ThCsANG1.pcx", "ThCsPIK2.pcx", "ThCsCRS2.pcx", "ThCsGR2.pcx",
+        "ThCsSWD2.pcx", "ThCsMON2.pcx", "ThCsCV2.pcx", "ThCsANG2.pcx",
         "ThCsAng1.PCX", "TPMAGECS.pcx", "TPMAGE.pcx", "VWorld.pcx",
         "univbldg.pcx", "TPCASNEU.pcx", "PUZZLOGO.pcx", "PUZCAS00.pcx",
         "PUZCAS01.pcx", "PUZCAS02.pcx", "PUZCAS03.pcx", "PUZCAS04.pcx",

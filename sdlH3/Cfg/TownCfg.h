@@ -12,8 +12,6 @@ struct TownCfg {
   const static inline std::vector<std::vector<std::string>> creatureBackground =
       {{"TPCASCAS.pcx", "CRBKGCAS.pcx"}};
 
-  const static inline std::string tavernVideoStr = "TAVERN.BIK";
-
   const static inline std::vector<std::string> guildWindowStr = {
       "TPMAGECS.pcx", "TPMAGERM.pcx", "TPMAGEIN.pcx", "TPMAGEIN.pcx",
       "TPMAGENC.pcx", "TPMAGEDN.pcx", "TPMAGEST.pcx", "TPMAGEFR.pcx"};
@@ -1063,43 +1061,43 @@ struct TownCfg {
           {// 城堡 (0)
            {(uint8_t)Building::MAGE_GUILD_1, "ThCsMAG1.pcx"},
            {(uint8_t)Building::MAGE_GUILD_2, "ThCsMAG2.pcx"},
-           {(uint8_t)Building::MAGE_GUILD_3, "ThCsM301.pcx"},
-           {(uint8_t)Building::MAGE_GUILD_4, "ThCsM401.pcx"},
+           {(uint8_t)Building::MAGE_GUILD_3, "ThCsMAG3.pcx"},
+           {(uint8_t)Building::MAGE_GUILD_4, "ThCsMAG4.pcx"},
            {(uint8_t)Building::TAVERN, "ThCsTAV1.pcx"},
-           {(uint8_t)Building::SHIPYARD, "ThCsDKMS.pcx"},
+           {(uint8_t)Building::SHIPYARD, "ThCsDock.pcx"},
            {(uint8_t)Building::FORT, "ThCsCAS1.pcx"},
            {(uint8_t)Building::CITADEL, "ThCsCAS2.pcx"},
            {(uint8_t)Building::CASTLE, "ThCsCAS3.pcx"},
-           {(uint8_t)Building::VILLAGE_HALL, "ThCsH101.pcx"},
-           {(uint8_t)Building::TOWN_HALL, "ThCsH201.pcx"},
-           {(uint8_t)Building::CITY_HALL, "ThCsH301.pcx"},
-           {(uint8_t)Building::CAPITOL, "ThCsH401.pcx"},
+           {(uint8_t)Building::VILLAGE_HALL, "ThCsHal1.pcx"},
+           {(uint8_t)Building::TOWN_HALL, "ThCsHal2.pcx"},
+           {(uint8_t)Building::CITY_HALL, "ThCsHal3.pcx"},
+           {(uint8_t)Building::CAPITOL, "ThCsHal4.pcx"},
            {(uint8_t)Building::MARKETPLACE, "ThCsMRK1.pcx"},
            {(uint8_t)Building::RESOURCE_SILO, "ThCsMRK2.pcx"},
            {(uint8_t)Building::BLACKSMITH, "ThCsBLAK.pcx"},
            {(uint8_t)Building::SPECIAL_18,
-            "ThCsLT01.pcx"}, // special1 for castle
+            "ThCsLite.pcx"}, // special1 for castle
            {(uint8_t)Building::HORDE_1, "ThCsGR1H.pcx"},
            {(uint8_t)Building::HORDE_1_UPGR, "ThCsGR2H.pcx"},
-           {(uint8_t)Building::SHIP, "ThCsDKMN.pcx"},
+           {(uint8_t)Building::SHIP, ""},
            {(uint8_t)Building::SPECIAL_20,
-            "ThCsCAVM.pcx"}, // special2 for castle
+            "ThCsCv2S.pcx"}, // special2 for castle
            {(uint8_t)Building::SPECIAL_19,
             "ThCsTAV2.pcx"}, // special3 for castle
            {(uint8_t)Building::GRAIL, "ThCsHOLY.pcx"},
            {(uint8_t)Building::DWELLING_LEVEL_1, "ThCsPIK1.pcx"},
            {(uint8_t)Building::DWELLING_LEVEL_2, "ThCsCRS1.pcx"},
-           {(uint8_t)Building::DWELLING_LEVEL_3, "ThCsGR1N.pcx"},
+           {(uint8_t)Building::DWELLING_LEVEL_3, "ThCsGR1.pcx"},
            {(uint8_t)Building::DWELLING_LEVEL_4, "ThCsSWD1.pcx"},
            {(uint8_t)Building::DWELLING_LEVEL_5, "ThCsMON1.pcx"},
-           {(uint8_t)Building::DWELLING_LEVEL_6, "ThCsC101.pcx"},
+           {(uint8_t)Building::DWELLING_LEVEL_6, "ThCsCv1.pcx"},
            {(uint8_t)Building::DWELLING_LEVEL_7, "ThCsANG1.pcx"},
            {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_1, "ThCsPIK2.pcx"},
            {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_2, "ThCsCRS2.pcx"},
-           {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3, "ThCsGR2N.pcx"},
+           {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_3, "ThCsGR2.pcx"},
            {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_4, "ThCsSWD2.pcx"},
            {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_5, "ThCsMON2.pcx"},
-           {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6, "ThCsCAV2.pcx"},
+           {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_6, "ThCsCV2.pcx"},
            {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7, "ThCsANG2.pcx"}},
           //    1
           {},
