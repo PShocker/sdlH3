@@ -114,6 +114,17 @@ static std::unordered_set<uint8_t> townUpGradeBuild(uint8_t lvl,
   return builds;
 }
 
+uint32_t TownSys::townDweNum(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
+  uint32_t r = 0;
+  auto &registry = World::registrys[lvl];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto builds = townComp->buildings;
+  auto bEnt = builds[bId];
+  auto dComp = &registry.get<DwellingComp>(townEnt);
+  r = dComp->creatures.back().second;
+  return r;
+}
+
 std::vector<TownDweInc> TownSys::townDweInc(uint8_t lvl, entt::entity townEnt,
                                             uint8_t bId) {
   std::vector<TownDweInc> r;
@@ -734,6 +745,10 @@ static void drawCres() {
     posRect.x += leftUp.x;
     posRect.y += leftUp.y;
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    auto num = dComp.creatures.back().second;
+    FreeTypeSys::setSize(13);
+    FreeTypeSys::setColor(255, 255, 255, 255);
+    FreeTypeSys::drawCenter(posRect.x + 16, posRect.y + 40, num);
     i++;
   }
 }
