@@ -49,8 +49,8 @@ static void showBuildComfirm(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto &buildings = townComp->buildings;
-  auto confirmbakW = 450;
-  auto confirmbakH = 130;
+  auto confirmbakW = 480;
+  auto confirmbakH = 180;
   Global::confirmdraw = [=]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};
@@ -58,12 +58,14 @@ static void showBuildComfirm(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
     FreeTypeSys::setSize(13);
     FreeTypeSys::setColor(240, 224, 104, 255);
     FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
-                            strPool[926 + (uint8_t)ObjectType::SWAN_POND]);
+                            strPool[3041 + bId * 2]);
+    FreeTypeSys::setColor(255, 255, 255, 255);
     FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 40,
-                            strPool[926 + (uint8_t)ObjectType::SWAN_POND]);
+                            strPool[3042 + bId * 2]);
     auto tStr = TownCfg::townBuildIcon[townComp->id].at(bId);
     auto texture = Global::pcxCache[tStr][0];
-    SDL_FRect posRect{0, 0, static_cast<float>(texture->w),
+    SDL_FRect posRect{leftUp.x + confirmbakW / 2 - texture->w / 2,
+                      leftUp.y + 75, static_cast<float>(texture->w),
                       static_cast<float>(texture->h)};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   };
@@ -958,7 +960,25 @@ static void clickCres(uint8_t clickType) {
   }
 }
 
-static void clickCapitol(uint8_t clickType) { World::enterTownHall(); }
+static void clickCapitol(uint8_t clickType) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+    World::enterTownHall();
+  } else {
+    auto [level, townEnt] = Global::townScnPair;
+    auto buildId = mouseBuildId.value();
+    showBuildComfirm(level, townEnt, buildId);
+  }
+}
+
+static void clickFort(uint8_t clickType) {
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+    World::enterTownHall();
+  } else {
+    auto [level, townEnt] = Global::townScnPair;
+    auto buildId = mouseBuildId.value();
+    showBuildComfirm(level, townEnt, buildId);
+  }
+}
 
 static void clickBlackSmith(uint8_t clickType) {
   auto [level, townEnt] = Global::townScnPair;
@@ -1041,6 +1061,12 @@ static bool clickBuild(uint8_t clickType) {
     case (uint8_t)TownCfg::Building::TOWN_HALL:
     case (uint8_t)TownCfg::Building::CAPITOL: {
       clickCapitol(clickType);
+      break;
+    }
+    case (uint8_t)TownCfg::Building::FORT:
+    case (uint8_t)TownCfg::Building::CITADEL:
+    case (uint8_t)TownCfg::Building::CASTLE: {
+      clickFort(clickType);
       break;
     }
     case (uint8_t)TownCfg::Building::BLACKSMITH: {

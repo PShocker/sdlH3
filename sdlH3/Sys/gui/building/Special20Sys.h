@@ -3,4 +3,5 @@
 #include <cstdint>
 struct Special20Sys {
   static bool run();
+  static void visit();
 };
