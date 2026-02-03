@@ -45,6 +45,31 @@
 static std::optional<uint8_t> mouseBuildId;
 static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
 
+static void showBuildComfirm(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
+  auto &registry = World::registrys[lvl];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto &buildings = townComp->buildings;
+  auto confirmbakW = 450;
+  auto confirmbakH = 130;
+  Global::confirmdraw = [=]() {
+    SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
+                      Global::viewPort.h / 2 - confirmbakH / 2};
+    auto strPool = *Lang::strPool[Global::langIndex];
+    FreeTypeSys::setSize(13);
+    FreeTypeSys::setColor(240, 224, 104, 255);
+    FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
+                            strPool[926 + (uint8_t)ObjectType::SWAN_POND]);
+    FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 40,
+                            strPool[926 + (uint8_t)ObjectType::SWAN_POND]);
+    auto tStr = TownCfg::townBuildIcon[townComp->id].at(bId);
+    auto texture = Global::pcxCache[tStr][0];
+    SDL_FRect posRect{0, 0, static_cast<float>(texture->w),
+                      static_cast<float>(texture->h)};
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  };
+  World::enterConfirm(confirmbakW, confirmbakH, ((uint8_t)Enum::SCNTYPE::POP));
+}
+
 static uint8_t fortLevel(uint8_t lvl, entt::entity townEnt) {
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
@@ -282,7 +307,7 @@ uint8_t TownSys::visitBuild(uint8_t bId) {
   return r;
 }
 
-static std::set<uint8_t> studySpel(uint8_t i) {
+static std::set<uint8_t> heroStudySpel(uint8_t i) {
   std::set<uint8_t> r;
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
@@ -325,8 +350,8 @@ static std::set<uint8_t> studySpel(uint8_t i) {
 }
 
 void TownSys::heroVisit() {
-  studySpel(0);
-  studySpel(1);
+  heroStudySpel(0);
+  heroStudySpel(1);
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
@@ -887,6 +912,52 @@ static void heroSwap() {
   townComp->heroEnt[1] = h0;
 }
 
+static void clickCres(uint8_t clickType) {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  SDL_FPoint point = {static_cast<float>(static_cast<int>(Window::mouseX)),
+                      static_cast<float>(static_cast<int>(Window::mouseY))};
+  SDL_FRect posRect;
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  auto builds = TownSys::townDweBuilds(level, townEnt);
+  const SDL_FRect posRects[] = {
+      // 第一行（i = 0, 1, 2）
+      {static_cast<float>(22), static_cast<float>(459), 32, 32},
+      {static_cast<float>(77), static_cast<float>(459), 32, 32},
+      {static_cast<float>(132), static_cast<float>(459), 32, 32},
+      {static_cast<float>(187), static_cast<float>(459), 32, 32},
+      // 第二行
+      {static_cast<float>(22), static_cast<float>(507), 32, 32},
+      {static_cast<float>(77), static_cast<float>(507), 32, 32},
+      {static_cast<float>(132), static_cast<float>(507), 32, 32},
+      {static_cast<float>(187), static_cast<float>(507), 32, 32}};
+  uint8_t i = 0;
+  for (auto &dwe : builds) {
+    auto dComp = registry.get<DwellingComp>(dwe.ent);
+    auto creatureId = dComp.creatures.back().first.back() + 2;
+    posRect = posRects[i];
+    posRect.x += leftUp.x;
+    posRect.y += leftUp.y;
+    if (SDL_PointInRectFloat(&point, &posRect)) {
+      if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+        entt::entity srcEnt;
+        auto goalEnt = dwe.ent;
+        if (townComp->heroEnt[0].has_value()) {
+          srcEnt = townComp->heroEnt[0].value();
+        } else {
+          srcEnt = townEnt;
+        }
+        World::enterDwe(srcEnt, goalEnt);
+      } else {
+      }
+    }
+
+    i++;
+  }
+}
+
 static void clickCapitol(uint8_t clickType) { World::enterTownHall(); }
 
 static void clickBlackSmith(uint8_t clickType) {
@@ -932,22 +1003,17 @@ static void clickDwe(uint8_t clickType) {
     }
     World::enterDwe(srcEnt, goalEnt);
   } else {
-    auto confirmbakW = 450;
-    auto confirmbakH = 130;
-    Global::confirmdraw = [=]() {
-      SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
-                        Global::viewPort.h / 2 - confirmbakH / 2};
-    };
-    World::enterConfirm(confirmbakW, confirmbakH,
-                        ((uint8_t)Enum::SCNTYPE::POP));
+    showBuildComfirm(level, townEnt, buildId);
   }
 }
 
 static void clickMageGuild(uint8_t clickType) {
+  auto [level, townEnt] = Global::townScnPair;
   if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
-    auto [level, townEnt] = Global::townScnPair;
     World::enterMageGuild(level, townEnt);
   } else {
+    auto buildId = mouseBuildId.value();
+    showBuildComfirm(level, townEnt, buildId);
   }
 }
 

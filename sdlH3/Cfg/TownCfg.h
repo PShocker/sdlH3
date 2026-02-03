@@ -52,6 +52,7 @@ struct TownCfg {
     MARKETPLACE = 8,
     RESOURCE_SILO = 9,
 
+    SPECIAL_10 = 10,
     // 魔法行会
     MAGE_GUILD_1 = 11,
     MAGE_GUILD_2 = 12,
@@ -63,7 +64,6 @@ struct TownCfg {
     GRAIL = 17,
 
     // 特殊建筑编号（根据城镇不同而意义不同）
-    SPECIAL_10 = 10,
     SPECIAL_18 = 18,
     SPECIAL_19 = 19,
     SPECIAL_20 = 20,
