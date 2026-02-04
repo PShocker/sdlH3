@@ -15,6 +15,57 @@
 #include <cstdint>
 #include <vector>
 
+
+static std::set<uint8_t> heroStudySpel(uint8_t i) {
+  std::set<uint8_t> r;
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  for (auto i : {(uint8_t)TownCfg::Building::MAGE_GUILD_1,
+                 (uint8_t)TownCfg::Building::MAGE_GUILD_2,
+                 (uint8_t)TownCfg::Building::MAGE_GUILD_3,
+                 (uint8_t)TownCfg::Building::MAGE_GUILD_4,
+                 (uint8_t)TownCfg::Building::MAGE_GUILD_5}) {
+    if (townComp->buildings.contains(i)) {
+      auto mEnt = townComp->buildings[i];
+      auto &mComp = registry.get<MageGuildComp>(mEnt);
+      r.insert(mComp.spells.begin(), mComp.spells.end());
+    }
+  }
+  // 智慧术
+  if (townComp->heroEnt[i].has_value()) {
+    auto heroEnt = townComp->heroEnt[i].value();
+    auto &heroComp = registry.get<HeroComp>(heroEnt);
+    int8_t wisdom = HeroScrSys::heroSecLevel(
+        heroComp, (uint8_t)HeroCfg::SecondarySkill::WISDOM);
+    std::set<uint8_t> s;
+    if (wisdom == -1) {
+      // 只能学习1-2级技能
+      auto v1 = SpellCfg::SpellLevels[1];
+      auto v2 = SpellCfg::SpellLevels[2];
+
+      s.insert(v1.begin(), v1.end());
+      s.insert(v2.begin(), v2.end());
+
+    } else {
+      for (auto i = 1; i <= wisdom + 3; i++) {
+        auto v = SpellCfg::SpellLevels[i];
+        s.insert(v.begin(), v.end());
+      }
+    }
+    heroComp.spells.insert(s.begin(), s.end());
+  }
+  return r;
+}
+
+void MageGuildSys::visit() {
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  
+
+}
+
 static void close() { World::exitScrn(); }
 
 static std::vector<Button> buttonInfo() {
