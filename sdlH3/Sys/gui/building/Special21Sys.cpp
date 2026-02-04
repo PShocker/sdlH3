@@ -99,3 +99,6 @@ bool Special21Sys::run() {
   drawButton();
   return true;
 }
+
+void Special21Sys::visit() {
+}

@@ -105,7 +105,7 @@ struct TownCfg {
   };
 
   const static inline std::vector<uint8_t> townForceVisit[] = {
-      {(uint8_t)Building::SPECIAL_10},
+      { (uint8_t)Building::SPECIAL_10},
       {},
   };
 

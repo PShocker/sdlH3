@@ -48,6 +48,7 @@ struct World {
   static bool enterAdvPop();
   static bool enterHeroScrn(uint8_t level, entt::entity ent, uint8_t type);
   static void enterTownHall();
+  static void enterTownFort();
   static void enterHeroTrade(entt::entity heroEnt, entt::entity goalEnt,
                              uint8_t goalLevel);
   static void enterKingdom();

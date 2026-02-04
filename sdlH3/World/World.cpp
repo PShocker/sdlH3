@@ -70,6 +70,7 @@
 #include "Sys/gui/StarAxisSys.h"
 #include "Sys/gui/TavernSys.h"
 #include "Sys/gui/TempleSys.h"
+#include "Sys/gui/TownFortSys.h"
 #include "Sys/gui/TownHallSys.h"
 #include "Sys/gui/TownPortalSys.h"
 #include "Sys/gui/TownSys.h"
@@ -215,6 +216,18 @@ void World::enterTownHall() {
   iterateSystems.push_back(CursorSys::run);
 
   LMouseUpSys.push_back(TownHallSys::leftMouseUp);
+
+  Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+}
+
+void World::enterTownFort() {
+  enterScrn();
+
+  iterateSystems.pop_back();
+  iterateSystems.push_back(TownFortSys::run);
+  iterateSystems.push_back(CursorSys::run);
+
+  LMouseUpSys.push_back(TownFortSys::leftMouseUp);
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }

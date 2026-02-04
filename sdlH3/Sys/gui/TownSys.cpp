@@ -20,6 +20,7 @@
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
+#include "MageGuildSys.h"
 #include "Pcx/Pcx.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
@@ -27,6 +28,10 @@
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/AdvPopSys.h"
+#include "Sys/gui/building/Special10Sys.h"
+#include "Sys/gui/building/Special18Sys.h"
+#include "Sys/gui/building/Special19Sys.h"
+#include "Sys/gui/building/Special21Sys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include "base/TownListSys.h"
@@ -309,20 +314,41 @@ uint8_t TownSys::visitBuild(uint8_t bId) {
   return r;
 }
 
-
-
 void TownSys::heroVisit() {
-  heroStudySpel(0);
-  heroStudySpel(1);
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto id = townComp->id;
   for (auto bId : TownCfg::townForceVisit[id]) {
     if (visitBuild(bId) != 0xff) {
-      World::enterSpecBuild(bId);
+      switch (bId) {
+      case (uint8_t)TownCfg::Building::SPECIAL_10: {
+        Special10Sys::visit();
+        break;
+      }
+      case (uint8_t)TownCfg::Building::SPECIAL_18: {
+        Special18Sys::visit();
+        break;
+      }
+      case (uint8_t)TownCfg::Building::SPECIAL_19: {
+        Special19Sys::visit();
+        break;
+      }
+      case (uint8_t)TownCfg::Building::SPECIAL_20: {
+        Special19Sys::visit();
+        break;
+      }
+      case (uint8_t)TownCfg::Building::SPECIAL_21: {
+        Special21Sys::visit();
+        break;
+      }
+      default: {
+        break;
+      }
+      }
     }
   }
+  MageGuildSys::visit();
 }
 
 static void close() {
@@ -932,7 +958,7 @@ static void clickCapitol(uint8_t clickType) {
 
 static void clickFort(uint8_t clickType) {
   if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
-    World::enterTownHall();
+    World::enterTownFort();
   } else {
     auto [level, townEnt] = Global::townScnPair;
     auto buildId = mouseBuildId.value();
@@ -1056,6 +1082,10 @@ static bool clickBuild(uint8_t clickType) {
     case (uint8_t)TownCfg::Building::MAGE_GUILD_4:
     case (uint8_t)TownCfg::Building::MAGE_GUILD_5: {
       clickMageGuild(clickType);
+      break;
+    }
+    case (uint8_t)TownCfg::Building::SPECIAL_10: {
+      World::enterSpecBuild(buildId);
       break;
     }
     default: {
