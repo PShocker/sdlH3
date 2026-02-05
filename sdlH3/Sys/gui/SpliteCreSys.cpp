@@ -97,8 +97,20 @@ static void splAnimate() {
   if (Global::splitFrameTime >= 90) {
     Global::splitFrameTime = 0;
     Global::splitFrameIndex += 1;
-    // if (condition) {
-    // }
+
+    auto id = Global::splitCre[0]->first;
+    auto group = Global::splitGroup;
+
+    auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) +
+                                     "/" + std::to_string(group)];
+    if (Global::splitFrameIndex >= textures.size()) {
+      Global::splitFrameIndex = 0;
+      int arr[] = {0, 2, 3, 4};
+      std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
+      // 生成随机索引并选择元素
+      int randomIndex = distrib(Global::gen);
+      Global::splitGroup = arr[randomIndex];
+    }
   }
 }
 

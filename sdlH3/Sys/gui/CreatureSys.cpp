@@ -147,8 +147,20 @@ static void creAnimate() {
   if (Global::creFrameTime >= 90) {
     Global::creFrameTime = 0;
     Global::creFrameIndex += 1;
-    // if (condition) {
-    // }
+
+    auto id = Global::crePair.first;
+    auto group = Global::creGroup;
+
+    auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) +
+                                     "/" + std::to_string(group)];
+    if (Global::creFrameIndex >= textures.size()) {
+      Global::creFrameIndex = 0;
+      int arr[] = {0, 2, 3, 4};
+      std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
+      // 生成随机索引并选择元素
+      int randomIndex = distrib(Global::gen);
+      Global::creGroup = arr[randomIndex];
+    }
   }
 }
 

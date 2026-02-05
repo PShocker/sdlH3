@@ -240,8 +240,21 @@ static void dweAnimate() {
   if (Global::dweFrameTime >= 90) {
     Global::dweFrameTime = 0;
     Global::dweFrameIndex += 1;
-    // if (condition) {
-    // }
+
+    auto creatures = cres();
+    auto id = creatures.front().first;
+    auto group = Global::dweGroup;
+
+    auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) +
+                                     "/" + std::to_string(group)];
+    if (Global::dweFrameIndex >= textures.size()) {
+      Global::dweFrameIndex = 0;
+      int arr[] = {0, 2, 3, 4};
+      std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
+      // 生成随机索引并选择元素
+      int randomIndex = distrib(Global::gen);
+      Global::dweGroup = arr[randomIndex];
+    }
   }
 }
 

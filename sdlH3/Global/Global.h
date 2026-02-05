@@ -167,6 +167,11 @@ struct Global {
   static inline uint32_t splitSliderNum;
   static inline uint64_t splitFrameTime;
   static inline uint64_t splitFrameIndex;
+  static inline uint8_t splitGroup;
+
+  static inline std::array<uint16_t, 8> townFortFrameTime;
+  static inline std::array<uint16_t, 8> townFortFrameIndex;
+  static inline std::array<uint8_t, 8> townFortGroup;
 
   static inline uint8_t viewWorldScale;
 
