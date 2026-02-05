@@ -177,7 +177,7 @@ static void drawCreatures() {
     auto p = pos[i];
     auto id = creatures[i].first;
     auto defPath = CreatureCfg::creatureGraphics.at(id);
-    auto group = 1;
+    auto group = Global::dweGroup;
     auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
     auto index = Global::dweFrameIndex % textures.size();
     auto colorType = Global::dweIndex == i ? 1 : 0;
@@ -221,8 +221,27 @@ void DwellingSys::drawCreatureBak(float x, float y, uint16_t id, uint16_t group,
   if (colorType != 0xff) {
     SDL_RenderRect(Window::renderer, &posRect);
   }
-  drawCreature(x, y, id, group, index,
-               (uint8_t)CreatureCfg::OV_COLOR::TRANSPARENCY);
+  colorType = (uint8_t)CreatureCfg::OV_COLOR::TRANSPARENCY;
+  drawCreature(x, y, id, group, index, colorType);
+}
+
+void DwellingSys::drawCreatureBak2(float x, float y, uint16_t id,
+                                   uint16_t group, uint16_t index,
+                                   uint8_t colorType) {
+  auto townIndex = CreatureCfg::creatureTowns.at(id);
+  SDL_FRect posRect{x, y, 100, 120};
+  auto texture = Global::pcxCache[TownCfg::creatureBackground[townIndex][0]][0];
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  if (colorType == 1) {
+    SDL_SetRenderDrawColor(Window::renderer, 255, 0, 0, 255);
+  } else {
+    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
+  }
+  if (colorType != 0xff) {
+    SDL_RenderRect(Window::renderer, &posRect);
+  }
+  colorType = (uint8_t)CreatureCfg::OV_COLOR::TRANSPARENCY;
+  drawCreature(x, y - 10, id, group, index, colorType);
 }
 
 static void drawButton() {

@@ -50,12 +50,13 @@
 static std::optional<uint8_t> mouseBuildId;
 static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
 
-static void showBuildComfirm(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
+static void showBuildComfirm(uint8_t lvl, entt::entity townEnt, uint8_t bId,
+                             uint8_t confirmType) {
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto &buildings = townComp->buildings;
   auto confirmbakW = 480;
-  auto confirmbakH = 180;
+  auto confirmbakH = 220;
   Global::confirmdraw = [=]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};
@@ -63,18 +64,22 @@ static void showBuildComfirm(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
     FreeTypeSys::setSize(13);
     FreeTypeSys::setColor(240, 224, 104, 255);
     FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
-                            strPool[3041 + bId * 2]);
+                            strPool[3043 + (int8_t)bId * 2]);
     FreeTypeSys::setColor(255, 255, 255, 255);
     FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 40,
-                            strPool[3042 + bId * 2]);
+                            strPool[3044 + (int8_t)bId * 2]);
     auto tStr = TownCfg::townBuildIcon[townComp->id].at(bId);
     auto texture = Global::pcxCache[tStr][0];
     SDL_FRect posRect{leftUp.x + confirmbakW / 2 - texture->w / 2,
                       leftUp.y + 75, static_cast<float>(texture->w),
                       static_cast<float>(texture->h)};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
+    SDL_RenderRect(Window::renderer, &posRect);
   };
-  World::enterConfirm(confirmbakW, confirmbakH, ((uint8_t)Enum::SCNTYPE::POP));
+  Global::confirmOnlyOK = true;
+  Global::confirmCallBack = std::nullopt;
+  World::enterConfirm(confirmbakW, confirmbakH, confirmType);
 }
 
 static uint8_t fortLevel(uint8_t lvl, entt::entity townEnt) {
@@ -952,7 +957,7 @@ static void clickCapitol(uint8_t clickType) {
   } else {
     auto [level, townEnt] = Global::townScnPair;
     auto buildId = mouseBuildId.value();
-    showBuildComfirm(level, townEnt, buildId);
+    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
@@ -962,35 +967,41 @@ static void clickFort(uint8_t clickType) {
   } else {
     auto [level, townEnt] = Global::townScnPair;
     auto buildId = mouseBuildId.value();
-    showBuildComfirm(level, townEnt, buildId);
+    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
 static void clickBlackSmith(uint8_t clickType) {
-  auto [level, townEnt] = Global::townScnPair;
-  auto &registry = World::registrys[level];
-  auto townComp = &registry.get<TownComp>(townEnt);
-  if (townComp->heroEnt[1].has_value()) {
-    auto heroEnt = townComp->heroEnt[1].value();
-    auto goalEnt =
-        townComp->buildings.at((uint8_t)TownCfg::Building::BLACKSMITH);
-    World::enterWarMachineFac(heroEnt, goalEnt);
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+    auto [level, townEnt] = Global::townScnPair;
+    auto &registry = World::registrys[level];
+    auto townComp = &registry.get<TownComp>(townEnt);
+    if (townComp->heroEnt[1].has_value()) {
+      auto heroEnt = townComp->heroEnt[1].value();
+      auto goalEnt =
+          townComp->buildings.at((uint8_t)TownCfg::Building::BLACKSMITH);
+      World::enterWarMachineFac(heroEnt, goalEnt);
+    } else {
+      Global::confirmOnlyOK = true;
+      Global::confirmCallBack = std::nullopt;
+      auto confirmbakW = 400;
+      auto confirmbakH = 140;
+      Global::confirmdraw = [confirmbakW, confirmbakH]() {
+        SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
+                          Global::viewPort.h / 2 - confirmbakH / 2};
+        auto strPool = *Lang::strPool[Global::langIndex];
+        FreeTypeSys::setSize(13);
+        FreeTypeSys::setColor(240, 224, 104, 255);
+        FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 15,
+                                strPool[1003]);
+      };
+      World::enterConfirm(confirmbakW, confirmbakH,
+                          ((uint8_t)Enum::SCNTYPE::MOD));
+    }
   } else {
-    Global::confirmOnlyOK = true;
-    Global::confirmCallBack = std::nullopt;
-    auto confirmbakW = 400;
-    auto confirmbakH = 140;
-    Global::confirmdraw = [confirmbakW, confirmbakH]() {
-      SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
-                        Global::viewPort.h / 2 - confirmbakH / 2};
-      auto strPool = *Lang::strPool[Global::langIndex];
-      FreeTypeSys::setSize(13);
-      FreeTypeSys::setColor(240, 224, 104, 255);
-      FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 15,
-                              strPool[1003]);
-    };
-    World::enterConfirm(confirmbakW, confirmbakH,
-                        ((uint8_t)Enum::SCNTYPE::MOD));
+    auto [level, townEnt] = Global::townScnPair;
+    auto buildId = mouseBuildId.value();
+    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
@@ -1009,7 +1020,7 @@ static void clickDwe(uint8_t clickType) {
     }
     World::enterDwe(srcEnt, goalEnt);
   } else {
-    showBuildComfirm(level, townEnt, buildId);
+    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
@@ -1019,7 +1030,39 @@ static void clickMageGuild(uint8_t clickType) {
     World::enterMageGuild(level, townEnt);
   } else {
     auto buildId = mouseBuildId.value();
-    showBuildComfirm(level, townEnt, buildId);
+    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
+  }
+}
+
+static void clickSpecial(uint8_t clickType) {
+  auto buildId = mouseBuildId.value();
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+    World::enterSpecBuild(buildId);
+  } else {
+    auto [level, townEnt] = Global::townScnPair;
+    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
+  }
+}
+
+static void clickGrail(uint8_t clickType) {
+  auto [level, townEnt] = Global::townScnPair;
+  auto buildId = mouseBuildId.value();
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::MOD);
+  } else {
+    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
+  }
+}
+
+static void clickShipyard(uint8_t clickType) {
+  auto [level, townEnt] = Global::townScnPair;
+  auto buildId = mouseBuildId.value();
+  if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
+    auto &registry = World::registrys[level];
+    auto townComp = &registry.get<TownComp>(townEnt);
+    World::enterShipyard(townEnt, townComp->buildings[buildId]);
+  } else {
+    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
@@ -1033,15 +1076,6 @@ static bool clickBuild(uint8_t clickType) {
     auto factionId = townComp->id;
 
     switch (buildId) {
-    case (uint8_t)TownCfg::Building::SPECIAL_19: {
-      switch (factionId) {
-      case (uint8_t)TownCfg::Faction::CASTLE: {
-        auto goalEnt = townComp->buildings[(uint8_t)TownCfg::Building::TAVERN];
-        World::enterTavern(entt::null, goalEnt);
-      }
-      }
-      break;
-    }
     case (uint8_t)TownCfg::Building::VILLAGE_HALL:
     case (uint8_t)TownCfg::Building::CITY_HALL:
     case (uint8_t)TownCfg::Building::TOWN_HALL:
@@ -1084,8 +1118,20 @@ static bool clickBuild(uint8_t clickType) {
       clickMageGuild(clickType);
       break;
     }
-    case (uint8_t)TownCfg::Building::SPECIAL_10: {
-      World::enterSpecBuild(buildId);
+    case (uint8_t)TownCfg::Building::SPECIAL_10:
+    case (uint8_t)TownCfg::Building::SPECIAL_18:
+    case (uint8_t)TownCfg::Building::SPECIAL_19:
+    case (uint8_t)TownCfg::Building::SPECIAL_20:
+    case (uint8_t)TownCfg::Building::SPECIAL_21: {
+      clickSpecial(clickType);
+      break;
+    }
+    case (uint8_t)TownCfg::Building::GRAIL: {
+      clickGrail(clickType);
+      break;
+    }
+    case (uint8_t)TownCfg::Building::SHIPYARD: {
+      clickShipyard(clickType);
       break;
     }
     default: {

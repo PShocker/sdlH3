@@ -91,6 +91,17 @@ static void draw() {
                static_cast<float>(texture->h)};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
+    FreeTypeSys::setSize(13);
+    FreeTypeSys::setColor(248, 240, 216, 255);
+
+    auto strPool = *Lang::strPool[Global::langIndex];
+    FreeTypeSys::draw(posRect2.x + 287, posRect2.y + 4, strPool[2339]);
+    FreeTypeSys::draw(posRect2.x + 287, posRect2.y + 24, strPool[2340]);
+    FreeTypeSys::draw(posRect2.x + 287, posRect2.y + 45, strPool[2341]);
+    FreeTypeSys::draw(posRect2.x + 287, posRect2.y + 65, strPool[2342]);
+    FreeTypeSys::draw(posRect2.x + 287, posRect2.y + 86, strPool[2343]);
+    FreeTypeSys::draw(posRect2.x + 287, posRect2.y + 106, strPool[2344]);
+
     auto dwe = dwes[i];
     auto tStr = TownCfg::townBuildIcon[townComp->id].at(dwe.bId);
     texture = Global::pcxCache[tStr][0];
@@ -98,21 +109,20 @@ static void draw() {
                static_cast<float>(texture->h)};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
-    FreeTypeSys::setSize(13);
-    FreeTypeSys::setColor(240, 224, 104, 255);
-    auto strPool = *Lang::strPool[Global::langIndex];
-    auto bStr = strPool[3041 + dwe.bId * 2];
-    FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15, bStr);
+
+    auto bStr = strPool[3043 + (int8_t)dwe.bId * 2];
+    FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y + 90, bStr);
 
     auto dComp = registry.get<DwellingComp>(dwe.ent);
     auto creatureId = dComp.creatures.back().first.back();
-    auto group = 0;
-    auto textures =
-        Global::defCache[CreatureCfg::creatureGraphics.at(creatureId) + "/" +
-                         std::to_string(group)];
-    auto index = Global::splitFrameIndex % textures.size();
-    DwellingSys::drawCreatureBak(leftUp.x + 20, leftUp.y + 54, creatureId,
-                                 group, index, 0);
+
+    auto cStr = strPool[12 + creatureId];
+    FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y, cStr);
+
+    auto group = Global::townFortGroup[i];
+    auto index = Global::townFortFrameIndex[i];
+    DwellingSys::drawCreatureBak2(posRect2.x + 159, posRect2.y + 4, creatureId,
+                                  group, index, 0xff);
   }
 }
 
