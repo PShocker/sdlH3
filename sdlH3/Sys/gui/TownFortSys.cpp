@@ -103,18 +103,33 @@ static void draw() {
     FreeTypeSys::draw(posRect2.x + 287, posRect2.y + 106, strPool[2344]);
 
     auto dwe = dwes[i];
+    auto dComp = registry.get<DwellingComp>(dwe.ent);
+    auto creatureId = dComp.creatures.back().first.back();
+    auto v = CreatureCfg::creatureAttr.at(creatureId);
+
+    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 4, v[2]);  // atk
+    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 24, v[3]); // def
+    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 45,
+                          FreeTypeSys::str(v[4]) + u"-" +
+                              FreeTypeSys::str(v[5]));              // dmg
+    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 65, v[0]); // life
+    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 86, v[1]); // speed
+    auto iv = TownSys::townDweInc(level, townEnt, dwe.bId);
+    uint32_t growth = 0;
+    for (auto v : iv) {
+      growth += v.num;
+    }
+    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 106,
+                          growth); // growth
+
     auto tStr = TownCfg::townBuildIcon[townComp->id].at(dwe.bId);
     texture = Global::pcxCache[tStr][0];
     posRect = {posRect2.x + 4, posRect2.y + 21, static_cast<float>(texture->w),
                static_cast<float>(texture->h)};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
-
     auto bStr = strPool[3043 + (int8_t)dwe.bId * 2];
     FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y + 90, bStr);
-
-    auto dComp = registry.get<DwellingComp>(dwe.ent);
-    auto creatureId = dComp.creatures.back().first.back();
 
     auto cStr = strPool[12 + creatureId];
     FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y, cStr);

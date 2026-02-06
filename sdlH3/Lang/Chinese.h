@@ -3458,8 +3458,8 @@ struct Chinese {
       u"市场可让你交换资源(你所拥有的市场越多，价格越便宜)。", // MARKETPLACE_
       u"物资仓库",                                             // RESOURCE_SILO
       u"物资仓库每天为你额外提供1木材和1矿石。",               // RESOURCE_SILO_
-      u"",                                               // SPECIAL_10
-      u"",             // SPECIAL_10_
+      u"",                                                     // SPECIAL_10
+      u"",                                                     // SPECIAL_10_
       u"1级魔法行会",                                          // MAGE_GUILD_1
       u"进入魔法行会的来访英雄可以学会其中的魔法。",           // MAGE_GUILD_1_
       u"2级魔法行会",                                          // MAGE_GUILD_2
@@ -3475,14 +3475,14 @@ struct Chinese {
       u"战神像",                                               // GRAIL
       u"战神像使每周的生物产量提高50%"
       u"，每天为你的王国额外提供5000个金币，并使所有的已方英雄士气+2。", // GRAIL_
-      u"灯塔", // SPECIAL_18
-      u"灯塔能提高船的移动能力。", // SPECIAL_18_
-      u"兄弟会", // SPECIAL_19
+      u"灯塔",                               // SPECIAL_18
+      u"灯塔能提高船的移动能力。",           // SPECIAL_18_
+      u"兄弟会",                             // SPECIAL_19
       u"在攻城战中，兄弟会能使部队士气+2。", // SPECIAL_19_
-      u"马厩", // SPECIAL_20
+      u"马厩",                               // SPECIAL_20
       u"马厩能提高来访英雄的陆上移动能力。", // SPECIAL_20_
-      u"", // SPECIAL_21
-      u"", // SPECIAL_21_
+      u"",                                   // SPECIAL_21
+      u"",                                   // SPECIAL_21_
       u"岗楼",
       u"岗楼允许你招募枪兵。",
       u"高级岗楼",
@@ -4209,5 +4209,7 @@ struct Chinese {
       u"凤凰巢允许你招募火鸟。",
       u"高级凤凰巢",
       u"高级凤凰巢允许你招募凤凰。",
+      //
+      u"基本生长率",
   };
 };

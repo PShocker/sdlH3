@@ -125,7 +125,7 @@ static void buy() {
   return;
 }
 
-static std::vector<Button> buttonInfo() {
+std::vector<Button> TavernSys::buttonInfo() {
   std::vector<Button> v;
   Button b;
 
@@ -235,7 +235,7 @@ static void drawButton() {
 
   SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
                     (Global::viewPort.h - 504) / 2};
-  auto v = buttonInfo();
+  auto v = TavernSys::buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 3];
   auto top = (*topFunc.target<bool (*)()>() == TavernSys::run);
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);

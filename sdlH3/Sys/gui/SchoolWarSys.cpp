@@ -57,7 +57,7 @@ static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
   Button b;
 
-  auto gold = Global::resources[Global::playerId][6];
+  auto gold = Global::resources[Global::playerId][(uint8_t)Enum::RESTYPE::GOLD];
 
   if (gold < 1000) {
     b.textures = Global::defCache["iOKAY.def/0"];

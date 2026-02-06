@@ -944,9 +944,61 @@ static void clickCres(uint8_t clickType) {
         }
         World::enterDwe(srcEnt, goalEnt);
       } else {
+        auto confirmbakW = 480;
+        auto confirmbakH = 220;
+        Global::confirmdraw = [=]() {
+          SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
+                            Global::viewPort.h / 2 - confirmbakH / 2};
+          auto strPool = *Lang::strPool[Global::langIndex];
+          FreeTypeSys::setSize(13);
+          FreeTypeSys::setColor(240, 224, 104, 255);
+          FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
+                                  strPool[12 + creatureId]);
+
+          FreeTypeSys::setColor(255, 255, 255, 255);
+          auto iv = TownSys::townDweInc(level, townEnt, dwe.bId);
+          uint32_t growth = 0;
+          for (uint8_t i = 0; i < iv.size(); i++) {
+            auto v = iv[i];
+            auto id = v.id;
+            auto subId = v.subId;
+            growth += v.num;
+            switch (id) {
+            case (uint8_t)Enum::DWEINCTYPE::BASE: {
+              auto str = strPool[3797] + u"+" + FreeTypeSys::str(v.num);
+              FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 40,
+                                      str);
+              break;
+            }
+            case (uint8_t)Enum::DWEINCTYPE::ARTIFACT: {
+              auto str = strPool[3797] + u"+" + FreeTypeSys::str(v.num);
+              FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 40,
+                                      str);
+              break;
+            }
+            case (uint8_t)Enum::DWEINCTYPE::BUILD: {
+              break;
+            }
+            default: {
+              break;
+            }
+            }
+          }
+
+          auto texture = Global::defCache["TWCRPORT.def/0"][creatureId + 2];
+          SDL_FRect posRect{leftUp.x + confirmbakW / 2 - texture->w / 2,
+                            leftUp.y + 75, static_cast<float>(texture->w),
+                            static_cast<float>(texture->h)};
+          SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+          SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
+          SDL_RenderRect(Window::renderer, &posRect);
+        };
+        Global::confirmOnlyOK = true;
+        Global::confirmCallBack = std::nullopt;
+        World::enterConfirm(confirmbakW, confirmbakH,
+                            (uint8_t)Enum::SCNTYPE::POP);
       }
     }
-
     i++;
   }
 }

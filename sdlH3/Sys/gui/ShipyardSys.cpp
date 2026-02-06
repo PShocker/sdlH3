@@ -11,6 +11,10 @@
 #include "Sys/gui/CursorSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
+#include <cstdint>
+
+auto goldValue = 1000;
+auto woodValue = 10;
 
 static void close() { World::exitScrn(); }
 
@@ -71,6 +75,15 @@ static void buy() {
   }
 }
 
+static bool canBuy() {
+  auto gold = Global::resources[Global::playerId][(uint8_t)Enum::RESTYPE::GOLD];
+  auto wood = Global::resources[Global::playerId][(uint8_t)Enum::RESTYPE::WOOD];
+  if (gold >= goldValue && wood >= woodValue) {
+    return true;
+  }
+  return false;
+}
+
 static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
   Button b;
@@ -78,7 +91,7 @@ static std::vector<Button> buttonInfo() {
   b.textures = Global::defCache["IBY6432.DEF/0"];
   b.r = {42, 312, 64, 30};
   b.func = buy;
-  b.disable = false;
+  b.disable = !canBuy();
   v.push_back(b);
 
   b.textures = Global::defCache["ICANCEL.DEF/0"];
@@ -106,6 +119,20 @@ static void drawBackGround() {
   FreeTypeSys::setColor(240, 224, 104, 255);
   FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
                           strPool[926 + (uint8_t)ObjectType::SHIPYARD]);
+
+  auto goldPic = Global::defCache["RESOURCE.def"][(uint8_t)Enum::RESTYPE::GOLD];
+  auto woodPic = Global::defCache["RESOURCE.def"][(uint8_t)Enum::RESTYPE::WOOD];
+
+  posRect = {leftUp.x + 100, leftUp.y + 244, static_cast<float>(goldPic->w),
+             static_cast<float>(goldPic->h)};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  posRect = {leftUp.x + 196, leftUp.y + 244, static_cast<float>(woodPic->w),
+             static_cast<float>(woodPic->h)};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  FreeTypeSys::drawCenter(leftUp.x + 118, leftUp.y + 294, goldValue);
+  FreeTypeSys::drawCenter(leftUp.x + 212, leftUp.y + 294, woodValue);
 }
 
 static void drawButton() {
