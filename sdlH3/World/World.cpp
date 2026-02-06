@@ -91,6 +91,7 @@
 #include "Sys/gui/building/Special20Sys.h"
 #include "Sys/gui/building/Special21Sys.h"
 #include "Window/Window.h"
+#include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include <algorithm>
 #include <cstdint>
@@ -178,31 +179,77 @@ void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
   }
 }
 
-void World::enterSpecBuild(uint8_t bId) {
-  enterScrn();
-  iterateSystems.pop_back();
-  switch (bId) {
-  case (uint8_t)TownCfg::Building::SPECIAL_10: {
-    iterateSystems.push_back(Special10Sys::run);
-    break;
-  }
-  case (uint8_t)TownCfg::Building::SPECIAL_18: {
-    iterateSystems.push_back(Special18Sys::run);
-    break;
-  }
-  case (uint8_t)TownCfg::Building::SPECIAL_19: {
-    iterateSystems.push_back(Special19Sys::run);
-    break;
-  }
-  case (uint8_t)TownCfg::Building::SPECIAL_20: {
-    iterateSystems.push_back(Special20Sys::run);
-    break;
-  }
-  case (uint8_t)TownCfg::Building::SPECIAL_21: {
-    iterateSystems.push_back(Special21Sys::run);
+void World::enterSpec10Build(uint8_t townId, entt::entity bEnt) {
+  switch (townId) {
+  case (uint8_t)TownCfg::Faction::CASTLE: {
+    enterTavern(entt::null, bEnt);
     break;
   }
   default: {
+    enterScrn();
+    iterateSystems.pop_back();
+    iterateSystems.push_back(Special10Sys::run);
+    iterateSystems.push_back(CursorSys::run);
+    break;
+  }
+  }
+}
+void World::enterSpec18Build(uint8_t townId, entt::entity bEnt) {
+  switch (townId) {
+  case (uint8_t)TownCfg::Faction::CASTLE: {
+    enterTavern(entt::null, bEnt);
+    break;
+  }
+  default: {
+    enterScrn();
+    iterateSystems.pop_back();
+    iterateSystems.push_back(Special18Sys::run);
+    iterateSystems.push_back(CursorSys::run);
+    break;
+  }
+  }
+}
+void World::enterSpec19Build(uint8_t townId, entt::entity bEnt) {
+  switch (townId) {
+  case (uint8_t)TownCfg::Faction::CASTLE: {
+    enterTavern(entt::null, bEnt);
+    break;
+  }
+  default: {
+    enterScrn();
+    iterateSystems.pop_back();
+    iterateSystems.push_back(Special19Sys::run);
+    iterateSystems.push_back(CursorSys::run);
+    break;
+  }
+  }
+}
+void World::enterSpec20Build(uint8_t townId, entt::entity bEnt) {
+  switch (townId) {
+  case (uint8_t)TownCfg::Faction::CASTLE: {
+    enterTavern(entt::null, bEnt);
+    break;
+  }
+  default: {
+    enterScrn();
+    iterateSystems.pop_back();
+    iterateSystems.push_back(Special20Sys::run);
+    iterateSystems.push_back(CursorSys::run);
+    break;
+  }
+  }
+}
+void World::enterSpec21Build(uint8_t townId, entt::entity bEnt) {
+  switch (townId) {
+  case (uint8_t)TownCfg::Faction::CASTLE: {
+    enterTavern(entt::null, bEnt);
+    break;
+  }
+  default: {
+    enterScrn();
+    iterateSystems.pop_back();
+    iterateSystems.push_back(Special21Sys::run);
+    iterateSystems.push_back(CursorSys::run);
     break;
   }
   }

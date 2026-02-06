@@ -11,6 +11,4 @@ struct TavernSys {
   static bool leftMouseUp(float x, float y);
   static bool rightMouseDown(float x, float y);
   static bool keyUp(uint16_t key);
-
-  static std::vector<Button> buttonInfo();
 };

@@ -34,4 +34,5 @@ struct TownSys {
   static std::vector<TownDweInc> townDweInc(uint8_t lvl, entt::entity townEnt,
                                             uint8_t bId);
   static uint32_t townDweNum(uint8_t lvl, entt::entity townEnt, uint8_t bId);
+  static uint8_t fortLevel(uint8_t lvl, entt::entity townEnt);
 };

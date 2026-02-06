@@ -54,6 +54,13 @@ static void drawBackGround() {
   posRect = {leftUp.x, leftUp.y, static_cast<float>(texture->w),
              static_cast<float>(texture->h)};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  auto fortLevel = TownSys::fortLevel(level, townEnt);
+  auto strPool = *Lang::strPool[Global::langIndex];
+  FreeTypeSys::setSize(17);
+  FreeTypeSys::setColor(240, 224, 104, 255);
+  FreeTypeSys::drawCenter(leftUp.x + 400, leftUp.y,
+                          strPool[3049 + fortLevel * 2]);
 }
 
 SDL_FRect slot7[] = {
@@ -107,19 +114,19 @@ static void draw() {
     auto creatureId = dComp.creatures.back().first.back();
     auto v = CreatureCfg::creatureAttr.at(creatureId);
 
-    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 4, v[2]);  // atk
-    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 24, v[3]); // def
-    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 45,
+    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 4, v[2]);  // atk
+    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 24, v[3]); // def
+    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 45,
                           FreeTypeSys::str(v[4]) + u"-" +
                               FreeTypeSys::str(v[5]));              // dmg
-    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 65, v[0]); // life
-    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 86, v[1]); // speed
+    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 65, v[0]); // life
+    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 86, v[1]); // speed
     auto iv = TownSys::townDweInc(level, townEnt, dwe.bId);
     uint32_t growth = 0;
     for (auto v : iv) {
       growth += v.num;
     }
-    FreeTypeSys::drawLeft(posRect2.x + 287, posRect2.y + 106,
+    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 106,
                           growth); // growth
 
     auto tStr = TownCfg::townBuildIcon[townComp->id].at(dwe.bId);
@@ -130,6 +137,10 @@ static void draw() {
 
     auto bStr = strPool[3043 + (int8_t)dwe.bId * 2];
     FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y + 90, bStr);
+
+    auto remainStr =
+        strPool[3797] + FreeTypeSys::str(dComp.creatures.back().second);
+    FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y + 108, remainStr);
 
     auto cStr = strPool[12 + creatureId];
     FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y, cStr);
@@ -173,10 +184,17 @@ static void fortAnimate() {
   }
 }
 
+static void drawResbar() {
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  AdvMapSys::drawResBar(leftUp.x + 3, leftUp.y + 575);
+}
+
 bool TownFortSys::run() {
   drawBackGround();
   draw();
   drawButton();
+  drawResbar();
   fortAnimate();
   return true;
 }

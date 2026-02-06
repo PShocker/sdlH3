@@ -5,6 +5,7 @@
 #include "Comp/TownComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
+#include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "Window/Window.h"
 #include "World/World.h"
@@ -57,13 +58,14 @@ static void drawBuildIcon() {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
-  auto buildings = townComp->buildings;
-  auto slots = TownCfg::townHallSlots[townComp->id];
+  auto &buildings = townComp->buildings;
+  auto &slots = TownCfg::townHallSlots[townComp->id];
   for (int row = 0; row < slots.size(); row++) {
-    for (int col = 0; col < slots[row].size(); col++) {
-      auto v = slots[row][col];
-      uint8_t bId = v.back();
-      for (auto i : v) {
+    auto &line = slots[row];
+    for (int col = 0; col < line.size(); col++) {
+      auto &slot = line[col];
+      uint8_t bId = slot.back();
+      for (auto i : slot) {
         if (!buildings.contains(i)) {
           bId = i;
           break;
@@ -71,12 +73,43 @@ static void drawBuildIcon() {
       }
       auto tStr = TownCfg::townBuildIcon[townComp->id].at(bId);
       auto texture = Global::pcxCache[tStr][0];
-      float posX = 402 - (float)slots[row].size() * 154 / 2 -
-                   (slots[row].size() - 1) * 20 + 194 * col;
+      float posX = 402 - (float)line.size() * 154 / 2 - (line.size() - 1) * 20 +
+                   194 * col;
       float posY = 37 + 104 * (int)row;
       posRect = {leftUp.x + static_cast<float>(posX),
                  leftUp.y + static_cast<float>(posY), 150, 70};
       SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+      auto textures = Global::defCache["TPTHBAR.def/0"];
+      if (buildings.contains(bId)) {
+        texture = textures[0];
+      } else if (townComp->forbidBuildings.contains(bId)) {
+        texture = textures[3];
+      } else if (townComp->hasBuild) {
+        texture = textures[2];
+      } else {
+        auto buildCost = TownCfg::townBuildCost[townComp->id].at(bId);
+        auto resource = Global::resources[Global::playerId];
+        uint8_t canBuy = 0;
+        for (uint8_t i = 0; i < resource.size(); i++) {
+          if (resource[i] >= buildCost[i]) {
+            canBuy++;
+          }
+        }
+        if (canBuy == resource.size()) {
+          texture = textures[1];
+        } else {
+          texture = textures[2];
+        }
+      }
+      posRect = {leftUp.x + static_cast<float>(posX) - 1,
+                 leftUp.y + static_cast<float>(posY) + 71,
+                 static_cast<float>(texture->w),
+                 static_cast<float>(texture->h)};
+      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+      auto strPool = *Lang::strPool[Global::langIndex];
+      auto bStr = strPool[3043 + (int8_t)bId * 2];
     }
   }
 }

@@ -105,7 +105,7 @@ struct TownCfg {
   };
 
   const static inline std::vector<uint8_t> townForceVisit[] = {
-      { (uint8_t)Building::SPECIAL_10},
+      {(uint8_t)Building::SPECIAL_10},
       {},
   };
 
@@ -240,6 +240,9 @@ struct TownCfg {
                {10, 0, 0, 0, 0, 0, 3000}},
               {(uint8_t)Building::DWELLING_UPGRADE_LEVEL_7,
                {0, 10, 0, 10, 10, 10, 20000}},
+
+              {(uint8_t)Building::HORDE_1, {0, 10, 0, 10, 10, 10, 20000}},
+              {(uint8_t)Building::HORDE_2, {0, 10, 0, 10, 10, 10, 20000}},
           },
 
           // 1 - 壁垒 (Rampart)

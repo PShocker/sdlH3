@@ -589,6 +589,7 @@ uint8_t CursorSys::astar(bool click) {
 
     // 点击
     if (click) {
+      // SDL_Log("click");
       // 如果英雄移动中点击左键
       if (heroComp->move) {
         return index;

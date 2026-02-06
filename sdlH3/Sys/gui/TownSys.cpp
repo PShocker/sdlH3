@@ -82,7 +82,7 @@ static void showBuildComfirm(uint8_t lvl, entt::entity townEnt, uint8_t bId,
   World::enterConfirm(confirmbakW, confirmbakH, confirmType);
 }
 
-static uint8_t fortLevel(uint8_t lvl, entt::entity townEnt) {
+uint8_t TownSys::fortLevel(uint8_t lvl, entt::entity townEnt) {
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto &buildings = townComp->buildings;
@@ -444,7 +444,7 @@ static void drawTownInfo() {
                        static_cast<float>(texture->h)};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
-  auto fLevel = fortLevel(level, townEnt);
+  auto fLevel = TownSys::fortLevel(level, townEnt);
   if (fLevel != 0xff) {
     textures = Global::defCache["itmcl.def/0"];
     texture = textures[fLevel];
@@ -712,7 +712,7 @@ static void drawBottomInfo() {
     if (SDL_PointInRectFloat(&point, &posRect)) {
       s = strPool[2862];
     }
-    auto fLevel = fortLevel(level, townEnt);
+    auto fLevel = TownSys::fortLevel(level, townEnt);
     if (fLevel != 0xff) {
       posRect = {leftUp.x + 122, leftUp.y + 413, 38, 38};
       if (SDL_PointInRectFloat(&point, &posRect)) {
@@ -1089,7 +1089,35 @@ static void clickMageGuild(uint8_t clickType) {
 static void clickSpecial(uint8_t clickType) {
   auto buildId = mouseBuildId.value();
   if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
-    World::enterSpecBuild(buildId);
+    auto [level, townEnt] = Global::townScnPair;
+    auto &registry = World::registrys[level];
+    auto townComp = &registry.get<TownComp>(townEnt);
+    auto bEnt = townComp->buildings[buildId];
+    switch (buildId) {
+    case (uint8_t)TownCfg::Building::SPECIAL_10: {
+      World::enterSpec10Build(townComp->id, bEnt);
+      break;
+    }
+    case (uint8_t)TownCfg::Building::SPECIAL_18: {
+      World::enterSpec18Build(townComp->id, bEnt);
+      break;
+    }
+    case (uint8_t)TownCfg::Building::SPECIAL_19: {
+      World::enterSpec19Build(townComp->id, bEnt);
+      break;
+    }
+    case (uint8_t)TownCfg::Building::SPECIAL_20: {
+      World::enterSpec20Build(townComp->id, bEnt);
+      break;
+    }
+    case (uint8_t)TownCfg::Building::SPECIAL_21: {
+      World::enterSpec21Build(townComp->id, bEnt);
+      break;
+    }
+    default: {
+      break;
+    }
+    }
   } else {
     auto [level, townEnt] = Global::townScnPair;
     showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
@@ -1420,7 +1448,7 @@ static bool clickTownInfo(uint8_t clickType) {
     } else {
     }
   }
-  auto fLevel = fortLevel(level, townEnt);
+  auto fLevel = TownSys::fortLevel(level, townEnt);
   if (fLevel != 0xff) {
     posRect = {leftUp.x + 122, leftUp.y + 413, 38, 38};
     if (SDL_PointInRectFloat(&point, &posRect)) {

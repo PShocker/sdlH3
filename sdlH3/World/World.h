@@ -60,7 +60,11 @@ struct World {
   static void enterPuzzle(entt::entity goalEnt);
   static void enterSplitCre();
   static void enterViewWorld();
-  static void enterSpecBuild(uint8_t bId);
+  static void enterSpec10Build(uint8_t townId, entt::entity bEnt);
+  static void enterSpec18Build(uint8_t townId, entt::entity bEnt);
+  static void enterSpec19Build(uint8_t townId, entt::entity bEnt);
+  static void enterSpec20Build(uint8_t townId, entt::entity bEnt);
+  static void enterSpec21Build(uint8_t townId, entt::entity bEnt);
   static void enterMageGuild(uint8_t level, entt::entity ent);
   static void enterVideo(const std::string &path, float x, float y);
 

@@ -26,9 +26,6 @@ static std::vector<Button> buttonInfo() {
   auto id = townComp->id;
   std::vector<Button> v;
   switch (id) {
-  case (uint8_t)TownCfg::Faction::CASTLE: {
-    return TavernSys::buttonInfo();
-  }
   default: {
     auto [bakW, bakH] = bakWH();
 
