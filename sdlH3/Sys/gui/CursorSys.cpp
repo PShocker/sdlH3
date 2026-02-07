@@ -586,16 +586,10 @@ uint8_t CursorSys::astar(bool click) {
     } else if (heroComp->moveType == HeroComp::HORSE) {
       index = (uint8_t)Enum::CRADVNTR::T1_MOVE + day * 6;
     }
-
     // 点击
     if (click) {
-      // SDL_Log("click");
-      // 如果英雄移动中点击左键
-      if (heroComp->move) {
-        return index;
-      }
       // 检查现有路径是否已到达目标
-      else if (!heroComp->pathEnts.empty()) {
+      if (!heroComp->pathEnts.empty()) {
         auto lastPathEnt =
             heroComp->pathEnts.back(); // 使用back()获取最后一个元素
         if (auto pathPoint = &registry.get<PositionComp>(lastPathEnt)) {
@@ -610,7 +604,7 @@ uint8_t CursorSys::astar(bool click) {
         }
       }
       // 清理现有路径
-      for (auto pathEnt : heroComp->pathEnts) {
+      for (auto &pathEnt : heroComp->pathEnts) {
         registry.destroy(pathEnt);
       }
       World::needSort = true;
@@ -777,7 +771,8 @@ bool CursorSys::run() {
 static bool heroStop = false;
 
 bool CursorSys::leftMouseUp(float x, float y) {
-  if (Global::cursorType == (uint8_t)Enum::CURSOR::SPELL) {
+  switch (Global::cursorType) {
+  case (uint8_t)Enum::CURSOR::SPELL: {
     if (x + Global::viewPort.x < 0 || y + Global::viewPort.y < 0 ||
         x + Global::viewPort.x >= Global::mapSize * 32 ||
         y + Global::viewPort.y >= Global::mapSize * 32) {
@@ -908,7 +903,8 @@ bool CursorSys::leftMouseUp(float x, float y) {
       break;
     }
     return false;
-  } else if (Global::cursorType == (uint8_t)Enum::CURSOR::ADVENTURE) {
+  }
+  case (uint8_t)Enum::CURSOR::ADVENTURE: {
     if (heroStop) {
       heroStop = false;
       return false;
@@ -920,6 +916,8 @@ bool CursorSys::leftMouseUp(float x, float y) {
         index != (uint8_t)Enum::CRADVNTR::POINTER) {
       return false;
     }
+    break;
+  }
   }
   return true;
 }

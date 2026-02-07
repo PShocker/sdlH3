@@ -1205,6 +1205,7 @@ entt::entity Ent::loadBoat(const std::string &path, uint8_t x, uint8_t y,
 
   return loadObj(object, 0);
 }
+
 void Ent::loadPath(std::vector<SDL_Point> &path, entt::entity heroEnt,
                    uint16_t indexCost) {
 
