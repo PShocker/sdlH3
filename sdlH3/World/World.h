@@ -66,6 +66,7 @@ struct World {
   static void enterSpec20Build(uint8_t townId, entt::entity bEnt);
   static void enterSpec21Build(uint8_t townId, entt::entity bEnt);
   static void enterMageGuild(uint8_t level, entt::entity ent);
+  static void enterTownBuild(uint8_t bId);
   static void enterVideo(const std::string &path, float x, float y);
 
   static void enterTreasure(entt::entity heroEnt, entt::entity goalEnt);

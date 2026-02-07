@@ -231,14 +231,14 @@ void loadPcx() {
   };
   const auto loadPal = []() {
     const std::vector<std::string> filePaths = {
-        "TPCASTL8.pcx", "TPCASTL7.pcx", "TPTHBKCS.pcx", "GPuCrdiv.pcx",
-        "TPGATE.pcx",   "OvCast.pcx",   "TPMrkCrS.pcx", "ALTRART2.pcx",
-        "ALTARMON.pcx", "TPMrkReS.pcx", "TPMrkPtS.pcx", "TPMrkAbS.pcx",
-        "TPMrkAsS.pcx", "APHLFTBK.PCX", "AdvMap.pcx",   "AResBar.pcx",
-        "Sysopbck.pcx", "SpelBack.pcx", "ADVOPTS.pcx",  "TPrcrt.pcx",
-        "GARRISON.PCX", "HeroScr4.pcx", "Trade2.pcx",   "TPSHIP.PCX",
-        "townScrn.pcx", "TpTavern.pcx", "CrStkPu.pcx",  "lvlupbkg.pcx",
-        "UNIVERS1.PCX", "UNIVERS2.PCX"};
+        "TPUBUILD.pcx", "TPCASTL8.pcx", "TPCASTL7.pcx", "TPTHBKCS.pcx",
+        "GPuCrdiv.pcx", "TPGATE.pcx",   "OvCast.pcx",   "TPMrkCrS.pcx",
+        "ALTRART2.pcx", "ALTARMON.pcx", "TPMrkReS.pcx", "TPMrkPtS.pcx",
+        "TPMrkAbS.pcx", "TPMrkAsS.pcx", "APHLFTBK.PCX", "AdvMap.pcx",
+        "AResBar.pcx",  "Sysopbck.pcx", "SpelBack.pcx", "ADVOPTS.pcx",
+        "TPrcrt.pcx",   "GARRISON.PCX", "HeroScr4.pcx", "Trade2.pcx",
+        "TPSHIP.PCX",   "townScrn.pcx", "TpTavern.pcx", "CrStkPu.pcx",
+        "lvlupbkg.pcx", "UNIVERS1.PCX", "UNIVERS2.PCX"};
     for (auto filePath : filePaths) {
       Pcx pcx("./Data/H3bitmap.lod/" + filePath);
       std::vector<SDL_Texture *> v;

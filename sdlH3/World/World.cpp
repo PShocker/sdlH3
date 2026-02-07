@@ -70,6 +70,7 @@
 #include "Sys/gui/StarAxisSys.h"
 #include "Sys/gui/TavernSys.h"
 #include "Sys/gui/TempleSys.h"
+#include "Sys/gui/TownBuildSys.h"
 #include "Sys/gui/TownFortSys.h"
 #include "Sys/gui/TownHallSys.h"
 #include "Sys/gui/TownPortalSys.h"
@@ -779,6 +780,20 @@ void World::enterMageGuild(uint8_t level, entt::entity ent) {
   Global::townScnPair = {level, ent};
   Global::goalIndex = 0xff;
   Global::townScnIndex = 0xff;
+
+  Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+}
+
+void World::enterTownBuild(uint8_t bId){
+  enterScrn();
+  iterateSystems.pop_back();
+  iterateSystems.push_back(TownBuildSys::run);
+  iterateSystems.push_back(CursorSys::run);
+
+  LMouseUpSys.push_back(TownBuildSys::leftMouseUp);
+  keyUpSys.push_back(TownBuildSys::keyUp);
+
+  Global::townBuildBid = bId;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }

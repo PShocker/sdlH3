@@ -175,6 +175,8 @@ struct Global {
 
   static inline uint8_t viewWorldScale;
 
+  static inline uint8_t townBuildBid;
+
   static inline std::vector<Audio> audioData;
   static inline SDL_AudioStream *audio;
 
