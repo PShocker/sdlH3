@@ -43,17 +43,21 @@ static void buy() {
 
   auto now = Window::dtNow;
   Global::fadeCallBack = [now, townComp, leftUp]() {
-    if (Window::dtNow >= now + 1500) {
-      return true;
-    }
-
     auto build = Global::townBuildBid;
     auto townPoint = TownCfg::townPoint[townComp->id].at(build);
     auto texture =
         Global::pcxCache[TownCfg::townBorder[townComp->id].at(build)][0];
+    if (Window::dtNow >= now + 2000) {
+      SDL_SetTextureAlphaModFloat(texture, 1);
+      return true;
+    }
     SDL_FRect posRect = {leftUp.x + townPoint.x, leftUp.y + townPoint.y,
                          static_cast<float>(texture->w),
                          static_cast<float>(texture->h)};
+    float t = (Window::dtNow % 1000) / 1000.0f; // 1秒周期
+    // 产生渐变色
+    float top = 1.0f - fabsf(2.0f * t - 1.0f);
+    SDL_SetTextureAlphaModFloat(texture, top);
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
     return false;
   };
