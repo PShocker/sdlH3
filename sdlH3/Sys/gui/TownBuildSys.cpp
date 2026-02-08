@@ -11,9 +11,13 @@
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
+#include "SDL3/SDL_render.h"
 #include "Sys/FreeTypeSys.h"
+#include "Sys/gui/CursorSys.h"
+#include "TownSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
+#include <cstdint>
 #include <string>
 
 static void close() { World::exitScrn(); }
@@ -22,10 +26,37 @@ static void buy() {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
-  townComp->buildings[Global::townBuildBid] =
-      Ent::loadBuild(level, townEnt, Global::townBuildBid);
   World::exitScrn();
   World::exitScrn();
+  World::iterateSystemsBak.push_back(World::iterateSystems);
+
+  World::iterateSystems.push_back([=]() {
+    townComp->buildings[Global::townBuildBid] =
+        Ent::loadBuild(level, townEnt, Global::townBuildBid);
+    return true;
+  });
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+
+  Global::fadeRect = {leftUp.x, leftUp.y, 800, 600};
+  World::iterateSystems.push_back(World::enterFadeScrn);
+
+  auto now = Window::dtNow;
+  Global::fadeCallBack = [now, townComp, leftUp]() {
+    if (Window::dtNow >= now + 1500) {
+      return true;
+    }
+
+    auto build = Global::townBuildBid;
+    auto townPoint = TownCfg::townPoint[townComp->id].at(build);
+    auto texture =
+        Global::pcxCache[TownCfg::townBorder[townComp->id].at(build)][0];
+    SDL_FRect posRect = {leftUp.x + townPoint.x, leftUp.y + townPoint.y,
+                         static_cast<float>(texture->w),
+                         static_cast<float>(texture->h)};
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    return false;
+  };
 }
 
 static std::vector<Button> buttonInfo() {
@@ -101,7 +132,7 @@ static void drawBackGround() {
 
 static void drawBuild() {
   SDL_FRect posRect;
- SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
+  SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
                     (Global::viewPort.h - 521) / 2};
   auto texture = Global::defCache["imrl82.def/0"][4];
   //   posRect = {leftUp.x + morPosition.x, leftUp.y + morPosition.y,
