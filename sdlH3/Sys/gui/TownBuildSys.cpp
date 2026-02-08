@@ -1,7 +1,10 @@
 #include "TownBuildSys.h"
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
+#include "Cfg/TownCfg.h"
 #include "Comp/TempleComp.h"
+#include "Comp/TownComp.h"
+#include "Ent/Ent.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
@@ -11,21 +14,33 @@
 #include "Sys/FreeTypeSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
-
-static float bakW = 450;
-static float bakH = 340;
+#include <string>
 
 static void close() { World::exitScrn(); }
 
-static void buy() { World::exitScrn(); }
+static void buy() {
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  townComp->buildings[Global::townBuildBid] =
+      Ent::loadBuild(level, townEnt, Global::townBuildBid);
+  World::exitScrn();
+  World::exitScrn();
+}
 
 static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
   Button b;
 
-  b.textures = Global::defCache["iOKAY.def/0"];
-  b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+  b.textures = Global::defCache["IBUY30.DEF/0"];
+  b.r = {45, 446, 64, 30};
   b.func = buy;
+  b.disable = false;
+  v.push_back(b);
+
+  b.textures = Global::defCache["ICANCEL.DEF/0"];
+  b.r = {290, 445, 64, 30};
+  b.func = close;
   b.disable = false;
   v.push_back(b);
 
@@ -36,10 +51,44 @@ static void drawBackGround() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
                     (Global::viewPort.h - 521) / 2};
+
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+
   auto texture = Global::pcxCache["TPUBUILD.pcx"][Global::playerId];
   posRect = {leftUp.x, leftUp.y, 395, 521};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
+  auto strPool = *Lang::strPool[Global::langIndex];
+  FreeTypeSys::setSize(17);
+  FreeTypeSys::setColor(240, 224, 104, 255);
+  auto titleStr =
+      strPool[3799] + strPool[3043 + (int8_t)Global::townBuildBid * 2];
+  FreeTypeSys::drawCenter(leftUp.x + 395 / 2, leftUp.y + 15, titleStr);
+
+  FreeTypeSys::setSize(13);
+  FreeTypeSys::setColor(248, 240, 216, 255);
+  auto title2Str = strPool[3044 + (int8_t)Global::townBuildBid * 2];
+  FreeTypeSys::drawCenter(leftUp.x + 395 / 2, leftUp.y + 150, title2Str);
+
+  std::u16string title3Str;
+  if (townComp->buildings.contains(Global::townBuildBid)) {
+    title3Str =
+        strPool[3800] + strPool[3043 + (int8_t)Global::townBuildBid * 2];
+  } else {
+
+    title3Str = strPool[3803];
+  }
+  FreeTypeSys::drawCenter(leftUp.x + 395 / 2, leftUp.y + 230, title3Str);
+
+  auto tStr = TownCfg::townBuildIcon[townComp->id].at(Global::townBuildBid);
+  texture = Global::pcxCache[tStr][0];
+  posRect = {leftUp.x + 125, leftUp.y + 50, static_cast<float>(texture->w),
+             static_cast<float>(texture->h)};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
+  SDL_RenderRect(Window::renderer, &posRect);
   //   auto strPool = *Lang::strPool[Global::langIndex];
   //   FreeTypeSys::setSize(13);
   //   FreeTypeSys::setColor(240, 224, 104, 255);
@@ -52,8 +101,8 @@ static void drawBackGround() {
 
 static void drawBuild() {
   SDL_FRect posRect;
-  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                    Global::viewPort.h / 2 - bakH / 2};
+ SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
+                    (Global::viewPort.h - 521) / 2};
   auto texture = Global::defCache["imrl82.def/0"][4];
   //   posRect = {leftUp.x + morPosition.x, leftUp.y + morPosition.y,
   //   morPosition.w,
@@ -64,8 +113,8 @@ static void drawBuild() {
 }
 
 static void drawButton() {
-  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                    Global::viewPort.h / 2 - bakH / 2};
+  SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
+                    (Global::viewPort.h - 521) / 2};
   auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == TownBuildSys::run);
@@ -80,8 +129,8 @@ bool TownBuildSys::run() {
 }
 
 bool TownBuildSys::leftMouseUp(float x, float y) {
-  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                    Global::viewPort.h / 2 - bakH / 2};
+  SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
+                    (Global::viewPort.h - 521) / 2};
   auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 

@@ -83,14 +83,46 @@ static void draw() {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto dweSize = TownSys::townDweBuilds(level, townEnt).size();
-  SDL_FRect *slotPtr;
-  if (dweSize == 7) {
-    slotPtr = slot7;
-  } else {
-    slotPtr = slot8;
-  }
   auto dwes = TownSys::townDweBuilds(level, townEnt);
-  for (uint8_t i = 0; i < dweSize; i++) {
+  SDL_FRect *slotPtr = slot7;
+  uint8_t spBid;
+  for (auto d : dwes) {
+    if (d.bId == (uint8_t)TownCfg::Building::SPECIAL_10 ||
+        d.bId == (uint8_t)TownCfg::Building::SPECIAL_18 ||
+        d.bId == (uint8_t)TownCfg::Building::SPECIAL_19 ||
+        d.bId == (uint8_t)TownCfg::Building::SPECIAL_20 ||
+        d.bId == (uint8_t)TownCfg::Building::SPECIAL_21) {
+      slotPtr = slot8;
+      spBid = d.bId;
+      break;
+    }
+  }
+  for (uint8_t i = 0; i < 8; i++) {
+    auto bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1 + i * 3;
+    if (i > 4) {
+      bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6 + (i - 5) * 2;
+    }
+    uint16_t creatureId;
+    if (i == 7) {
+      if (slotPtr == slot8) {
+        bId = spBid;
+        auto dComp = registry.get<DwellingComp>(townComp->buildings[bId]);
+        creatureId = dComp.creatures.back().first.back();
+      } else {
+        break;
+      }
+    } else if (townComp->buildings.contains(bId)) {
+      creatureId = TownCfg::townCreature[townComp->id][i][1];
+    } else {
+      creatureId = TownCfg::townCreature[townComp->id][i][0];
+      bId = bId - 1;
+    }
+
+    bool hasBuild = false;
+    if (townComp->buildings.contains(bId) ||
+        townComp->buildings.contains(bId - 1)) {
+      hasBuild = true;
+    }
     SDL_FRect posRect2 = {leftUp.x + slotPtr[i].x, leftUp.y + slotPtr[i].y,
                           slotPtr[i].w, slotPtr[i].h};
     auto texture = Global::pcxCache["TPCAINFO.pcx"][0];
@@ -109,11 +141,7 @@ static void draw() {
     FreeTypeSys::draw(posRect2.x + 287, posRect2.y + 86, strPool[2343]);
     FreeTypeSys::draw(posRect2.x + 287, posRect2.y + 106, strPool[2344]);
 
-    auto dwe = dwes[i];
-    auto dComp = registry.get<DwellingComp>(dwe.ent);
-    auto creatureId = dComp.creatures.back().first.back();
     auto v = CreatureCfg::creatureAttr.at(creatureId);
-
     FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 4, v[2]);  // atk
     FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 24, v[3]); // def
     FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 45,
@@ -121,26 +149,15 @@ static void draw() {
                               FreeTypeSys::str(v[5]));              // dmg
     FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 65, v[0]); // life
     FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 86, v[1]); // speed
-    auto iv = TownSys::townDweInc(level, townEnt, dwe.bId);
-    uint32_t growth = 0;
-    for (auto v : iv) {
-      growth += v.num;
-    }
-    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 106,
-                          growth); // growth
 
-    auto tStr = TownCfg::townBuildIcon[townComp->id].at(dwe.bId);
+    auto bStr = strPool[3043 + (int8_t)bId * 2];
+    FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y + 90, bStr);
+
+    auto tStr = TownCfg::townBuildIcon[townComp->id].at(bId);
     texture = Global::pcxCache[tStr][0];
     posRect = {posRect2.x + 4, posRect2.y + 21, static_cast<float>(texture->w),
                static_cast<float>(texture->h)};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-
-    auto bStr = strPool[3043 + (int8_t)dwe.bId * 2];
-    FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y + 90, bStr);
-
-    auto remainStr =
-        strPool[3797] + FreeTypeSys::str(dComp.creatures.back().second);
-    FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y + 108, remainStr);
 
     auto cStr = strPool[12 + creatureId];
     FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y, cStr);
@@ -149,23 +166,66 @@ static void draw() {
     auto index = Global::townFortFrameIndex[i];
     DwellingSys::drawCreatureBak2(posRect2.x + 159, posRect2.y + 4, creatureId,
                                   group, index, 0xff);
+
+    if (hasBuild) {
+      auto iv = TownSys::townDweInc(level, townEnt, bId);
+      uint32_t growth = 0;
+      for (auto v : iv) {
+        growth += v.num;
+      }
+      FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 106,
+                            growth); // growth
+
+      auto dComp = registry.get<DwellingComp>(townComp->buildings[bId]);
+      auto remainStr =
+          strPool[3797] + FreeTypeSys::str(dComp.creatures.back().second);
+      FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y + 108, remainStr);
+    }
   }
 }
 
 static void fortAnimate() {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
-  auto dweSize = TownSys::townDweBuilds(level, townEnt).size();
-  for (uint8_t i = 0; i < dweSize; i++) {
+
+  uint8_t spBid = 0;
+  auto dwes = TownSys::townDweBuilds(level, townEnt);
+  for (auto d : dwes) {
+    if (d.bId == (uint8_t)TownCfg::Building::SPECIAL_10 ||
+        d.bId == (uint8_t)TownCfg::Building::SPECIAL_18 ||
+        d.bId == (uint8_t)TownCfg::Building::SPECIAL_19 ||
+        d.bId == (uint8_t)TownCfg::Building::SPECIAL_20 ||
+        d.bId == (uint8_t)TownCfg::Building::SPECIAL_21) {
+      spBid = d.bId;
+      break;
+    }
+  }
+
+  for (uint8_t i = 0; i < 8; i++) {
     Global::townFortFrameTime[i] += Window::deltaTime;
     if (Global::townFortFrameTime[i] >= 90) {
       Global::townFortFrameTime[i] = 0;
       Global::townFortFrameIndex[i] += 1;
 
-      auto dwes = TownSys::townDweBuilds(level, townEnt);
-      auto dwe = dwes[i];
-      auto dComp = registry.get<DwellingComp>(dwe.ent);
-      auto creatureId = dComp.creatures.back().first.back();
+      auto bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1 + i * 3;
+      if (i > 4) {
+        bId =
+            (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6 + (i - 5) * 2;
+      }
+      uint16_t creatureId;
+      auto townComp = &registry.get<TownComp>(townEnt);
+      if (i == 7) {
+        if (spBid != 0) {
+          auto dComp = registry.get<DwellingComp>(townComp->buildings[bId]);
+          creatureId = dComp.creatures.back().first.back();
+        } else {
+          break;
+        }
+      } else if (townComp->buildings.contains(bId)) {
+        creatureId = TownCfg::townCreature[townComp->id][i][1];
+      } else {
+        creatureId = TownCfg::townCreature[townComp->id][i][0];
+      }
 
       auto group = Global::townFortGroup[i];
 
@@ -174,7 +234,7 @@ static void fortAnimate() {
                            std::to_string(group)];
       if (Global::townFortFrameIndex[i] >= textures.size()) {
         Global::townFortFrameIndex[i] = 0;
-        int arr[] = {0, 2, 3, 4};
+        int arr[] = {0, 2, 3, 4, 11};
         std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
         // 生成随机索引并选择元素
         int randomIndex = distrib(Global::gen);

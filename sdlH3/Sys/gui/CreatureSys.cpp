@@ -155,7 +155,7 @@ static void creAnimate() {
                                      "/" + std::to_string(group)];
     if (Global::creFrameIndex >= textures.size()) {
       Global::creFrameIndex = 0;
-      int arr[] = {0, 2, 3, 4};
+      int arr[] = {0, 2, 3, 4, 11};
       std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
       // 生成随机索引并选择元素
       int randomIndex = distrib(Global::gen);

@@ -277,6 +277,10 @@ void World::enterTownFort() {
 
   LMouseUpSys.push_back(TownFortSys::leftMouseUp);
 
+  Global::townFortFrameIndex = {};
+  Global::townFortFrameTime = {};
+  Global::townFortGroup = {};
+
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
@@ -381,6 +385,8 @@ void World::enterSplitCre() {
   keyUpSys.push_back(SpliteCreSys::keyUp);
 
   Global::splitSliderNum = Global::splitCre[1]->second + 1;
+  Global::splitFrameIndex = 0;
+  Global::splitFrameTime = 0;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
@@ -784,7 +790,7 @@ void World::enterMageGuild(uint8_t level, entt::entity ent) {
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
-void World::enterTownBuild(uint8_t bId){
+void World::enterTownBuild(uint8_t bId) {
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(TownBuildSys::run);
@@ -1375,6 +1381,9 @@ void World::enterCreature(std::pair<uint8_t, uint16_t> crePair,
 
   Global::creType = creType;
   Global::crePair = crePair;
+
+  Global::creFrameIndex = 0;
+  Global::creFrameTime = 0;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
