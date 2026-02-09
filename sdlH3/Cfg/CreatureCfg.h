@@ -1705,6 +1705,7 @@ struct CreatureCfg {
     ACTION_GET_HIT = 3,
     ACTION_DEFEND = 4,
     ACTION_ATTCK = 11,
+    ACTION_SHOOT_UP = 11,
     ACTION_START_MOVE = 20,
     ACTION_STOP_MOVE = 21,
   };

@@ -104,19 +104,37 @@ static void drawButton() {
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
 }
 
-static void warAnimate(uint64_t &warFrameTime, uint64_t &warFrameIndex,
-                       uint64_t &warGroup, uint16_t warId) {
-  Global::creFrameTime += Window::deltaTime;
-  if (Global::creFrameTime >= 90) {
-    Global::creFrameTime = 0;
-    Global::creFrameIndex += 1;
-    // if (condition) {
-    // }
+void WarMachineSys::warAnimate(uint64_t &warFrameTime, uint64_t &warFrameIndex,
+                               uint64_t &warGroup, uint16_t warId) {
+
+  warFrameTime += Window::deltaTime;
+  if (warFrameTime >= 90) {
+    warFrameTime = 0;
+    warFrameIndex += 1;
+
+    auto textures =
+        Global::defCache[WarMachineCfg::warMachineGraphics.at(warId) + "/" +
+                         std::to_string(warGroup)];
+    if (warFrameIndex >= textures.size()) {
+      warFrameIndex = 0;
+      std::vector<uint8_t> arr;
+      arr = {
+          CreatureCfg::ACTION_SHOOT_UP,
+          CreatureCfg::ACTION_DEFEND,
+          CreatureCfg::ACTION_STAND,
+          CreatureCfg::ACTION_GET_HIT,
+      };
+      std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
+      // 生成随机索引并选择元素
+      int randomIndex = distrib(Global::gen);
+      warGroup = arr[randomIndex];
+    }
   }
 }
 
 bool WarMachineSys::run() {
-  warAnimate();
+  warAnimate(Global::creFrameTime, Global::creFrameIndex, Global::creGroup,
+             Global::crePair.first);
   drawBackGround();
   drawMachine();
   drawButton();

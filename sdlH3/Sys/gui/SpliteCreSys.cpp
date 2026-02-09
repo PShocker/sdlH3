@@ -75,13 +75,13 @@ static void drawCreatures() {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
   auto id = Global::splitCre[0]->first;
-  auto group = 0;
+  auto group = Global::splitGroup;
   auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) + "/" +
                                    std::to_string(group)];
   DwellingSys::drawCreatureBak(leftUp.x + 20, leftUp.y + 54, id, group,
-                               Global::splitFrameIndex % textures.size(), 0);
+                               Global::splitFrameIndex % textures.size(), 0xff);
   DwellingSys::drawCreatureBak(leftUp.x + 177, leftUp.y + 54, id, group,
-                               Global::splitFrameIndex % textures.size(), 0);
+                               Global::splitFrameIndex % textures.size(), 0xff);
 }
 
 static void drawButton() {

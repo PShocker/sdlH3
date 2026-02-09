@@ -38,7 +38,7 @@ static void buy() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
 
-  Global::fadeRect = {leftUp.x, leftUp.y, 800, 600};
+  Global::fadeRect = {leftUp.x, leftUp.y, 800, 226};
   World::iterateSystems.push_back(World::enterFadeScrn);
 
   auto now = Window::dtNow;

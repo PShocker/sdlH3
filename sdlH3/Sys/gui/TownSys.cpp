@@ -741,19 +741,7 @@ static void drawCres() {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
-  uint8_t spBid = 0;
-  auto dwes = TownSys::townDweBuilds(level, townEnt);
-  for (auto d : dwes) {
-    if (d.bId == (uint8_t)TownCfg::Building::SPECIAL_10 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_18 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_19 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_20 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_21) {
-      spBid = d.bId;
-      break;
-    }
-  }
-
+  auto builds = TownSys::townDweBuilds(level, townEnt);
   const SDL_FRect posRects[] = {
       // 第一行（i = 0, 1, 2）
       {static_cast<float>(22), static_cast<float>(459), 32, 32},
@@ -765,39 +753,21 @@ static void drawCres() {
       {static_cast<float>(77), static_cast<float>(507), 32, 32},
       {static_cast<float>(132), static_cast<float>(507), 32, 32},
       {static_cast<float>(187), static_cast<float>(507), 32, 32}};
-
-  for (uint8_t i = 0; i < 8; i++) {
-    auto bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1 + i * 3;
-    if (i > 4) {
-      bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6 + (i - 5) * 2;
-    }
-    uint16_t creatureId;
-    auto townComp = &registry.get<TownComp>(townEnt);
-    if (i == 7) {
-      if (spBid != 0) {
-        auto dComp = registry.get<DwellingComp>(townComp->buildings[bId]);
-        creatureId = dComp.creatures.back().first.back();
-      } else {
-        break;
-      }
-    } else if (townComp->buildings.contains(bId)) {
-      creatureId = TownCfg::townCreature[townComp->id][i][1];
-    } else if (townComp->buildings.contains(bId - 1)) {
-      creatureId = TownCfg::townCreature[townComp->id][i][0];
-    } else {
-      continue;
-    }
+  uint8_t i = 0;
+  for (auto &dwe : builds) {
+    auto dComp = registry.get<DwellingComp>(dwe.ent);
+    auto creatureId = dComp.creatures.back().first.back() + 2;
     auto textures = Global::defCache["CPRSMALL.def/0"];
     auto texture = textures[creatureId];
     posRect = posRects[i];
     posRect.x += leftUp.x;
     posRect.y += leftUp.y;
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-    auto dComp = registry.get<DwellingComp>(townComp->buildings[bId]);
     auto num = dComp.creatures.back().second;
     FreeTypeSys::setSize(13);
     FreeTypeSys::setColor(255, 255, 255, 255);
     FreeTypeSys::drawCenter(posRect.x + 16, posRect.y + 40, num);
+    i++;
   }
 }
 
@@ -935,7 +905,7 @@ static void heroSwap() {
   townComp->heroEnt[1] = h0;
 }
 
-static void clickCres(uint8_t clickType) {
+static bool clickCres(uint8_t clickType) {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
   SDL_FPoint point = {static_cast<float>(static_cast<int>(Window::mouseX)),
@@ -956,8 +926,8 @@ static void clickCres(uint8_t clickType) {
       {static_cast<float>(77), static_cast<float>(507), 32, 32},
       {static_cast<float>(132), static_cast<float>(507), 32, 32},
       {static_cast<float>(187), static_cast<float>(507), 32, 32}};
-  uint8_t i = 0;
-  for (auto &dwe : builds) {
+  for (uint8_t i = 0; i < builds.size(); i++) {
+    auto &dwe = builds[i];
     auto dComp = registry.get<DwellingComp>(dwe.ent);
     auto creatureId = dComp.creatures.back().first.back() + 2;
     posRect = posRects[i];
@@ -1028,9 +998,10 @@ static void clickCres(uint8_t clickType) {
         World::enterConfirm(confirmbakW, confirmbakH,
                             (uint8_t)Enum::SCNTYPE::POP);
       }
+      return true;
     }
-    i++;
   }
+  return false;
 }
 
 static void clickCapitol(uint8_t clickType) {
@@ -1511,6 +1482,10 @@ bool TownSys::leftMouseUp(float x, float y) {
   if (clickTownList(clickType)) {
     return false;
   }
+  if (clickCres(clickType)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -1537,6 +1512,9 @@ bool TownSys::rightMouseDown(float x, float y) {
     return false;
   }
   if (clickTownList(clickType)) {
+    return false;
+  }
+  if (clickCres(clickType)) {
     return false;
   }
   return true;

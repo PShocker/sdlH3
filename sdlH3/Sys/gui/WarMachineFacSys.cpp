@@ -167,16 +167,6 @@ static void drawButton() {
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
 }
 
-static void dweAnimate() {
-  Global::dweFrameTime += Window::deltaTime;
-  if (Global::dweFrameTime >= 90) {
-    Global::dweFrameTime = 0;
-    Global::dweFrameIndex += 1;
-    // if (condition) {
-    // }
-  }
-}
-
 static void drawCost() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
@@ -248,7 +238,12 @@ static void drawSlider() {
 }
 
 bool WarMachineFacSys::run() {
-  dweAnimate();
+  // auto wComp =
+  //     World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
+  // auto mhs = wComp.warMachines;
+  // auto id = mhs[i].first;
+  // WarMachineSys::warAnimate(Global::dweFrameTime, Global::dweFrameIndex,
+  //                           Global::dweGroup, id);
   drawBackGround();
   drawWarMachines();
   drawCost();
