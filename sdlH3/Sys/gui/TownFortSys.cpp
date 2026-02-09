@@ -4,6 +4,7 @@
 #include "Comp/DwellingComp.h"
 #include "Comp/PlayerIdComp.h"
 #include "Comp/TownComp.h"
+#include "CreatureSys.h"
 #include "DwellingSys.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
@@ -202,45 +203,27 @@ static void fortAnimate() {
   }
 
   for (uint8_t i = 0; i < 8; i++) {
-    Global::townFortFrameTime[i] += Window::deltaTime;
-    if (Global::townFortFrameTime[i] >= 90) {
-      Global::townFortFrameTime[i] = 0;
-      Global::townFortFrameIndex[i] += 1;
-
-      auto bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1 + i * 3;
-      if (i > 4) {
-        bId =
-            (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6 + (i - 5) * 2;
-      }
-      uint16_t creatureId;
-      auto townComp = &registry.get<TownComp>(townEnt);
-      if (i == 7) {
-        if (spBid != 0) {
-          auto dComp = registry.get<DwellingComp>(townComp->buildings[bId]);
-          creatureId = dComp.creatures.back().first.back();
-        } else {
-          break;
-        }
-      } else if (townComp->buildings.contains(bId)) {
-        creatureId = TownCfg::townCreature[townComp->id][i][1];
-      } else {
-        creatureId = TownCfg::townCreature[townComp->id][i][0];
-      }
-
-      auto group = Global::townFortGroup[i];
-
-      auto textures =
-          Global::defCache[CreatureCfg::creatureGraphics.at(creatureId) + "/" +
-                           std::to_string(group)];
-      if (Global::townFortFrameIndex[i] >= textures.size()) {
-        Global::townFortFrameIndex[i] = 0;
-        int arr[] = {0, 2, 3, 4, 11};
-        std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
-        // 生成随机索引并选择元素
-        int randomIndex = distrib(Global::gen);
-        Global::townFortGroup[i] = arr[randomIndex];
-      }
+    auto bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1 + i * 3;
+    if (i > 4) {
+      bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6 + (i - 5) * 2;
     }
+    uint16_t creatureId;
+    auto townComp = &registry.get<TownComp>(townEnt);
+    if (i == 7) {
+      if (spBid != 0) {
+        auto dComp = registry.get<DwellingComp>(townComp->buildings[bId]);
+        creatureId = dComp.creatures.back().first.back();
+      } else {
+        break;
+      }
+    } else if (townComp->buildings.contains(bId)) {
+      creatureId = TownCfg::townCreature[townComp->id][i][1];
+    } else {
+      creatureId = TownCfg::townCreature[townComp->id][i][0];
+    }
+    CreatureSys::creAnimate(Global::townFortFrameTime[i],
+                            Global::townFortFrameIndex[i],
+                            Global::townFortGroup[i], creatureId);
   }
 }
 

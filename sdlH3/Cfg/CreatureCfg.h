@@ -1698,4 +1698,14 @@ struct CreatureCfg {
       20, 20, 2, 2, 0, 6, 0, 4, 0, 6, 0, 5, 2, 2,
       // 特殊生物 (132-149)
       1, 1, 1, 1, 2, 4, 15, 25, 8, 7, 7, 8, 3, 0, 0, 0, 0, 0};
+
+  enum CREATURE_ACTION {
+    ACTION_MOVE = 0,
+    ACTION_STAND = 2,
+    ACTION_GET_HIT = 3,
+    ACTION_DEFEND = 4,
+    ACTION_ATTCK = 11,
+    ACTION_START_MOVE = 20,
+    ACTION_STOP_MOVE = 21,
+  };
 };

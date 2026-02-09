@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "BMPFont/BMPFont.h"
 #include "Cfg/CreatureCfg.h"
+#include "CreatureSys.h"
 #include "DwellingSys.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
@@ -92,28 +93,6 @@ static void drawButton() {
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
 }
 
-static void splAnimate() {
-  Global::splitFrameTime += Window::deltaTime;
-  if (Global::splitFrameTime >= 90) {
-    Global::splitFrameTime = 0;
-    Global::splitFrameIndex += 1;
-
-    auto id = Global::splitCre[0]->first;
-    auto group = Global::splitGroup;
-
-    auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) +
-                                     "/" + std::to_string(group)];
-    if (Global::splitFrameIndex >= textures.size()) {
-      Global::splitFrameIndex = 0;
-      int arr[] = {0, 2, 3, 4};
-      std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
-      // 生成随机索引并选择元素
-      int randomIndex = distrib(Global::gen);
-      Global::splitGroup = arr[randomIndex];
-    }
-  }
-}
-
 static void drawNum() {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
@@ -173,10 +152,11 @@ static void drawSlider() {
 }
 
 bool SpliteCreSys::run() {
+  CreatureSys::creAnimate(Global::splitFrameTime, Global::splitFrameIndex,
+                          Global::splitGroup, Global::splitCre[0]->first);
   drawBackGround();
   drawCreatures();
   drawButton();
-  splAnimate();
   drawNum();
   drawSlider();
   return true;

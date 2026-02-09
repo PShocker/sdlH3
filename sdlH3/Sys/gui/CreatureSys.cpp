@@ -142,24 +142,61 @@ static void drawButton() {
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
 }
 
-static void creAnimate() {
-  Global::creFrameTime += Window::deltaTime;
-  if (Global::creFrameTime >= 90) {
-    Global::creFrameTime = 0;
-    Global::creFrameIndex += 1;
+void CreatureSys::creAnimate(uint64_t &creFrameTime, uint64_t &creFrameIndex,
+                             uint64_t &creGroup, uint16_t creId) {
+  creFrameTime += Window::deltaTime;
+  if (creFrameTime >= 90) {
+    creFrameTime = 0;
+    creFrameIndex += 1;
 
-    auto id = Global::crePair.first;
-    auto group = Global::creGroup;
+    auto id = creId;
+    auto group = creGroup;
 
     auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) +
                                      "/" + std::to_string(group)];
-    if (Global::creFrameIndex >= textures.size()) {
-      Global::creFrameIndex = 0;
-      int arr[] = {0, 2, 3, 4, 11};
+    if (creFrameIndex >= textures.size()) {
+      creFrameIndex = 0;
+      std::vector<uint8_t> arr;
+
+      bool hasStartMove = Global::defCache.contains(
+          CreatureCfg::creatureGraphics.at(id) + "/20");
+      if (hasStartMove) {
+        arr = {
+            CreatureCfg::ACTION_START_MOVE, CreatureCfg::ACTION_ATTCK,
+            CreatureCfg::ACTION_DEFEND,     CreatureCfg::ACTION_STAND,
+            CreatureCfg::ACTION_GET_HIT,
+        };
+      } else {
+        arr = {
+            CreatureCfg::ACTION_ATTCK,
+            CreatureCfg::ACTION_DEFEND,
+            CreatureCfg::ACTION_STAND,
+            CreatureCfg::ACTION_GET_HIT,
+        };
+      }
+      bool hasStoptMove = Global::defCache.contains(
+          CreatureCfg::creatureGraphics.at(id) + "/21");
+      switch (group) {
+      case CreatureCfg::ACTION_MOVE: {
+        if (hasStoptMove) {
+          arr = {
+              CreatureCfg::ACTION_MOVE,
+              CreatureCfg::ACTION_STOP_MOVE,
+          };
+        }
+        break;
+      }
+      case CreatureCfg::ACTION_START_MOVE: {
+        arr = {
+            CreatureCfg::ACTION_MOVE,
+        };
+        break;
+      }
+      }
       std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
       // 生成随机索引并选择元素
       int randomIndex = distrib(Global::gen);
-      Global::creGroup = arr[randomIndex];
+      creGroup = arr[randomIndex];
     }
   }
 }
@@ -269,7 +306,8 @@ static void drawText() {
 }
 
 bool CreatureSys::run() {
-  creAnimate();
+  CreatureSys::creAnimate(Global::creFrameTime, Global::creFrameIndex,
+                          Global::creGroup, Global::crePair.first);
   drawBackGround();
   drawCreatures();
   drawButton();

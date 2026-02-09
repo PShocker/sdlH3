@@ -5,6 +5,7 @@
 #include "Comp/DwellingComp.h"
 #include "Comp/HeroComp.h"
 #include "Comp/TownComp.h"
+#include "CreatureSys.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "Lang/Lang.h"
@@ -254,29 +255,6 @@ static void drawButton() {
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
 }
 
-static void dweAnimate() {
-  Global::dweFrameTime += Window::deltaTime;
-  if (Global::dweFrameTime >= 90) {
-    Global::dweFrameTime = 0;
-    Global::dweFrameIndex += 1;
-
-    auto creatures = cres();
-    auto id = creatures.front().first;
-    auto group = Global::dweGroup;
-
-    auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) +
-                                     "/" + std::to_string(group)];
-    if (Global::dweFrameIndex >= textures.size()) {
-      Global::dweFrameIndex = 0;
-      int arr[] = {0, 2, 3, 4};
-      std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
-      // 生成随机索引并选择元素
-      int randomIndex = distrib(Global::gen);
-      Global::dweGroup = arr[randomIndex];
-    }
-  }
-}
-
 static void drawCost() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
@@ -347,7 +325,10 @@ static void drawSlider() {
 }
 
 bool DwellingSys::run() {
-  dweAnimate();
+  auto creatures = cres();
+  auto id = creatures.front().first;
+  CreatureSys::creAnimate(Global::dweFrameTime, Global::dweFrameIndex,
+                          Global::dweGroup, id);
   drawBackGround();
   drawCreatures();
   drawCost();

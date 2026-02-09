@@ -721,6 +721,7 @@ struct TownCfg {
           // 0 - 城堡 (Castle)
           {
               {(uint8_t)Building::SPECIAL_19, {(uint8_t)Building::SPECIAL_18}},
+              {(uint8_t)Building::HORDE_2_UPGR, {(uint8_t)Building::SPECIAL_18}},
 
           },
   };
