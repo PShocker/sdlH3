@@ -1,8 +1,10 @@
 
 #include "Enum/Enum.h"
+#include <any>
 #include <array>
+#include <cstddef>
 #include <cstdint>
-#include <set>
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -55,14 +57,11 @@ struct CreatureSetI {
   CreatureSetGraphics graphics;
   CreatureSetSound sounds;
   CreatureSetAttribute attribute;
-  std::set<uint8_t> attributeEx;
+  std::map<uint8_t, std::any> abilities;
   uint32_t growth;
   uint32_t experience;
   std::array<uint32_t, 7> cost;
   bool hasDoubleWeek;
-  std::vector<CreatureSetSpell> spell;
-  std::vector<CreatureSetSpellEx> spellAttack;
-  std::vector<CreatureSetSpellEx> spellHit;
 };
 
 struct CastleCreatureSet {
@@ -88,7 +87,7 @@ struct CastleCreatureSet {
                .wince = "PIKEWNCE.wav",
            },
        .attribute = {10, 4, 4, 5, 1, 3, 0},
-       .attributeEx = {Enum::IMMUNE_TO_CAVALRY},
+       .abilities = {{Enum::IMMUNE_TO_CAVALRY, NULL}},
        .growth = 14,
        .experience = 10,
        .cost = {0, 0, 0, 0, 0, 0, 60}},
@@ -113,7 +112,7 @@ struct CastleCreatureSet {
                .wince = "HALBWNCE.wav",
            },
        .attribute = {10, 5, 6, 5, 2, 3, 0},
-       .attributeEx = {Enum::IMMUNE_TO_CAVALRY},
+       .abilities = {{Enum::IMMUNE_TO_CAVALRY, NULL}},
        .growth = 14,
        .experience = 10,
        .cost = {0, 0, 0, 0, 0, 0, 75}},
@@ -139,7 +138,7 @@ struct CastleCreatureSet {
                .wince = "LCRSWNCE.wav",
            },
        .attribute = {10, 4, 6, 3, 2, 3, 12},
-       .attributeEx = {Enum::SHOOTING_ARMY},
+       .abilities = {{Enum::SHOOTING_ARMY, NULL}},
        .growth = 14,
        .experience = 10,
        .cost = {0, 0, 0, 0, 0, 0, 100}},
@@ -165,7 +164,8 @@ struct CastleCreatureSet {
                .wince = "HCRSWNCE.wav",
            },
        .attribute = {10, 6, 6, 3, 2, 3, 24},
-       .attributeEx = {Enum::SHOOTING_ARMY, Enum::const_two_distance_attacks},
+       .abilities = {{Enum::SHOOTING_ARMY, NULL},
+                     {Enum::const_two_distance_attacks, NULL}},
        .growth = 14,
        .experience = 10,
        .cost = {0, 0, 0, 0, 0, 0, 150}},
@@ -191,8 +191,9 @@ struct CastleCreatureSet {
                   .wince = "GRIFWNCE.wav",
               },
           .attribute = {25, 6, 8, 8, 3, 6, 0},
-          .attributeEx = {Enum::DOUBLE_WIDE, Enum::FLYING_ARMY,
-                          Enum::const_two_retaliation},
+          .abilities = {{Enum::DOUBLE_WIDE, NULL},
+                        {Enum::FLYING_ARMY, NULL},
+                        {Enum::const_two_retaliation, NULL}},
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 200},
@@ -220,8 +221,9 @@ struct CastleCreatureSet {
                   .wince = "RGRFWNCE.wav",
               },
           .attribute = {25, 9, 9, 9, 3, 6, 0},
-          .attributeEx = {Enum::DOUBLE_WIDE, Enum::FLYING_ARMY,
-                          Enum::const_unlimit_retaliation},
+          .abilities = {{Enum::DOUBLE_WIDE, NULL},
+                        {Enum::FLYING_ARMY, NULL},
+                        {Enum::const_unlimit_retaliation, NULL}},
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 240},
@@ -248,7 +250,7 @@ struct CastleCreatureSet {
                   .wince = "SWRDWNCE.wav",
               },
           .attribute = {35, 5, 10, 12, 6, 9, 0},
-          .attributeEx = {},
+          .abilities = {},
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 300},
@@ -275,7 +277,7 @@ struct CastleCreatureSet {
                   .wince = "CRUSWNCE.wav",
               },
           .attribute = {35, 6, 12, 12, 7, 10, 0},
-          .attributeEx = {Enum::const_two_attacks},
+          .abilities = {{Enum::const_two_attacks, NULL}},
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 400},
@@ -303,7 +305,8 @@ struct CastleCreatureSet {
                   .wince = "MONKWNCE.wav",
               },
           .attribute = {30, 5, 12, 7, 10, 12, 12},
-          .attributeEx = {Enum::SHOOTING_ARMY, Enum::const_no_melee_penalty},
+          .abilities = {{Enum::SHOOTING_ARMY, NULL},
+                        {Enum::const_no_melee_penalty, NULL}},
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 300},
@@ -331,7 +334,8 @@ struct CastleCreatureSet {
                   .wince = "ZELTWNCE.wav",
               },
           .attribute = {30, 7, 12, 10, 10, 12, 24},
-          .attributeEx = {Enum::SHOOTING_ARMY, Enum::const_no_melee_penalty},
+          .abilities = {{Enum::SHOOTING_ARMY, NULL},
+                        {Enum::const_no_melee_penalty, NULL}},
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 450},
@@ -359,7 +363,7 @@ struct CastleCreatureSet {
                   .wince = "CAVAWNCE.wav",
               },
           .attribute = {100, 7, 15, 15, 15, 25, 0},
-          .attributeEx = {Enum::DOUBLE_WIDE, Enum::const_jousting},
+          .abilities = {{Enum::DOUBLE_WIDE, NULL}, {Enum::const_jousting, 5}},
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 1000},
@@ -387,7 +391,7 @@ struct CastleCreatureSet {
                   .wince = "CHMPWNCE.wav",
               },
           .attribute = {100, 9, 16, 16, 20, 25, 0},
-          .attributeEx = {Enum::DOUBLE_WIDE, Enum::const_jousting},
+          .abilities = {{Enum::DOUBLE_WIDE, NULL}, {Enum::const_jousting, 5}},
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 1200},
@@ -415,7 +419,15 @@ struct CastleCreatureSet {
                   .wince = "ANGLWNCE.wav",
               },
           .attribute = {200, 12, 20, 20, 50, 50, 0},
-          .attributeEx = {Enum::const_raises_morale, Enum::FLYING_ARMY},
+          .abilities =
+              {
+                  {Enum::const_raises_morale, 1},
+                  {Enum::FLYING_ARMY, NULL},
+                  {Enum::const_spell,
+                   std::vector<CreatureSetSpell>{
+
+                   }},
+              },
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 1000},

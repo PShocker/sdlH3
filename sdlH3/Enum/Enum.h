@@ -101,7 +101,7 @@ struct Enum {
     UPLEFT = 16,
   };
 
-  enum class RESTYPE : uint8_t {
+  enum RESTYPE : uint8_t {
     CRYSTAL = 0,
     GEM = 1,
     MERCURY = 2,
@@ -387,5 +387,196 @@ struct Enum {
     HERO_CLASS_WITCH = 15,
     HERO_CLASS_ELEMENTALIST = 16,
     HERO_CLASS_PLANESWALKER = 17,
+  };
+
+  enum SECOND_SKILL : uint8_t {
+    PATHFINDING = 0,
+    ARCHERY = 1,
+    LOGISTICS = 2,
+    SCOUTING = 3,
+    DIPLOMACY = 4,
+    NAVIGATION = 5,
+    LEADERSHIP = 6,
+    WISDOM = 7,
+    MYSTICISM = 8,
+    LUCK = 9,
+    BALLISTICS = 10,
+    EAGLE_EYE = 11,
+    NECROMANCY = 12,
+    ESTATES = 13,
+    FIRE_MAGIC = 14,
+    AIR_MAGIC = 15,
+    WATER_MAGIC = 16,
+    EARTH_MAGIC = 17,
+    SCHOLAR = 18,
+    TACTICS = 19,
+    ARTILLERY = 20,
+    LEARNING = 21,
+    OFFENCE = 22,
+    ARMORER = 23,
+    INTELLIGENCE = 24,
+    SORCERY = 25,
+    RESISTANCE = 26,
+    FIRST_AID = 27
+  };
+
+  enum SECOND_SKILL_LEVEL : uint8_t { BASIC = 0, ADVANCED = 1, EXPERT = 2 };
+
+  enum HERO_SPECIAL : uint8_t {
+    // 技能类特长
+    SPECIAL_SECONDARY_SKILL, // 对应二级技能 (如：archery, armorer, logistics等)
+    SPECIAL_SPECIFIC_SPELL,
+    // 生物类特长
+    SPECIAL_CREATURE, // 特定生物增强
+
+    // 属性类特长
+    SPECIAL_PRIMARY_SKILL,            // 主要属性 (攻击、防御)
+    SPECIAL_GENERAL_DAMAGE_PREMY,     // 通用伤害加成
+    SPECIAL_GENERAL_DAMAGE_REDUCTION, // 通用伤害减免
+    SPECIAL_STACKS_SPEED,             // 部队速度
+
+    // 资源类特长
+    SPECIAL_GENERATE_RESOURCE, // 资源生成 (gold, mercury, sulfur等)
+    // 特殊类特长
+    SPECIAL_SPECIAL_UPGRADE, // 特殊升级 (如：archer升级为sharpshooter)
+  };
+
+  enum SPELL : uint8_t {
+    SummonBoat = 0,    // 0: 召船术
+    ScuttleBoat = 1,   // 1: 摧毁船只
+    Visions = 2,       // 2: 透视之眼
+    ViewEarth = 3,     // 3: 透视大地
+    Disguise = 4,      // 4: 伪装大法
+    ViewAir = 5,       // 5: 透视大气
+    Fly = 6,           // 6: 飞行奇术
+    WaterWalk = 7,     // 7: 凌波微步
+    DimensionDoor = 8, // 8: 异次元之门
+    TownPortal = 9,    // 9: 时空之门
+
+    Quicksand = 10,      // 10: 流沙陷阱
+    LandMine = 11,       // 11: 埋设地雷
+    ForceField = 12,     // 12: 大力神盾
+    FireWall = 13,       // 13: 烈火魔墙
+    Earthquake = 14,     // 14: 地动山摇
+    MagicArrow = 15,     // 15: 魔法神箭
+    IceBolt = 16,        // 16: 霹雳寒冰
+    LightningBolt = 17,  // 17: 霹雳闪电
+    Implosion = 18,      // 18: 雷鸣爆弹
+    ChainLightning = 19, // 19: 连锁闪电
+
+    FrostRing = 20,     // 20: 寒冰魔环
+    Fireball = 21,      // 21: 连珠火球
+    Inferno = 22,       // 22: 地狱烈焰
+    MeteorShower = 23,  // 23: 流星火雨
+    DeathRipple = 24,   // 24: 死亡波纹
+    DestroyUndead = 25, // 25: 亡灵杀手
+    Armageddon = 26,    // 26: 末日审判
+    Shield = 27,        // 27: 护体神盾
+    AirShield = 28,     // 28: 大气神盾
+    FireShield = 29,    // 29: 烈火神盾
+
+    ProtectionfromAir = 30,   // 30: 御气奇术
+    ProtectionfromFire = 31,  // 31: 御火奇术
+    ProtectionfromWater = 32, // 32: 御水奇术
+    ProtectionfromEarth = 33, // 33: 御土奇术
+    AntiMagic = 34,           // 34: 抗魔大法
+    Dispel = 35,              // 35: 驱魔大法
+    MagicMirror = 36,         // 36: 魔法神镜
+    Cure = 37,                // 37: 疗伤
+    Resurrection = 38,        // 38: 转世重生
+    AnimateDead = 39,         // 39: 聚灵奇术
+
+    Sacrifice = 40,     // 40: 牺牲
+    Bless = 41,         // 41: 圣灵佑佐
+    Curse = 42,         // 42: 恶咒附身
+    Bloodlust = 43,     // 43: 嗜血奇术
+    Precision = 44,     // 44: 百发百中
+    Weakness = 45,      // 45: 虚弱无力
+    StoneSkin = 46,     // 46: 护体石肤
+    DisruptingRay = 47, // 47: 毁灭之光
+    Prayer = 48,        // 48: 祈祷
+    Mirth = 49,         // 49: 欢欣鼓舞
+
+    Sorrow = 50,              // 50: 悲痛欲绝
+    Fortune = 51,             // 51: 幸运之神
+    Misfortune = 52,          // 52: 大难临头
+    Haste = 53,               // 53: 攻击加速
+    Slow = 54,                // 54: 迟缓大法
+    Slayer = 55,              // 55: 屠戮成性
+    Frenzy = 56,              // 56: 孤注一掷
+    TitansLightningBolt = 57, // 57: 泰坦之箭
+    Counterstrike = 58,       // 58: 反戈一击
+    Berserk = 59,             // 59: 丧心病狂
+
+    Hypnotize = 60,            // 60: 蛊惑人心
+    Forgetfulness = 61,        // 61: 失忆大法
+    Blind = 62,                // 62: 双目失明
+    Teleport = 63,             // 63: 瞬间移动
+    RemoveObstacle = 64,       // 64: 驱除障碍
+    MirrorImage = 65,          // 65: 镜像大法
+    SummonFireElemental = 66,  // 66: 召唤火元素
+    SummonEarthElemental = 67, // 67: 召唤土元素
+    SummonWaterElemental = 68, // 68: 召唤水元素
+    SummonAirElemental = 69    // 69: 召唤气元素
+  };
+
+  enum BUILD : int32_t {
+    // 通用建筑
+    BUILD_VILLAGE_HALL = -1,
+    BUILD_TOWN_HALL = 0,
+    BUILD_CITY_HALL = 1,
+    BUILD_CAPITOL = 2,
+    BUILD_FORT = 3,
+    BUILD_CITADEL = 4,
+    BUILD_CASTLE = 5,
+    BUILD_TAVERN = 6,
+    BUILD_BLACKSMITH = 7,
+    BUILD_MARKETPLACE = 8,
+    BUILD_RESOURCE_SILO = 9,
+
+    BUILD_SPECIAL_10 = 10,
+    // 魔法行会
+    BUILD_MAGE_GUILD_1 = 11,
+    BUILD_MAGE_GUILD_2 = 12,
+    BUILD_MAGE_GUILD_3 = 13,
+    BUILD_MAGE_GUILD_4 = 14,
+    BUILD_MAGE_GUILD_5 = 15,
+
+    BUILD_SHIPYARD = 16,
+    BUILD_GRAIL = 17,
+
+    // 特殊建筑编号（根据城镇不同而意义不同）
+    BUILD_SPECIAL_18 = 18,
+    BUILD_SPECIAL_19 = 19,
+    BUILD_SPECIAL_20 = 20,
+    BUILD_SPECIAL_21 = 21,
+
+    // 生物巢穴
+    BUILD_DWELLING_LEVEL_1 = 22,
+    BUILD_DWELLING_UPGRADE_LEVEL_1 = 23,
+    BUILD_HORDE_1 = 24,
+    BUILD_DWELLING_LEVEL_2 = 25,
+    BUILD_DWELLING_UPGRADE_LEVEL_2 = 26,
+    BUILD_HORDE_2 = 27,
+    BUILD_DWELLING_LEVEL_3 = 28,
+    BUILD_DWELLING_UPGRADE_LEVEL_3 = 29,
+    BUILD_HORDE_3 = 30,
+    BUILD_DWELLING_LEVEL_4 = 31,
+    BUILD_DWELLING_UPGRADE_LEVEL_4 = 32,
+    BUILD_HORDE_4 = 33,
+    BUILD_DWELLING_LEVEL_5 = 34,
+    BUILD_DWELLING_UPGRADE_LEVEL_5 = 35,
+    BUILD_HORDE_5 = 36,
+    BUILD_DWELLING_LEVEL_6 = 37,
+    BUILD_DWELLING_UPGRADE_LEVEL_6 = 38,
+    BUILD_DWELLING_LEVEL_7 = 39,
+    BUILD_DWELLING_UPGRADE_LEVEL_7 = 40,
+    // 额外的建筑,补充
+    BUILD_SHIP,
+    BUILD_HORDE_UPGRADE_1,
+    BUILD_HORDE_UPGRADE_2,
+    BUILD_HORDE_UPGRADE_3,
+    BUILD_HORDE_UPGRADE_4,
+    BUILD_HORDE_UPGRADE_5,
   };
 };

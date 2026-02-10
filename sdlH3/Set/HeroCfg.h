@@ -44,11 +44,6 @@ struct HeroCfg {
     SPECIFIC_SPELL_DAMAGE,     // 特定法术伤害 (fireWall, magicArrow等)
     SPECIAL_ADD_VALUE_ENCHANT, // 特殊数值附加附魔 (disruptingRay等)
     CREATURE_DAMAGE,           // 生物伤害
-
-    // 复合类特长
-    COMPOSITE, // 复合特长 (多个效果组合)
-
-    NONE, // 无特长
   };
 
   enum class SecondarySkill : uint8_t {
