@@ -173,6 +173,10 @@ struct Global {
   static inline std::array<uint64_t, 8> townFortFrameIndex;
   static inline std::array<uint64_t, 8> townFortGroup;
 
+  static inline std::array<uint64_t, 8> warFacFrameTime;
+  static inline std::array<uint64_t, 8> warFacFrameIndex;
+  static inline std::array<uint64_t, 8> warFacGroup;
+
   static inline uint8_t viewWorldScale;
 
   static inline uint8_t townBuildBid;

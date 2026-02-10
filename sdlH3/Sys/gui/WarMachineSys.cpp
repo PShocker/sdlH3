@@ -119,11 +119,14 @@ void WarMachineSys::warAnimate(uint64_t &warFrameTime, uint64_t &warFrameIndex,
       warFrameIndex = 0;
       std::vector<uint8_t> arr;
       arr = {
-          CreatureCfg::ACTION_SHOOT_UP,
           CreatureCfg::ACTION_DEFEND,
           CreatureCfg::ACTION_STAND,
           CreatureCfg::ACTION_GET_HIT,
       };
+      if (Global::defCache.contains(
+              WarMachineCfg::warMachineGraphics.at(warId) + "/11")) {
+        arr.push_back(CreatureCfg::ACTION_SHOOT_UP);
+      }
       std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
       // 生成随机索引并选择元素
       int randomIndex = distrib(Global::gen);

@@ -11,6 +11,7 @@
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/base/SliderSys.h"
+#include "WarMachineSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include <cstdint>
@@ -147,11 +148,11 @@ static void drawWarMachines() {
   auto pos = DwellingSys::creatruePos(size);
   for (uint8_t i = 0; i < size; i++) {
     auto p = pos[i];
-    auto group = 2;
+    auto group = Global::warFacGroup[i];
     auto id = mhs[i].first;
     auto defPath = WarMachineCfg::warMachineGraphics.at(id);
     auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
-    auto index = Global::dweFrameIndex % textures.size();
+    auto index = Global::warFacFrameIndex[i] % textures.size();
     auto colorType = Global::dweIndex == i ? 1 : 0;
     WarMachineFacSys::drawMachineBak(leftUp.x + p.x, leftUp.y + p.y, id, group,
                                      index, colorType);
@@ -237,13 +238,22 @@ static void drawSlider() {
   }
 }
 
+static void warAnimate() {
+  auto wComp =
+      World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
+  auto mhs = wComp.warMachines;
+  for (uint8_t i = 0; i < mhs.size(); i++) {
+    auto mh = mhs[i];
+    auto id = mh.first;
+    WarMachineSys::warAnimate(Global::warFacFrameTime[i],
+                              Global::warFacFrameIndex[i],
+                              Global::warFacGroup[i], id);
+  }
+}
+
 bool WarMachineFacSys::run() {
-  // auto wComp =
-  //     World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
-  // auto mhs = wComp.warMachines;
-  // auto id = mhs[i].first;
-  // WarMachineSys::warAnimate(Global::dweFrameTime, Global::dweFrameIndex,
-  //                           Global::dweGroup, id);
+
+  warAnimate();
   drawBackGround();
   drawWarMachines();
   drawCost();

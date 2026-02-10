@@ -324,11 +324,15 @@ static void drawSlider() {
   }
 }
 
-bool DwellingSys::run() {
+static void dweAnimate() {
   auto creatures = cres();
   auto id = creatures.front().first;
   CreatureSys::creAnimate(Global::dweFrameTime, Global::dweFrameIndex,
                           Global::dweGroup, id);
+}
+
+bool DwellingSys::run() {
+  dweAnimate();
   drawBackGround();
   drawCreatures();
   drawCost();

@@ -151,9 +151,13 @@ static void drawSlider() {
   }
 }
 
-bool SpliteCreSys::run() {
+static void splitAnimate() {
   CreatureSys::creAnimate(Global::splitFrameTime, Global::splitFrameIndex,
                           Global::splitGroup, Global::splitCre[0]->first);
+}
+
+bool SpliteCreSys::run() {
+  splitAnimate();
   drawBackGround();
   drawCreatures();
   drawButton();
