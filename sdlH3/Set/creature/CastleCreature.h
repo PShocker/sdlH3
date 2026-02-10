@@ -1,0 +1,424 @@
+
+#include "Enum/Enum.h"
+#include <array>
+#include <cstdint>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
+struct CreatureSetAttribute {
+  uint32_t hitPoint;
+  int32_t speed;
+  int32_t attack;
+  int32_t defense;
+  int32_t maxDamage;
+  int32_t minDamage;
+  int32_t shots;
+};
+
+struct CreatureSetSound {
+  std::string attack;
+  std::string defend;
+  std::string killed;
+  std::string move;
+  std::string shoot;
+  std::string wince;
+};
+
+struct CreatureSetGraphics {
+  std::string animation;
+  std::string missile;
+  std::string adventure;
+};
+
+struct CreatureSetSpell {
+  uint8_t type;  // 魔法种类
+  uint8_t power; // 魔法强度
+  uint8_t level; // 魔法等级
+  uint8_t point; // 释放次数
+};
+
+struct CreatureSetSpellEx {
+  uint8_t type;  // 魔法种类
+  uint8_t power; // 魔法强度
+  uint8_t level; // 魔法等级
+  float rate;    // 触发概率
+};
+
+struct CreatureSetI {
+  uint8_t index;
+  uint8_t level;
+  bool female;
+  uint8_t faction;
+  std::vector<uint16_t> upgrades;
+  CreatureSetGraphics graphics;
+  CreatureSetSound sounds;
+  CreatureSetAttribute attribute;
+  std::set<uint8_t> attributeEx;
+  uint32_t growth;
+  uint32_t experience;
+  std::array<uint32_t, 7> cost;
+  bool hasDoubleWeek;
+  std::vector<CreatureSetSpell> spell;
+  std::vector<CreatureSetSpellEx> spellAttack;
+  std::vector<CreatureSetSpellEx> spellHit;
+};
+
+struct CastleCreatureSet {
+  std::vector<CreatureSetI> creatures = {
+      {// pikeman
+       .index = 0,
+       .level = 1,
+       .female = false,
+       .faction = Enum::CASTLE,
+       .upgrades = {Enum::HALBERDIER},
+       .graphics =
+           {
+               .animation = "CPKMAN.DEF",
+               .missile = "",
+               .adventure = "AvWPike.def",
+           },
+       .sounds =
+           {
+               .attack = "PIKEATTK.wav",
+               .defend = "PIKEDFND.wav",
+               .killed = "PIKEKILL.wav",
+               .move = "PIKEMOVE.wav",
+               .wince = "PIKEWNCE.wav",
+           },
+       .attribute = {10, 4, 4, 5, 1, 3, 0},
+       .attributeEx = {Enum::IMMUNE_TO_CAVALRY},
+       .growth = 14,
+       .experience = 10,
+       .cost = {0, 0, 0, 0, 0, 0, 60}},
+      {// halberdier
+       .index = 1,
+       .level = 1,
+       .female = false,
+       .faction = Enum::CASTLE,
+       .upgrades = {},
+       .graphics =
+           {
+               .animation = "CHALBD.DEF",
+               .missile = "",
+               .adventure = "AVWpikx0.def",
+           },
+       .sounds =
+           {
+               .attack = "HALBATTK.wav",
+               .defend = "HALBDFND.wav",
+               .killed = "HALBKILL.wav",
+               .move = "HALBMOVE.wav",
+               .wince = "HALBWNCE.wav",
+           },
+       .attribute = {10, 5, 6, 5, 2, 3, 0},
+       .attributeEx = {Enum::IMMUNE_TO_CAVALRY},
+       .growth = 14,
+       .experience = 10,
+       .cost = {0, 0, 0, 0, 0, 0, 75}},
+      {// archer
+       .index = 2,
+       .level = 2,
+       .female = false,
+       .faction = Enum::CASTLE,
+       .upgrades = {Enum::MARKSMAN},
+       .graphics =
+           {
+               .animation = "CLCBOW.DEF",
+               .missile = "PLCBOWX.DEF",
+               .adventure = "AvWLCrs.def",
+           },
+       .sounds =
+           {
+               .attack = "LCRSATTK.wav",
+               .defend = "LCRSDFND.wav",
+               .killed = "LCRSKILL.wav",
+               .move = "LCRSMOVE.wav",
+               .shoot = "LCRSSHOT.wav",
+               .wince = "LCRSWNCE.wav",
+           },
+       .attribute = {10, 4, 6, 3, 2, 3, 12},
+       .attributeEx = {Enum::SHOOTING_ARMY},
+       .growth = 14,
+       .experience = 10,
+       .cost = {0, 0, 0, 0, 0, 0, 100}},
+      {// marksman
+       .index = 3,
+       .level = 2,
+       .female = false,
+       .faction = Enum::CASTLE,
+       .upgrades = {},
+       .graphics =
+           {
+               .animation = "CHCBOW.DEF",
+               .missile = "PLCBOWX.DEF",
+               .adventure = "AvWHCrs.def",
+           },
+       .sounds =
+           {
+               .attack = "HCRSATTK.wav",
+               .defend = "HCRSDFND.wav",
+               .killed = "HCRSKILL.wav",
+               .move = "HCRSMOVE.wav",
+               .shoot = "HCRSSHOT.wav",
+               .wince = "HCRSWNCE.wav",
+           },
+       .attribute = {10, 6, 6, 3, 2, 3, 24},
+       .attributeEx = {Enum::SHOOTING_ARMY, Enum::const_two_distance_attacks},
+       .growth = 14,
+       .experience = 10,
+       .cost = {0, 0, 0, 0, 0, 0, 150}},
+      {
+          // griffin
+          .index = 4,
+          .level = 3,
+          .female = false,
+          .faction = Enum::CASTLE,
+          .upgrades = {Enum::ROYAL_GRIFFIN},
+          .graphics =
+              {
+                  .animation = "CGRIFF.DEF",
+                  .missile = "",
+                  .adventure = "AvWGrif.def",
+              },
+          .sounds =
+              {
+                  .attack = "GRIFATTK.wav",
+                  .defend = "GRIFDFND.wav",
+                  .killed = "GRIFKILL.wav",
+                  .move = "GRIFMOVE.wav",
+                  .wince = "GRIFWNCE.wav",
+              },
+          .attribute = {25, 6, 8, 8, 3, 6, 0},
+          .attributeEx = {Enum::DOUBLE_WIDE, Enum::FLYING_ARMY,
+                          Enum::const_two_retaliation},
+          .growth = 14,
+          .experience = 10,
+          .cost = {0, 0, 0, 0, 0, 0, 200},
+          .hasDoubleWeek = true,
+      },
+      {
+          // royalGriffin
+          .index = 5,
+          .level = 3,
+          .female = false,
+          .faction = Enum::CASTLE,
+          .upgrades = {},
+          .graphics =
+              {
+                  .animation = "CRGRIF.DEF",
+                  .missile = "",
+                  .adventure = "AVWgrix0.def",
+              },
+          .sounds =
+              {
+                  .attack = "RGRFATTK.wav",
+                  .defend = "RGRFDFND.wav",
+                  .killed = "RGRFKILL.wav",
+                  .move = "RGRFMOVE.wav",
+                  .wince = "RGRFWNCE.wav",
+              },
+          .attribute = {25, 9, 9, 9, 3, 6, 0},
+          .attributeEx = {Enum::DOUBLE_WIDE, Enum::FLYING_ARMY,
+                          Enum::const_unlimit_retaliation},
+          .growth = 14,
+          .experience = 10,
+          .cost = {0, 0, 0, 0, 0, 0, 240},
+      },
+      {
+          // swordsman
+          .index = 6,
+          .level = 4,
+          .female = false,
+          .faction = Enum::CASTLE,
+          .upgrades = {Enum::CRUSADER},
+          .graphics =
+              {
+                  .animation = "CSWORD.DEF",
+                  .missile = "",
+                  .adventure = "AVWswrd0.def",
+              },
+          .sounds =
+              {
+                  .attack = "SWRDATTK.wav",
+                  .defend = "SWRDDFND.wav",
+                  .killed = "SWRDKILL.wav",
+                  .move = "SWRDMOVE.wav",
+                  .wince = "SWRDWNCE.wav",
+              },
+          .attribute = {35, 5, 10, 12, 6, 9, 0},
+          .attributeEx = {},
+          .growth = 14,
+          .experience = 10,
+          .cost = {0, 0, 0, 0, 0, 0, 300},
+      },
+      {
+          // crusader
+          .index = 7,
+          .level = 4,
+          .female = false,
+          .faction = Enum::CASTLE,
+          .upgrades = {},
+          .graphics =
+              {
+                  .animation = "CCRUSD.DEF",
+                  .missile = "",
+                  .adventure = "AVWswrx0.def",
+              },
+          .sounds =
+              {
+                  .attack = "CRUSATTK.wav",
+                  .defend = "CRUSDFND.wav",
+                  .killed = "CRUSKILL.wav",
+                  .move = "CRUSMOVE.wav",
+                  .wince = "CRUSWNCE.wav",
+              },
+          .attribute = {35, 6, 12, 12, 7, 10, 0},
+          .attributeEx = {Enum::const_two_attacks},
+          .growth = 14,
+          .experience = 10,
+          .cost = {0, 0, 0, 0, 0, 0, 400},
+      },
+      {
+          // monk
+          .index = 8,
+          .level = 5,
+          .female = false,
+          .faction = Enum::CASTLE,
+          .upgrades = {Enum::ZEALOT},
+          .graphics =
+              {
+                  .animation = "CMONKK.DEF",
+                  .missile = "CPRZEAX.DEF",
+                  .adventure = "AvWMonk.def",
+              },
+          .sounds =
+              {
+                  .attack = "MONKATTK.wav",
+                  .defend = "MONKDFND.wav",
+                  .killed = "MONKKILL.wav",
+                  .move = "MONKMOVE.wav",
+                  .shoot = "MONKSHOT.wav",
+                  .wince = "MONKWNCE.wav",
+              },
+          .attribute = {30, 5, 12, 7, 10, 12, 12},
+          .attributeEx = {Enum::SHOOTING_ARMY, Enum::const_no_melee_penalty},
+          .growth = 14,
+          .experience = 10,
+          .cost = {0, 0, 0, 0, 0, 0, 300},
+      },
+      {
+          // zealot
+          .index = 9,
+          .level = 5,
+          .female = false,
+          .faction = Enum::CASTLE,
+          .upgrades = {},
+          .graphics =
+              {
+                  .animation = "CZEALT.DEF",
+                  .missile = "CPRZEAX.DEF",
+                  .adventure = "AVWmonx0.def",
+              },
+          .sounds =
+              {
+                  .attack = "ZELTATTK.wav",
+                  .defend = "ZELTDFND.wav",
+                  .killed = "ZELTKILL.wav",
+                  .move = "ZELTMOVE.wav",
+                  .shoot = "ZELTSHOT.wav",
+                  .wince = "ZELTWNCE.wav",
+              },
+          .attribute = {30, 7, 12, 10, 10, 12, 24},
+          .attributeEx = {Enum::SHOOTING_ARMY, Enum::const_no_melee_penalty},
+          .growth = 14,
+          .experience = 10,
+          .cost = {0, 0, 0, 0, 0, 0, 450},
+      },
+      {
+          // cavalier
+          .index = 10,
+          .level = 6,
+          .female = false,
+          .faction = Enum::CASTLE,
+          .upgrades = {Enum::CHAMPION},
+          .graphics =
+              {
+                  .animation = "CCAVLR.DEF",
+                  .missile = "",
+                  .adventure = "AVWcvlr0.def",
+              },
+          .sounds =
+              {
+                  .attack = "CAVAATTK.wav",
+                  .defend = "CAVADFND.wav",
+                  .killed = "CAVAKILL.wav",
+                  .move = "CAVAMOVE.wav",
+                  .shoot = "",
+                  .wince = "CAVAWNCE.wav",
+              },
+          .attribute = {100, 7, 15, 15, 15, 25, 0},
+          .attributeEx = {Enum::DOUBLE_WIDE, Enum::const_jousting},
+          .growth = 14,
+          .experience = 10,
+          .cost = {0, 0, 0, 0, 0, 0, 1000},
+      },
+      {
+          // champion
+          .index = 11,
+          .level = 6,
+          .female = false,
+          .faction = Enum::CASTLE,
+          .upgrades = {},
+          .graphics =
+              {
+                  .animation = "CCHAMP.DEF",
+                  .missile = "",
+                  .adventure = "AVWcvlx0.def",
+              },
+          .sounds =
+              {
+                  .attack = "CHMPATTK.wav",
+                  .defend = "CHMPDFND.wav",
+                  .killed = "CHMPKILL.wav",
+                  .move = "CHMPMOVE.wav",
+                  .shoot = "",
+                  .wince = "CHMPWNCE.wav",
+              },
+          .attribute = {100, 9, 16, 16, 20, 25, 0},
+          .attributeEx = {Enum::DOUBLE_WIDE, Enum::const_jousting},
+          .growth = 14,
+          .experience = 10,
+          .cost = {0, 0, 0, 0, 0, 0, 1200},
+      },
+      {
+          // angel
+          .index = 12,
+          .level = 7,
+          .female = false,
+          .faction = Enum::CASTLE,
+          .upgrades = {Enum::ARCHANGEL},
+          .graphics =
+              {
+                  .animation = "CANGEL.DEF",
+                  .missile = "",
+                  .adventure = "AvWAngl.def",
+              },
+          .sounds =
+              {
+                  .attack = "ANGLATTK.wav",
+                  .defend = "ANGLDFND.wav",
+                  .killed = "ANGLKILL.wav",
+                  .move = "ANGLMOVE.wav",
+                  .shoot = "",
+                  .wince = "ANGLWNCE.wav",
+              },
+          .attribute = {200, 12, 20, 20, 50, 50, 0},
+          .attributeEx = {Enum::const_raises_morale, Enum::FLYING_ARMY},
+          .growth = 14,
+          .experience = 10,
+          .cost = {0, 0, 0, 0, 0, 0, 1000},
+      },
+  };
+};
