@@ -1,4 +1,4 @@
-#include "/Set/StructSet.h"
+#include "Set/StructSet.h"
 #include "Enum/Enum.h"
 #include <cstddef>
 #include <cstdint>
@@ -11,7 +11,7 @@ struct CastleCreatureSet {
        .index = 0,
        .level = 1,
        .female = false,
-       .faction = Enum::CASTLE,
+       .faction = Enum::FACTION_CASTLE,
        .upgrades = {Enum::HALBERDIER},
        .graphics =
            {
@@ -36,7 +36,7 @@ struct CastleCreatureSet {
        .index = 1,
        .level = 1,
        .female = false,
-       .faction = Enum::CASTLE,
+       .faction = Enum::FACTION_CASTLE,
        .upgrades = {},
        .graphics =
            {
@@ -61,7 +61,7 @@ struct CastleCreatureSet {
        .index = 2,
        .level = 2,
        .female = false,
-       .faction = Enum::CASTLE,
+       .faction = Enum::FACTION_CASTLE,
        .upgrades = {Enum::MARKSMAN},
        .graphics =
            {
@@ -87,7 +87,7 @@ struct CastleCreatureSet {
        .index = 3,
        .level = 2,
        .female = false,
-       .faction = Enum::CASTLE,
+       .faction = Enum::FACTION_CASTLE,
        .upgrades = {},
        .graphics =
            {
@@ -115,7 +115,7 @@ struct CastleCreatureSet {
           .index = 4,
           .level = 3,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::FACTION_CASTLE,
           .upgrades = {Enum::ROYAL_GRIFFIN},
           .graphics =
               {
@@ -145,7 +145,7 @@ struct CastleCreatureSet {
           .index = 5,
           .level = 3,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::FACTION_CASTLE,
           .upgrades = {},
           .graphics =
               {
@@ -174,7 +174,7 @@ struct CastleCreatureSet {
           .index = 6,
           .level = 4,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::FACTION_CASTLE,
           .upgrades = {Enum::CRUSADER},
           .graphics =
               {
@@ -201,7 +201,7 @@ struct CastleCreatureSet {
           .index = 7,
           .level = 4,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::FACTION_CASTLE,
           .upgrades = {},
           .graphics =
               {
@@ -228,7 +228,7 @@ struct CastleCreatureSet {
           .index = 8,
           .level = 5,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::FACTION_CASTLE,
           .upgrades = {Enum::ZEALOT},
           .graphics =
               {
@@ -257,7 +257,7 @@ struct CastleCreatureSet {
           .index = 9,
           .level = 5,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::FACTION_CASTLE,
           .upgrades = {},
           .graphics =
               {
@@ -286,7 +286,7 @@ struct CastleCreatureSet {
           .index = 10,
           .level = 6,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::FACTION_CASTLE,
           .upgrades = {Enum::CHAMPION},
           .graphics =
               {
@@ -314,7 +314,7 @@ struct CastleCreatureSet {
           .index = 11,
           .level = 6,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::FACTION_CASTLE,
           .upgrades = {},
           .graphics =
               {
@@ -342,7 +342,7 @@ struct CastleCreatureSet {
           .index = 12,
           .level = 7,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::FACTION_CASTLE,
           .upgrades = {Enum::ARCHANGEL},
           .graphics =
               {
@@ -380,7 +380,7 @@ struct CastleCreatureSet {
           .index = 13,
           .level = 7,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::FACTION_CASTLE,
           .upgrades = {},
           .graphics =
               {
