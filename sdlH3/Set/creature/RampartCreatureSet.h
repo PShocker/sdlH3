@@ -1,4 +1,3 @@
-
 #include "/Set/StructSet.h"
 #include "Enum/Enum.h"
 #include <cstddef>
@@ -6,177 +5,182 @@
 #include <map>
 #include <vector>
 
-struct CastleCreatureSet {
+struct RampartCreatureSet {
   const static inline std::vector<CreatureSetI> creatures = {
-      {// pikeman
-       .index = 0,
+      {
+          // centaur
+        .index = 14,
+          .level = 1,
+          .female = false,
+          .faction = Enum::RAMPART,
+          .upgrades = {Enum::CENTAUR_CAPTAIN},
+          .graphics =
+              {
+                  .animation = "CCENTR.DEF",
+                  .missile = "",
+                  .adventure = "AvWPike.def",
+              },
+          .sounds =
+              {
+                  .attack = "CNTRATTK.wav",
+                  .defend = "CNTRDFND.wav",
+                  .killed = "CNTRKILL.wav",
+                  .move = "CNTRMOVE.wav",
+                  .wince = "CNTRWNCE.wav",
+              },
+          .attribute = {10, 4, 4, 5, 1, 3, 0},
+          .abilities = {{Enum::DOUBLE_WIDE, NULL}},
+          .growth = 14,
+          .experience = 10,
+          .cost = {0, 0, 0, 0, 0, 0, 60},
+          .hasDoubleWeek = true,
+      },
+      {
+        // centaurCaptain
+       .index = 15,
        .level = 1,
        .female = false,
-       .faction = Enum::CASTLE,
-       .upgrades = {Enum::HALBERDIER},
-       .graphics =
-           {
-               .animation = "CPKMAN.DEF",
-               .missile = "",
-               .adventure = "AvWPike.def",
-           },
-       .sounds =
-           {
-               .attack = "PIKEATTK.wav",
-               .defend = "PIKEDFND.wav",
-               .killed = "PIKEKILL.wav",
-               .move = "PIKEMOVE.wav",
-               .wince = "PIKEWNCE.wav",
-           },
-       .attribute = {10, 4, 4, 5, 1, 3, 0},
-       .abilities = {{Enum::IMMUNE_TO_CAVALRY, NULL}},
-       .growth = 14,
-       .experience = 10,
-       .cost = {0, 0, 0, 0, 0, 0, 60}},
-      {// halberdier
-       .index = 1,
-       .level = 1,
-       .female = false,
-       .faction = Enum::CASTLE,
+       .faction = Enum::RAMPART,
        .upgrades = {},
        .graphics =
            {
-               .animation = "CHALBD.DEF",
+               .animation = "CECENT.DEF",
                .missile = "",
                .adventure = "AVWpikx0.def",
            },
        .sounds =
            {
-               .attack = "HALBATTK.wav",
-               .defend = "HALBDFND.wav",
-               .killed = "HALBKILL.wav",
-               .move = "HALBMOVE.wav",
-               .wince = "HALBWNCE.wav",
+               .attack = "ECNTATTK.wav",
+               .defend = "ECNTDFND.wav",
+               .killed = "ECNTKILL.wav",
+               .move = "ECNTMOVE.wav",
+               .wince = "ECNTWNCE.wav",
            },
        .attribute = {10, 5, 6, 5, 2, 3, 0},
        .abilities = {{Enum::IMMUNE_TO_CAVALRY, NULL}},
        .growth = 14,
        .experience = 10,
        .cost = {0, 0, 0, 0, 0, 0, 75}},
-      {// archer
-       .index = 2,
+      {// dwarf
+       .index = 16,
        .level = 2,
        .female = false,
-       .faction = Enum::CASTLE,
-       .upgrades = {Enum::MARKSMAN},
+       .faction = Enum::RAMPART,
+       .upgrades = {Enum::BATTLE_DWARF},
        .graphics =
            {
-               .animation = "CLCBOW.DEF",
-               .missile = "PLCBOWX.DEF",
-               .adventure = "AvWLCrs.def",
+               .animation = "CDWARF.DEF",
+               .missile = "",
+               .adventure = "",
            },
        .sounds =
            {
-               .attack = "LCRSATTK.wav",
-               .defend = "LCRSDFND.wav",
-               .killed = "LCRSKILL.wav",
-               .move = "LCRSMOVE.wav",
-               .shoot = "LCRSSHOT.wav",
-               .wince = "LCRSWNCE.wav",
+               .attack = "DWRFATTK.wav",
+               .defend = "DWRFDFND.wav",
+               .killed = "DWRFKILL.wav",
+               .move = "DWRFMOVE.wav",
+               .shoot = "",
+               .wince = "DWRFWNCE.wav",
            },
        .attribute = {10, 4, 6, 3, 2, 3, 12},
-       .abilities = {{Enum::SHOOTING_ARMY, NULL}},
+       .abilities = {{Enum::MAGIC_RESISTANCE, 20}},
        .growth = 14,
        .experience = 10,
        .cost = {0, 0, 0, 0, 0, 0, 100}},
-      {// marksman
-       .index = 3,
+      {// battleDwarf
+       .index = 17,
        .level = 2,
        .female = false,
-       .faction = Enum::CASTLE,
+       .faction = Enum::RAMPART,
        .upgrades = {},
        .graphics =
            {
-               .animation = "CHCBOW.DEF",
-               .missile = "PLCBOWX.DEF",
+               .animation = "CBDWAR.DEF",
+               .missile = "",
                .adventure = "AvWHCrs.def",
            },
        .sounds =
            {
-               .attack = "HCRSATTK.wav",
-               .defend = "HCRSDFND.wav",
-               .killed = "HCRSKILL.wav",
-               .move = "HCRSMOVE.wav",
-               .shoot = "HCRSSHOT.wav",
-               .wince = "HCRSWNCE.wav",
+               .attack = "BDRFATTK.wav",
+               .defend = "BDRFDFND.wav",
+               .killed = "BDRFKILL.wav",
+               .move = "BDRFMOVE.wav",
+               .shoot = "",
+               .wince = "BDRFWNCE.wav",
            },
        .attribute = {10, 6, 6, 3, 2, 3, 24},
-       .abilities = {{Enum::SHOOTING_ARMY, NULL},
-                     {Enum::const_two_distance_attacks, NULL}},
+       .abilities = {{Enum::MAGIC_RESISTANCE, 40}},
        .growth = 14,
        .experience = 10,
        .cost = {0, 0, 0, 0, 0, 0, 150}},
       {
-          // griffin
-          .index = 4,
+          // woodElf
+          .index = 18,
           .level = 3,
           .female = false,
-          .faction = Enum::CASTLE,
-          .upgrades = {Enum::ROYAL_GRIFFIN},
+          .faction = Enum::RAMPART,
+          .upgrades = {Enum::GRAND_ELF},
           .graphics =
               {
-                  .animation = "CGRIFF.DEF",
-                  .missile = "",
-                  .adventure = "AvWGrif.def",
+                  .animation = "CELF.DEF",
+                  .missile = "CELF.DEF",
+                  .adventure = "",
               },
           .sounds =
               {
-                  .attack = "GRIFATTK.wav",
-                  .defend = "GRIFDFND.wav",
-                  .killed = "GRIFKILL.wav",
-                  .move = "GRIFMOVE.wav",
-                  .wince = "GRIFWNCE.wav",
+                  .attack = "WELFATTK.wav",
+                  .defend = "WELFDFND.wav",
+                  .killed = "WELFKILL.wav",
+                  .move = "WELFMOVE.wav",
+                  .shoot="WELFSHOT.wav",
+                  .wince = "WELFWNCE.wav",
               },
           .attribute = {25, 6, 8, 8, 3, 6, 0},
-          .abilities = {{Enum::DOUBLE_WIDE, NULL},
-                        {Enum::FLYING_ARMY, NULL},
-                        {Enum::const_two_retaliation, NULL}},
+          .abilities = {{Enum::SHOOTING_ARMY, NULL},
+                        {Enum::const_two_distance_attacks, NULL},
+                        },
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 200},
           .hasDoubleWeek = true,
       },
       {
-          // royalGriffin
-          .index = 5,
+          // grandElf
+          .index = 19,
           .level = 3,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::RAMPART,
           .upgrades = {},
           .graphics =
               {
-                  .animation = "CRGRIF.DEF",
-                  .missile = "",
+                  .animation = "CGRELF.DEF",
+                  .missile = "PELFX.DEF",
                   .adventure = "AVWgrix0.def",
               },
           .sounds =
               {
-                  .attack = "RGRFATTK.wav",
-                  .defend = "RGRFDFND.wav",
-                  .killed = "RGRFKILL.wav",
-                  .move = "RGRFMOVE.wav",
-                  .wince = "RGRFWNCE.wav",
+                  .attack = "GELFATTK.wav",
+                  .defend = "GELFDFND.wav",
+                  .killed = "GELFKILL.wav",
+                  .move = "GELFMOVE.wav",
+                  .shoot= "GELFSHOT.wav",
+                  .wince = "GELFWNCE.wav",
               },
           .attribute = {25, 9, 9, 9, 3, 6, 0},
-          .abilities = {{Enum::DOUBLE_WIDE, NULL},
-                        {Enum::FLYING_ARMY, NULL},
-                        {Enum::const_unlimit_retaliation, NULL}},
+          .abilities = {{Enum::SHOOTING_ARMY, NULL},
+                        {Enum::const_two_distance_attacks, NULL},
+                        },
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 240},
       },
       {
-          // swordsman
-          .index = 6,
+          // pegasus
+          .index = 20,
           .level = 4,
           .female = false,
-          .faction = Enum::CASTLE,
-          .upgrades = {Enum::CRUSADER},
+          .faction = Enum::RAMPART,
+          .upgrades = {Enum::SILVER_PEGASUS},
           .graphics =
               {
                   .animation = "CSWORD.DEF",
@@ -185,24 +189,26 @@ struct CastleCreatureSet {
               },
           .sounds =
               {
-                  .attack = "SWRDATTK.wav",
-                  .defend = "SWRDDFND.wav",
-                  .killed = "SWRDKILL.wav",
-                  .move = "SWRDMOVE.wav",
-                  .wince = "SWRDWNCE.wav",
+                  .attack = "PEGAATTK.wav",
+                  .defend = "PEGADFND.wav",
+                  .killed = "PEGAKILL.wav",
+                  .move = "PEGAMOVE.wav",
+                  .wince = "PEGAWNCE.wav",
               },
           .attribute = {35, 5, 10, 12, 6, 9, 0},
-          .abilities = {},
+          .abilities = {{Enum::DOUBLE_WIDE, NULL},
+                        {Enum::const_enemy_spell_cost, 2},
+                        },
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 300},
       },
       {
-          // crusader
-          .index = 7,
+          // silverPegasus
+          .index = 21,
           .level = 4,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::RAMPART,
           .upgrades = {},
           .graphics =
               {
@@ -219,7 +225,9 @@ struct CastleCreatureSet {
                   .wince = "CRUSWNCE.wav",
               },
           .attribute = {35, 6, 12, 12, 7, 10, 0},
-          .abilities = {{Enum::const_two_attacks, NULL}},
+                 .abilities = {{Enum::DOUBLE_WIDE, NULL},
+                        {Enum::const_enemy_spell_cost, 2},
+                        },
           .growth = 14,
           .experience = 10,
           .cost = {0, 0, 0, 0, 0, 0, 400},
@@ -229,7 +237,7 @@ struct CastleCreatureSet {
           .index = 8,
           .level = 5,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::RAMPART,
           .upgrades = {Enum::ZEALOT},
           .graphics =
               {
@@ -258,7 +266,7 @@ struct CastleCreatureSet {
           .index = 9,
           .level = 5,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::RAMPART,
           .upgrades = {},
           .graphics =
               {
@@ -287,7 +295,7 @@ struct CastleCreatureSet {
           .index = 10,
           .level = 6,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::RAMPART,
           .upgrades = {Enum::CHAMPION},
           .graphics =
               {
@@ -315,7 +323,7 @@ struct CastleCreatureSet {
           .index = 11,
           .level = 6,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::RAMPART,
           .upgrades = {},
           .graphics =
               {
@@ -343,7 +351,7 @@ struct CastleCreatureSet {
           .index = 12,
           .level = 7,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::RAMPART,
           .upgrades = {Enum::ARCHANGEL},
           .graphics =
               {
@@ -381,7 +389,7 @@ struct CastleCreatureSet {
           .index = 13,
           .level = 7,
           .female = false,
-          .faction = Enum::CASTLE,
+          .faction = Enum::RAMPART,
           .upgrades = {},
           .graphics =
               {

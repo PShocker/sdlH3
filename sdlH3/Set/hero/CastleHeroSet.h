@@ -1,4 +1,4 @@
-
+#include "/Set/StructSet.h"
 #include "Enum/Enum.h"
 #include <cstdint>
 #include <set>
@@ -6,27 +6,9 @@
 #include <utility>
 #include <vector>
 
-struct HeroSetSpec {
-  uint8_t id;
-  uint8_t subId;
-  int32_t val;
-};
-
-struct HeroSetI {
-  uint8_t index;
-  uint8_t clasz; // class
-  bool female;
-  std::vector<std::pair<uint8_t, uint8_t>> secSkill;
-  std::vector<std::pair<uint8_t, uint8_t>> defaultCre;
-  std::string smallPor;
-  std::string largePor;
-  std::vector<HeroSetSpec> spec;
-  uint64_t experience;
-  std::set<uint8_t> spells;
-};
 
 struct CastleHeroSet {
-  std::vector<HeroSetI> heros = {
+  const static inline std::vector<HeroSetI> heros = {
       {// orrin
        .index = 0,
        .clasz = 0,

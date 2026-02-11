@@ -109,6 +109,9 @@ struct Enum {
     SULFUR = 4,
     WOOD = 5,
     GOLD = 6,
+
+    // 随机资源
+    RAMDOM_RESOURCE
   };
 
   enum class SCNTYPE : uint8_t {
@@ -328,10 +331,11 @@ struct Enum {
 
   enum CREATURE_EX_ATTRIBUTE {
     // 基本类型属性
-    SHOOTING_ARMY, // 远程部队
-    FLYING_ARMY,   // 飞行部队
-    DOUBLE_WIDE,   // 2格兵种
-    IS_UNDEAD,     // 丧尸
+    SHOOTING_ARMY,    // 远程部队
+    FLYING_ARMY,      // 飞行部队
+    DOUBLE_WIDE,      // 2格兵种
+    IS_UNDEAD,        // 丧尸
+    MAGIC_RESISTANCE, // 魔法抵抗
 
     // 特殊能力属性
     const_no_melee_penalty,     // 无近战惩罚
@@ -348,6 +352,8 @@ struct Enum {
     const_spell,                // 生物可以释放魔法
     const_spell_attack,         // 攻击后释放魔法
     const_spell_hit,            // 被攻击后产生的魔法
+    const_hate,                 // 死敌属性
+    const_enemy_spell_cost,     //  增加(减少)敌方魔法消耗
 
     // 兵种等级属性
     KING_1, // 7级生物（龙、比蒙、九头怪等）
@@ -361,7 +367,6 @@ struct Enum {
 
     // 攻城属性
     CATAPULT_ATTACK, // 攻击城墙
-    SIEGE_WEAPON,    // 攻城武器
 
     // 攻击方式属性
     MULTI_HEADED,        // 多头攻击（攻击多个敌人）
@@ -578,5 +583,29 @@ struct Enum {
     BUILD_HORDE_UPGRADE_3,
     BUILD_HORDE_UPGRADE_4,
     BUILD_HORDE_UPGRADE_5,
+
+    // 一些额外的动画
+    BUILD_EXTRA_ANIMATE_1,
+    BUILD_EXTRA_ANIMATE_2,
+    BUILD_EXTRA_ANIMATE_3,
+  };
+
+  enum TERRAIN : int8_t {
+    TERRAIN_GRASS,
+  };
+
+  enum BUILD_BONUS : uint8_t {
+    CREATURE_GROWTH,
+    CREATURE_GROWTH_RATE,
+    TOWN_BATTLE_MORALE_RAISE,
+    TOWN_BATTLE_LUCK_RAISE,
+    TOWN_BATTLE_ESCAPE,
+    TOWN_BATTLE_SIEGE,
+    RESTORE_MANA,
+    HERO_PRIMAYRY_SKILL,
+    HERO_SECOND_SKILL,
+    HERO_MOVENT_LAND,
+    HERO_MOVENT_SEA,
+    HERO_MANA,
   };
 };

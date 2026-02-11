@@ -26,7 +26,7 @@ enum class ObjectTemplateType : int32_t {
   ORIGINAL_REGULAR_TERRAIN_COUNT = ROCK
 };
 
-enum class ObjectType {
+enum ObjectType {
   NOTHING = 0,
   ALTAR_OF_SACRIFICE = 2,
   ANCHOR_POINT = 3,
