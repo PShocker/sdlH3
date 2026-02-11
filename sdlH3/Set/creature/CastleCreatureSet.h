@@ -1,4 +1,3 @@
-
 #include "/Set/StructSet.h"
 #include "Enum/Enum.h"
 #include <cstddef>
