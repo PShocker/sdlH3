@@ -1,12 +1,12 @@
-#pragma  once
+#pragma once
 
 #include <any>
+#include <array>
 #include <cstdint>
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
-#include <array>
 
 struct CreatureSetAttribute {
   uint32_t hitPoint;
@@ -80,4 +80,20 @@ struct HeroSetI {
   std::vector<HeroSetSpec> spec;
   uint64_t experience;
   std::set<uint8_t> spells;
+};
+
+struct SpellAdventure {
+  uint8_t goalType;
+  uint8_t cursor;
+  uint8_t range;
+};
+
+struct SpellData {
+  uint8_t index;
+  uint8_t school;
+  std::array<uint8_t, 4> cost;
+  uint8_t level;
+  uint8_t type;
+  void (*func)(std::any);
+  std::any extra;
 };

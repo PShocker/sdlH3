@@ -1,15 +1,14 @@
 #pragma once
-
 #include "Set/StructSet.h"
+
 #include <any>
 #include <array>
 #include <cstdint>
 
-struct SummonBoat {
+struct ViewEarth {
   static void func(std::any data);
 
   const static inline SpellData spell = {
-      .index = 0,
       .school = 0,
       .cost = {1, 1, 1, 1},
       .level = 1,
