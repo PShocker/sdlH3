@@ -1,9 +1,7 @@
 build
 data
-font
-ffmpeg
 out
-web
+.clangd
 .vscode
 .vs
 .cache

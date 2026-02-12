@@ -1,63 +1,61 @@
 #include "Enum/Enum.h"
 #include "Set/StructSet.h"
 #include <cstddef>
-#include <cstdint>
-#include <map>
 #include <vector>
 
-struct DungeonCreatureSet {
+struct InfernoCreatureSet {
   const static inline std::vector<CreatureSetI> creatures =
       {
           {
-              // troglodyte
-              .index = 70,
+              // imp
+              .index = 42,
               .level = 1,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
-              .upgrades = {Enum::INFERNAL_TROGLODYTE},
+              .faction = Enum::FACTION_INFERNO,
+              .upgrades = {Enum::FAMILIAR},
               .graphics =
                   {
-                      .animation = "CTROGL.DEF",
+                      .animation = "CIMP.DEF",
                       .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "TROGATTK.wav",
-                      .defend = "TROGDFND.wav",
-                      .killed = "TROGKILL.wav",
-                      .move = "TROGMOVE.wav",
+                      .attack = "IMPPATTK.wav",
+                      .defend = "IMPPDFND.wav",
+                      .killed = "IMPPKILL.wav",
+                      .move = "IMPPMOVE.wav",
                       .shoot = "",
-                      .wince = "TROGWNCE.wav",
+                      .wince = "IMPPWNCE.wav",
                   },
               .attribute = {10, 4, 4, 5, 1, 3, 0},
               .abilities = {},
               .growth = 14,
               .experience = 10,
               .cost = {0, 0, 0, 0, 0, 0, 60},
-              .hasDoubleWeek = true,
+              .hasDoubleWeek = false,
           },
           {
-              // infernalTroglodyte
-              .index = 71,
+              // familiar
+              .index = 43,
               .level = 1,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
+              .faction = Enum::FACTION_INFERNO,
               .upgrades = {},
               .graphics =
                   {
-                      .animation = "CITROG.DEF",
+                      .animation = "CFAMIL.DEF",
                       .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "ITRGATTK.wav",
-                      .defend = "ITRGDFND.wav",
-                      .killed = "ITRGKILL.wav",
-                      .move = "ITRGMOVE.wav",
+                      .attack = "FMLRATTK.wav",
+                      .defend = "FMLRDFND.wav",
+                      .killed = "FMLRKILL.wav",
+                      .move = "FMLRMOVE.wav",
                       .shoot = "",
-                      .wince = "ITRGWNCE.wav",
+                      .wince = "FMLRWNCE.wav",
                   },
               .attribute = {10, 5, 6, 5, 2, 3, 0},
               .abilities = {},
@@ -67,26 +65,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = false,
           },
           {
-              // harpy
-              .index = 72,
+              // gog
+              .index = 44,
               .level = 2,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
-              .upgrades = {Enum::HARPY_HAG},
+              .faction = Enum::FACTION_INFERNO,
+              .upgrades = {Enum::MAGOG},
               .graphics =
                   {
-                      .animation = "CHARPY.DEF",
-                      .missile = "",
+                      .animation = "CGOG.DEF",
+                      .missile = "CPRGOGX.DEF",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "HARPATTK.wav",
-                      .defend = "HARPDFND.wav",
-                      .killed = "HARPKILL.wav",
-                      .move = "HARPMOVE.wav",
-                      .shoot = "",
-                      .wince = "HARPWNCE.wav",
+                      .attack = "GOGGATTK.wav",
+                      .defend = "GOGGDFND.wav",
+                      .killed = "GOGGKILL.wav",
+                      .move = "GOGGMOVE.wav",
+                      .shoot = "GOGGSHOT.wav",
+                      .wince = "GOGGWNCE.wav",
                   },
               .attribute = {10, 4, 6, 3, 2, 3, 12},
               .abilities = {},
@@ -96,26 +94,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = true,
           },
           {
-              // harpyHag
-              .index = 73,
+              // magog
+              .index = 45,
               .level = 2,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
+              .faction = Enum::FACTION_INFERNO,
               .upgrades = {},
               .graphics =
                   {
-                      .animation = "CHARPH.DEF",
-                      .missile = "",
+                      .animation = "CMAGOG.DEF",
+                      .missile = "CPRGOGX.DEF",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "HHAGATTK.wav",
-                      .defend = "HHAGDFND.wav",
-                      .killed = "HHAGKILL.wav",
-                      .move = "HHAGMOVE.wav",
-                      .shoot = "HHAGSHOT.wav",
-                      .wince = "HHAGWNCE.wav",
+                      .attack = "MGOGATTK.wav",
+                      .defend = "MGOGDFND.wav",
+                      .killed = "MGOGKILL.wav",
+                      .move = "MGOGMOVE.wav",
+                      .shoot = "SPONTCOMB.wav",
+                      .wince = "MGOGWNCE.wav",
                   },
               .attribute = {10, 6, 6, 3, 2, 3, 24},
               .abilities = {},
@@ -125,26 +123,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = false,
           },
           {
-              // beholder
-              .index = 74,
+              // hellHound
+              .index = 46,
               .level = 3,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
-              .upgrades = {Enum::EVIL_EYE},
+              .faction = Enum::FACTION_INFERNO,
+              .upgrades = {Enum::CERBERUS},
               .graphics =
                   {
-                      .animation = "CBEHOL.DEF",
+                      .animation = "CHHOUN.DEF",
                       .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "BHDRATTK.wav",
-                      .defend = "BHDRDFND.wav",
-                      .killed = "BHDRKILL.wav",
-                      .move = "BHDRMOVE.wav",
-                      .shoot = "BHDRSHOT.wav",
-                      .wince = "BHDRWNCE.wav",
+                      .attack = "HHNDATTK.wav",
+                      .defend = "HHNDDFND.wav",
+                      .killed = "HHNDKILL.wav",
+                      .move = "HHNDMOVE.wav",
+                      .shoot = "",
+                      .wince = "HHNDWNCE.wav",
                   },
               .attribute = {10, 4, 6, 3, 2, 3, 12},
               .abilities = {},
@@ -154,26 +152,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = false,
           },
           {
-              // evilEye
-              .index = 75,
+              // cerberus
+              .index = 47,
               .level = 3,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
+              .faction = Enum::FACTION_INFERNO,
               .upgrades = {},
               .graphics =
                   {
-                      .animation = "CEVEYE.DEF",
+                      .animation = "CCERBU.DEF",
                       .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "EVLIATTK.wav",
-                      .defend = "EVLIDFND.wav",
-                      .killed = "EVLIKILL.wav",
-                      .move = "EVLIMOVE.wav",
-                      .shoot = "EVLISHOT.wav",
-                      .wince = "EVLIWNCE.wav",
+                      .attack = "CERBATTK.wav",
+                      .defend = "CERBDFND.wav",
+                      .killed = "CERBKILL.wav",
+                      .move = "CERBMOVE.wav",
+                      .shoot = "",
+                      .wince = "CERBWNCE.wav",
                   },
               .attribute = {10, 6, 6, 3, 2, 3, 24},
               .abilities = {},
@@ -183,26 +181,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = false,
           },
           {
-              // medusa
-              .index = 76,
+              // demon
+              .index = 48,
               .level = 4,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
-              .upgrades = {Enum::MEDUSA_QUEEN},
+              .faction = Enum::FACTION_INFERNO,
+              .upgrades = {Enum::HORNED_DEMON},
               .graphics =
                   {
-                      .animation = "CMEDUS.DEF",
-                      .missile = "PMEDUSX.DEF",
+                      .animation = "COHDEM.DEF",
+                      .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "MEDUATTK.wav",
-                      .defend = "MEDUDFND.wav",
-                      .killed = "MEDUKILL.wav",
-                      .move = "MEDUMOVE.wav",
-                      .shoot = "MEDUSHOT.wav",
-                      .wince = "MEDUWNCE.wav",
+                      .attack = "SHDMATTK.wav",
+                      .defend = "SHDMDFND.wav",
+                      .killed = "SHDMKILL.wav",
+                      .move = "SHDMMOVE.wav",
+                      .shoot = "",
+                      .wince = "SHDMWNCE.wav",
                   },
               .attribute = {35, 5, 10, 12, 6, 9, 0},
               .abilities = {},
@@ -212,26 +210,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = false,
           },
           {
-              // medusaQueen
-              .index = 77,
+              // hornedDemon
+              .index = 49,
               .level = 4,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
+              .faction = Enum::FACTION_INFERNO,
               .upgrades = {},
               .graphics =
                   {
-                      .animation = "CMEDUQ.DEF",
-                      .missile = "PMEDUSX.DEF",
+                      .animation = "CTHDEM.DEF",
+                      .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "MEDQATTK.wav",
-                      .defend = "MEDQDFND.wav",
-                      .killed = "MEDQKILL.wav",
-                      .move = "MEDQMOVE.wav",
-                      .shoot = "MEDQSHOT.wav",
-                      .wince = "MEDQWNCE.wav",
+                      .attack = "DHDMATTK.wav",
+                      .defend = "DHDMDFND.wav",
+                      .killed = "DHDMKILL.wav",
+                      .move = "DHDMMOVE.wav",
+                      .shoot = "",
+                      .wince = "DHDMWNCE.wav",
                   },
               .attribute = {35, 6, 12, 12, 7, 10, 0},
               .abilities = {},
@@ -241,26 +239,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = false,
           },
           {
-              // minotaur
-              .index = 78,
+              // pitFiend
+              .index = 50,
               .level = 5,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
-              .upgrades = {Enum::MINOTAUR_KING},
+              .faction = Enum::FACTION_INFERNO,
+              .upgrades = {Enum::PIT_LORD},
               .graphics =
                   {
-                      .animation = "CMINOT.DEF",
+                      .animation = "CPFIEN.DEF",
                       .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "MINOATTK.wav",
-                      .defend = "MINODFND.wav",
-                      .killed = "MINOKILL.wav",
-                      .move = "MINOMOVE.wav",
+                      .attack = "PFNDATTK.wav",
+                      .defend = "PFNDDFND.wav",
+                      .killed = "PFNDKILL.wav",
+                      .move = "PFNDMOVE.wav",
                       .shoot = "",
-                      .wince = "MINOWNCE.wav",
+                      .wince = "PFNDWNCE.wav",
                   },
               .attribute = {30, 5, 12, 7, 10, 12, 12},
               .abilities = {},
@@ -270,26 +268,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = false,
           },
           {
-              // minotaurKing
-              .index = 79,
+              // pitLord
+              .index = 51,
               .level = 5,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
+              .faction = Enum::FACTION_INFERNO,
               .upgrades = {},
               .graphics =
                   {
-                      .animation = "CMINOK.DEF",
+                      .animation = "CPFOE.DEF",
                       .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "MINKATTK.wav",
-                      .defend = "MINKDFND.wav",
-                      .killed = "MINKKILL.wav",
-                      .move = "MINKMOVE.wav",
-                      .shoot = "MINKSHOT.wav",
-                      .wince = "MINKWNCE.wav",
+                      .attack = "PFOEATTK.wav",
+                      .defend = "PFOEDFND.wav",
+                      .killed = "PFOEKILL.wav",
+                      .move = "PFOEMOVE.wav",
+                      .shoot = "",
+                      .wince = "PFOEWNCE.wav",
                   },
               .attribute = {30, 7, 12, 10, 10, 12, 24},
               .abilities = {},
@@ -299,26 +297,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = false,
           },
           {
-              // manticore
-              .index = 80,
+              // efreet
+              .index = 52,
               .level = 6,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
-              .upgrades = {Enum::SCORPICORE},
+              .faction = Enum::FACTION_INFERNO,
+              .upgrades = {Enum::EFREET_SULTAN},
               .graphics =
                   {
-                      .animation = "CMCORE.DEF",
+                      .animation = "CEFREE.DEF",
                       .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "MANTATTK.wav",
-                      .defend = "MANTDFND.wav",
-                      .killed = "MANTKILL.wav",
-                      .move = "MANTMOVE.wav",
-                      .shoot = "MANTSHOT.wav",
-                      .wince = "MANTWNCE.wav",
+                      .attack = "EFRTATTK.wav",
+                      .defend = "EFRTDFND.wav",
+                      .killed = "EFRTKILL.wav",
+                      .move = "EFRTMOVE.wav",
+                      .shoot = "",
+                      .wince = "EFRTWNCE.wav",
                   },
               .attribute = {100, 7, 15, 15, 15, 25, 0},
               .abilities = {},
@@ -328,26 +326,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = false,
           },
           {
-              // scorpicore
-              .index = 81,
+              // efreetSultan
+              .index = 53,
               .level = 6,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
+              .faction = Enum::FACTION_INFERNO,
               .upgrades = {},
               .graphics =
                   {
-                      .animation = "CCMCOR.DEF",
+                      .animation = "CEFRES.DEF",
                       .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "SCRPATTK.wav",
-                      .defend = "SCRPDFND.wav",
-                      .killed = "SCRPKILL.wav",
-                      .move = "SCRPMOVE.wav",
-                      .shoot = "SCRPSHOT.wav",
-                      .wince = "SCRPWNCE.wav",
+                      .attack = "ESULATTK.wav",
+                      .defend = "ESULDFND.wav",
+                      .killed = "ESULKILL.wav",
+                      .move = "ESULMOVE.wav",
+                      .shoot = "ESULSHOT.wav",
+                      .wince = "ESULWNCE.wav",
                   },
               .attribute = {100, 9, 16, 16, 20, 25, 0},
               .abilities = {},
@@ -357,26 +355,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = false,
           },
           {
-              // redDragon
-              .index = 82,
+              // devil
+              .index = 54,
               .level = 7,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
-              .upgrades = {Enum::BLACK_DRAGON},
+              .faction = Enum::FACTION_INFERNO,
+              .upgrades = {Enum::ARCH_DEVIL},
               .graphics =
                   {
-                      .animation = "CRDRGN.DEF",
+                      .animation = "CDEVIL.DEF",
                       .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "RDDRATTK.wav",
-                      .defend = "RDDRDFND.wav",
-                      .killed = "RDDRKILL.wav",
-                      .move = "RDDRMOVE.wav",
+                      .attack = "DEVLATTK.wav",
+                      .defend = "DEVLDFND.wav",
+                      .killed = "DEVLKILL.wav",
+                      .move = "DEVLMOVE.wav",
                       .shoot = "",
-                      .wince = "RDDRWNCE.wav",
+                      .wince = "DEVLWNCE.wav",
                   },
               .attribute = {200, 12, 20, 20, 50, 50, 0},
               .abilities = {},
@@ -386,26 +384,26 @@ struct DungeonCreatureSet {
               .hasDoubleWeek = false,
           },
           {
-              // blackDragon
-              .index = 83,
+              // archDevil
+              .index = 55,
               .level = 7,
               .female = false,
-              .faction = Enum::FACTION_DUNGEON,
+              .faction = Enum::FACTION_INFERNO,
               .upgrades = {},
               .graphics =
                   {
-                      .animation = "CBDRGN.DEF",
+                      .animation = "CADEVL.DEF",
                       .missile = "",
                       .adventure = "",
                   },
               .sounds =
                   {
-                      .attack = "BKDRATTK.wav",
-                      .defend = "BKDRDFND.wav",
-                      .killed = "BKDRKILL.wav",
-                      .move = "BKDRMOVE.wav",
+                      .attack = "ADVLATTK.wav",
+                      .defend = "ADVLDFND.wav",
+                      .killed = "ADVLKILL.wav",
+                      .move = "ADVLMOVE.wav",
                       .shoot = "",
-                      .wince = "BKDRWNCE.wav",
+                      .wince = "ADVLWNCE.wav",
                   },
               .attribute = {200, 12, 20, 20, 50, 50, 0},
               .abilities = {},

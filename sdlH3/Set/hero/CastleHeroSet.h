@@ -1,4 +1,4 @@
-#include "/Set/StructSet.h"
+#include "Set/StructSet.h"
 #include "Enum/Enum.h"
 #include <cstdint>
 #include <set>
@@ -6,12 +6,11 @@
 #include <utility>
 #include <vector>
 
-
 struct CastleHeroSet {
   const static inline std::vector<HeroSetI> heros = {
       {// orrin
        .index = 0,
-       .clasz = 0,
+       .clasz = Enum::HERO_CLASS_KNIGHT,
        .female = false,
        .secSkill = {{Enum::LEADERSHIP, Enum::BASIC},
                     {Enum::ARCHERY, Enum::BASIC}},
@@ -255,7 +254,7 @@ struct CastleHeroSet {
                },
 
            },
-       .spells = {Enum::StoneSkin}},
+       .spells = {Enum::STONE_SKIN}},
       {// adela
        .index = 9,
        .clasz = 0,
@@ -277,11 +276,11 @@ struct CastleHeroSet {
            {
                {
                    .id = Enum::SPECIAL_SPECIFIC_SPELL,
-                   .subId = Enum::Bless,
+                   .subId = Enum::BLESS,
                    .val = 5,
                },
            },
-       .spells = {Enum::Bless}},
+       .spells = {Enum::BLESS}},
       {// cuthbert
        .index = 10,
        .clasz = 0,
@@ -303,12 +302,12 @@ struct CastleHeroSet {
            {
                {
                    .id = Enum::SPECIAL_SPECIFIC_SPELL,
-                   .subId = Enum::Weakness,
+                   .subId = Enum::WEAKNESS,
                    .val = 5,
                },
 
            },
-       .spells = {Enum::Weakness}},
+       .spells = {Enum::WEAKNESS}},
 
       {// adelaide
        .index = 11,
@@ -330,12 +329,12 @@ struct CastleHeroSet {
            {
                {
                    .id = Enum::SPECIAL_SPECIFIC_SPELL,
-                   .subId = Enum::FrostRing,
+                   .subId = Enum::FROST_RING,
                    .val = 5,
                },
 
            },
-       .spells = {Enum::FrostRing}},
+       .spells = {Enum::FROST_RING}},
 
       {// ingham
        .index = 12,
@@ -367,7 +366,7 @@ struct CastleHeroSet {
                    .val = 5,
                },
            },
-       .spells = {Enum::Curse}},
+       .spells = {Enum::CURSE}},
       {// sanya
        .index = 13,
        .clasz = 0,
@@ -394,7 +393,7 @@ struct CastleHeroSet {
                },
 
            },
-       .spells = {Enum::Dispel}},
+       .spells = {Enum::DISPEL}},
 
       {// loynis
        .index = 14,
@@ -417,12 +416,12 @@ struct CastleHeroSet {
            {
                {
                    .id = Enum::SPECIAL_SPECIFIC_SPELL,
-                   .subId = Enum::Prayer,
+                   .subId = Enum::PRAYER,
                    .val = 5,
                },
 
            },
-       .spells = {Enum::Prayer}},
+       .spells = {Enum::PRAYER}},
       {
           // caitlin
           .index = 15,

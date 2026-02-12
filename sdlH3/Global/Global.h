@@ -7,6 +7,7 @@
 #include "entt/entity/fwd.hpp"
 #include <array>
 #include <cstdint>
+#include <flat_map>
 #include <functional>
 #include <optional>
 #include <random>
@@ -16,6 +17,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
 
 struct Global {
   static inline std::random_device rd = std::random_device();
@@ -184,12 +186,9 @@ struct Global {
   static inline std::vector<Audio> audioData;
   static inline SDL_AudioStream *audio;
 
-  //   static inline std::unordered_map<std::string, std::any> stateCache;
-  static inline std::unordered_map<std::string, std::vector<SDL_Texture *>>
-      pcxCache;
-  static inline std::unordered_map<std::string, std::vector<SDL_Texture *>>
-      defCache;
-  static inline std::unordered_map<std::string, std::vector<uint8_t>> pcmCache;
+  static inline std::flat_map<std::string, std::vector<SDL_Texture *>> pcxCache;
+  static inline std::flat_map<std::string, std::vector<SDL_Texture *>> defCache;
+  static inline std::flat_map<std::string, std::vector<uint8_t>> pcmCache;
   static void init();
   static void startGame();
   static void endGame();

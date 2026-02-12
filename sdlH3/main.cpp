@@ -7,11 +7,9 @@
 #include "SDL3/SDL_mouse.h"
 #include "Sys/AudioSys.h"
 #include "Sys/FreeTypeSys.h"
-#include "Sys/VideoSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include <cstdint>
-#include <cstring>
 #include <string>
 #include <zlib.h>
 
@@ -59,7 +57,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   AudioSys::init();
 
   World::enterAdvScrn();
-
 
   SDL_HideCursor();
 

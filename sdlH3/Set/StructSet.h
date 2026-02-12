@@ -1,4 +1,4 @@
-
+#pragma  once
 
 #include <any>
 #include <cstdint>
@@ -6,6 +6,8 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <array>
+
 struct CreatureSetAttribute {
   uint32_t hitPoint;
   int32_t speed;
