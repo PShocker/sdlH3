@@ -1,8 +1,6 @@
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
 #include "CameraSys.h"
-#include "Cfg/HeroCfg.h"
-#include "Cfg/TownCfg.h"
 #include "Comp/ArenaComp.h"
 #include "Comp/DwellingComp.h"
 #include "Comp/HeroComp.h"

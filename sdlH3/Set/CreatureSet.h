@@ -9,6 +9,7 @@
 #include "Set/creature/RampartCreatureSet.h"
 #include "Set/creature/StrongholdCreatureSet.h"
 #include "Set/creature/TowerCreatureSet.h"
+#include "creature/SpecialCreatureSet.h"
 #include <algorithm>
 #include <vector>
 
@@ -20,14 +21,10 @@ struct CreatureSet {
           &NecropolisCreatureSet::creatures, &DungeonCreatureSet::creatures,
           &StrongholdCreatureSet::creatures, &FortressCreatureSet::creatures,
           &ConfluxCreatureSet::creatures,    &NeutralCreatureSet::creatures,
+          &SpecialCreatureSet::creatures,
   };
 
-  static constexpr auto fullCreatures = []() {
-    std::vector<CreatureSetI> r;
-    for (auto creatures : townCreatures) {
-      r.append_range(*creatures);
-    }
-    std::ranges::sort(r, {}, &CreatureSetI::index);
-    return r;
-  };
+  static inline std::vector<CreatureSetI *> fullCreatures;
+
+  static void init();
 };

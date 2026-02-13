@@ -1,0 +1,9 @@
+
+
+#include "World/World.h"
+#include <any>
+#include <cstdint>
+
+void ProtectionfromWater(std::any data) {
+  return;
+}

@@ -1,6 +1,6 @@
 #include "TownHallSys.h"
 #include "AdvMapSys.h"
-#include "Cfg/TownCfg.h"
+
 #include "Comp/PlayerIdComp.h"
 #include "Comp/TownComp.h"
 #include "Enum/Enum.h"

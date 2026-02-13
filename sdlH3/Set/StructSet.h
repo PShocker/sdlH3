@@ -48,7 +48,7 @@ struct CreatureSetSpellEx {
 };
 
 struct CreatureSetI {
-  uint8_t index;
+  uint16_t index;
   uint8_t level;
   bool female;
   uint8_t faction;
@@ -96,4 +96,20 @@ struct SpellData {
   uint8_t type;
   void (*func)(std::any);
   std::any extra;
+};
+
+struct ArtifactBonus {
+  uint8_t type; // Bonus type, corresponds to Enum::ARTIFACT_BONUS_TYPE
+  uint8_t
+      subType; // Subtype, e.g., PRIMARY_SKILL_ATTACK, SPELL_SCHOOL_FIRE, etc.
+  int32_t val; // Bonus value
+};
+
+struct ArtifactI {
+  uint8_t index; // Artifact ID, corresponds to Enum::ARTIFACT_ID
+  std::vector<ArtifactBonus> bonus; // List of bonuses provided by the artifact
+  uint32_t experience;              // Experience provided by the artifact
+  std::array<uint32_t, 7> cost;     // Purchase cost
+  std::array<bool, 19> slot;        // Equip slots [0-18]
+  std::vector<uint8_t> components;  // Combined artifact component IDs
 };

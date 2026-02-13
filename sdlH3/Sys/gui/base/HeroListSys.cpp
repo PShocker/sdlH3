@@ -1,5 +1,5 @@
 #include "HeroListSys.h"
-#include "Cfg/HeroCfg.h"
+
 #include "Comp/HeroComp.h"
 #include "Global/Global.h"
 #include "SDL3/SDL_rect.h"

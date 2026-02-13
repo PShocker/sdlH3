@@ -1,7 +1,7 @@
 #include "PrisonSys.h"
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
-#include "Cfg/HeroCfg.h"
+
 #include "Comp/HeroComp.h"
 #include "Comp/ObjectComp.h"
 #include "Comp/PrisonComp.h"

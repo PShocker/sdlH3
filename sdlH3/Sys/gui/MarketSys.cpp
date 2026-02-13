@@ -1,6 +1,6 @@
 #include "MarketSys.h"
 #include "AdvMapSys.h"
-#include "Cfg/ArtifactCfg.h"
+
 #include "Comp/HeroComp.h"
 #include "Comp/MarketComp.h"
 #include "Enum/Enum.h"

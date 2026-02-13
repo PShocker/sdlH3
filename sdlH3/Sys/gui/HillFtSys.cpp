@@ -1,6 +1,5 @@
 #include "HillFtSys.h"
 #include "AdvMapSys.h"
-#include "Cfg/CreatureCfg.h"
 #include "Comp/HeroComp.h"
 #include "Comp/PlayerIdComp.h"
 #include "Enum/Enum.h"

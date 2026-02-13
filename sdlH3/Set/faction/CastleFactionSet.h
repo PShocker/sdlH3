@@ -1,4 +1,4 @@
-
+#pragma once
 
 #include "Enum/Enum.h"
 #include "H3mLoader/H3mObject.h"

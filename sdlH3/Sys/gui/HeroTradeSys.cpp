@@ -1,7 +1,5 @@
 #include "HeroTradeSys.h"
 #include "AdvMapSys.h"
-#include "Cfg/ArtifactCfg.h"
-#include "Cfg/HeroCfg.h"
 #include "Comp/HeroComp.h"
 #include "Comp/PlayerIdComp.h"
 #include "Enum/Enum.h"

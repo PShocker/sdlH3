@@ -1,7 +1,7 @@
 #include "SpliteCreSys.h"
 #include "AdvMapSys.h"
 #include "BMPFont/BMPFont.h"
-#include "Cfg/CreatureCfg.h"
+
 #include "CreatureSys.h"
 #include "DwellingSys.h"
 #include "Enum/Enum.h"

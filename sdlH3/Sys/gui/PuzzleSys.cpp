@@ -1,6 +1,6 @@
 #include "PuzzleSys.h"
 #include "AdvMapSys.h"
-#include "Cfg/PuzzleCfg.h"
+
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 

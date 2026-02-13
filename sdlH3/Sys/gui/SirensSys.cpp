@@ -1,6 +1,6 @@
 #include "SirensSys.h"
 #include "AdvPopSys.h"
-#include "Cfg/CreatureCfg.h"
+
 #include "Comp/SirensComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"

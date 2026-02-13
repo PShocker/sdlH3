@@ -1,11 +1,11 @@
 #include "TownSys.h"
 #include "BMPFont/BMPFont.h"
 #include "CameraSys.h"
-#include "Cfg/ArtifactCfg.h"
-#include "Cfg/CreatureCfg.h"
-#include "Cfg/HeroCfg.h"
-#include "Cfg/SpellCfg.h"
-#include "Cfg/TownCfg.h"
+
+
+
+
+
 #include "Comp/DwellingComp.h"
 #include "Comp/HeroComp.h"
 #include "Comp/MageGuildComp.h"

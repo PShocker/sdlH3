@@ -1,5 +1,5 @@
 #include "Special18Sys.h"
-#include "Cfg/TownCfg.h"
+
 #include "Comp/HeroComp.h"
 #include "Comp/TownComp.h"
 #include "Global/Global.h"

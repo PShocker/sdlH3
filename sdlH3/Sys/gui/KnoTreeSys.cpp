@@ -1,7 +1,6 @@
 #include "KnoTreeSys.h"
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
-#include "Cfg/HeroCfg.h"
 #include "Comp/HeroComp.h"
 #include "Comp/KnoTreeComp.h"
 #include "Enum/Enum.h"

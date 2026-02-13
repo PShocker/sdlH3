@@ -1,7 +1,6 @@
 #include "Global.h"
-#include "Cfg/HeroCfg.h"
-#include "Cfg/PuzzleCfg.h"
-#include "Cfg/TerrainCfg.h"
+#include "Set/HeroSet.h"
+#include "Set/TerrainSet.h"
 #include "Comp/GateComp.h"
 #include "Comp/GrailComp.h"
 #include "Comp/HeroComp.h"
@@ -773,13 +772,13 @@ void Global::startGame() {
         auto x = positon.x * 4;
         auto y = positon.y * Global::mapSize * 4;
         if (block.contains(y + x)) {
-          auto color = TerrainCfg::minimapBlocked.at(terrainComp->index);
+          auto color = TerrainSet::minimapBlocked.at(terrainComp->index);
           pixels[y + x] = color.r;
           pixels[y + x + 1] = color.g;
           pixels[y + x + 2] = color.b;
           pixels[y + x + 3] = color.a;
         } else {
-          auto color = TerrainCfg::minimapUnblocked.at(terrainComp->index);
+          auto color = TerrainSet::minimapUnblocked.at(terrainComp->index);
           pixels[y + x] = color.r;
           pixels[y + x + 1] = color.g;
           pixels[y + x + 2] = color.b;

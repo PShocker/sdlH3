@@ -1,8 +1,7 @@
 #include "CursorSys.h"
 #include "AdvMapSys.h"
 #include "CameraSys.h"
-#include "Cfg/SpellCfg.h"
-#include "Cfg/TerrainCfg.h"
+
 #include "Comp/BoatComp.h"
 #include "Comp/HeroComp.h"
 #include "Comp/ObjectComp.h"

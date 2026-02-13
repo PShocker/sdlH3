@@ -21,12 +21,7 @@ struct HeroSet {
       &ConfluxHeroSet::heros,    &SpecialHeroSet::heros,
   };
 
-  static constexpr auto fullHeros = []() {
-    std::vector<HeroSetI> r;
-    for (auto heros : townHeros) {
-      r.append_range(*heros);
-    }
-    std::ranges::sort(r, {}, &HeroSetI::index);
-    return r;
-  };
+  static inline std::vector<HeroSetI*> fullHeros;
+
+  static void init();
 };

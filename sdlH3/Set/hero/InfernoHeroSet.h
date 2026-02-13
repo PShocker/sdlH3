@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Set/StructSet.h"
 #include "Enum/Enum.h"
 #include <cstdint>

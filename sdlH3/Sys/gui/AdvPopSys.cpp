@@ -1,6 +1,4 @@
 #include "AdvPopSys.h"
-#include "Cfg/HeroCfg.h"
-#include "Cfg/TownCfg.h"
 #include "Comp/ArtifactComp.h"
 #include "Comp/HeroComp.h"
 #include "Comp/MonsterComp.h"

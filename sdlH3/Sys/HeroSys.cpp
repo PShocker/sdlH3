@@ -1,8 +1,5 @@
 #include "HeroSys.h"
 #include "AudioSys.h"
-#include "Cfg/AudioCfg.h"
-#include "Cfg/HeroCfg.h"
-#include "Cfg/TerrainCfg.h"
 #include "Comp/BoatComp.h"
 #include "Comp/CampFireComp.h"
 #include "Comp/FlotsamComp.h"

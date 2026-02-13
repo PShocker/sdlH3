@@ -1,7 +1,7 @@
 #include "TownBuildSys.h"
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
-#include "Cfg/TownCfg.h"
+
 #include "Comp/TempleComp.h"
 #include "Comp/TownComp.h"
 #include "Ent/Ent.h"

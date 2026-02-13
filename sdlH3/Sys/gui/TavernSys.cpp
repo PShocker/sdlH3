@@ -1,7 +1,7 @@
 #include "TavernSys.h"
 #include "AdvMapSys.h"
-#include "Cfg/ArtifactCfg.h"
-#include "Cfg/HeroCfg.h"
+
+
 #include "Comp/HeroComp.h"
 #include "Comp/ObjectComp.h"
 #include "Comp/TownComp.h"

@@ -1,7 +1,5 @@
 #include "KingdomSys.h"
 #include "AdvMapSys.h"
-#include "Cfg/HeroCfg.h"
-#include "Cfg/TownCfg.h"
 #include "Comp/HeroComp.h"
 #include "Comp/TownComp.h"
 #include "Enum/Enum.h"

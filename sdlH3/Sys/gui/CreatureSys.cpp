@@ -1,6 +1,6 @@
 #include "CreatureSys.h"
 #include "AdvMapSys.h"
-#include "Cfg/CreatureCfg.h"
+
 #include "Comp/HeroComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"

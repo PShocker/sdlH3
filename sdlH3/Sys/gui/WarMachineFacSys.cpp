@@ -1,5 +1,5 @@
 #include "WarMachineFacSys.h"
-#include "Cfg/WarMachineCfg.h"
+
 #include "Comp/WarMachineFacComp.h"
 #include "DwellingSys.h"
 #include "Enum/Enum.h"

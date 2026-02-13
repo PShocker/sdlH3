@@ -1,5 +1,5 @@
 #include "World.h"
-#include "Cfg/TownCfg.h"
+
 #include "Comp/PositionComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"

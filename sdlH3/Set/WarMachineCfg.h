@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Cfg/CreatureCfg.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>

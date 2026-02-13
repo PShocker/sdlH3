@@ -1,7 +1,5 @@
 #include "MageGuildSys.h"
 #include "AdvMapSys.h"
-#include "Cfg/HeroCfg.h"
-#include "Cfg/TownCfg.h"
 #include "Comp/MageGuildComp.h"
 #include "Comp/TownComp.h"
 #include "Enum/Enum.h"

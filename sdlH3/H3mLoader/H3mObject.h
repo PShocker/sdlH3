@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 enum class EBlockMapBits : uint8_t { VISIBLE = 1, VISITABLE = 2, BLOCKED = 4 };
 

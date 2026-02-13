@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Cfg/CreatureCfg.h"
-#include "Cfg/SpellCfg.h"
+
+
 #include "Enum/Enum.h"
 #include <array>
 #include <cstdint>

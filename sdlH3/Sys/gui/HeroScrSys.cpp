@@ -1,8 +1,6 @@
 #include "HeroScrSys.h"
 #include "AdvMapSys.h"
 #include "BMPFont/BMPFont.h"
-#include "Cfg/ArtifactCfg.h"
-#include "Cfg/HeroCfg.h"
 #include "Comp/HeroComp.h"
 #include "Comp/TownComp.h"
 #include "Enum/Enum.h"

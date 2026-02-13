@@ -1,6 +1,6 @@
 #include "SpellSys.h"
-#include "Cfg/HeroCfg.h"
-#include "Cfg/SpellCfg.h"
+
+
 #include "Comp/HeroComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"

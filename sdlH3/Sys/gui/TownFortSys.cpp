@@ -1,6 +1,6 @@
 #include "TownFortSys.h"
 #include "AdvMapSys.h"
-#include "Cfg/TownCfg.h"
+
 #include "Comp/DwellingComp.h"
 #include "Comp/PlayerIdComp.h"
 #include "Comp/TownComp.h"

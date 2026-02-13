@@ -1,7 +1,7 @@
 #include "ShrineMagicSys.h"
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
-#include "Cfg/HeroCfg.h"
+
 #include "Comp/ShrineMagicComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"

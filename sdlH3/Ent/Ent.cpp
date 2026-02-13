@@ -1,9 +1,4 @@
 #include "Ent.h"
-#include "Cfg/CreatureCfg.h"
-#include "Cfg/DwellingCfg.h"
-#include "Cfg/HeroCfg.h"
-#include "Cfg/SpellCfg.h"
-#include "Cfg/TownCfg.h"
 #include "Comp/AltarSacComp.h"
 #include "Comp/ArenaComp.h"
 #include "Comp/ArtifactComp.h"
@@ -87,6 +82,8 @@
 #include "H3mLoader/H3mObject.h"
 #include "Point/Point.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/CreatureSet.h"
+#include "Set/HeroSet.h"
 #include "World/World.h"
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
@@ -100,8 +97,11 @@
 #include <vector>
 
 HeroComp Ent::loadDefaultHeroComp(uint8_t hId) {
+  auto defaultHero = HeroSet::fullHeros[hId];
+
   HeroComp heroComp;
-  heroComp.subId = HeroCfg::heroPro[hId];
+  heroComp.subId = defaultHero->clasz;
+  // heroComp.subId = HeroCfg::heroPro[hId];
   heroComp.portrait = hId;
   heroComp.movement = 65535;
   heroComp.mana = 500;
@@ -110,15 +110,14 @@ HeroComp Ent::loadDefaultHeroComp(uint8_t hId) {
   heroComp.moveType = 0;
   heroComp.artifacts.assign(19, 0xffff);
 
-  auto secSkills = HeroCfg::heroSecSkills.at(heroComp.portrait);
-  heroComp.secSkills = secSkills;
+  heroComp.secSkills = defaultHero->secSkill;
 
-  for (auto pair : HeroCfg::heroCreatures[heroComp.portrait]) {
+  for (auto pair : defaultHero->defaultCre) {
     switch (pair.first) {
-    case (uint16_t)CreatureCfg::Creature::CATAPULT:
-    case (uint16_t)CreatureCfg::Creature::BALLISTA:
-    case (uint16_t)CreatureCfg::Creature::FIRST_AID_TENT:
-    case (uint16_t)CreatureCfg::Creature::AMMO_CART: {
+    case (uint16_t)Enum::CATAPULT:
+    case (uint16_t)Enum::BALLISTA:
+    case (uint16_t)Enum::FIRST_AID_TENT:
+    case (uint16_t)Enum::AMMO_CART: {
       break;
     }
     default: {
@@ -140,52 +139,55 @@ entt::entity Ent::loadBuild(uint8_t level, entt::entity townEnt,
   auto townId = townComp.id;
 
   switch (buildId) {
-  case (uint8_t)TownCfg::Building::BLACKSMITH: {
-    ent = registry.create();
-    auto wComp = &registry.emplace<WarMachineFacComp>(ent);
-    wComp->warMachines = {{0, 1}, {1, 1}, {2, 1}};
-    break;
-  }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_1: {
+  case Enum::BUILD_DWELLING_LEVEL_1: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][0][0];
-    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(0).index;
+    auto g = CreatureSet::townCreatures[townId]->at(0).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1: {
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_1: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][0];
-    dComp->creatures.push_back({creatures, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(0).index;
+    auto c2 = CreatureSet::townCreatures[townId]->at(1).index;
+    auto g = CreatureSet::townCreatures[townId]->at(0).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c, c2}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_2: {
+  case Enum::BUILD_DWELLING_LEVEL_2: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][1][0];
-    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(2).index;
+    auto g = CreatureSet::townCreatures[townId]->at(2).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_2: {
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_2: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][1];
-    dComp->creatures.push_back({creatures, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(2).index;
+    auto c2 = CreatureSet::townCreatures[townId]->at(3).index;
+    auto g = CreatureSet::townCreatures[townId]->at(2).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c, c2}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_3: {
+  case Enum::BUILD_DWELLING_LEVEL_3: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][2][0];
-    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(4).index;
+    auto g = CreatureSet::townCreatures[townId]->at(4).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_3: {
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_3: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][2];
-    dComp->creatures.push_back({creatures, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(4).index;
+    auto c2 = CreatureSet::townCreatures[townId]->at(5).index;
+    auto g = CreatureSet::townCreatures[townId]->at(4).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c, c2}, g});
     break;
   }
   case (uint8_t)TownCfg::Building::DWELLING_LEVEL_4: {

@@ -5,6 +5,7 @@
 #include "Pal/PlayerPal.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_mouse.h"
+#include "Set/HeroSet.h"
 #include "Sys/AudioSys.h"
 #include "Sys/FreeTypeSys.h"
 #include "Window/Window.h"
@@ -38,6 +39,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     height = SDL_atoi(argv[2]);
   }
   std::srand(std::time(0));
+
+  // init Set
+  HeroSet::init();
 
   H3mData data("./Maps/Untitled.h3m");
   data.init();

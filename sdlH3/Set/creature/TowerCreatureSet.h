@@ -1,3 +1,4 @@
+#pragma once
 #include "Enum/Enum.h"
 #include "Set/StructSet.h"
 #include <cstddef>

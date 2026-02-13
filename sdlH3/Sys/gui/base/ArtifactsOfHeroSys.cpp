@@ -1,5 +1,5 @@
 #include "ArtifactsOfHeroSys.h"
-#include "Cfg/ArtifactCfg.h"
+
 #include "Global/Global.h"
 
 #include "SDL3/SDL_rect.h"
