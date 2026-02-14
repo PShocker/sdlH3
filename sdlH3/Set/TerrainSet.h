@@ -1,9 +1,37 @@
 #pragma once
 
+#include "Enum/Enum.h"
 #include "SDL3/SDL_pixels.h"
 #include <array>
+#include <cstdint>
+#include <flat_set>
+#include <string>
+
+struct TerrainSetI {
+  uint8_t index;
+  uint32_t moveCost;
+  SDL_Color minimapUnblocked;
+  SDL_Color minimapBlocked;
+  std::string music;
+  std::string horseSound;
+  std::string horseSoundPenalty;
+  std::flat_set<uint8_t> battleFields;
+};
 
 struct TerrainSet {
+
+  const static inline std::vector<TerrainSetI> terrains = {
+      {
+          .index = Enum::TERRAIN_DIRT,
+          .moveCost = 100,
+          .minimapUnblocked = SDL_Color{82, 56, 8, 255},
+          .minimapBlocked=SDL_Color{57, 40, 8, 255}, 
+          .music="Dirt.wav",
+          .horseSound="horse00.wav",
+          .horseSoundPenalty="horse00.wav",
+      },
+  };
+
   const static inline std::array<uint8_t> moveCost = {
       100, // 0: dirt
       150, // 1: sand
