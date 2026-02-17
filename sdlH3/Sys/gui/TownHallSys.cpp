@@ -7,6 +7,7 @@
 #include "Global/Global.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/FactionSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
@@ -45,7 +46,7 @@ static void drawBackGround() {
 
   auto townComp = &registry.get<TownComp>(townEnt);
   auto playerIdComp = &registry.get<PlayerIdComp>(townEnt);
-  auto halBakStr = TownCfg::hallBackgroundStr[townComp->id];
+  auto halBakStr = FactionSet::fullFactions[townComp->id]->hallBackground;
   auto texture = Global::pcxCache[halBakStr][Global::playerId];
   posRect = {leftUp.x, leftUp.y, static_cast<float>(texture->w),
              static_cast<float>(texture->h)};
@@ -60,7 +61,7 @@ static void drawBuildIcon() {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto &buildings = townComp->buildings;
-  auto &slots = TownCfg::townHallSlots[townComp->id];
+  auto &slots = FactionSet::fullFactions[townComp->id]->hallSlots;
   for (int row = 0; row < slots.size(); row++) {
     auto &line = slots[row];
     for (int col = 0; col < line.size(); col++) {
@@ -72,7 +73,7 @@ static void drawBuildIcon() {
           break;
         }
       }
-      auto tStr = TownCfg::townBuildIcon[townComp->id].at(bId);
+      auto tStr = FactionSet::fullFactions[townComp->id]->builds[bId].icon;
       auto texture = Global::pcxCache[tStr][0];
       float posX = 402 - (float)line.size() * 154 / 2 - (line.size() - 1) * 20 +
                    194 * col;
@@ -89,7 +90,8 @@ static void drawBuildIcon() {
       } else if (townComp->hasBuild) {
         texture = textures[2];
       } else {
-        auto buildCost = TownCfg::townBuildCost[townComp->id].at(bId);
+        auto buildCost =
+            FactionSet::fullFactions[townComp->id]->builds[bId].cost;
         auto resource = Global::resources[Global::playerId];
         uint8_t canBuy = 0;
         for (uint8_t i = 0; i < resource.size(); i++) {
@@ -140,7 +142,7 @@ static bool clickBuildIcon(uint8_t clickType) {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto &buildings = townComp->buildings;
-  auto &slots = TownCfg::townHallSlots[townComp->id];
+  auto &slots = FactionSet::fullFactions[townComp->id]->hallSlots;
   for (int row = 0; row < slots.size(); row++) {
     auto &line = slots[row];
     for (int col = 0; col < line.size(); col++) {

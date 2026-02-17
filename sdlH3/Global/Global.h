@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-
 struct Global {
   static inline std::random_device rd = std::random_device();
   static inline std::mt19937 gen = std::mt19937(rd());
@@ -71,6 +70,9 @@ struct Global {
   static inline uint8_t cursorIndex;
   static inline SDL_FPoint cursorPoint;
   static inline std::vector<uint8_t> cursorBack;
+  static inline uint8_t cursorSpellGoal;
+  static inline uint8_t cursorSpellI;
+  static inline std::function<void()> cursorSpellBack;
 
   static inline SDL_Texture *fadeTexture;
   static inline int32_t fadeAlpha;

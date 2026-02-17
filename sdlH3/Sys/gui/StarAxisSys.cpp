@@ -35,8 +35,14 @@ static void receive() {
   auto &mComp =
       World::registrys[World::level].get<StarAxisComp>(Global::goalEnt);
   if (!visited()) {
-    heroComp.primSkills[1] += 1;
-    heroComp.visitedLog.insert({(uint8_t)ObjectType::STAR_AXIS, 0});
+        AdventureBonus bonus = {
+        .src = ObjectType::STAR_AXIS,
+        .type = Enum::ADVENTURE_PRIMARY_SKILL,
+        .subType=Enum::PRIMARY_SKILL_SPELLPOWER,
+        .val = 1,
+    };
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
+    heroComp.visited.insert(ObjectType::STAR_AXIS);
   }
   mComp.visitHeros.insert(heroComp.portrait);
 }

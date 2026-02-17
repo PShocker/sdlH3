@@ -12,6 +12,7 @@
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/HeroSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/CursorSys.h"
 #include "Window/Window.h"
@@ -101,7 +102,8 @@ void PrisonSys::draw() {
   auto heroComp = World::registrys[World::level].get<HeroComp>(Global::goalEnt);
   auto portrait =
       heroComp.portrait == 0xff ? heroComp.subId : heroComp.portrait;
-  auto texture = Global::pcxCache[HeroCfg::heroLargePor[portrait]][0];
+  auto largePor=HeroSet::fullHeros[portrait]->largePor;
+  auto texture = Global::pcxCache[largePor][0];
   posRect = {leftUp.x + porPosition.x, leftUp.y + porPosition.y, porPosition.w,
              porPosition.h};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);

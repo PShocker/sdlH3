@@ -2,10 +2,6 @@
 #include "BMPFont/BMPFont.h"
 #include "CameraSys.h"
 
-
-
-
-
 #include "Comp/DwellingComp.h"
 #include "Comp/HeroComp.h"
 #include "Comp/MageGuildComp.h"
@@ -25,6 +21,9 @@
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
+#include "Set/CreatureSet.h"
+#include "Set/FactionSet.h"
+#include "Set/HeroSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/AdvPopSys.h"
@@ -39,6 +38,7 @@
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
 #include <functional>
+#include <map>
 #include <optional>
 #include <set>
 #include <string>
@@ -68,7 +68,7 @@ static void showBuildComfirm(uint8_t lvl, entt::entity townEnt, uint8_t bId,
     FreeTypeSys::setColor(255, 255, 255, 255);
     FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 40,
                             strPool[3044 + (int8_t)bId * 2]);
-    auto tStr = TownCfg::townBuildIcon[townComp->id].at(bId);
+    auto tStr = FactionSet::fullFactions[townComp->id]->builds[bId].icon;
     auto texture = Global::pcxCache[tStr][0];
     SDL_FRect posRect{leftUp.x + confirmbakW / 2 - texture->w / 2,
                       leftUp.y + 75, static_cast<float>(texture->w),
@@ -87,11 +87,11 @@ uint8_t TownSys::fortLevel(uint8_t lvl, entt::entity townEnt) {
   auto townComp = &registry.get<TownComp>(townEnt);
   auto &buildings = townComp->buildings;
 
-  if (buildings.contains((uint8_t)TownCfg::Building::CASTLE))
+  if (buildings.contains(Enum::BUILD_CASTLE))
     return 2;
-  if (buildings.contains((uint8_t)TownCfg::Building::CITADEL))
+  if (buildings.contains(Enum::BUILD_CITADEL))
     return 1;
-  if (buildings.contains((uint8_t)TownCfg::Building::FORT))
+  if (buildings.contains(Enum::BUILD_FORT))
     return 0;
   return 0xff;
 }
@@ -101,13 +101,13 @@ static uint8_t hallLevel(uint8_t lvl, entt::entity townEnt) {
   auto townComp = &registry.get<TownComp>(townEnt);
   auto &buildings = townComp->buildings;
 
-  if (buildings.contains((uint8_t)TownCfg::Building::CAPITOL))
+  if (buildings.contains(Enum::BUILD_CAPITOL))
     return 3;
-  if (buildings.contains((uint8_t)TownCfg::Building::CITY_HALL))
+  if (buildings.contains(Enum::BUILD_CITY_HALL))
     return 2;
-  if (buildings.contains((uint8_t)TownCfg::Building::TOWN_HALL))
+  if (buildings.contains(Enum::BUILD_TOWN_HALL))
     return 1;
-  if (buildings.contains((uint8_t)TownCfg::Building::VILLAGE_HALL))
+  if (buildings.contains(Enum::BUILD_VILLAGE_HALL))
     return 0;
   return 0xff;
 }
@@ -117,15 +117,15 @@ static uint8_t mageGuildLevel(uint8_t lvl, entt::entity townEnt) {
   auto townComp = &registry.get<TownComp>(townEnt);
   auto &buildings = townComp->buildings;
 
-  if (buildings.contains((uint8_t)TownCfg::Building::MAGE_GUILD_5))
+  if (buildings.contains(Enum::BUILD_MAGE_GUILD_5))
     return 5;
-  if (buildings.contains((uint8_t)TownCfg::Building::MAGE_GUILD_4))
+  if (buildings.contains(Enum::BUILD_MAGE_GUILD_4))
     return 4;
-  if (buildings.contains((uint8_t)TownCfg::Building::MAGE_GUILD_3))
+  if (buildings.contains(Enum::BUILD_MAGE_GUILD_3))
     return 3;
-  if (buildings.contains((uint8_t)TownCfg::Building::MAGE_GUILD_2))
+  if (buildings.contains(Enum::BUILD_MAGE_GUILD_2))
     return 2;
-  if (buildings.contains((uint8_t)TownCfg::Building::MAGE_GUILD_1))
+  if (buildings.contains(Enum::BUILD_MAGE_GUILD_1))
     return 1;
   return 0;
 }
@@ -134,18 +134,18 @@ static std::unordered_set<uint8_t> townUpGradeBuild(uint8_t lvl,
                                                     entt::entity townEnt) {
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
-  auto builds = TownCfg::townDefaultAni[townComp->id];
-  for (const auto &pair : townComp->buildings) {
-    builds.insert(pair.first);
+  std::unordered_set<uint8_t> builds;
+  std::unordered_set<uint8_t> temp;
+  auto buildInfo = FactionSet::fullFactions[townComp->id]->builds;
+  for (auto [bId, ent] : townComp->buildings) {
+    if (buildInfo[bId].upgrades.has_value()) {
+      temp.insert(buildInfo[bId].upgrades.value());
+    }
   }
-  auto upG = TownCfg::townBuildUpgrade[townComp->id];
-  auto upGC = TownCfg::townBuildUpgradeCommon;
-  upG.insert(upGC.begin(), upGC.end());
-  for (auto [k, v] : upG) {
-    if (builds.contains(k)) {
-      for (auto r : v) {
-        builds.erase(r);
-      }
+
+  for (auto [bId, ent] : townComp->buildings) {
+    if (!temp.contains(bId)) {
+      builds.insert(bId);
     }
   }
   return builds;
@@ -167,38 +167,38 @@ std::vector<TownDweInc> TownSys::townDweInc(uint8_t lvl, entt::entity townEnt,
   std::vector<TownDweInc> r;
   uint8_t dweLevel = 0;
   switch (bId) {
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_1:
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1: {
+  case Enum::BUILD_DWELLING_LEVEL_1:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_1: {
     dweLevel = 1;
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_2:
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_2: {
+  case Enum::BUILD_DWELLING_LEVEL_2:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_2: {
     dweLevel = 2;
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_3:
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_3: {
+  case Enum::BUILD_DWELLING_LEVEL_3:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_3: {
     dweLevel = 3;
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_4:
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_4: {
+  case Enum::BUILD_DWELLING_LEVEL_4:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_4: {
     dweLevel = 4;
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_5:
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_5: {
+  case Enum::BUILD_DWELLING_LEVEL_5:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_5: {
     dweLevel = 5;
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_6:
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6: {
+  case Enum::BUILD_DWELLING_LEVEL_6:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_6: {
     dweLevel = 6;
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_7:
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_7: {
+  case Enum::BUILD_DWELLING_LEVEL_7:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_7: {
     dweLevel = 7;
     break;
   }
@@ -219,20 +219,24 @@ std::vector<TownDweInc> TownSys::townDweInc(uint8_t lvl, entt::entity townEnt,
   if (townComp->heroEnt[0].has_value()) {
     auto heroEnt = townComp->heroEnt[0];
     auto &hComp = registry.get<HeroComp>(townEnt);
-    auto i = (uint8_t)ArtifactCfg::BONUSE::CREATURE_GROWTH_2 + dweLevel - 2;
-    auto v = HeroScrSys::heroArtifactAbility(hComp, i);
-    for (auto &pair : v) {
-      TownDweInc t;
-      t.id = (uint8_t)Enum::DWEINCTYPE::ARTIFACT;
-      t.subId = pair.first;
-      t.num = pair.second;
-      r.push_back(t);
+    auto i = Enum::ARTIFACT_CREATURE_GROWTH;
+    auto range = hComp.artifactBonus.equal_range(i);
+    // 遍历所有值
+    for (auto it = range.first; it != range.second; ++it) {
+      ArtifactBonus &value = it->second;
+      if (value.subType == dweLevel) {
+        TownDweInc t;
+        t.id = (uint8_t)Enum::DWEINCTYPE::ARTIFACT;
+        t.subId = value.src;
+        t.num = value.val;
+        r.push_back(t);
+      }
     }
   }
   auto buildEnt = townComp->buildings[bId];
   auto dComp = registry.get<DwellingComp>(buildEnt);
   auto creatureId = dComp.creatures.back().first.back();
-  auto baseNum = CreatureCfg::creatureGrowth[creatureId];
+  auto baseNum = CreatureSet::fullCreatures[creatureId]->growth;
   TownDweInc t;
   t.id = (uint8_t)Enum::DWEINCTYPE::BASE;
   t.subId = 0;
@@ -242,7 +246,7 @@ std::vector<TownDweInc> TownSys::townDweInc(uint8_t lvl, entt::entity townEnt,
   auto fortLvl = fortLevel(lvl, townEnt);
   if (fortLvl != 0xff) {
     t.id = (uint8_t)Enum::DWEINCTYPE::BUILD;
-    t.subId = (uint8_t)TownCfg::Building::FORT + fortLvl;
+    t.subId = Enum::BUILD_FORT + fortLvl;
     t.num = baseNum * fortLvl * 0.5;
     r.push_back(t);
   }
@@ -292,12 +296,10 @@ std::array<uint16_t, 7> TownSys::townInCome(uint8_t lvl, entt::entity townEnt) {
   auto townId = townComp->id;
   auto builds = townUpGradeBuild(lvl, townEnt);
   for (const auto bId : builds) {
-    if (TownCfg::townBuildInCome[townId].contains(bId)) {
-      auto income = TownCfg::townBuildInCome[townId].at(bId);
-      for (auto i = 0; i < 7; ++i) {
-        r[i] = r[i] + income[i];
-      }
-    }
+    // auto income = FactionSet::fullFactions[townComp->id]->builds[bId].income;
+    // for (auto i = 0; i < 7; ++i) {
+    //   r[i] = r[i] + income[i];
+    // }
   }
   return r;
 }
@@ -324,26 +326,26 @@ void TownSys::heroVisit() {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto id = townComp->id;
-  for (auto bId : TownCfg::townForceVisit[id]) {
+  for (auto [bId,ent] : townComp->buildings) {
     if (visitBuild(bId) != 0xff) {
       switch (bId) {
-      case (uint8_t)TownCfg::Building::SPECIAL_10: {
+      case Enum::BUILD_SPECIAL_10: {
         Special10Sys::visit();
         break;
       }
-      case (uint8_t)TownCfg::Building::SPECIAL_18: {
+      case Enum::BUILD_SPECIAL_18: {
         Special18Sys::visit();
         break;
       }
-      case (uint8_t)TownCfg::Building::SPECIAL_19: {
+      case Enum::BUILD_SPECIAL_19: {
         Special19Sys::visit();
         break;
       }
-      case (uint8_t)TownCfg::Building::SPECIAL_20: {
+      case Enum::BUILD_SPECIAL_20: {
         Special19Sys::visit();
         break;
       }
-      case (uint8_t)TownCfg::Building::SPECIAL_21: {
+      case Enum::BUILD_SPECIAL_21: {
         Special21Sys::visit();
         break;
       }
@@ -461,7 +463,8 @@ static void drawScrn() {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
-  auto texture = Global::pcxCache[TownCfg::backGroundsStr[townComp->id]][0];
+  auto bStr = FactionSet::fullFactions[townComp->id]->townBackground;
+  auto texture = Global::pcxCache[bStr][0];
   SDL_FRect posRect = {leftUp.x, leftUp.y, 800, 374};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   posRect = {leftUp.x, leftUp.y + 374, 800, 226};
@@ -500,51 +503,60 @@ static void drawBuilds() {
 
   auto builds = townUpGradeBuild(level, townEnt);
   mouseBuildId = std::nullopt;
-  std::vector<uint8_t> sortBuild;
-  for (auto build : TownCfg::townZ[townComp->id]) {
-    if (builds.contains(build)) {
-      auto textures =
-          Global::defCache[TownCfg::townBuilds[townComp->id].at(build) + "/0"];
-      auto frame = Global::bldFrameIndex % textures.size();
-      auto townPoint = TownCfg::townPoint[townComp->id].at(build);
-      posRect = {leftUp.x + townPoint.x, leftUp.y + townPoint.y,
-                 static_cast<float>(textures[frame]->w),
-                 static_cast<float>(textures[frame]->h)};
-      if (posRect.x <= mousePoint.x && mousePoint.x < posRect.x + posRect.w &&
-          posRect.y <= mousePoint.y && mousePoint.y < posRect.y + posRect.h) {
-        uint32_t point = (mousePoint.x - posRect.x) +
-                         textures[0]->w * (mousePoint.y - posRect.y);
-        if (!townAreaBuilds[townComp->id].contains(build) &&
-            TownCfg::townBorder[townComp->id].contains(build)) {
-          townAreaBuilds[townComp->id][build] =
-              Pcx("./Data/H3bitmap.lod/" +
-                  TownCfg::townArea[townComp->id].at(build))
-                  .loadArea();
-        }
-        if (townAreaBuilds[townComp->id].contains(build) &&
-            townAreaBuilds[townComp->id][build][point]) {
-          mouseBuildId = build;
-        }
+  std::multimap<int8_t, uint8_t> sortBuild;
+  for (auto bId : builds) {
+    auto z = FactionSet::fullFactions[townComp->id]->builds[bId].z;
+    sortBuild.insert({z, bId});
+  }
+  for (auto [z, bId] : sortBuild) {
+    auto buildStr =
+        FactionSet::fullFactions[townComp->id]->builds[bId].animation;
+    auto textures = Global::defCache[buildStr + "/0"];
+    auto buildX = FactionSet::fullFactions[townComp->id]->builds[bId].x;
+    auto buildY = FactionSet::fullFactions[townComp->id]->builds[bId].y;
+    SDL_FPoint townPoint = {static_cast<float>(buildX),
+                            static_cast<float>(buildY)};
+    auto frame = Global::bldFrameIndex % textures.size();
+    posRect = {leftUp.x + townPoint.x, leftUp.y + townPoint.y,
+               static_cast<float>(textures[frame]->w),
+               static_cast<float>(textures[frame]->h)};
+    if (posRect.x <= mousePoint.x && mousePoint.x < posRect.x + posRect.w &&
+        posRect.y <= mousePoint.y && mousePoint.y < posRect.y + posRect.h) {
+      uint32_t point = (mousePoint.x - posRect.x) +
+                       textures[0]->w * (mousePoint.y - posRect.y);
+      if (!townAreaBuilds[townComp->id].contains(bId) &&
+          !FactionSet::fullFactions[townComp->id]->builds[bId].area.empty()) {
+        townAreaBuilds[townComp->id][bId] =
+            Pcx("./Data/H3bitmap.lod/" +
+                FactionSet::fullFactions[townComp->id]->builds[bId].area)
+                .loadArea();
       }
-      sortBuild.push_back(build);
+      if (townAreaBuilds[townComp->id].contains(bId) &&
+          townAreaBuilds[townComp->id][bId][point]) {
+        mouseBuildId = bId;
+      }
     }
   }
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto funcPtr = topFunc.target<bool (*)()>();
   auto top = (funcPtr && *topFunc.target<bool (*)()>() == TownSys::run);
-  for (auto build : sortBuild) {
-    auto textures =
-        Global::defCache[TownCfg::townBuilds[townComp->id].at(build) + "/0"];
+  for (auto [z, bId] : sortBuild) {
+    auto buildStr =
+        FactionSet::fullFactions[townComp->id]->builds[bId].animation;
+    auto textures = Global::defCache[buildStr + "/0"];
     auto frame = Global::bldFrameIndex % textures.size();
-    auto townPoint = TownCfg::townPoint[townComp->id].at(build);
+    auto buildX = FactionSet::fullFactions[townComp->id]->builds[bId].x;
+    auto buildY = FactionSet::fullFactions[townComp->id]->builds[bId].y;
+    SDL_FPoint townPoint = {static_cast<float>(buildX),
+                            static_cast<float>(buildY)};
     posRect = {leftUp.x + townPoint.x, leftUp.y + townPoint.y,
                static_cast<float>(textures[frame]->w),
                static_cast<float>(textures[frame]->h)};
     SDL_RenderTexture(Window::renderer, textures[0], nullptr, &posRect);
     SDL_RenderTexture(Window::renderer, textures[frame], nullptr, &posRect);
-    if (mouseBuildId == build && top) {
-      auto texture = Global::pcxCache[TownCfg::townBorder[townComp->id].at(
-          mouseBuildId.value())][0];
+    if (mouseBuildId == bId && top) {
+      auto texture = Global::pcxCache
+          [FactionSet::fullFactions[townComp->id]->builds[bId].area][0];
       SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
     }
   }
@@ -621,8 +633,8 @@ static void drawHeroPor() {
       auto heroEnt = townComp->heroEnt[i].value();
       auto heroComp = &registry.get<HeroComp>(heroEnt);
       posRect = {leftUp.x + 242, leftUp.y + 387 + i * 96, 58, 64};
-      auto texture =
-          Global::pcxCache[HeroCfg::heroLargePor[heroComp->portrait]][0];
+      auto lagerPor = HeroSet::fullHeros[heroComp->portrait]->largePor;
+      auto texture = Global::pcxCache[lagerPor][0];
       SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
       drawCreature(i, &heroComp->creatures);
     } else if (i == 0) {
@@ -1031,8 +1043,7 @@ static void clickBlackSmith(uint8_t clickType) {
     auto townComp = &registry.get<TownComp>(townEnt);
     if (townComp->heroEnt[1].has_value()) {
       auto heroEnt = townComp->heroEnt[1].value();
-      auto goalEnt =
-          townComp->buildings.at((uint8_t)TownCfg::Building::BLACKSMITH);
+      auto goalEnt = townComp->buildings.at(Enum::BUILD_BLACKSMITH);
       World::enterWarMachineFac(heroEnt, goalEnt);
     } else {
       Global::confirmOnlyOK = true;
@@ -1095,23 +1106,23 @@ static void clickSpecial(uint8_t clickType) {
     auto townComp = &registry.get<TownComp>(townEnt);
     auto bEnt = townComp->buildings[buildId];
     switch (buildId) {
-    case (uint8_t)TownCfg::Building::SPECIAL_10: {
+    case Enum::BUILD_SPECIAL_10: {
       World::enterSpec10Build(townComp->id, bEnt);
       break;
     }
-    case (uint8_t)TownCfg::Building::SPECIAL_18: {
+    case Enum::BUILD_SPECIAL_18: {
       World::enterSpec18Build(townComp->id, bEnt);
       break;
     }
-    case (uint8_t)TownCfg::Building::SPECIAL_19: {
+    case Enum::BUILD_SPECIAL_19: {
       World::enterSpec19Build(townComp->id, bEnt);
       break;
     }
-    case (uint8_t)TownCfg::Building::SPECIAL_20: {
+    case Enum::BUILD_SPECIAL_20: {
       World::enterSpec20Build(townComp->id, bEnt);
       break;
     }
-    case (uint8_t)TownCfg::Building::SPECIAL_21: {
+    case Enum::BUILD_SPECIAL_21: {
       World::enterSpec21Build(townComp->id, bEnt);
       break;
     }
@@ -1157,61 +1168,61 @@ static bool clickBuild(uint8_t clickType) {
     auto factionId = townComp->id;
 
     switch (buildId) {
-    case (uint8_t)TownCfg::Building::VILLAGE_HALL:
-    case (uint8_t)TownCfg::Building::CITY_HALL:
-    case (uint8_t)TownCfg::Building::TOWN_HALL:
-    case (uint8_t)TownCfg::Building::CAPITOL: {
+    case Enum::BUILD_VILLAGE_HALL:
+    case Enum::BUILD_CITY_HALL:
+    case Enum::BUILD_TOWN_HALL:
+    case Enum::BUILD_CAPITOL: {
       clickCapitol(clickType);
       break;
     }
-    case (uint8_t)TownCfg::Building::FORT:
-    case (uint8_t)TownCfg::Building::CITADEL:
-    case (uint8_t)TownCfg::Building::CASTLE: {
+    case Enum::BUILD_FORT:
+    case Enum::BUILD_CITADEL:
+    case Enum::BUILD_CASTLE: {
       clickFort(clickType);
       break;
     }
-    case (uint8_t)TownCfg::Building::BLACKSMITH: {
+    case Enum::BUILD_BLACKSMITH: {
       clickBlackSmith(clickType);
       break;
     }
-    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_1:
-    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_2:
-    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_3:
-    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_4:
-    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_5:
-    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_6:
-    case (uint8_t)TownCfg::Building::DWELLING_LEVEL_7:
-    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1:
-    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_2:
-    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_3:
-    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_4:
-    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_5:
-    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6:
-    case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_7: {
+    case Enum::BUILD_DWELLING_LEVEL_1:
+    case Enum::BUILD_DWELLING_LEVEL_2:
+    case Enum::BUILD_DWELLING_LEVEL_3:
+    case Enum::BUILD_DWELLING_LEVEL_4:
+    case Enum::BUILD_DWELLING_LEVEL_5:
+    case Enum::BUILD_DWELLING_LEVEL_6:
+    case Enum::BUILD_DWELLING_LEVEL_7:
+    case Enum::BUILD_DWELLING_UPGRADE_LEVEL_1:
+    case Enum::BUILD_DWELLING_UPGRADE_LEVEL_2:
+    case Enum::BUILD_DWELLING_UPGRADE_LEVEL_3:
+    case Enum::BUILD_DWELLING_UPGRADE_LEVEL_4:
+    case Enum::BUILD_DWELLING_UPGRADE_LEVEL_5:
+    case Enum::BUILD_DWELLING_UPGRADE_LEVEL_6:
+    case Enum::BUILD_DWELLING_UPGRADE_LEVEL_7: {
       clickDwe(clickType);
       break;
     }
-    case (uint8_t)TownCfg::Building::MAGE_GUILD_1:
-    case (uint8_t)TownCfg::Building::MAGE_GUILD_2:
-    case (uint8_t)TownCfg::Building::MAGE_GUILD_3:
-    case (uint8_t)TownCfg::Building::MAGE_GUILD_4:
-    case (uint8_t)TownCfg::Building::MAGE_GUILD_5: {
+    case Enum::BUILD_MAGE_GUILD_1:
+    case Enum::BUILD_MAGE_GUILD_2:
+    case Enum::BUILD_MAGE_GUILD_3:
+    case Enum::BUILD_MAGE_GUILD_4:
+    case Enum::BUILD_MAGE_GUILD_5: {
       clickMageGuild(clickType);
       break;
     }
-    case (uint8_t)TownCfg::Building::SPECIAL_10:
-    case (uint8_t)TownCfg::Building::SPECIAL_18:
-    case (uint8_t)TownCfg::Building::SPECIAL_19:
-    case (uint8_t)TownCfg::Building::SPECIAL_20:
-    case (uint8_t)TownCfg::Building::SPECIAL_21: {
+    case Enum::BUILD_SPECIAL_10:
+    case Enum::BUILD_SPECIAL_18:
+    case Enum::BUILD_SPECIAL_19:
+    case Enum::BUILD_SPECIAL_20:
+    case Enum::BUILD_SPECIAL_21: {
       clickSpecial(clickType);
       break;
     }
-    case (uint8_t)TownCfg::Building::GRAIL: {
+    case Enum::BUILD_GRAIL: {
       clickGrail(clickType);
       break;
     }
-    case (uint8_t)TownCfg::Building::SHIPYARD: {
+    case Enum::BUILD_SHIPYARD: {
       clickShipyard(clickType);
       break;
     }

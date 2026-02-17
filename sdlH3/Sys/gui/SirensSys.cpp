@@ -8,6 +8,7 @@
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_render.h"
+#include "Set/CreatureSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/LevelUpSys.h"
@@ -39,8 +40,10 @@ static void receive() {
   auto &sComp = World::registrys[World::level].get<SirensComp>(Global::goalEnt);
   for (auto &pair : heroComp.creatures) {
     if (pair.second > 0 && pair.second * 0.7 > 0) {
-      auto &creExp = CreatureCfg::creatureExp;
-      exp += creExp.at(pair.first) * pair.second * 0.3;
+      auto creatureId = pair.first;
+      auto num = pair.second;
+      auto creExp = CreatureSet::fullCreatures[creatureId]->experience;
+      exp += creExp * pair.second * 0.3;
       pair.second = pair.second * 0.7;
     }
   }
@@ -48,7 +51,6 @@ static void receive() {
   if (LevelUpSys::prepareLvlUp(heroComp)) {
     World::enterLvlup(Global::heroEnt);
   }
-  heroComp.visitedLog.insert({(uint8_t)ObjectType::SIRENS, 0});
   heroComp.visited.insert((uint8_t)ObjectType::SIRENS);
   sComp.visitHeros.insert(heroComp.portrait);
 }

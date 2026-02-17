@@ -10,6 +10,8 @@
 #include "Global/Global.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/CreatureSet.h"
+#include "Set/FactionSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "TownSys.h"
 #include "Window/Window.h"
@@ -88,20 +90,18 @@ static void draw() {
   SDL_FRect *slotPtr = slot7;
   uint8_t spBid;
   for (auto d : dwes) {
-    if (d.bId == (uint8_t)TownCfg::Building::SPECIAL_10 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_18 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_19 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_20 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_21) {
+    if (d.bId == Enum::BUILD_SPECIAL_10 || d.bId == Enum::BUILD_SPECIAL_18 ||
+        d.bId == Enum::BUILD_SPECIAL_19 || d.bId == Enum::BUILD_SPECIAL_20 ||
+        d.bId == Enum::BUILD_SPECIAL_21) {
       slotPtr = slot8;
       spBid = d.bId;
       break;
     }
   }
   for (uint8_t i = 0; i < 8; i++) {
-    auto bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1 + i * 3;
+    auto bId = Enum::BUILD_DWELLING_UPGRADE_LEVEL_1 + i * 3;
     if (i > 4) {
-      bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6 + (i - 5) * 2;
+      bId = Enum::BUILD_DWELLING_UPGRADE_LEVEL_6 + (i - 5) * 2;
     }
     uint16_t creatureId;
     if (i == 7) {
@@ -113,9 +113,10 @@ static void draw() {
         break;
       }
     } else if (townComp->buildings.contains(bId)) {
-      creatureId = TownCfg::townCreature[townComp->id][i][1];
+      creatureId =
+          CreatureSet::townCreatures[townComp->id]->at(i * 2 + 1).index;
     } else {
-      creatureId = TownCfg::townCreature[townComp->id][i][0];
+      creatureId = CreatureSet::townCreatures[townComp->id]->at(i * 2).index;
       bId = bId - 1;
     }
 
@@ -142,19 +143,20 @@ static void draw() {
     FreeTypeSys::draw(posRect2.x + 287, posRect2.y + 86, strPool[2343]);
     FreeTypeSys::draw(posRect2.x + 287, posRect2.y + 106, strPool[2344]);
 
-    auto v = CreatureCfg::creatureAttr.at(creatureId);
-    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 4, v[2]);  // atk
-    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 24, v[3]); // def
+    auto v = CreatureSet::fullCreatures[creatureId]->attribute;
+    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 4, v.attack);   // atk
+    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 24, v.defense); // def
     FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 45,
-                          FreeTypeSys::str(v[4]) + u"-" +
-                              FreeTypeSys::str(v[5]));              // dmg
-    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 65, v[0]); // life
-    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 86, v[1]); // speed
+                          FreeTypeSys::str(v.minDamage) + u"-" +
+                              FreeTypeSys::str(v.maxDamage)); // dmg
+    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 65,
+                          v.hitPoint);                                 // life
+    FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 86, v.speed); // speed
 
     auto bStr = strPool[3043 + (int8_t)bId * 2];
     FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y + 90, bStr);
 
-    auto tStr = TownCfg::townBuildIcon[townComp->id].at(bId);
+    auto tStr = FactionSet::fullFactions[townComp->id]->builds[bId].icon;
     texture = Global::pcxCache[tStr][0];
     posRect = {posRect2.x + 4, posRect2.y + 21, static_cast<float>(texture->w),
                static_cast<float>(texture->h)};
@@ -192,20 +194,18 @@ static void fortAnimate() {
   uint8_t spBid = 0;
   auto dwes = TownSys::townDweBuilds(level, townEnt);
   for (auto d : dwes) {
-    if (d.bId == (uint8_t)TownCfg::Building::SPECIAL_10 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_18 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_19 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_20 ||
-        d.bId == (uint8_t)TownCfg::Building::SPECIAL_21) {
+    if (d.bId == Enum::BUILD_SPECIAL_10 || d.bId == Enum::BUILD_SPECIAL_18 ||
+        d.bId == Enum::BUILD_SPECIAL_19 || d.bId == Enum::BUILD_SPECIAL_20 ||
+        d.bId == Enum::BUILD_SPECIAL_21) {
       spBid = d.bId;
       break;
     }
   }
 
   for (uint8_t i = 0; i < 8; i++) {
-    auto bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_1 + i * 3;
+    auto bId = Enum::BUILD_DWELLING_UPGRADE_LEVEL_1 + i * 3;
     if (i > 4) {
-      bId = (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6 + (i - 5) * 2;
+      bId = Enum::BUILD_DWELLING_UPGRADE_LEVEL_6 + (i - 5) * 2;
     }
     uint16_t creatureId;
     auto townComp = &registry.get<TownComp>(townEnt);
@@ -217,9 +217,10 @@ static void fortAnimate() {
         break;
       }
     } else if (townComp->buildings.contains(bId)) {
-      creatureId = TownCfg::townCreature[townComp->id][i][1];
+      creatureId =
+          CreatureSet::townCreatures[townComp->id]->at(i * 2 + 1).index;
     } else {
-      creatureId = TownCfg::townCreature[townComp->id][i][0];
+      creatureId = CreatureSet::townCreatures[townComp->id]->at(i * 2).index;
     }
     CreatureSys::creAnimate(Global::townFortFrameTime[i],
                             Global::townFortFrameIndex[i],

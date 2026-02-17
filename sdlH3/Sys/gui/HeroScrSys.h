@@ -2,6 +2,7 @@
 
 #include "Comp/HeroComp.h"
 #include <cstdint>
+#include <optional>
 #include <string>
 struct HeroScrSys {
   static bool run();
@@ -11,15 +12,13 @@ struct HeroScrSys {
   static bool rightMouseDown(float x, float y);
   static bool keyUp(uint16_t key);
 
-  static std::vector<std::pair<uint8_t, int8_t>>
-  heroArtifactAbility(HeroComp &hComp, uint8_t i);
-  static int32_t heroPrimAbility(HeroComp &hComp, uint8_t i);
+  static int32_t heroPrim(HeroComp &hComp, uint8_t i);
   static int32_t heroMaxMana(HeroComp &hComp);
   static int32_t heroMor(HeroComp &hComp);
   static int32_t heroLuk(HeroComp &hComp);
   static int32_t heroSight(HeroComp &hComp);
 
-  static int8_t heroSecLevel(HeroComp &hComp,uint8_t i);
+  static int8_t heroSecLevel(HeroComp &hComp, uint8_t i);
 
   static void showResConfirm(uint8_t clickType, uint16_t i);
   static void showArtifactComfirm(uint16_t i);

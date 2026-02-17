@@ -10,6 +10,7 @@
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Set/ArtifactSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/base/ArtifactPanelSys.h"
 #include "Sys/gui/base/ArtifactsOfHeroSys.h"
@@ -91,7 +92,8 @@ static bool checkTrade() {
       auto &mComp =
           World::registrys[World::level].get<MarketComp>(Global::goalEnt);
       auto id = mComp.artifacts[Global::makIndex[1]];
-      auto cost = resConvert(ArtifactCfg::artCost[id], Global::makIndex[0], 10);
+      auto cost =
+          resConvert(ArtifactSet::artifacts[id].cost, Global::makIndex[0], 10);
       if (Global::resources[Global::playerId][Global::makIndex[0]] >= cost) {
         r = true;
       }
@@ -327,7 +329,7 @@ static void drawArts() {
       std::array<std::u16string, 7> r;
       for (uint8_t i = 0; i < 7; i++) {
         auto id = mComp.artifacts[i];
-        auto cost = ArtifactCfg::artCost[id];
+        auto cost = ArtifactSet::artifacts[id].cost;
         r[i] = u"1/" + FreeTypeSys::str(
                            resConvert(cost * 2.5, Global::makIndex[0], 10));
       }

@@ -1,4 +1,5 @@
 #include "Global.h"
+#include "Set/FactionSet.h"
 #include "Set/HeroSet.h"
 #include "Set/TerrainSet.h"
 #include "Comp/GateComp.h"
@@ -588,7 +589,7 @@ void Global::startGame() {
         oVec.push_back(&r.get<ObeliskComp>(ent));
       }
     }
-    auto total = PuzzleCfg::puzzleVec[0].size();
+    auto total = FactionSet::fullFactions[0]->puzzleMap.size();
     auto obeSize = oVec.size();
 
     std::vector<std::vector<uint8_t>> distribution(obeSize);
@@ -934,8 +935,8 @@ void Global::startGame() {
       auto &registry = World::registrys[i];
       for (auto ent : registry.view<HeroComp>()) {
         auto hComp = &registry.get<HeroComp>(ent);
-        for (uint8_t i = 1; i < std::size(HeroCfg::heroLevelExp); i++) {
-          if (hComp->exp >= HeroCfg::heroLevelExp[i]) {
+        for (uint8_t i = 1; i < HeroSet::heroLevelExperience.size(); i++) {
+          if (hComp->exp >= HeroSet::heroLevelExperience[i]) {
             hComp->level = i + 1;
             LevelUpSys::prepareLvlUp(*hComp);
             hComp->primSkills[Global::lvlPrimIndex] += 1;

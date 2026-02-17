@@ -33,8 +33,14 @@ static void receive() {
     auto &heroComp =
         World::registrys[World::level].get<HeroComp>(Global::heroEnt);
     heroComp.movement += 1000;
-    heroComp.morale.push_back({(uint8_t)ObjectType::RALLY_FLAG, 1});
     heroComp.visited.insert((uint8_t)ObjectType::RALLY_FLAG);
+    AdventureBonus bonus = {
+        .src = ObjectType::RALLY_FLAG,
+        .type = Enum::ADVENTURE_MORALE,
+        .subType = 0,
+        .val = 1,
+    };
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_MORALE, bonus});
   }
 }
 

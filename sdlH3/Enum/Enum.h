@@ -626,6 +626,8 @@ struct Enum {
     ARTIFACT_MORALE,
     ARTIFACT_LUCK,
 
+    ARTIFACT_MAX_MORALE,
+    ARTIFACT_MAX_LUCK,
     // 视野
     ARTIFACT_SIGHT_RADIUS,
 
@@ -705,6 +707,15 @@ struct Enum {
     // 心智免疫
     ARTIFACT_MIND_IMMUNITY,
   };
+
+  enum ADVENTURE_BONUS_TYPE {
+   // 主要技能
+    ADVENTURE_PRIMARY_SKILL,
+    // 士气和幸运
+    ADVENTURE_MORALE,
+    ADVENTURE_LUCK,
+  };
+
 
   enum ARTIFACT_SLOT : uint8_t {
     HEAD,
@@ -971,7 +982,7 @@ struct Enum {
     BATTLE_FIELD_SHIP
   };
 
-  enum  TERRAIN {
+  enum TERRAIN {
     TERRAIN_DIRT,
     TERRAIN_SAND,
     TERRAIN_GRASS,
@@ -982,5 +993,16 @@ struct Enum {
     TERRAIN_LAVA,
     TERRAIN_WATER,
     TERRAIN_ROCK
-};
+  };
+
+  enum CREATURE_ACTION {
+    ACTION_MOVE = 0,
+    ACTION_STAND = 2,
+    ACTION_GET_HIT = 3,
+    ACTION_DEFEND = 4,
+    ACTION_ATTCK = 11,
+    ACTION_SHOOT_UP = 11,
+    ACTION_START_MOVE = 20,
+    ACTION_STOP_MOVE = 21,
+  };
 };

@@ -7,6 +7,7 @@
 
 #include "Lang/Lang.h"
 #include "SDL3/SDL_render.h"
+#include "Set/CreatureSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
@@ -66,7 +67,7 @@ static void drawCreature() {
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
     posRect = {leftUp.x + 107 + i * 76, leftUp.y + 171, 58, 29};
     std::vector<SDL_Texture *> textures;
-    if (CreatureCfg::creatureUpgradeTo.at(id) != -1) {
+    if (!CreatureSet::fullCreatures[id]->upgrades.empty()) {
       textures = Global::defCache["APHLF1G.def/0"];
     } else {
       textures = Global::defCache["APHLF1Y.def/0"];

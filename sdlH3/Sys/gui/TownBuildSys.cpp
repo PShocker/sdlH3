@@ -12,6 +12,7 @@
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Set/FactionSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/CursorSys.h"
 #include "TownSys.h"
@@ -44,9 +45,13 @@ static void buy() {
   auto now = Window::dtNow;
   Global::fadeCallBack = [now, townComp, leftUp]() {
     auto build = Global::townBuildBid;
-    auto townPoint = TownCfg::townPoint[townComp->id].at(build);
-    auto texture =
-        Global::pcxCache[TownCfg::townBorder[townComp->id].at(build)][0];
+    auto buildX = FactionSet::fullFactions[townComp->id]->builds[build].x;
+    auto buildY = FactionSet::fullFactions[townComp->id]->builds[build].y;
+    SDL_FPoint townPoint = {static_cast<float>(buildX),
+                            static_cast<float>(buildY)};
+    auto borderStr =
+        FactionSet::fullFactions[townComp->id]->builds[build].border;
+    auto texture = Global::pcxCache[borderStr][0];
     if (Window::dtNow >= now + 2000) {
       SDL_SetTextureAlphaModFloat(texture, 1);
       return true;
@@ -117,7 +122,8 @@ static void drawBackGround() {
   }
   FreeTypeSys::drawCenter(leftUp.x + 395 / 2, leftUp.y + 230, title3Str);
 
-  auto tStr = TownCfg::townBuildIcon[townComp->id].at(Global::townBuildBid);
+  auto tStr =
+      FactionSet::fullFactions[townComp->id]->builds[Global::townBuildBid].icon;
   texture = Global::pcxCache[tStr][0];
   posRect = {leftUp.x + 125, leftUp.y + 50, static_cast<float>(texture->w),
              static_cast<float>(texture->h)};

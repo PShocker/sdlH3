@@ -5,6 +5,7 @@
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/HeroSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Window/Window.h"
@@ -83,7 +84,8 @@ static void drawHeroPor() {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 385) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 470) / 2)};
   auto heroComp = World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  auto texture = Global::pcxCache[HeroCfg::heroLargePor[heroComp.portrait]][0];
+  auto largePor = HeroSet::fullHeros[heroComp.portrait]->largePor;
+  auto texture = Global::pcxCache[largePor][0];
   posRect = {leftUp.x + porPosition.x, leftUp.y + porPosition.y, porPosition.w,
              porPosition.h};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
@@ -176,10 +178,10 @@ bool LevelUpSys::prepareLvlUp(HeroComp &heroComp) {
   };
   auto level = heroComp.level;
   auto exp = heroComp.exp;
-  if (exp >= HeroCfg::heroLevelExp[level]) {
-    auto primChance = HeroCfg::heroLowLevelChance.at(heroComp.subId);
+  if (exp >= HeroSet::heroLevelExperience[level]) {
+    auto primChance = HeroSet::heroLowPrimChance.at(heroComp.subId);
     Global::lvlPrimIndex = randomId(primChance);
-    auto secChance = HeroCfg::heroSecondarySkills.at(heroComp.subId);
+    auto secChance = HeroSet::heroSecondarySkills.at(heroComp.subId);
     std::vector<uint8_t> secChance2;
     secChance2.assign(28, 0);
     uint8_t r = 0;

@@ -27,6 +27,9 @@
 #include "Lang/Lang.h"
 #include "Point/Point.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/ObjectSet.h"
+#include "Set/StructSet.h"
+#include "Set/TerrainSet.h"
 #include "Sys/gui/CameraSys.h"
 #include "Sys/gui/CursorSys.h"
 #include "Sys/gui/DwellingSys.h"
@@ -46,17 +49,18 @@
 static void ambientAudio(uint8_t id) {}
 
 static void visitAudio(uint8_t id) {
-  auto &rAudio = AudioCfg::objectAudio.at(id)[AudioCfg::VISIT];
-  int randomIndex = std::rand() % rAudio.size();
-  auto audioStr = rAudio[randomIndex];
-  AudioSys::push(audioStr, 1, 0, false);
+  if (ObjectSet::fullObjects.contains(id)) {
+    auto &rAudio = ObjectSet::fullObjects.at(id)->sound.visit;
+    int randomIndex = std::rand() % rAudio.size();
+    AudioSys::push(rAudio, 1, 0, false);
+  }
 }
 
 static void removeAudio(uint8_t id) {
-  auto &rAudio = AudioCfg::objectAudio.at(id)[AudioCfg::REMOVAL];
-  int randomIndex = std::rand() % rAudio.size();
-  auto audioStr = rAudio[randomIndex];
-  AudioSys::push(audioStr, 1, 0, false);
+  // auto &rAudio = AudioCfg::objectAudio.at(id)[AudioCfg::REMOVAL];
+  // int randomIndex = std::rand() % rAudio.size();
+  // auto audioStr = rAudio[randomIndex];
+  // AudioSys::push(audioStr, 1, 0, false);
 }
 
 static bool checkAccessibility(ObjectType type, int heroX, int heroY,
@@ -223,7 +227,6 @@ static void handleGate(entt::entity heroEnt, entt::entity goalEnt) {
     Global::fadeRect = {0, 0, Global::viewPort.w - 199,
                         Global::viewPort.h - 47};
     World::iterateSystems.push_back(World::enterFadeScrn);
-    visitAudio((uint8_t)ObjectType::SUBTERRANEAN_GATE);
   }
 }
 
@@ -530,7 +533,7 @@ static void handleHeroMeet(entt::entity heroEnt, uint8_t level0,
     // 判断有没有学术
     for (auto v2 : {hComp0->secSkills, hComp1->secSkills}) {
       for (auto v1 : v2) {
-        if (v1.first == (uint8_t)HeroCfg::SecondarySkill::LEARNING) {
+        if (v1.first == Enum::LEARNING) {
           learnLevel = std::max(learnLevel, (int8_t)v1.second);
         }
       }
@@ -749,7 +752,6 @@ static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
   case ObjectType::PRISON:
     World::enterPrison(heroEnt, goalEnt);
     registry.get<HeroComp>(heroEnt).curEnt = goalEnt;
-    visitAudio((uint8_t)ObjectType::PRISON);
     break;
   case ObjectType::WITCH_HUT:
     World::enterWitchHut(heroEnt, goalEnt);
@@ -800,7 +802,6 @@ static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
     break;
   case ObjectType::WHIRLPOOL:
     World::enterWhirlPool(heroEnt, goalEnt);
-    visitAudio((uint8_t)ObjectType::WHIRLPOOL);
     registry.get<HeroComp>(heroEnt).curEnt = goalEnt;
     break;
   case ObjectType::ARENA:
@@ -871,6 +872,7 @@ static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
   default:
     break;
   }
+  visitAudio(objectComp.type);
 }
 
 static bool heroGoal(entt::entity heroEnt) {
@@ -1029,8 +1031,9 @@ static void heroMove(entt::entity heroEnt) {
 
     auto terrainEnt =
         Global::terrains[World::level][objectComp->x - 1][objectComp->y].back();
-    auto moveCost = TerrainCfg::moveCost.at(
-        World::registrys[World::level].get<TerrainComp>(terrainEnt).index);
+    auto tIndex =
+        World::registrys[World::level].get<TerrainComp>(terrainEnt).index;
+    auto moveCost = TerrainSet::terrains[tIndex].moveCost;
     heroComp->movement -= moveCost;
     // 判断是否触发事件
   }

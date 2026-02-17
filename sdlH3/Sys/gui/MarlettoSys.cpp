@@ -35,8 +35,13 @@ static void receive() {
   auto &mComp =
       World::registrys[World::level].get<MarlettoComp>(Global::goalEnt);
   if (!visited()) {
-    heroComp.primSkills[1] += 1;
-    heroComp.visitedLog.insert({(uint8_t)ObjectType::MARLETTO_TOWER, 0});
+    AdventureBonus bonus = {
+        .src = ObjectType::MARLETTO_TOWER,
+        .type = Enum::ADVENTURE_PRIMARY_SKILL,
+        .subType = Enum::PRIMARY_SKILL_DEFENCE,
+        .val = 1,
+    };
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
   }
   mComp.visitHeros.insert(heroComp.portrait);
 }

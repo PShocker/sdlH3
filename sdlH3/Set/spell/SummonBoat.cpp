@@ -8,8 +8,9 @@
 #include <any>
 #include <cstdint>
 #include <utility>
+#include "Set/SpellSet.h"
 
-void SummonBoat(std::any data) {
+void SpellSet::SummonBoat(std::any data) {
   World::enterAdvScrn();
   auto [heroEnt, level] = std::any_cast<std::pair<entt::entity, uint8_t>>(data);
   Global::cursorType=(uint8_t)Enum::CURSOR::SPELL;

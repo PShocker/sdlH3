@@ -18,7 +18,7 @@ static float bakH = 340;
 static bool visited() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  if (heroComp.visited.contains((uint8_t)ObjectType::MERMAID)) {
+  if (heroComp.visited.contains(ObjectType::MERMAID)) {
     return true;
   } else {
     return false;
@@ -30,7 +30,14 @@ static void receive() {
   if (!visited()) {
     auto &heroComp =
         World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-    heroComp.luck.push_back({(uint8_t)ObjectType::MERMAID, 1});
+    AdventureBonus bonus = {
+        .src = ObjectType::MERMAID,
+        .type = Enum::ADVENTURE_MORALE,
+        .subType = 0,
+        .val = 1,
+    };
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_MORALE, bonus});
+    heroComp.visited.insert(ObjectType::MERMAID);
   }
 }
 

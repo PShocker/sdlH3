@@ -17,56 +17,56 @@
 static const float bakW = 450;
 static const float bakH = 340;
 
-enum PandoraType {
-  MESSAGE,
-  CREATURE,
-  EXP,
-  MANA,
-  MORALE,
-  LUCK,
-  RESOURCE,
-  PRIMARY,
-  SECSKILL,
-  ARTIFACT,
-  SPELL,
+enum PANDORA_TYPE {
+  PANDORA_MESSAGE,
+  PANDORA_CREATURE,
+  PANDORA_EXP,
+  PANDORA_MANA,
+  PANDORA_MORALE,
+  PANDORA_LUCK,
+  PANDORA_RESOURCE,
+  PANDORA_PRIMARY,
+  PANDORA_SECSKILL,
+  PANDORA_ARTIFACT,
+  PANDORA_SPELL,
 };
 
 static uint8_t curReward() {
   auto pComp =
       World::registrys[World::level].get<PandorBoxComp>(Global::goalEnt);
   if (pComp.message != "") {
-    return MESSAGE;
+    return PANDORA_MESSAGE;
   }
   if (!pComp.creatures.empty()) {
-    return CREATURE;
+    return PANDORA_CREATURE;
   }
   if (pComp.heroExperience != 0) {
-    return EXP;
+    return PANDORA_EXP;
   }
   if (pComp.manaDiff != 0) {
-    return MANA;
+    return PANDORA_MANA;
   }
   if (pComp.morale != 0) {
-    return MORALE;
+    return PANDORA_MORALE;
   }
   if (pComp.luck != 0) {
-    return LUCK;
+    return PANDORA_LUCK;
   }
   for (auto r : pComp.resources) {
     if (r != 0) {
-      return RESOURCE;
+      return PANDORA_RESOURCE;
     }
   }
   for (auto r : pComp.primary) {
     if (r != 0) {
-      return PRIMARY;
+      return PANDORA_PRIMARY;
     }
   }
   if (!pComp.secSkills.empty()) {
-    return SECSKILL;
+    return PANDORA_SECSKILL;
   }
   if (!pComp.spells.empty()) {
-    return SPELL;
+    return PANDORA_SPELL;
   }
 
   return 0xff;
@@ -83,7 +83,7 @@ static void receive() {
     Global::cursorBack.pop_back();
 
     auto &registry = World::registrys[World::level];
-    if (type == EXP) {
+    if (type == PANDORA_EXP) {
       auto &heroComp = registry.get<HeroComp>(Global::heroEnt);
       heroComp.exp += 1000;
       if (LevelUpSys::prepareLvlUp(heroComp)) {
@@ -140,13 +140,13 @@ static void draw() {
                     Global::viewPort.h / 2 - bakH / 2};
   auto type = curReward();
   switch (type) {
-  case MESSAGE: {
+  case PANDORA_MESSAGE: {
     break;
   }
-  case CREATURE: {
+  case PANDORA_CREATURE: {
     break;
   }
-  case EXP: {
+  case PANDORA_EXP: {
     auto texture = Global::defCache["PSKILL.def/0"][4];
     posRect = {leftUp.x + bakW / 2 - 41, leftUp.y + 145, 82, 93};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
@@ -154,25 +154,25 @@ static void draw() {
     SDL_RenderRect(Window::renderer, &posRect);
     break;
   }
-  case MANA: {
+  case PANDORA_MANA: {
     break;
   }
-  case MORALE: {
+  case PANDORA_MORALE: {
     break;
   }
-  case LUCK: {
+  case PANDORA_LUCK: {
     break;
   }
-  case RESOURCE: {
+  case PANDORA_RESOURCE: {
     break;
   }
-  case PRIMARY: {
+  case PANDORA_PRIMARY: {
     break;
   }
-  case SECSKILL: {
+  case PANDORA_SECSKILL: {
     break;
   }
-  case SPELL: {
+  case PANDORA_SPELL: {
     break;
   }
   }

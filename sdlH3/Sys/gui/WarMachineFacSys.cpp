@@ -8,6 +8,7 @@
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Set/CreatureSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/base/SliderSys.h"
@@ -27,6 +28,23 @@ static void buy() {
   auto &registry = World::registrys[World::level];
   // 判断英雄身上是否可以放下这个生物
   World::enterConfirm(100, 100, ((uint8_t)Enum::SCNTYPE::MOD));
+}
+
+uint32_t WarMachineFacSys::maxCount() {
+  auto wComp =
+      &World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
+  auto mId = wComp->warMachines[Global::dweIndex].first;
+  auto cost = CreatureSet::fullCreatures[mId]->cost;
+  uint32_t maxCount = UINT32_MAX;
+  for (uint8_t i = 0; i < cost.size(); i++) {
+    auto r = Global::resources[Global::playerId][i];
+    if (cost[i] == 0) {
+      continue;
+    }
+    maxCount = std::min(r / cost[i], maxCount);
+  }
+  auto count = wComp->warMachines[Global::dweIndex].second;
+  return std::min(maxCount, count);
 }
 
 static std::vector<Button> buttonInfo() {
@@ -62,203 +80,14 @@ static std::vector<Button> buttonInfo() {
   return v;
 }
 
-static void drawBackGround() {
-  SDL_FRect posRect;
-  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
-                    static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
-  posRect = {leftUp.x, leftUp.y, 485, 395};
-  auto texture = Global::pcxCache["TPrcrt.pcx"][Global::playerId];
-  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-  SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
-  auto strPool = *Lang::strPool[Global::langIndex];
-
-  FreeTypeSys::setSize(13);
-  FreeTypeSys::setColor(255, 255, 255, 255);
-  posRect = {leftUp.x + 172, leftUp.y + 222, 67, 42};
-  SDL_RenderRect(Window::renderer, &posRect);
-  FreeTypeSys::drawCenter(posRect.x + 34, posRect.y + 2, strPool[1859]);
-  auto wComp =
-      &World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
-  auto count = wComp->warMachines[Global::dweIndex].second;
-  FreeTypeSys::drawCenter(posRect.x + 34, posRect.y + 24, count);
-  posRect = {leftUp.x + 246, leftUp.y + 222, 67, 42};
-  SDL_RenderRect(Window::renderer, &posRect);
-  FreeTypeSys::drawCenter(posRect.x + 34, posRect.y + 2, strPool[1857]);
-  FreeTypeSys::drawCenter(posRect.x + 34, posRect.y + 24, Global::dweSliderNum);
-
-  posRect = {leftUp.x + 64, leftUp.y + 222, 99, 76};
-  SDL_RenderRect(Window::renderer, &posRect);
-  FreeTypeSys::drawCenter(posRect.x + 50, posRect.y + 2, strPool[1858]);
-  posRect = {leftUp.x + 322, leftUp.y + 222, 99, 76};
-  SDL_RenderRect(Window::renderer, &posRect);
-  FreeTypeSys::drawCenter(posRect.x + 50, posRect.y + 2, strPool[1860]);
-
-  FreeTypeSys::setSize(13);
-  FreeTypeSys::setColor(240, 224, 104, 255);
-  FreeTypeSys::drawCenter(
-      Global::viewPort.w / 2, posRect.y + 15,
-      strPool[926 + (uint8_t)ObjectType::WAR_MACHINE_FACTORY]);
-}
-
-static void drawWarMachine(float x, float y, uint16_t id, uint16_t group,
-                           uint16_t index, uint8_t colorType) {
-  auto defPath = WarMachineCfg::warMachineGraphics.at(id);
-  auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
-  auto texture = textures[index];
-  SDL_FRect srcRect;
-  if (WarMachineCfg::machinedoubleWide[id]) {
-    srcRect = {165, 145, 100, 130};
-  } else {
-    srcRect = {145, 145, 100, 130};
-  }
-  SDL_FRect posRect{x, y, 100, 130};
-  // 色彩混合
-  auto pal = SDL_GetTexturePalette(texture);
-  SDL_Color originColor = pal->colors[5];
-  pal->colors[5] = CreatureCfg::ovColor[colorType];
-  SDL_RenderTexture(Window::renderer, texture, &srcRect, &posRect);
-  pal->colors[5] = originColor;
-}
-
-void WarMachineFacSys::drawMachineBak(float x, float y, uint16_t id,
-                                      uint16_t group, uint16_t index,
-                                      uint8_t colorType) {
-
-  SDL_FRect posRect{x, y, 100, 130};
-  auto texture = Global::pcxCache["TPCASNEU.pcx"][0];
-  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-  if (colorType == 1) {
-    SDL_SetRenderDrawColor(Window::renderer, 255, 0, 0, 255);
-  } else {
-    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
-  }
-  SDL_RenderRect(Window::renderer, &posRect);
-  drawWarMachine(x, y, id, group, index, (uint8_t)CreatureCfg::OV_COLOR::CYAN);
-}
-
-static void drawWarMachines() {
-  SDL_FRect posRect;
-  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
-                    static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
-  auto wComp =
-      World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
-  auto mhs = wComp.warMachines;
-  int size = mhs.size();
-  // 100x120
-  auto pos = DwellingSys::creatruePos(size);
-  for (uint8_t i = 0; i < size; i++) {
-    auto p = pos[i];
-    auto group = Global::warFacGroup[i];
-    auto id = mhs[i].first;
-    auto defPath = WarMachineCfg::warMachineGraphics.at(id);
-    auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
-    auto index = Global::warFacFrameIndex[i] % textures.size();
-    auto colorType = Global::dweIndex == i ? 1 : 0;
-    WarMachineFacSys::drawMachineBak(leftUp.x + p.x, leftUp.y + p.y, id, group,
-                                     index, colorType);
-  }
-}
-
-static void drawButton() {
-  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
-                    static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
-  auto v = buttonInfo();
-  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
-  auto top = (*topFunc.target<bool (*)()>() == WarMachineFacSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
-}
-
-static void drawCost() {
-  SDL_FRect posRect;
-  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
-                    static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
-  auto wComp =
-      &World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
-  auto mId = wComp->warMachines[Global::dweIndex].first;
-  auto cost = WarMachineCfg::machineCost.at(mId);
-  std::vector<std::pair<uint8_t, uint8_t>> costVec;
-  for (int8_t i = cost.size() - 1; i >= 0; i--) {
-    if (cost[i] != 0) {
-      costVec.push_back({i, cost[i]});
-    }
-  }
-  int size = costVec.size();
-  auto textures = Global::defCache["RESOURCE.def/0"];
-  uint8_t m = 0;
-  FreeTypeSys::setSize(12);
-  FreeTypeSys::setColor(255, 255, 255, 255);
-  for (auto posRect : {SDL_FRect{leftUp.x + 64, leftUp.y + 245, 32, 32},
-                       SDL_FRect{leftUp.x + 322, leftUp.y + 245, 32, 32}}) {
-    auto totalWidth = size * 32;
-    auto padding = (99 - totalWidth) / (size + 1);
-    for (auto i = 0; i < costVec.size(); i++) {
-      auto texture = textures[costVec[i].first];
-      SDL_FRect pRect{posRect.x + padding * (i + 1) + i * texture->w, posRect.y,
-                      static_cast<float>(texture->w),
-                      static_cast<float>(texture->h)};
-      SDL_RenderTexture(Window::renderer, texture, nullptr, &pRect);
-      if (m == 0) {
-        FreeTypeSys::drawCenter(pRect.x + 16, pRect.y + 35, costVec[i].second);
-      } else {
-        FreeTypeSys::drawCenter(pRect.x + 16, pRect.y + 35,
-                                Global::dweSliderNum * costVec[i].second);
-      }
-    }
-    m++;
-  }
-}
-
-uint32_t WarMachineFacSys::maxCount() {
-  auto wComp =
-      &World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
-  auto mId = wComp->warMachines[Global::dweIndex].first;
-  auto cost = WarMachineCfg::machineCost.at(mId);
-  uint32_t maxCount = UINT32_MAX;
-  for (uint8_t i = 0; i < cost.size(); i++) {
-    auto r = Global::resources[Global::playerId][i];
-    if (cost[i] == 0) {
-      continue;
-    }
-    maxCount = std::min(r / cost[i], maxCount);
-  }
-  auto count = wComp->warMachines[Global::dweIndex].second;
-  return std::min(maxCount, count);
-}
-static void drawSlider() {
-  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
-                    static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
-  auto wComp =
-      &World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
-  auto count = WarMachineFacSys::maxCount();
-  if (count != 0) {
-    SliderSys::drawHor(leftUp.x + 176, leftUp.y + 279, 135,
-                       Global::dweSliderNum / (float)count);
-  } else {
-    SliderSys::drawHor(leftUp.x + 176, leftUp.y + 279, 135, 0);
-  }
-}
-
-static void warAnimate() {
-  auto wComp =
-      World::registrys[World::level].get<WarMachineFacComp>(Global::goalEnt);
-  auto mhs = wComp.warMachines;
-  for (uint8_t i = 0; i < mhs.size(); i++) {
-    auto mh = mhs[i];
-    auto id = mh.first;
-    WarMachineSys::warAnimate(Global::warFacFrameTime[i],
-                              Global::warFacFrameIndex[i],
-                              Global::warFacGroup[i], id);
-  }
-}
-
 bool WarMachineFacSys::run() {
 
-  warAnimate();
-  drawBackGround();
-  drawWarMachines();
-  drawCost();
-  drawButton();
-  drawSlider();
+  // warAnimate();
+  // drawBackGround();
+  // drawWarMachines();
+  // drawCost();
+  // drawButton();
+  // drawSlider();
   return true;
 }
 

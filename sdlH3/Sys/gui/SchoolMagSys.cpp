@@ -40,14 +40,18 @@ static void receive() {
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   auto &schMComp =
       World::registrys[World::level].get<SchoolMagComp>(Global::goalEnt);
+  AdventureBonus bonus = {
+      .src = ObjectType::SCHOOL_OF_MAGIC,
+      .type = Enum::ADVENTURE_PRIMARY_SKILL,
+      .val = 1,
+  };
   if (!schMComp.visitHeros.contains(heroComp.portrait)) {
     if (Global::goalIndex == 0) {
-      heroComp.primSkills[2] += 1;
+      bonus.subType = Enum::PRIMARY_SKILL_SPELLPOWER;
     } else {
-      heroComp.primSkills[3] += 1;
+      bonus.subType = Enum::PRIMARY_SKILL_KNOWLEDGE;
     }
-    heroComp.visitedLog.insert(
-        {(uint8_t)ObjectType::SCHOOL_OF_MAGIC, Global::goalIndex});
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
   }
   heroComp.visited.insert((uint8_t)ObjectType::SCHOOL_OF_MAGIC);
   schMComp.visitHeros.insert(heroComp.portrait);

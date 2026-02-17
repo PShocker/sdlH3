@@ -10,6 +10,8 @@
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Set/CreatureSet.h"
+#include "Set/FactionSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/base/SliderSys.h"
 #include "Window/Window.h"
@@ -175,7 +177,7 @@ static void drawCreatures() {
   for (uint8_t i = 0; i < size; i++) {
     auto p = pos[i];
     auto id = creatures[i].first;
-    auto defPath = CreatureCfg::creatureGraphics.at(id);
+    auto defPath = CreatureSet::fullCreatures.at(id)->graphics.animation;
     auto group = Global::dweGroup;
     auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
     auto index = Global::dweFrameIndex % textures.size();
@@ -188,11 +190,12 @@ static void drawCreatures() {
 void DwellingSys::drawCreature(float x, float y, uint16_t id, uint16_t group,
                                uint16_t index, uint8_t colorType) {
   // colorType指生物的描边颜色
-  auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) + "/" +
-                                   std::to_string(group)];
+  auto creature = CreatureSet::fullCreatures.at(id);
+  auto graphic = creature->graphics.animation;
+  auto textures = Global::defCache[graphic + "/" + std::to_string(group)];
   auto texture = textures[index];
   SDL_FRect srcRect;
-  if (CreatureCfg::creatureExAttr[id][CreatureCfg::EX_ATTRIBUTE::DOUBLE_WIDE]) {
+  if (creature->abilities.contains(Enum::DOUBLE_WIDE)) {
     srcRect = {165, 145, 100, 130};
   } else {
     srcRect = {145, 145, 100, 130};
@@ -201,16 +204,19 @@ void DwellingSys::drawCreature(float x, float y, uint16_t id, uint16_t group,
   // 色彩混合
   auto pal = SDL_GetTexturePalette(texture);
   SDL_Color originColor = pal->colors[5];
-  pal->colors[5] = CreatureCfg::ovColor[colorType];
+  pal->colors[5] = CreatureSet::ovColor[colorType];
   SDL_RenderTexture(Window::renderer, texture, &srcRect, &posRect);
   pal->colors[5] = originColor;
 }
 
 void DwellingSys::drawCreatureBak(float x, float y, uint16_t id, uint16_t group,
                                   uint16_t index, uint8_t colorType) {
-  auto townIndex = CreatureCfg::creatureTowns.at(id);
+
   SDL_FRect posRect{x, y, 100, 130};
-  auto texture = Global::pcxCache[TownCfg::creatureBackground[townIndex][1]][0];
+  auto fIndex = CreatureSet::fullCreatures.at(id)->faction;
+  auto creatureBackground =
+      FactionSet::fullFactions[fIndex]->creatureBackground;
+  auto texture = Global::pcxCache[creatureBackground[1]][0];
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   if (colorType == 1) {
     SDL_SetRenderDrawColor(Window::renderer, 255, 0, 0, 255);
@@ -220,16 +226,19 @@ void DwellingSys::drawCreatureBak(float x, float y, uint16_t id, uint16_t group,
   if (colorType != 0xff) {
     SDL_RenderRect(Window::renderer, &posRect);
   }
-  colorType = (uint8_t)CreatureCfg::OV_COLOR::TRANSPARENCY;
+  colorType = CreatureSet::OV_COLOR_TRANSPARENCY;
   drawCreature(x, y, id, group, index, colorType);
 }
 
 void DwellingSys::drawCreatureBak2(float x, float y, uint16_t id,
                                    uint16_t group, uint16_t index,
                                    uint8_t colorType) {
-  auto townIndex = CreatureCfg::creatureTowns.at(id);
+
   SDL_FRect posRect{x, y, 100, 120};
-  auto texture = Global::pcxCache[TownCfg::creatureBackground[townIndex][0]][0];
+  auto fIndex = CreatureSet::fullCreatures.at(id)->faction;
+  auto creatureBackground =
+      FactionSet::fullFactions[fIndex]->creatureBackground;
+  auto texture = Global::pcxCache[creatureBackground[0]][0];
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   if (colorType == 1) {
     SDL_SetRenderDrawColor(Window::renderer, 255, 0, 0, 255);
@@ -239,7 +248,7 @@ void DwellingSys::drawCreatureBak2(float x, float y, uint16_t id,
   if (colorType != 0xff) {
     SDL_RenderRect(Window::renderer, &posRect);
   }
-  colorType = (uint8_t)CreatureCfg::OV_COLOR::TRANSPARENCY;
+  colorType = CreatureSet::OV_COLOR_TRANSPARENCY;
   drawCreature(x, y - 10, id, group, index, colorType);
 }
 
@@ -259,7 +268,7 @@ static void drawCost() {
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
   auto creatures = cres();
   auto id = creatures[Global::dweIndex].first;
-  auto cost = CreatureCfg::creatureCost.at(id);
+  auto cost = CreatureSet::fullCreatures[id]->cost;
   std::vector<std::pair<uint8_t, uint8_t>> costVec;
   for (int8_t i = cost.size() - 1; i >= 0; i--) {
     if (cost[i] != 0) {
@@ -295,7 +304,7 @@ static void drawCost() {
 uint32_t DwellingSys::maxCount() {
   auto creatures = cres();
   auto id = creatures[Global::dweIndex].first;
-  auto cost = CreatureCfg::creatureCost.at(id);
+  auto cost = CreatureSet::fullCreatures[id]->cost;
   uint32_t maxCount = UINT32_MAX;
   for (uint8_t i = 0; i < cost.size(); i++) {
     auto r = Global::resources[Global::playerId][i];

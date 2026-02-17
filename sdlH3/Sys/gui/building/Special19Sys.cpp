@@ -47,14 +47,7 @@ static void draw() {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto id = townComp->id;
-  switch (id) {
-  case (uint8_t)TownCfg::Faction::CASTLE: {
-    TavernSys::run();
-  }
-  default: {
-    break;
-  }
-  }
+ 
 }
 
 static void drawButton() {

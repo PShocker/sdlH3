@@ -1,6 +1,5 @@
 #include "AltarSacSys.h"
 
-
 #include "Comp/HeroComp.h"
 #include "Comp/PlayerIdComp.h"
 #include "Enum/Enum.h"
@@ -8,6 +7,8 @@
 
 #include "HeroScrSys.h"
 #include "SDL3/SDL_render.h"
+#include "Set/ArtifactSet.h"
+#include "Set/CreatureSet.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/base/AltArtPanelSys.h"
 #include "Sys/gui/base/ArtifactsOfHeroSys.h"
@@ -23,7 +24,7 @@ static uint32_t maxExp() {
   switch ((Enum::ALTAR)Global::altType) {
   case Enum::ALTAR::ART: {
     for (auto [k, v] : Global::alts) {
-      auto exp = ArtifactCfg::artExp.at(v);
+      auto exp = ArtifactSet::artifacts.at(v).experience;
       e += exp;
     }
     break;
@@ -33,7 +34,9 @@ static uint32_t maxExp() {
       if (k == -1) {
         continue;
       }
-      auto exp = CreatureCfg::creatureExp.at(k);
+
+      // auto exp = CreatureCfg::creatureExp.at(k);
+      auto exp = CreatureSet::fullCreatures[k]->experience;
       e += exp * v;
     }
     break;
@@ -78,7 +81,7 @@ static void deal() {
         } else {
           heroComp->artifactsInBackpack[i] = 0xff;
         }
-        heroComp->exp += ArtifactCfg::artExp.at(artId);
+        heroComp->exp += ArtifactSet::artifacts.at(artId).experience;
       }
     }
     break;
@@ -90,7 +93,7 @@ static void deal() {
       auto num = pair.second;
       if (id != 0xff && num != 0) {
         heroComp->creatures[i].first -= num;
-        heroComp->exp += ArtifactCfg::artExp.at(id);
+        heroComp->exp += CreatureSet::fullCreatures[id]->experience;
       }
     }
     break;

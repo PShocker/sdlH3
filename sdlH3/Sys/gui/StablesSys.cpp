@@ -19,7 +19,6 @@ static void receive() {
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   if (!heroComp.visited.contains((uint8_t)ObjectType::STABLES)) {
     heroComp.movement += 100;
-    heroComp.visitedLog.insert({(uint8_t)ObjectType::STABLES, 0});
   }
   heroComp.visited.insert((uint8_t)ObjectType::STABLES);
 }

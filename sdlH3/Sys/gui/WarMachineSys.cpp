@@ -83,15 +83,15 @@ static void drawBackGround() {
 }
 
 static void drawMachine() {
-  SDL_FRect posRect;
-  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
-                    static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
-  auto id = Global::crePair.first;
-  auto group = Global::creGroup;
-  auto defPath = WarMachineCfg::warMachineGraphics.at(id);
-  auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
-  WarMachineFacSys::drawMachineBak(leftUp.x + 20, leftUp.y + 47, id, group,
-                                   Global::creFrameIndex % textures.size(), 0);
+  // SDL_FRect posRect;
+  // SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
+  //                   static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
+  // auto id = Global::crePair.first;
+  // auto group = Global::creGroup;
+  // auto defPath = WarMachineCfg::warMachineGraphics.at(id);
+  // auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
+  // WarMachineFacSys::drawMachineBak(leftUp.x + 20, leftUp.y + 47, id, group,
+  //                                  Global::creFrameIndex % textures.size(), 0);
 }
 
 static void drawButton() {
@@ -104,40 +104,8 @@ static void drawButton() {
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
 }
 
-void WarMachineSys::warAnimate(uint64_t &warFrameTime, uint64_t &warFrameIndex,
-                               uint64_t &warGroup, uint16_t warId) {
-
-  warFrameTime += Window::deltaTime;
-  if (warFrameTime >= 90) {
-    warFrameTime = 0;
-    warFrameIndex += 1;
-
-    auto textures =
-        Global::defCache[WarMachineCfg::warMachineGraphics.at(warId) + "/" +
-                         std::to_string(warGroup)];
-    if (warFrameIndex >= textures.size()) {
-      warFrameIndex = 0;
-      std::vector<uint8_t> arr;
-      arr = {
-          CreatureCfg::ACTION_DEFEND,
-          CreatureCfg::ACTION_STAND,
-          CreatureCfg::ACTION_GET_HIT,
-      };
-      if (Global::defCache.contains(
-              WarMachineCfg::warMachineGraphics.at(warId) + "/11")) {
-        arr.push_back(CreatureCfg::ACTION_SHOOT_UP);
-      }
-      std::uniform_int_distribution<> distrib(0, std::size(arr) - 1);
-      // 生成随机索引并选择元素
-      int randomIndex = distrib(Global::gen);
-      warGroup = arr[randomIndex];
-    }
-  }
-}
-
 bool WarMachineSys::run() {
-  warAnimate(Global::creFrameTime, Global::creFrameIndex, Global::creGroup,
-             Global::crePair.first);
+
   drawBackGround();
   drawMachine();
   drawButton();

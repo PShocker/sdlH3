@@ -25,6 +25,7 @@
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
+#include "Set/HeroSet.h"
 #include "Sys/AudioSys.h"
 #include "Sys/BorderSys.h"
 #include "Sys/FreeTypeSys.h"
@@ -493,13 +494,11 @@ static void drawTownStat() {
     posRect = {Global::viewPort.w - 186, Global::viewPort.h - 199, 58, 64};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
-    if (townComp->buildings.contains((uint8_t)TownCfg::Building::TOWN_HALL)) {
+    if (townComp->buildings.contains(Enum::BUILD_TOWN_HALL)) {
       texture = Global::defCache["ITMTLS.def/0"][1];
-    } else if (townComp->buildings.contains(
-                   (uint8_t)TownCfg::Building::CITY_HALL)) {
+    } else if (townComp->buildings.contains(Enum::BUILD_CITY_HALL)) {
       texture = Global::defCache["ITMTLS.def/0"][2];
-    } else if (townComp->buildings.contains(
-                   (uint8_t)TownCfg::Building::CAPITOL)) {
+    } else if (townComp->buildings.contains(Enum::BUILD_CAPITOL)) {
       texture = Global::defCache["ITMTLS.def/0"][3];
     } else {
       texture = Global::defCache["ITMTLS.def/0"][0];
@@ -508,13 +507,11 @@ static void drawTownStat() {
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
     // SDL_RenderFillRect(Window::renderer, &posRect);
 
-    if (townComp->buildings.contains((uint8_t)TownCfg::Building::FORT)) {
+    if (townComp->buildings.contains(Enum::BUILD_FORT)) {
       texture = Global::defCache["ITMCLS.def/0"][0];
-    } else if (townComp->buildings.contains(
-                   (uint8_t)TownCfg::Building::CITADEL)) {
+    } else if (townComp->buildings.contains(Enum::BUILD_CITADEL)) {
       texture = Global::defCache["ITMCLS.def/0"][1];
-    } else if (townComp->buildings.contains(
-                   (uint8_t)TownCfg::Building::CASTLE)) {
+    } else if (townComp->buildings.contains(Enum::BUILD_CASTLE)) {
       texture = Global::defCache["ITMCLS.def/0"][2];
     } else {
       texture = Global::defCache["ITMCLS.def/0"][3];
@@ -538,21 +535,25 @@ static void drawHeroStat() {
   if (heroIndex < 8) {
     auto [level, heroEnt] = Global::heros[playerId][heroIndex];
     auto heroComp = &World::registrys[level].get<HeroComp>(heroEnt);
-    auto texture =
-        Global::pcxCache[HeroCfg::heroLargePor[heroComp->portrait]][0];
+    auto largePor = HeroSet::fullHeros[heroComp->portrait]->largePor;
+    auto texture = Global::pcxCache[largePor][0];
     SDL_FRect posRect = {Global::viewPort.w - 186, Global::viewPort.h - 199, 58,
                          64};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
     FreeTypeSys::setSize(12);
     FreeTypeSys::setColor(255, 255, 255, 255);
-    FreeTypeSys::drawCenter(posRect.x + 75, posRect.y + 48,
-                            HeroScrSys::heroPrimAbility(*heroComp, 0));
-    FreeTypeSys::drawCenter(posRect.x + 102, posRect.y + 48,
-                            HeroScrSys::heroPrimAbility(*heroComp, 1));
-    FreeTypeSys::drawCenter(posRect.x + 130, posRect.y + 48,
-                            HeroScrSys::heroPrimAbility(*heroComp, 2));
-    FreeTypeSys::drawCenter(posRect.x + 157, posRect.y + 48,
-                            HeroScrSys::heroPrimAbility(*heroComp, 3));
+    FreeTypeSys::drawCenter(
+        posRect.x + 75, posRect.y + 48,
+        HeroScrSys::heroPrim(*heroComp, Enum::PRIMARY_SKILL_ATTACK));
+    FreeTypeSys::drawCenter(
+        posRect.x + 102, posRect.y + 48,
+        HeroScrSys::heroPrim(*heroComp, Enum::PRIMARY_SKILL_DEFENCE));
+    FreeTypeSys::drawCenter(
+        posRect.x + 130, posRect.y + 48,
+        HeroScrSys::heroPrim(*heroComp, Enum::PRIMARY_SKILL_SPELLPOWER));
+    FreeTypeSys::drawCenter(
+        posRect.x + 157, posRect.y + 48,
+        HeroScrSys::heroPrim(*heroComp, Enum::PRIMARY_SKILL_KNOWLEDGE));
     FreeTypeSys::drawCenter(posRect.x + 155, posRect.y + 87, heroComp->mana);
 
     auto strPool = *Lang::strPool[Global::langIndex];

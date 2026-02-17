@@ -42,7 +42,7 @@ static void receive() {
     } else {
       heroComp.primSkills[1] += 2;
     }
-    heroComp.visitedLog.insert({(uint8_t)ObjectType::ARENA, Global::goalIndex});
+    heroComp.visitedEnt.insert(Global::goalEnt);
     schMComp.visitHeros.insert(heroComp.portrait);
   }
   heroComp.visited.insert((uint8_t)ObjectType::ARENA);

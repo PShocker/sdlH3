@@ -39,8 +39,7 @@ static void receive() {
     heroComp.primSkills[1] += 5;
     heroComp.primSkills[2] += 5;
     heroComp.primSkills[3] += 5;
-    heroComp.visitedLog.insert(
-        {(uint8_t)ObjectType::LIBRARY_OF_ENLIGHTENMENT, 0});
+    heroComp.visitedEnt.insert(Global::goalEnt);
   }
   lComp.visitHeros.insert(heroComp.portrait);
 }

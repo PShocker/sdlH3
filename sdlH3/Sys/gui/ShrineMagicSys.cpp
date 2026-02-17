@@ -28,8 +28,7 @@ static bool visited() {
   auto &smComp =
       World::registrys[World::level].get<ShrineMagicComp>(Global::goalEnt);
   // 获取智慧术等级
-  int8_t wisdom = HeroScrSys::heroSecLevel(
-      heroComp, (uint8_t)HeroCfg::SecondarySkill::WISDOM);
+  int8_t wisdom = HeroScrSys::heroSecLevel(heroComp, Enum::WISDOM);
   if (smComp.level >= 2 && wisdom < 0) {
     return true;
   }
@@ -132,7 +131,7 @@ static bool clickSpl(uint8_t clickType) {
     if (SDL_PointInRectFloat(&point, &posRect)) {
       auto &sComp =
           World::registrys[World::level].get<ShrineMagicComp>(Global::goalEnt);
-      SpellSys::showSplComfirm(clickType, sComp.spellId, 0);
+      SpellSys::showSpellComfirm(clickType, sComp.spellId, 0);
       return true;
     }
   }

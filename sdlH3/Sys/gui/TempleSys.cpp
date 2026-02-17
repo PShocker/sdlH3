@@ -18,7 +18,7 @@ static float bakH = 340;
 static bool visited() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  if (heroComp.visited.contains((uint8_t)ObjectType::SWAN_POND)) {
+  if (heroComp.visited.contains(ObjectType::TEMPLE)) {
     return true;
   } else {
     return false;
@@ -30,10 +30,13 @@ static void receive() {
   if (!visited()) {
     auto &heroComp =
         World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-    if (!heroComp.visited.contains((uint8_t)ObjectType::TEMPLE)) {
-      heroComp.morale.push_back({(uint8_t)ObjectType::TEMPLE, 1});
-    }
-    heroComp.visited.insert((uint8_t)ObjectType::TEMPLE);
+    AdventureBonus bonus = {
+        .src = ObjectType::TEMPLE,
+        .type = Enum::ADVENTURE_MORALE,
+        .val = 1,
+    };
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_MORALE, bonus});
+    heroComp.visited.insert(ObjectType::TEMPLE);
   }
 }
 

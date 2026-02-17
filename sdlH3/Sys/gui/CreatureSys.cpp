@@ -7,6 +7,7 @@
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Set/CreatureSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/DwellingSys.h"
 #include "Sys/gui/HeroScrSys.h"
@@ -126,8 +127,8 @@ static void drawCreatures() {
                     static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
   auto id = Global::crePair.first;
   auto group = Global::creGroup;
-  auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) + "/" +
-                                   std::to_string(group)];
+  auto graphic = CreatureSet::fullCreatures[id]->graphics.animation;
+  auto textures = Global::defCache[graphic + "/" + std::to_string(group)];
   DwellingSys::drawCreatureBak(leftUp.x + 20, leftUp.y + 47, id, group,
                                Global::creFrameIndex % textures.size(), 0xff);
 }
@@ -152,43 +153,41 @@ void CreatureSys::creAnimate(uint64_t &creFrameTime, uint64_t &creFrameIndex,
     auto id = creId;
     auto group = creGroup;
 
-    auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) +
-                                     "/" + std::to_string(group)];
+    auto graphic = CreatureSet::fullCreatures[id]->graphics.animation;
+    auto textures = Global::defCache[graphic + "/" + std::to_string(group)];
     if (creFrameIndex >= textures.size()) {
       creFrameIndex = 0;
       std::vector<uint8_t> arr;
+      auto graphic = CreatureSet::fullCreatures[id]->graphics.animation;
 
-      bool hasStartMove = Global::defCache.contains(
-          CreatureCfg::creatureGraphics.at(id) + "/20");
+      bool hasStartMove = Global::defCache.contains(graphic + "/20");
       if (hasStartMove) {
         arr = {
-            CreatureCfg::ACTION_START_MOVE, CreatureCfg::ACTION_ATTCK,
-            CreatureCfg::ACTION_DEFEND,     CreatureCfg::ACTION_STAND,
-            CreatureCfg::ACTION_GET_HIT,
+            Enum::ACTION_START_MOVE, Enum::ACTION_ATTCK,   Enum::ACTION_DEFEND,
+            Enum::ACTION_STAND,      Enum::ACTION_GET_HIT,
         };
       } else {
         arr = {
-            CreatureCfg::ACTION_ATTCK,
-            CreatureCfg::ACTION_DEFEND,
-            CreatureCfg::ACTION_STAND,
-            CreatureCfg::ACTION_GET_HIT,
+            Enum::ACTION_ATTCK,
+            Enum::ACTION_DEFEND,
+            Enum::ACTION_STAND,
+            Enum::ACTION_GET_HIT,
         };
       }
-      bool hasStoptMove = Global::defCache.contains(
-          CreatureCfg::creatureGraphics.at(id) + "/21");
+      bool hasStoptMove = Global::defCache.contains(graphic + "/21");
       switch (group) {
-      case CreatureCfg::ACTION_MOVE: {
+      case Enum::ACTION_MOVE: {
         if (hasStoptMove) {
           arr = {
-              CreatureCfg::ACTION_MOVE,
-              CreatureCfg::ACTION_STOP_MOVE,
+              Enum::ACTION_MOVE,
+              Enum::ACTION_STOP_MOVE,
           };
         }
         break;
       }
-      case CreatureCfg::ACTION_START_MOVE: {
+      case Enum::ACTION_START_MOVE: {
         arr = {
-            CreatureCfg::ACTION_MOVE,
+            Enum::ACTION_MOVE,
         };
         break;
       }
@@ -205,7 +204,7 @@ static void drawCreInfo() {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
   auto id = Global::crePair.first;
-  auto v = CreatureCfg::creatureAttr.at(id);
+  auto attribute = CreatureSet::fullCreatures[id]->attribute;
   // Hit Points,Speed,Attack,Defense,Low,High,Shots,Spells,Low,High
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(248, 240, 216, 255);
@@ -213,21 +212,22 @@ static void drawCreInfo() {
   case (uint8_t)Enum::CRETYPE::MOD_DWE:
   case (uint8_t)Enum::CRETYPE::POP_DWE: {
     // atk
-    FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 46, v[2]);
+    FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 46, attribute.attack);
     // def
-    FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 65, v[3]);
+    FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 65, attribute.defense);
     // shoot
-    FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 84, v[6]);
+    FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 84, attribute.shots);
     // dmg
-    auto str = FreeTypeSys::str(v[4]) + u"-" + FreeTypeSys::str(v[5]);
+    auto str = FreeTypeSys::str(attribute.minDamage) + u"-" +
+               FreeTypeSys::str(attribute.maxDamage);
     FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 103, str);
 
     // life
-    str = FreeTypeSys::str(v[0]);
+    str = FreeTypeSys::str(attribute.hitPoint);
     FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 122, str);
 
     // speed
-    str = FreeTypeSys::str(v[1]);
+    str = FreeTypeSys::str(attribute.speed);
     FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 160, str);
 
     break;
@@ -237,29 +237,32 @@ static void drawCreInfo() {
     auto [level, heroEnt] = Global::creHeroPair;
     auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
     // atk
-    auto str = FreeTypeSys::str(v[2]) + u"(" +
-               FreeTypeSys::str(v[2] + hComp.primSkills[0]) + u")";
+    auto heroAtk = HeroScrSys::heroPrim(hComp, Enum::PRIMARY_SKILL_ATTACK);
+    auto str = FreeTypeSys::str(attribute.attack) + u"(" +
+               FreeTypeSys::str(attribute.attack + heroAtk) + u")";
     FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 46, str);
     // def
-    str = FreeTypeSys::str(v[3]) + u"(" +
-          FreeTypeSys::str(v[3] + hComp.primSkills[1]) + u")";
+    auto heroDef = HeroScrSys::heroPrim(hComp, Enum::PRIMARY_SKILL_DEFENCE);
+    str = FreeTypeSys::str(attribute.defense) + u"(" +
+          FreeTypeSys::str(attribute.defense + heroDef) + u")";
     FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 65, str);
     // shoot
-    str = FreeTypeSys::str(v[6]);
+    str = FreeTypeSys::str(attribute.shots);
     FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 84, str);
     // dmg
-    str = FreeTypeSys::str(v[4]) + u"-" + FreeTypeSys::str(v[5]);
+    str = FreeTypeSys::str(attribute.minDamage) + u"-" +
+          FreeTypeSys::str(attribute.maxDamage);
     FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 103, str);
 
     // life
-    str = FreeTypeSys::str(v[0]);
+    str = FreeTypeSys::str(attribute.hitPoint);
     FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 122, str);
     // remain life
     // str = FreeTypeSys::str(v[4]) + u"-" + FreeTypeSys::str(v[0]);
     // FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 141, str);
 
     // speed
-    str = FreeTypeSys::str(v[1]);
+    str = FreeTypeSys::str(attribute.speed);
     FreeTypeSys::drawLeft(leftUp.x + 276, leftUp.y + 160, str);
     break;
   }

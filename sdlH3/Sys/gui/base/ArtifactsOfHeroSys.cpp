@@ -4,6 +4,7 @@
 
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Set/ArtifactSet.h"
 #include "Window/Window.h"
 #include <cstdint>
 #include <vector>
@@ -43,7 +44,7 @@ void ArtifactsOfHeroSys::drawEquipBorder(int32_t x, int32_t y, uint8_t index) {
 }
 
 void ArtifactsOfHeroSys::drawArtSlot(uint8_t artId, int32_t x, int32_t y) {
-  auto slots = ArtifactCfg::artSlot.at(artId);
+  auto slots = ArtifactSet::artifacts[artId].slot;
   for (uint8_t i = 0; i < slots.size(); i++) {
     if (slots[i]) {
       SDL_FRect posRect = {static_cast<float>(x + slotPos[i].x - 66),

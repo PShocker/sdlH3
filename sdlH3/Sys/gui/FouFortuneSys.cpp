@@ -32,9 +32,7 @@ static void receive() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   World::exitScrn();
-  if (!visited()) {
-    heroComp.luck.push_back({(uint8_t)ObjectType::FOUNTAIN_OF_FORTUNE, 1});
-  }
+  heroComp.visitedEnt.insert(Global::goalEnt);
   heroComp.visited.insert((uint8_t)ObjectType::FOUNTAIN_OF_FORTUNE);
 }
 

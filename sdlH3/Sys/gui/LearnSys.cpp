@@ -7,6 +7,7 @@
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/SpellSet.h"
 #include "SpellSys.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/AdvPopSys.h"
@@ -26,25 +27,20 @@ static std::set<uint8_t> swapSpel(uint8_t i) {
   auto level1 = Global::goalLevel;
   auto &hComp0 = World::registrys[level0].get<HeroComp>(Global::heroEnt);
   auto &hComp1 = World::registrys[level1].get<HeroComp>(Global::goalEnt);
-  int8_t learnLevel = -1;
+  int8_t sLevel = -1;
   // 判断有没有学术
-  auto l1 = HeroScrSys::heroSecLevel(
-      hComp0, (uint8_t)HeroCfg::SecondarySkill::LEARNING);
-  auto l2 = HeroScrSys::heroSecLevel(
-      hComp1, (uint8_t)HeroCfg::SecondarySkill::LEARNING);
-  learnLevel = std::max(l1, l2);
-  if (learnLevel == -1) {
+  auto l1 = HeroScrSys::heroSecLevel(hComp0, Enum::LEARNING);
+  auto l2 = HeroScrSys::heroSecLevel(hComp1, Enum::LEARNING);
+  sLevel = std::max(l1, l2);
+  if (sLevel == -1) {
     return r;
   }
 
-  auto studyLevel = learnLevel + 2;
+  sLevel += 2;
   std::set<uint8_t> r0;
 
   for (auto &s : {hComp0.spells, hComp1.spells}) {
-    for (uint8_t i = 0; i <= studyLevel; i++) {
-      r0.insert(SpellCfg::SpellLevels[i].begin(),
-                SpellCfg::SpellLevels[i].end());
-    }
+    r0.insert(s.begin(), s.end());
   }
   std::set<uint8_t> intersection;
   HeroComp *hComp = nullptr;
@@ -53,28 +49,16 @@ static std::set<uint8_t> swapSpel(uint8_t i) {
   } else {
     hComp = &hComp1;
   }
-  auto w = HeroScrSys::heroSecLevel(*hComp,
-                                    (uint8_t)HeroCfg::SecondarySkill::WISDOM);
-  if (w == -1) {
-    std::set<uint8_t> s;
-    auto v1 = SpellCfg::SpellLevels[1];
-    auto v2 = SpellCfg::SpellLevels[2];
-
-    s.insert(v1.begin(), v1.end());
-    s.insert(v2.begin(), v2.end());
-
-    std::ranges::set_intersection(
-        r0, s, std::inserter(intersection, intersection.begin()));
-
-  } else {
-    std::set<uint8_t> s;
-    for (auto i = 1; i <= w + 3; i++) {
-      auto v = SpellCfg::SpellLevels[i];
-      s.insert(v.begin(), v.end());
+  auto w = HeroScrSys::heroSecLevel(*hComp, Enum::WISDOM);
+  std::set<uint8_t> s;
+  for (auto i = 1; i <= w + 3; i++) {
+    auto v = SpellSet::spellsLvl[i];
+    for (auto v2 : v) {
+      s.insert(v2->index);
     }
-    std::ranges::set_intersection(
-        r0, s, std::inserter(intersection, intersection.begin()));
   }
+  std::ranges::set_intersection(
+      r0, s, std::inserter(intersection, intersection.begin()));
   std::ranges::set_difference(intersection, hComp->spells,
                               std::inserter(r, r.begin()));
   return r;
@@ -184,7 +168,7 @@ static bool clickSpell(uint8_t clickType) {
     }
     posRect = {splSlot[i].x + leftUp.x, splSlot[i].x + leftUp.y, 78, 65};
     if (SDL_PointInRectFloat(&point, &posRect)) {
-      SpellSys::showSplComfirm(clickType, spelId, 0);
+      SpellSys::showSpellComfirm(clickType, spelId, 0);
       return true;
     }
     i++;

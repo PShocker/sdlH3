@@ -41,7 +41,7 @@ static void receive() {
     if (LevelUpSys::prepareLvlUp(heroComp)) {
       World::enterLvlup(Global::heroEnt);
     }
-    heroComp.visitedLog.insert({(uint8_t)ObjectType::LEARNING_STONE, 0});
+    heroComp.visitedEnt.insert(Global::goalEnt);
   }
   heroComp.visited.insert((uint8_t)ObjectType::LEARNING_STONE);
   lrnComp.visitHeros.insert(heroComp.portrait);

@@ -20,9 +20,7 @@ static float bakH = 340;
 static bool visited() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  auto &iComp =
-      World::registrys[World::level].get<IdolFortuneComp>(Global::goalEnt);
-  if (iComp.visitHeros.contains(heroComp.portrait)) {
+  if (heroComp.visited.contains(ObjectType::IDOL_OF_FORTUNE)) {
     return true;
   } else {
     return false;
@@ -33,7 +31,8 @@ static void receive() {
   World::exitScrn();
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  heroComp.luck.push_back({(uint8_t)ObjectType::IDOL_OF_FORTUNE, 1});
+  heroComp.visited.insert(ObjectType::IDOL_OF_FORTUNE);
+  heroComp.visitedEnt.insert(Global::goalEnt);
 }
 
 static std::vector<Button> buttonInfo() {

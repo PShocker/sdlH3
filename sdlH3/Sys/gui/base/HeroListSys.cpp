@@ -3,6 +3,7 @@
 #include "Comp/HeroComp.h"
 #include "Global/Global.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/HeroSet.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
@@ -42,7 +43,8 @@ void HeroListSys::draw(int32_t x, int32_t y, int32_t length, uint8_t page,
     auto &[level, heroEnt] = Global::heros[Global::playerId][index];
     auto &registry = World::registrys[level];
     auto hComp = &registry.get<HeroComp>(heroEnt);
-    auto texture = Global::pcxCache[HeroCfg::heroSmallPor[hComp->portrait]][0];
+    auto largePor = HeroSet::fullHeros[hComp->portrait]->largePor;
+    auto texture = Global::pcxCache[largePor][0];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
     if (index == i) {
       SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //

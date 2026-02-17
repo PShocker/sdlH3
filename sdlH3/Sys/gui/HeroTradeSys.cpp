@@ -6,6 +6,8 @@
 #include "Global/Global.h"
 #include "HeroScrSys.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/ArtifactSet.h"
+#include "Set/HeroSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui//base/ArtifactsOfHeroSys.h"
 #include "Window/Window.h"
@@ -117,8 +119,8 @@ static void drawHeroPortraitSpec() {
   for (uint8_t i = 0; i < 2; i++) {
     posRect = {(float)leftUp.x + 257 + 228 * i, leftUp.y + 13, 58, 64};
     auto heroComp = &registry[i]->get<HeroComp>(heroEnts[i]);
-    auto texture =
-        Global::pcxCache[HeroCfg::heroLargePor[heroComp->portrait]][0];
+    auto lagerPor = HeroSet::fullHeros[heroComp->portrait]->largePor;
+    auto texture = Global::pcxCache[lagerPor][0];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
     posRect = {(float)leftUp.x + 67 + 490 * i, leftUp.y + 46, 32, 32};
     texture = Global::defCache["UN32.def/0"][heroComp->portrait];
@@ -330,7 +332,7 @@ static bool clickEquip(uint8_t clickType) {
         }
         selectedArtId = 0xffff;
       } else {
-        auto validSlots = ArtifactCfg::artSlot.at(selectedArtId);
+        auto validSlots = ArtifactSet::artifacts[selectedArtId].slot;
         if (validSlots[targetIndex]) {
           if (artifacts[targetIndex] != 0xffff) {
             auto targetArtId = artifacts[targetIndex];

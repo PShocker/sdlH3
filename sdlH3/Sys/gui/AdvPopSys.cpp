@@ -14,6 +14,7 @@
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Set/HeroSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/CursorSys.h"
 #include "TownSys.h"
@@ -93,7 +94,8 @@ void AdvPopSys::drawHeroInfo(float x, float y, uint8_t level,
   SDL_Texture *texture = Global::pcxCache["ADSTATHR.pcx"][0];
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   auto heroComp = &registrys.get<HeroComp>(heroEnt);
-  texture = Global::pcxCache[HeroCfg::heroLargePor[heroComp->portrait]][0];
+  auto lagerPor = HeroSet::fullHeros[heroComp->portrait]->largePor;
+  texture = Global::pcxCache[lagerPor][0];
   posRect = {x + 12, y + 17, 58, 64};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
@@ -101,14 +103,18 @@ void AdvPopSys::drawHeroInfo(float x, float y, uint8_t level,
 
   FreeTypeSys::setSize(12);
   FreeTypeSys::setColor(255, 255, 255, 255);
-  FreeTypeSys::drawCenter(posRect.x + 75, posRect.y + 48,
-                          HeroScrSys::heroPrimAbility(*heroComp, 0));
-  FreeTypeSys::drawCenter(posRect.x + 102, posRect.y + 48,
-                          HeroScrSys::heroPrimAbility(*heroComp, 1));
-  FreeTypeSys::drawCenter(posRect.x + 130, posRect.y + 48,
-                          HeroScrSys::heroPrimAbility(*heroComp, 2));
-  FreeTypeSys::drawCenter(posRect.x + 157, posRect.y + 48,
-                          HeroScrSys::heroPrimAbility(*heroComp, 3));
+  FreeTypeSys::drawCenter(
+      posRect.x + 75, posRect.y + 48,
+      HeroScrSys::heroPrim(*heroComp, Enum::PRIMARY_SKILL_ATTACK));
+  FreeTypeSys::drawCenter(
+      posRect.x + 102, posRect.y + 48,
+      HeroScrSys::heroPrim(*heroComp, Enum::PRIMARY_SKILL_DEFENCE));
+  FreeTypeSys::drawCenter(
+      posRect.x + 130, posRect.y + 48,
+      HeroScrSys::heroPrim(*heroComp, Enum::PRIMARY_SKILL_SPELLPOWER));
+  FreeTypeSys::drawCenter(
+      posRect.x + 157, posRect.y + 48,
+      HeroScrSys::heroPrim(*heroComp, Enum::PRIMARY_SKILL_KNOWLEDGE));
   FreeTypeSys::drawCenter(posRect.x + 155, posRect.y + 87, heroComp->mana);
 
   auto heroName = strPool[1258 + heroComp->portrait];
@@ -151,16 +157,14 @@ void AdvPopSys::drawTownInfo(float x, float y, uint8_t level,
   auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(255, 255, 255, 255);
-  auto townName = TownSys::townName(level,townEnt);
+  auto townName = TownSys::townName(level, townEnt);
   FreeTypeSys::draw(posRect.x + 64, posRect.y, townName);
 
-  if (townComp->buildings.contains((uint8_t)TownCfg::Building::TOWN_HALL)) {
+  if (townComp->buildings.contains(Enum::BUILD_TOWN_HALL)) {
     texture = Global::defCache["ITMTLS.def/0"][1];
-  } else if (townComp->buildings.contains(
-                 (uint8_t)TownCfg::Building::CITY_HALL)) {
+  } else if (townComp->buildings.contains(Enum::BUILD_CITY_HALL)) {
     texture = Global::defCache["ITMTLS.def/0"][2];
-  } else if (townComp->buildings.contains(
-                 (uint8_t)TownCfg::Building::CAPITOL)) {
+  } else if (townComp->buildings.contains(Enum::BUILD_CAPITOL)) {
     texture = Global::defCache["ITMTLS.def/0"][3];
   } else {
     texture = Global::defCache["ITMTLS.def/0"][0];
@@ -168,12 +172,11 @@ void AdvPopSys::drawTownInfo(float x, float y, uint8_t level,
 
   posRect = {x + 78, y + 48, 34, 34};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-  if (townComp->buildings.contains((uint8_t)TownCfg::Building::FORT)) {
+  if (townComp->buildings.contains(Enum::BUILD_FORT)) {
     texture = Global::defCache["ITMCLS.def/0"][0];
-  } else if (townComp->buildings.contains(
-                 (uint8_t)TownCfg::Building::CITADEL)) {
+  } else if (townComp->buildings.contains(Enum::BUILD_CITADEL)) {
     texture = Global::defCache["ITMCLS.def/0"][1];
-  } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CASTLE)) {
+  } else if (townComp->buildings.contains(Enum::BUILD_CASTLE)) {
     texture = Global::defCache["ITMCLS.def/0"][2];
   } else {
     texture = Global::defCache["ITMCLS.def/0"][3];

@@ -5,6 +5,7 @@
 #include "Global/Global.h"
 
 #include "SDL3/SDL_render.h"
+#include "Set/FactionSet.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include "entt/entity/entity.hpp"
@@ -43,7 +44,8 @@ static void drawBackGround() {
              static_cast<float>(texture->h)};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   if (Global::puzzleFadeTime > Window::dtNow) {
-    for (auto [path, point] : PuzzleCfg::puzzleVec[0]) {
+    auto pMap = FactionSet::fullFactions[0]->puzzleMap;
+    for (auto [path, point] : pMap) {
       auto texture = Global::pcxCache[path][0];
       SDL_SetTextureAlphaMod(texture,
                              (float)(Global::puzzleFadeTime - Window::dtNow) /
@@ -69,9 +71,10 @@ static void draw() {
   posRect = {leftUp.x + 7, leftUp.y + 7, 595, 546};
   // SDL_RenderFillRect(Window::renderer, &posRect);
   SDL_RenderTexture(Window::renderer, texture, &srcRect, &posRect);
-  for (uint8_t i = 0; i < PuzzleCfg::puzzleVec[0].size(); i++) {
+  auto pMap = FactionSet::fullFactions[0]->puzzleMap;
+  for (uint8_t i = 0; i < pMap.size(); i++) {
     if (!Global::puzzle[Global::playerId].contains(i)) {
-      auto [path, point] = PuzzleCfg::puzzleVec[0][i];
+      auto [path, point] = pMap[i];
       auto texture = Global::pcxCache[path][0];
       SDL_SetTextureAlphaMod(texture, 255);
       posRect = {leftUp.x + point.x, leftUp.y + point.y,

@@ -8,6 +8,8 @@
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Set/ArtifactSet.h"
+#include "Set/HeroSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui//base/ArtifactsOfHeroSys.h"
 #include "Sys/gui/CursorSys.h"
@@ -232,7 +234,7 @@ static bool clickEquip(uint8_t clickType) {
       }
       selectedArtId = 0xffff;
     } else {
-      auto validSlots = ArtifactCfg::artSlot.at(selectedArtId);
+      auto validSlots = ArtifactSet::artifacts[selectedArtId].slot;
       if (validSlots[targetIndex]) {
         if (artifacts[targetIndex] != 0xffff) {
           auto targetArtId = artifacts[targetIndex];
@@ -549,8 +551,8 @@ static void drawHeroPortraitSpec() {
     posRect.y += 54;
     auto &registry = World::registrys[level];
     auto heroComp = &registry.get<HeroComp>(heroEnt);
-    auto texture =
-        Global::pcxCache[HeroCfg::heroSmallPor[heroComp->portrait]][0];
+    auto largePor = HeroSet::fullHeros[heroComp->portrait]->largePor;
+    auto texture = Global::pcxCache[largePor][0];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   }
 
@@ -558,7 +560,8 @@ static void drawHeroPortraitSpec() {
   posRect = {(float)leftUp.x + 18, leftUp.y + 18, 58, 64};
   auto [level, ent] = Global::heroScnPair;
   auto heroComp = &World::registrys[level].get<HeroComp>(ent);
-  auto texture = Global::pcxCache[HeroCfg::heroLargePor[heroComp->portrait]][0];
+  auto lagerPor = HeroSet::fullHeros[heroComp->portrait]->largePor;
+  auto texture = Global::pcxCache[lagerPor][0];
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   FreeTypeSys::setSize(15);
   FreeTypeSys::setColor(240, 224, 104, 255);
@@ -634,7 +637,7 @@ static void drawPrim() {
     FreeTypeSys::setColor(240, 224, 104, 255);
     FreeTypeSys::drawCenter(posRect.x + 22, posRect.y - 22, strPool[i + 1]);
     FreeTypeSys::setColor(255, 255, 255, 255);
-    auto num = HeroScrSys::heroPrimAbility(*heroComp, i);
+    auto num = HeroScrSys::heroPrim(*heroComp, i);
     FreeTypeSys::drawCenter(posRect.x + 22, posRect.y + 44, num);
   }
 
@@ -997,34 +1000,22 @@ bool HeroScrSys::rightMouseDown(float x, float y) {
   return true;
 }
 
-std::vector<std::pair<uint8_t, int8_t>>
-HeroScrSys::heroArtifactAbility(HeroComp &hComp, uint8_t i) {
-  std::vector<std::pair<uint8_t, int8_t>> r;
-  for (auto a : hComp.artifacts) {
-    if (a != 0xffff) {
-      auto vec = ArtifactCfg::artBonuse.at(a);
-      for (auto v : vec) {
-        if (v.first == i) {
-          r.push_back({a, v.second});
-        }
-      }
-    }
-  }
-  return r;
-}
-
-int32_t HeroScrSys::heroPrimAbility(HeroComp &hComp, uint8_t i) {
-  auto r = heroArtifactAbility(hComp, i);
+int32_t HeroScrSys::heroPrim(HeroComp &hComp, uint8_t i) {
+  auto range = hComp.artifactBonus.equal_range(Enum::ARTIFACT_PRIMARY_SKILL);
   int32_t sum = 0;
-  for (const auto &pair : r) {
-    sum += pair.second;
+  for (auto it = range.first; it != range.second; ++it) {
+    ArtifactBonus &bonus = it->second;
+    // 处理每个 bonus
+    if (bonus.subType == i + Enum::PRIMARY_SKILL_ATTACK) {
+      sum += bonus.val;
+    }
   }
   return hComp.primSkills[i] + sum;
 }
 
 int32_t HeroScrSys::heroMaxMana(HeroComp &hComp) {
   int32_t r = 0;
-  auto kno = HeroScrSys::heroPrimAbility(hComp, 3);
+  auto kno = HeroScrSys::heroPrim(hComp, Enum::PRIMARY_SKILL_KNOWLEDGE);
   r = kno * 10;
   for (auto p : hComp.secSkills) {
     if (p.first == 24) {
@@ -1050,54 +1041,52 @@ int32_t HeroScrSys::heroMaxMana(HeroComp &hComp) {
 
 int32_t HeroScrSys::heroMor(HeroComp &hComp) {
   int32_t r = 0;
-  for (auto p : hComp.morale) {
-    r += p.second;
-  }
   // 装备
-  auto i = (uint8_t)ArtifactCfg::BONUSE::MOR;
-  auto v = HeroScrSys::heroArtifactAbility(hComp, i);
-  for (const auto &pair : v) {
-    r += pair.second;
+  auto range = hComp.artifactBonus.equal_range(Enum::ARTIFACT_MORALE);
+  for (auto it = range.first; it != range.second; ++it) {
+    ArtifactBonus &bonus = it->second;
+    // 处理每个 bonus
+    r += bonus.val;
   }
   // 辅助技能
   for (auto p : hComp.secSkills) {
-    if (p.first == 6) {
+    if (p.first == Enum::LEADERSHIP) {
       r += p.second + 1;
       break;
     }
   }
   // 特殊装备
-  i = (uint8_t)ArtifactCfg::BONUSE::MAX_MOR;
-  v = HeroScrSys::heroArtifactAbility(hComp, i);
-  if (!v.empty()) {
-    r = std::max(r, (int32_t)v[0].second);
+  range = hComp.artifactBonus.equal_range(Enum::ARTIFACT_MAX_MORALE);
+  for (auto it = range.first; it != range.second; ++it) {
+    ArtifactBonus &bonus = it->second;
+    // 处理每个 bonus
+    r = std::max(r, bonus.val);
   }
   return r;
 }
 
 int32_t HeroScrSys::heroLuk(HeroComp &hComp) {
   int32_t r = 0;
-  for (auto p : hComp.luck) {
-    r += p.second;
-  }
   // 装备
-  auto i = (uint8_t)ArtifactCfg::BONUSE::LUK;
-  auto v = HeroScrSys::heroArtifactAbility(hComp, i);
-  for (const auto &pair : v) {
-    r += pair.second;
+  auto range = hComp.artifactBonus.equal_range(Enum::ARTIFACT_LUCK);
+  for (auto it = range.first; it != range.second; ++it) {
+    ArtifactBonus &bonus = it->second;
+    // 处理每个 bonus
+    r += bonus.val;
   }
   // 辅助技能
   for (auto p : hComp.secSkills) {
-    if (p.first == 9) {
+    if (p.first == Enum::LUCK) {
       r += p.second + 1;
       break;
     }
   }
   // 特殊装备
-  i = (uint8_t)ArtifactCfg::BONUSE::MAX_LUK;
-  v = HeroScrSys::heroArtifactAbility(hComp, i);
-  if (!v.empty()) {
-    r = std::max(r, (int32_t)v[0].second);
+  range = hComp.artifactBonus.equal_range(Enum::ARTIFACT_MAX_LUCK);
+  for (auto it = range.first; it != range.second; ++it) {
+    ArtifactBonus &bonus = it->second;
+    // 处理每个 bonus
+    r = std::max(r, bonus.val);
   }
   // 访问过的物体
   return r;
@@ -1105,17 +1094,18 @@ int32_t HeroScrSys::heroLuk(HeroComp &hComp) {
 
 int32_t HeroScrSys::heroSight(HeroComp &hComp) {
   int32_t r = 0;
-  auto i = (uint8_t)ArtifactCfg::BONUSE::SIGHT;
-  auto v = HeroScrSys::heroArtifactAbility(hComp, i);
-
-  for (const auto &pair : v) {
-    r += pair.second;
+  auto range = hComp.artifactBonus.equal_range(Enum::ARTIFACT_SIGHT_RADIUS);
+  for (auto it = range.first; it != range.second; ++it) {
+    ArtifactBonus &bonus = it->second;
+    // 处理每个 bonus
+    r += bonus.val;
   }
-  int8_t scout = HeroScrSys::heroSecLevel(
-      hComp, (uint8_t)HeroCfg::SecondarySkill::SCOUTING);
   // 辅助技能
-  if (scout != -1) {
-    r += scout + 1;
+  for (auto p : hComp.secSkills) {
+    if (p.first == Enum::SCOUTING) {
+      r += p.second + 1;
+      break;
+    }
   }
   return r;
 }
@@ -1224,24 +1214,24 @@ void HeroScrSys::showLukComfirm(uint8_t clickType, HeroComp &hComp) {
                             strPool[2223]);
     FreeTypeSys::setColor(255, 255, 255, 255);
     auto y = leftUp.y + 60;
-    for (auto p : hComp.luck) {
-      y += 20;
-      str = strPool[926 + p.first];
-      auto num = p.second >= 0 ? u"+" + FreeTypeSys::str(p.second)
-                               : u"-" + FreeTypeSys::str(p.second);
-      FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y,
-                              strPool[2219] + str + num);
-    }
+    // for (auto p : hComp.luck) {
+    //   y += 20;
+    //   str = strPool[926 + p.first];
+    //   auto num = p.second >= 0 ? u"+" + FreeTypeSys::str(p.second)
+    //                            : u"-" + FreeTypeSys::str(p.second);
+    //   FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y,
+    //                           strPool[2219] + str + num);
+    // }
 
-    auto i = (uint8_t)ArtifactCfg::BONUSE::LUK;
-    auto v = HeroScrSys::heroArtifactAbility(hComp, i);
-    for (auto p : v) {
-      y += 20;
-      str = strPool[162 + p.first];
-      auto num = p.second >= 0 ? u"+" + FreeTypeSys::str(p.second)
-                               : u"-" + FreeTypeSys::str(p.second);
-      FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y, str + num);
-    }
+    // auto i = (uint8_t)ArtifactCfg::BONUSE::LUK;
+    // auto v = HeroScrSys::heroArtifactAbility(hComp, i);
+    // for (auto p : v) {
+    //   y += 20;
+    //   str = strPool[162 + p.first];
+    //   auto num = p.second >= 0 ? u"+" + FreeTypeSys::str(p.second)
+    //                            : u"-" + FreeTypeSys::str(p.second);
+    //   FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y, str + num);
+    // }
     for (auto p : hComp.secSkills) {
       if (p.first == 6) {
         y += 20;
@@ -1325,23 +1315,23 @@ void HeroScrSys::showMorComfirm(uint8_t clickType, HeroComp &hComp) {
                             strPool[2231]);
     FreeTypeSys::setColor(255, 255, 255, 255);
     auto y = leftUp.y + 60;
-    for (auto p : hComp.morale) {
-      y += 20;
-      str = strPool[926 + p.first];
-      auto num = p.second >= 0 ? u"+" + FreeTypeSys::str(p.second)
-                               : u"-" + FreeTypeSys::str(p.second);
-      FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y,
-                              strPool[2219] + str + num);
-    }
-    auto i = (uint8_t)ArtifactCfg::BONUSE::MOR;
-    auto v = HeroScrSys::heroArtifactAbility(hComp, i);
-    for (auto p : v) {
-      y += 20;
-      str = strPool[162 + p.first];
-      auto num = p.second >= 0 ? u"+" + FreeTypeSys::str(p.second)
-                               : u"-" + FreeTypeSys::str(p.second);
-      FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y, str + num);
-    }
+    // for (auto p : hComp.morale) {
+    //   y += 20;
+    //   str = strPool[926 + p.first];
+    //   auto num = p.second >= 0 ? u"+" + FreeTypeSys::str(p.second)
+    //                            : u"-" + FreeTypeSys::str(p.second);
+    //   FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y,
+    //                           strPool[2219] + str + num);
+    // }
+    // auto i = (uint8_t)ArtifactCfg::BONUSE::MOR;
+    // auto v = HeroScrSys::heroArtifactAbility(hComp, i);
+    // for (auto p : v) {
+    //   y += 20;
+    //   str = strPool[162 + p.first];
+    //   auto num = p.second >= 0 ? u"+" + FreeTypeSys::str(p.second)
+    //                            : u"-" + FreeTypeSys::str(p.second);
+    //   FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y, str + num);
+    // }
     for (auto p : hComp.secSkills) {
       if (p.first == 6) {
         y += 20;
@@ -1431,11 +1421,11 @@ void HeroScrSys::showExpComfirm(uint8_t clickType, HeroComp &hComp) {
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 40,
                             strPool[2208]);
     std::u16string str;
-    if (hComp.level >= std::size(HeroCfg::heroLevelExp)) {
+    if (hComp.level >= std::size(HeroSet::heroLevelExperience)) {
       str = strPool[2205] + strPool[2209];
     } else {
-      str =
-          strPool[2205] + FreeTypeSys::str(HeroCfg::heroLevelExp[hComp.level]);
+      str = strPool[2205] +
+            FreeTypeSys::str(HeroSet::heroLevelExperience[hComp.level]);
     }
     FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 80, str);
     str = strPool[2206] + FreeTypeSys::str(hComp.exp);

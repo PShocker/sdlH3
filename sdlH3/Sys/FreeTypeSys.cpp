@@ -185,7 +185,7 @@ void FreeTypeSys::drawLeft(float x, float y, const int num) {
 }
 
 std::u16string FreeTypeSys::str(int num) {
-  auto str = std::to_string(std::abs(num));
+  auto str = std::to_string(abs(num));
   return std::u16string(str.begin(), str.end());
 }
 

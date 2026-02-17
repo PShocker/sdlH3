@@ -84,11 +84,14 @@
 #include "SDL3/SDL_rect.h"
 #include "Set/CreatureSet.h"
 #include "Set/HeroSet.h"
+#include "Set/SpellSet.h"
+#include "Set/objects/DwellingSet.h"
 #include "World/World.h"
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include <cmath>
 #include <cstdint>
+#include <flat_map>
 #include <format>
 #include <optional>
 #include <string>
@@ -190,80 +193,89 @@ entt::entity Ent::loadBuild(uint8_t level, entt::entity townEnt,
     dComp->creatures.push_back({std::vector<uint16_t>{c, c2}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_4: {
+  case Enum::BUILD_DWELLING_LEVEL_4: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][3][0];
-    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(6).index;
+    auto g = CreatureSet::townCreatures[townId]->at(6).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_4: {
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_4: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][3];
-    dComp->creatures.push_back({creatures, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(6).index;
+    auto c2 = CreatureSet::townCreatures[townId]->at(7).index;
+    auto g = CreatureSet::townCreatures[townId]->at(4).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c, c2}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_5: {
+  case Enum::BUILD_DWELLING_LEVEL_5: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][4][0];
-    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(8).index;
+    auto g = CreatureSet::townCreatures[townId]->at(8).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_5: {
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_5: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][4];
-    dComp->creatures.push_back({creatures, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(8).index;
+    auto c2 = CreatureSet::townCreatures[townId]->at(9).index;
+    auto g = CreatureSet::townCreatures[townId]->at(8).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c, c2}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_6: {
+  case Enum::BUILD_DWELLING_LEVEL_6: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][5][0];
-    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(10).index;
+    auto g = CreatureSet::townCreatures[townId]->at(10).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_6: {
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_6: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][5];
-    dComp->creatures.push_back({creatures, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(10).index;
+    auto c2 = CreatureSet::townCreatures[townId]->at(11).index;
+    auto g = CreatureSet::townCreatures[townId]->at(10).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c, c2}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_LEVEL_7: {
+  case Enum::BUILD_DWELLING_LEVEL_7: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][6][0];
-    dComp->creatures.push_back({std::vector<uint16_t>{creatures}, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(12).index;
+    auto g = CreatureSet::townCreatures[townId]->at(12).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::DWELLING_UPGRADE_LEVEL_7: {
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_7: {
     ent = registry.create();
     auto dComp = &registry.emplace<DwellingComp>(ent);
-    auto creatures = TownCfg::townCreature[townId][6];
-    dComp->creatures.push_back({creatures, 0});
+    auto c = CreatureSet::townCreatures[townId]->at(12).index;
+    auto c2 = CreatureSet::townCreatures[townId]->at(13).index;
+    auto g = CreatureSet::townCreatures[townId]->at(12).growth;
+    dComp->creatures.push_back({std::vector<uint16_t>{c, c2}, g});
     break;
   }
-  case (uint8_t)TownCfg::Building::MAGE_GUILD_1:
-  case (uint8_t)TownCfg::Building::MAGE_GUILD_2:
-  case (uint8_t)TownCfg::Building::MAGE_GUILD_3:
-  case (uint8_t)TownCfg::Building::MAGE_GUILD_4:
-  case (uint8_t)TownCfg::Building::MAGE_GUILD_5: {
-    const uint8_t spellNums[] = {5, 4, 4, 3, 2};
-    auto level = buildId - (uint8_t)TownCfg::Building::MAGE_GUILD_1 + 1;
-    auto num = spellNums[level - 1];
+  case Enum::BUILD_MAGE_GUILD_1:
+  case Enum::BUILD_MAGE_GUILD_2:
+  case Enum::BUILD_MAGE_GUILD_3:
+  case Enum::BUILD_MAGE_GUILD_4:
+  case Enum::BUILD_MAGE_GUILD_5: {
     ent = registry.create();
     auto mComp = &registry.emplace<MageGuildComp>(ent);
-    mComp->level = level;
-    auto s = SpellCfg::SpellLevels[level];
-    std::vector<uint8_t> r;
-    std::sample(s.begin(), s.end(), std::back_inserter(r), num, Global::gen);
-    mComp->spells = r;
+    mComp->level = buildId - Enum::BUILD_MAGE_GUILD_1 + 1;
+    auto spells = SpellSet::spellsLvl[mComp->level];
+    for (auto spel : spells) {
+      mComp->spells.push_back(spel->index);
+    }
     break;
   }
-  case (uint8_t)TownCfg::Building::TAVERN: {
+  case Enum::BUILD_TAVERN: {
     ent = registry.create();
     registry.emplace<TavernComp>(ent);
     break;
@@ -448,7 +460,7 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
 
     auto buildings =
         std::any_cast<std::set<uint8_t>>(object.data["builtBuildings"]);
-    std::unordered_map<uint8_t, entt::entity> builds;
+    std::flat_map<uint8_t, entt::entity> builds;
     for (auto i : buildings) {
       builds[i] = Ent::loadBuild(level, ent, i);
     }
@@ -469,14 +481,16 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     auto dwellingComp = &registry.emplace<DwellingComp>(ent);
     dwellingComp->id = object.subId;
 
-    auto creatures =
-        DwellingCfg::dweCreature[object.id -
-                                 (uint8_t)ObjectType::CREATURE_GENERATOR1]
-            .at(object.subId);
+    // auto creatures =
+    //     DwellingCfg::dweCreature[object.id -
+    //                              (uint8_t)ObjectType::CREATURE_GENERATOR1]
+    //         .at(object.subId);
+    auto i = object.id - ObjectType::CREATURE_GENERATOR1;
+    auto creatures = DwellingSet::fullDwellings[i]->at(object.subId).creatures;
     for (auto creature : creatures) {
+      auto growth = CreatureSet::fullCreatures[creature]->growth;
       dwellingComp->creatures.push_back(
-          {std::vector<uint16_t>{creature},
-           CreatureCfg::creatureGrowth.at(creature)});
+          {std::vector<uint16_t>{creature}, growth});
     }
     auto playerIdComp = &registry.emplace<PlayerIdComp>(ent);
     playerIdComp->id = std::any_cast<uint8_t>(object.data["playerId"]);
@@ -519,117 +533,117 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     break;
   }
   case ObjectType::RANDOM_MONSTER: {
-    static std::vector<uint8_t> creatures;
-    if (creatures.empty()) {
-      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
-        if (CreatureCfg::creatureLevel[i] <= 7 &&
-            CreatureCfg::creatureLevel[i] >= 1) {
-          creatures.push_back(i);
-        }
-      }
-    }
-    int randomIndex = std::rand() % creatures.size();
-    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+    // static std::vector<uint8_t> creatures;
+    // if (creatures.empty()) {
+    //   for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+    //     if (CreatureCfg::creatureLevel[i] <= 7 &&
+    //         CreatureCfg::creatureLevel[i] >= 1) {
+    //       creatures.push_back(i);
+    //     }
+    //   }
+    // }
+    // int randomIndex = std::rand() % creatures.size();
+    // auto monsterComp = &registry.emplace<MonsterComp>(ent);
 
     break;
   }
-  case ObjectType::RANDOM_MONSTER_L1: {
-    static std::vector<uint8_t> creatures;
-    if (creatures.empty()) {
-      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
-        if (CreatureCfg::creatureLevel[i] == 1) {
-          creatures.push_back(i);
-        }
-      }
-    }
-    int randomIndex = std::rand() % creatures.size();
-    texturePath = CreatureCfg::creatureGraphicsMini[0] + "/" + "0";
-    auto monsterComp = &registry.emplace<MonsterComp>(ent);
-    break;
-  }
-  case ObjectType::RANDOM_MONSTER_L2: {
-    static std::vector<uint8_t> creatures;
-    if (creatures.empty()) {
-      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
-        if (CreatureCfg::creatureLevel[i] == 2) {
-          creatures.push_back(i);
-        }
-      }
-    }
-    int randomIndex = std::rand() % creatures.size();
-    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+    // case ObjectType::RANDOM_MONSTER_L1: {
+    //   static std::vector<uint8_t> creatures;
+    //   if (creatures.empty()) {
+    //     for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+    //       if (CreatureCfg::creatureLevel[i] == 1) {
+    //         creatures.push_back(i);
+    //       }
+    //     }
+    //   }
+    //   int randomIndex = std::rand() % creatures.size();
+    //   texturePath = CreatureCfg::creatureGraphicsMini[0] + "/" + "0";
+    //   auto monsterComp = &registry.emplace<MonsterComp>(ent);
+    //   break;
+    // }
+    // case ObjectType::RANDOM_MONSTER_L2: {
+    //   static std::vector<uint8_t> creatures;
+    //   if (creatures.empty()) {
+    //     for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+    //       if (CreatureCfg::creatureLevel[i] == 2) {
+    //         creatures.push_back(i);
+    //       }
+    //     }
+    //   }
+    //   int randomIndex = std::rand() % creatures.size();
+    //   auto monsterComp = &registry.emplace<MonsterComp>(ent);
 
-    break;
-  }
-  case ObjectType::RANDOM_MONSTER_L3: {
-    static std::vector<uint8_t> creatures;
-    if (creatures.empty()) {
-      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
-        if (CreatureCfg::creatureLevel[i] == 3) {
-          creatures.push_back(i);
-        }
-      }
-    }
-    int randomIndex = std::rand() % creatures.size();
-    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+    //   break;
+    // }
+    // case ObjectType::RANDOM_MONSTER_L3: {
+    //   static std::vector<uint8_t> creatures;
+    //   if (creatures.empty()) {
+    //     for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+    //       if (CreatureCfg::creatureLevel[i] == 3) {
+    //         creatures.push_back(i);
+    //       }
+    //     }
+    //   }
+    //   int randomIndex = std::rand() % creatures.size();
+    //   auto monsterComp = &registry.emplace<MonsterComp>(ent);
 
-    break;
-  }
-  case ObjectType::RANDOM_MONSTER_L4: {
-    static std::vector<uint8_t> creatures;
-    if (creatures.empty()) {
-      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
-        if (CreatureCfg::creatureLevel[i] == 4) {
-          creatures.push_back(i);
-        }
-      }
-    }
-    int randomIndex = std::rand() % creatures.size();
-    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+    //   break;
+    // }
+    // case ObjectType::RANDOM_MONSTER_L4: {
+    //   static std::vector<uint8_t> creatures;
+    //   if (creatures.empty()) {
+    //     for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+    //       if (CreatureCfg::creatureLevel[i] == 4) {
+    //         creatures.push_back(i);
+    //       }
+    //     }
+    //   }
+    //   int randomIndex = std::rand() % creatures.size();
+    //   auto monsterComp = &registry.emplace<MonsterComp>(ent);
 
-    break;
-  }
-  case ObjectType::RANDOM_MONSTER_L5: {
-    static std::vector<uint8_t> creatures;
-    if (creatures.empty()) {
-      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
-        if (CreatureCfg::creatureLevel[i] == 5) {
-          creatures.push_back(i);
-        }
-      }
-    }
-    int randomIndex = std::rand() % creatures.size();
-    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+    //   break;
+    // }
+    // case ObjectType::RANDOM_MONSTER_L5: {
+    //   static std::vector<uint8_t> creatures;
+    //   if (creatures.empty()) {
+    //     for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+    //       if (CreatureCfg::creatureLevel[i] == 5) {
+    //         creatures.push_back(i);
+    //       }
+    //     }
+    //   }
+    //   int randomIndex = std::rand() % creatures.size();
+    //   auto monsterComp = &registry.emplace<MonsterComp>(ent);
 
-    break;
-  }
-  case ObjectType::RANDOM_MONSTER_L6: {
-    static std::vector<uint8_t> creatures;
-    if (creatures.empty()) {
-      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
-        if (CreatureCfg::creatureLevel[i] == 6) {
-          creatures.push_back(i);
-        }
-      }
-    }
-    int randomIndex = std::rand() % creatures.size();
-    auto monsterComp = &registry.emplace<MonsterComp>(ent);
+    //   break;
+    // }
+    // case ObjectType::RANDOM_MONSTER_L6: {
+    //   static std::vector<uint8_t> creatures;
+    //   if (creatures.empty()) {
+    //     for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+    //       if (CreatureCfg::creatureLevel[i] == 6) {
+    //         creatures.push_back(i);
+    //       }
+    //     }
+    //   }
+    //   int randomIndex = std::rand() % creatures.size();
+    //   auto monsterComp = &registry.emplace<MonsterComp>(ent);
 
-    break;
-  }
-  case ObjectType::RANDOM_MONSTER_L7: {
-    static std::vector<uint8_t> creatures;
-    if (creatures.empty()) {
-      for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
-        if (CreatureCfg::creatureLevel[i] == 7) {
-          creatures.push_back(i);
-        }
-      }
-    }
-    int randomIndex = std::rand() % creatures.size();
-    auto monsterComp = &registry.emplace<MonsterComp>(ent);
-    break;
-  }
+    //   break;
+    // }
+    // case ObjectType::RANDOM_MONSTER_L7: {
+    //   static std::vector<uint8_t> creatures;
+    //   if (creatures.empty()) {
+    //     for (int i = 0; i < CreatureCfg::creatureLevel.size(); ++i) {
+    //       if (CreatureCfg::creatureLevel[i] == 7) {
+    //         creatures.push_back(i);
+    //       }
+    //     }
+    //   }
+    //   int randomIndex = std::rand() % creatures.size();
+    //   auto monsterComp = &registry.emplace<MonsterComp>(ent);
+    //   break;
+    // }
 
   case ObjectType::MONSTER: {
     auto monsterComp = &registry.emplace<MonsterComp>(ent);
@@ -805,36 +819,17 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     }
     break;
   }
-  case ObjectType::SHRINE_OF_MAGIC_GESTURE: {
-    auto shrMagComp = &registry.emplace<ShrineMagicComp>(ent);
-    shrMagComp->level = 1;
-    if (object.data.contains("spell")) {
-      shrMagComp->spellId = std::any_cast<uint8_t>(object.data["spell"]);
-    } else {
-      auto &spells = SpellCfg::SpellLevels[shrMagComp->level];
-      shrMagComp->spellId = spells[std::rand() % spells.size()];
-    }
-    break;
-  }
-  case ObjectType::SHRINE_OF_MAGIC_INCANTATION: {
-    auto shrMagComp = &registry.emplace<ShrineMagicComp>(ent);
-    shrMagComp->level = 0;
-    if (object.data.contains("spell")) {
-      shrMagComp->spellId = std::any_cast<uint8_t>(object.data["spell"]);
-    } else {
-      auto spells = SpellCfg::SpellLevels[shrMagComp->level];
-      shrMagComp->spellId = spells[std::rand() % spells.size()];
-    }
-    break;
-  }
+  case ObjectType::SHRINE_OF_MAGIC_INCANTATION:
+  case ObjectType::SHRINE_OF_MAGIC_GESTURE:
   case ObjectType::SHRINE_OF_MAGIC_THOUGHT: {
     auto shrMagComp = &registry.emplace<ShrineMagicComp>(ent);
-    shrMagComp->level = 2;
+    shrMagComp->level = object.id - ObjectType::SHRINE_OF_MAGIC_INCANTATION + 2;
     if (object.data.contains("spell")) {
       shrMagComp->spellId = std::any_cast<uint8_t>(object.data["spell"]);
     } else {
-      auto spells = SpellCfg::SpellLevels[shrMagComp->level];
-      shrMagComp->spellId = spells[std::rand() % spells.size()];
+      // auto &spells = SpellCfg::SpellLevels[shrMagComp->level];
+      auto &spells = SpellSet::spellsLvl[shrMagComp->level];
+      shrMagComp->spellId = spells[std::rand() % spells.size()]->index;
     }
     break;
   }

@@ -1,7 +1,6 @@
 #include "TavernSys.h"
 #include "AdvMapSys.h"
 
-
 #include "Comp/HeroComp.h"
 #include "Comp/ObjectComp.h"
 #include "Comp/TownComp.h"
@@ -11,6 +10,7 @@
 #include "Lang/Lang.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
+#include "Set/HeroSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/VideoSys.h"
 #include "Sys/gui/CursorSys.h"
@@ -192,8 +192,8 @@ static void drawPortraits() {
     }
     auto heroEnt = Global::tavernHeros[Global::playerId][i];
     auto heroComp = &World::registrys[0].get<HeroComp>(heroEnt);
-    auto texture =
-        Global::pcxCache[HeroCfg::heroLargePor[heroComp->portrait]][0];
+    auto lagerPor = HeroSet::fullHeros[heroComp->portrait]->largePor;
+    auto texture = Global::pcxCache[lagerPor][0];
     posRect = {leftUp.x + PorPosition[i].x, leftUp.y + PorPosition[i].y,
                static_cast<float>(texture->w), static_cast<float>(texture->h)};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
@@ -213,11 +213,8 @@ static void drawPortraits() {
 
       auto equipNum = 0;
       for (auto i = 0; i < heroComp->artifacts.size(); i++) {
-        if (i == (uint8_t)ArtifactCfg::artSlot::SPELLBOOK ||
-            i == (uint8_t)ArtifactCfg::artSlot::MACH1 ||
-            i == (uint8_t)ArtifactCfg::artSlot::MACH2 ||
-            i == (uint8_t)ArtifactCfg::artSlot::MACH3 ||
-            i == (uint8_t)ArtifactCfg::artSlot::MACH4) {
+        if (i == Enum::SPELLBOOK || i == Enum::MACH1 || i == Enum::MACH2 ||
+            i == Enum::MACH3 || i == Enum::MACH4) {
           continue;
         }
         if (heroComp->artifacts[i] != 0xffff) {

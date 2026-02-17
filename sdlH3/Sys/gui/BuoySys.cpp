@@ -27,9 +27,6 @@ static bool visited() {
 static void receive() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  if (!heroComp.visited.contains((uint8_t)ObjectType::BUOY)) {
-    heroComp.morale.push_back({(uint8_t)ObjectType::BUOY, 1});
-  }
   heroComp.visited.insert((uint8_t)ObjectType::BUOY);
   World::exitScrn();
 }

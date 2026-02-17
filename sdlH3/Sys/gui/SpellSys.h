@@ -8,7 +8,6 @@ struct SpellSys {
   static bool rightMouseDown(float x, float y);
   static bool keyUp(uint16_t key);
 
-  static std::pair<uint8_t, uint8_t> heroSplLevel(HeroComp *heroComp,
-                                                  uint8_t spellId);
-  static void showSplComfirm(uint8_t clickType, uint16_t id, uint16_t i);
+  static std::pair<uint8_t, uint8_t> spellLevel(HeroComp *heroComp, uint8_t id);
+  static void showSpellComfirm(uint8_t clickType, uint16_t id, uint16_t i);
 };

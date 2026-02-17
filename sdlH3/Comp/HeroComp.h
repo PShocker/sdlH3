@@ -1,4 +1,5 @@
 #pragma once
+#include "Set/StructSet.h"
 #include "entt/entity/fwd.hpp"
 #include "entt/entt.hpp"
 #include <cstdint>
@@ -20,8 +21,6 @@ struct HeroComp {
 
   std::vector<uint16_t> artifactsInBackpack;
   std::vector<uint16_t> artifacts;
-  std::vector<std::pair<uint8_t, int8_t>> morale;
-  std::vector<std::pair<uint8_t, int8_t>> luck;
 
   uint8_t moveType;
   enum MOVE_TYPE : uint8_t {
@@ -41,6 +40,8 @@ struct HeroComp {
   uint64_t exp;
   uint8_t level;
 
-  std::set<uint8_t> visited;
-  std::multimap<uint8_t, uint8_t> visitedLog;
+  std::multiset<uint8_t> visited;
+  std::set<entt::entity> visitedEnt;
+  std::multimap<uint8_t, ArtifactBonus> artifactBonus;
+  std::multimap<uint8_t, AdventureBonus> adventureBonus;
 };

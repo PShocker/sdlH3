@@ -1,24 +1,14 @@
 #pragma once
 #include "Enum/Enum.h"
+#include "Set/StructSet.h"
+#include <array>
 #include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
 
-struct DwellingSound {
-  std::string ambient;
-  std::string visit;
-};
-
-struct DwellingData {
-  uint8_t index;
-  DwellingSound sound;
-  std::vector<std::pair<uint16_t, uint32_t>> guards; // <creatureType, amount>
-  std::vector<uint16_t> creatures; // 生物类型ID列表，支持多级兵种
-};
-
 struct DwellingSet {
-  const static inline std::vector<DwellingData> dwellings = {
+  const static inline std::vector<ObjectSetI> dwellings1 = {
       // === 普通生物巢穴 (creatureGeneratorCommon) ===
       {
           // basiliskPit - 蛇妖窝
@@ -1183,5 +1173,31 @@ struct DwellingSet {
                   Enum::DIAMOND_GOLEM,
               },
       },
+  };
+  const static inline std::vector<ObjectSetI> dwellings2 = {};
+  const static inline std::vector<ObjectSetI> dwellings3 = {};
+  const static inline std::vector<ObjectSetI> dwellings4 = {
+        // === 普通生物巢穴 (creatureGeneratorCommon) ===
+      {
+          // basiliskPit - 蛇妖窝
+          .index = 0,
+          .sound =
+              {
+                  .ambient = "LOOPMONS.wav",
+                  .visit = "MILITARY.wav",
+              },
+          .guards = {},
+          .creatures =
+              {
+                  Enum::BASILISK,
+              },
+      },
+  };
+
+  const static inline std::array fullDwellings = {
+      &dwellings1,
+      &dwellings2,
+      &dwellings3,
+      &dwellings4,
   };
 };

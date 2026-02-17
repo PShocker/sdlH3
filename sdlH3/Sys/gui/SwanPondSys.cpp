@@ -30,9 +30,13 @@ static void receive() {
   if (!visited()) {
     auto &heroComp =
         World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-    heroComp.luck.push_back({(uint8_t)ObjectType::SWAN_POND, 1});
+    AdventureBonus bonus = {
+        .src = ObjectType::SWAN_POND,
+        .type = Enum::ADVENTURE_LUCK,
+        .val = 1,
+    };
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_LUCK, bonus});
     heroComp.visited.insert((uint8_t)ObjectType::SWAN_POND);
-    heroComp.visitedLog.insert({(uint8_t)ObjectType::SWAN_POND, 0});
     heroComp.movement = 0;
   }
 }

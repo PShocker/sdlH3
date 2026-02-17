@@ -1,64 +1,47 @@
 #include "SpellSys.h"
 
-
 #include "Comp/HeroComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
+#include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/SpellSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include <any>
+#include <cstddef>
 #include <cstdint>
 #include <iterator>
 #include <map>
+#include <set>
 #include <unordered_map>
 #include <vector>
 
-std::pair<uint8_t, uint8_t> SpellSys::heroSplLevel(HeroComp *heroComp,
-                                                   uint8_t spellId) {
+/*
+ FIRE_MAGIC = ,
+    AIR_MAGIC = ,
+    WATER_MAGIC = ,
+    EARTH_MAGIC = ,
+*/
+
+std::pair<uint8_t, uint8_t> SpellSys::spellLevel(HeroComp *heroComp,
+                                                 uint8_t id) {
   uint8_t r = 0;
-  uint8_t school = 0;
-  auto vec = SpellCfg::SpellSchool.at(spellId);
-  for (uint8_t i = 0; i < vec.size(); i++) {
-    if (vec[i]) {
-      school = i;
-    }
-  }
-  std::unordered_map<uint8_t, uint8_t> skillMap;
-  for (auto [key, val] : heroComp->secSkills) {
-    switch (key) {
-    case (uint8_t)HeroCfg::SecondarySkill::EARTH_MAGIC: {
-      skillMap[0] = val + 1;
-      break;
-    }
-    case (uint8_t)HeroCfg::SecondarySkill::WATER_MAGIC: {
-      skillMap[1] = val + 1;
-      break;
-    }
-    case (uint8_t)HeroCfg::SecondarySkill::FIRE_MAGIC: {
-      skillMap[2] = val + 1;
-      break;
-    }
-    case (uint8_t)HeroCfg::SecondarySkill::AIR_MAGIC: {
-      skillMap[3] = val + 1;
-      break;
-    }
-    default: {
-      break;
-    }
-    }
-  }
-  for (uint8_t i = 0; i < 4; i++) {
-    if (skillMap.contains(i) && vec[i]) {
-      if (skillMap.at(i) >= r) {
-        r = skillMap.at(i);
-        school = i;
+  uint8_t sch;
+  auto school = SpellSet::spells[id].school;
+  for (uint8_t i = 0; i < school.size(); i++) {
+    if (school[i]) {
+      auto secLevel = HeroScrSys::heroSecLevel(*heroComp, Enum::FIRE_MAGIC + i);
+      auto r1 = secLevel + 1;
+      if (r1 > r) {
+        r = r1;
+        sch = i;
       }
     }
   }
-  return {school, r};
+  return {sch, r};
 }
 
 static void drawBackGround() {
@@ -86,30 +69,38 @@ static void drawSchoolTab() {
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 }
 
-static std::multimap<uint8_t, uint8_t> curSpellsBook(HeroComp &heroComp) {
-  std::multimap<uint8_t, uint8_t> spellsMap;
-  std::set<uint8_t> spellsSet = heroComp.spells;
+static std::vector<uint8_t> spellsBook(HeroComp &heroComp) {
+  std::vector<uint8_t> r;
+  auto spells = heroComp.spells;
   if (Global::splBattle) {
-    auto it = spellsSet.lower_bound(10);
-    spellsSet.erase(spellsSet.begin(), it);
-  } else {
-    auto it = spellsSet.upper_bound(10);
-    spellsSet.erase(it, spellsSet.end());
-  }
-  if (Global::splSchool == 4) {
-    for (auto spell : spellsSet) {
-      spellsMap.insert({SpellCfg::SpellLevel.at(spell), spell});
+    auto sAdv = SpellSet::spellsAdv;
+    for (auto s : sAdv) {
+      spells.erase(s->index);
     }
   } else {
-    for (auto spell : spellsSet) {
-      if (SpellCfg::SpellSchool.at(spell)[Global::splSchool]) {
-        spellsMap.insert({SpellCfg::SpellLevel.at(spell), spell});
+    auto sBat = SpellSet::spellsBat;
+    for (auto s : sBat) {
+      spells.erase(s->index);
+    }
+  }
+  if (Global::splSchool != 4) {
+    auto sSch = SpellSet::spellsSchool[Global::splSchool];
+    std::set<uint8_t> sSch2;
+    for (auto s : sSch) {
+      sSch2.insert(s->index);
+    }
+    std::erase_if(spells, [&](uint8_t val) { return !sSch2.contains(val); });
+  }
+  for (auto i = 0; i < SpellSet::spellsLvl.size(); i++) {
+    auto splLvl = SpellSet::spellsLvl[i];
+    for (auto s : splLvl) {
+      if (spells.contains(s->index)) {
+        r.push_back(s->index);
       }
     }
   }
-  auto endIt = std::next(spellsMap.begin(), 16 * Global::splPage);
-  spellsMap.erase(spellsMap.begin(), endIt);
-  return spellsMap;
+
+  return r;
 }
 
 const static SDL_FRect splSlot[16] = {
@@ -130,17 +121,19 @@ static void drawSchoolBook() {
                     (Global::viewPort.h - 595) / 2};
   auto &registry = World::registrys[World::level];
   auto heroComp = registry.get<HeroComp>(Global::heroEnt);
-  std::multimap<uint8_t, uint8_t> spellsMap = curSpellsBook(heroComp);
-  uint8_t i = 0;
-  for (auto [spelLevel, spelVal] : spellsMap) {
-    if (i >= 16) {
+  auto spellBooks = spellsBook(heroComp);
+  // for (auto [spelLevel, spelVal] : spellsMap) {
+  for (uint8_t i = 0; i < 16; i++) {
+    auto page = Global::splPage * 16;
+    if (page > spellBooks.size()) {
       break;
     }
+    auto spelVal = spellBooks[page + i];
     posRect = {splSlot[i].x + leftUp.x, splSlot[i].y + leftUp.y, 78, 65};
     auto textures = Global::defCache["Spells.DEF/0"];
     auto texture = textures[spelVal];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-    auto spellPair = SpellSys::heroSplLevel(&heroComp, spelVal);
+    auto spellPair = SpellSys::spellLevel(&heroComp, spelVal);
     switch (Global::splSchool) {
     case 0: {
       texture = Global::defCache["SplevE.DEF/0"][spellPair.second];
@@ -188,7 +181,6 @@ static void drawSchoolBook() {
       break;
     }
     }
-    i++;
   }
 }
 
@@ -197,27 +189,27 @@ static bool hasLeftPage() { return Global::splPage > 0; }
 static bool hasRightPage() {
   auto &registry = World::registrys[World::level];
   auto heroComp = registry.get<HeroComp>(Global::heroEnt);
-  std::multimap<uint8_t, uint8_t> spellsMap;
-  std::set<uint8_t> spellsSet = heroComp.spells;
+  auto spells = heroComp.spells;
   if (Global::splBattle) {
-    auto it = spellsSet.lower_bound(10);
-    spellsSet.erase(spellsSet.begin(), it);
-  } else {
-    auto it = spellsSet.upper_bound(10);
-    spellsSet.erase(it, spellsSet.end());
-  }
-  if (Global::splSchool == 4) {
-    for (auto spell : spellsSet) {
-      spellsMap.insert({SpellCfg::SpellLevel.at(spell), spell});
+    auto sAdv = SpellSet::spellsAdv;
+    for (auto s : sAdv) {
+      spells.erase(s->index);
     }
   } else {
-    for (auto spell : spellsSet) {
-      if (SpellCfg::SpellSchool.at(spell)[Global::splSchool]) {
-        spellsMap.insert({SpellCfg::SpellLevel.at(spell), spell});
-      }
+    auto sBat = SpellSet::spellsBat;
+    for (auto s : sBat) {
+      spells.erase(s->index);
     }
   }
-  return (Global::splPage + 1) * 16 < spellsMap.size();
+  if (Global::splSchool != 4) {
+    auto sSch = SpellSet::spellsSchool[Global::splSchool];
+    std::set<uint8_t> sSch2;
+    for (auto s : sSch) {
+      sSch2.insert(s->index);
+    }
+    std::erase_if(spells, [&](uint8_t val) { return !sSch2.contains(val); });
+  }
+  return (Global::splPage + 1) * 16 < spells.size();
 }
 
 static void drawPage() {
@@ -324,29 +316,28 @@ static bool clickSpell(uint8_t clickType) {
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   auto &registry = World::registrys[World::level];
   auto &heroComp = registry.get<HeroComp>(Global::heroEnt);
-  std::multimap<uint8_t, uint8_t> spellsMap = curSpellsBook(heroComp);
-  uint8_t i = 0;
-  for (auto [spelLevel, spelVal] : spellsMap) {
-    if (i >= 16) {
+  auto spellBooks = spellsBook(heroComp);
+  for (uint8_t i = 0; i < 16; i++) {
+    auto page = Global::splPage * 16;
+    if (page > spellBooks.size()) {
       break;
     }
+    auto spelVal = spellBooks[page + i];
     posRect = {splSlot[i].x + leftUp.x, splSlot[i].y + leftUp.y, 78, 65};
-    auto skillLevel = SpellSys::heroSplLevel(&heroComp, spelVal).second;
-    auto manaCost = SpellCfg::SpellCost[spelVal][skillLevel];
+    auto [skillSch, skillLevel] = SpellSys::spellLevel(&heroComp, spelVal);
+    auto secLevel =
+        HeroScrSys::heroSecLevel(heroComp, Enum::FIRE_MAGIC + skillSch);
+    auto manaCost = SpellSet::spells[spelVal].manaCost[secLevel + 1];
     if (SDL_PointInRectFloat(&point, &posRect) && heroComp.mana >= manaCost) {
       if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
-        SpellCfg::SpellFunc.at(spelVal)(
-            std::pair<entt::entity, uint8_t>{Global::heroEnt, skillLevel});
-        if (spelVal > 9) {
-          heroComp.mana -= manaCost;
-        }
+        SpellSet::spells[spelVal].func(NULL);
       } else {
-        SpellSys::showSplComfirm(clickType, spelVal, skillLevel);
+        SpellSys::showSpellComfirm(clickType, spelVal, skillLevel);
       }
       return true;
     }
-    i++;
   }
+
   return false;
 }
 
@@ -391,7 +382,7 @@ bool SpellSys::keyUp(uint16_t key) {
   return true;
 }
 
-void SpellSys::showSplComfirm(uint8_t clickType, uint16_t id, uint16_t i) {
+void SpellSys::showSpellComfirm(uint8_t clickType, uint16_t id, uint16_t i) {
   auto confirmbakW = 480;
   auto confirmbakH = 230;
   Global::confirmdraw = [confirmbakW, confirmbakH, id, i]() {

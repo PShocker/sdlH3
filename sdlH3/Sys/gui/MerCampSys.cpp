@@ -36,8 +36,13 @@ static void receive() {
   auto &mComp =
       World::registrys[World::level].get<MerCampComp>(Global::goalEnt);
   if (!visited()) {
-    heroComp.primSkills[0] += 1;
-    heroComp.visitedLog.insert({(uint8_t)ObjectType::MERCENARY_CAMP, 0});
+    AdventureBonus bonus = {
+        .src = ObjectType::MERCENARY_CAMP,
+        .type = Enum::ADVENTURE_PRIMARY_SKILL,
+        .subType = Enum::PRIMARY_SKILL_ATTACK,
+        .val = 1,
+    };
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
   }
   mComp.visitHeros.insert(heroComp.portrait);
 }

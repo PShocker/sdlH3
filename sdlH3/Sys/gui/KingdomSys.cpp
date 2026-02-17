@@ -7,6 +7,7 @@
 
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Set/HeroSet.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include <cstdint>
@@ -148,12 +149,12 @@ static void drawTown() {
       }
     }
 
-    if (townComp->buildings.contains((uint8_t)TownCfg::Building::FORT)) {
+    if (townComp->buildings.contains(Enum::BUILD_FORT)) {
       texture = Global::defCache["ITMCLS.def/0"][0];
     } else if (townComp->buildings.contains(
-                   (uint8_t)TownCfg::Building::CITADEL)) {
+                   Enum::BUILD_CITADEL)) {
       texture = Global::defCache["ITMCLS.def/0"][1];
-    } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CASTLE)) {
+    } else if (townComp->buildings.contains(Enum::BUILD_CASTLE)) {
       texture = Global::defCache["ITMCLS.def/0"][2];
     } else {
       texture = Global::defCache["ITMCLS.def/0"][3];
@@ -161,11 +162,11 @@ static void drawTown() {
     posRect = {x + 113, y + 33, 34, 34};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
-    if (townComp->buildings.contains((uint8_t)TownCfg::Building::TOWN_HALL)) {
+    if (townComp->buildings.contains(Enum::BUILD_TOWN_HALL)) {
       texture = Global::defCache["ITMTLS.def/0"][1];
-    } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CITY_HALL)) {
+    } else if (townComp->buildings.contains(Enum::BUILD_CITY_HALL)) {
       texture = Global::defCache["ITMTLS.def/0"][2];
-    } else if (townComp->buildings.contains((uint8_t)TownCfg::Building::CAPITOL)) {
+    } else if (townComp->buildings.contains(Enum::BUILD_CAPITOL)) {
       texture = Global::defCache["ITMTLS.def/0"][3];
     } else {
       texture = Global::defCache["ITMTLS.def/0"][0];
@@ -208,7 +209,8 @@ static void drawHero() {
     auto [level, heroEnt] = Global::heros[Global::playerId][i];
     auto &heroComp = World::registrys[level].get<HeroComp>(heroEnt);
     posRect = {x + 5, y + 6, 58, 64};
-    texture = Global::pcxCache[HeroCfg::heroLargePor[heroComp.portrait]][0];
+    auto largePor=HeroSet::fullHeros[heroComp.portrait]->largePor;
+    texture = Global::pcxCache[largePor][0];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
     for (auto m = 0; m < 4; m++) {

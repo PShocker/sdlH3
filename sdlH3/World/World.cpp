@@ -182,7 +182,7 @@ void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
 
 void World::enterSpec10Build(uint8_t townId, entt::entity bEnt) {
   switch (townId) {
-  case (uint8_t)TownCfg::Faction::CASTLE: {
+  case Enum::FACTION_CASTLE: {
     enterTavern(entt::null, bEnt);
     break;
   }
@@ -197,7 +197,7 @@ void World::enterSpec10Build(uint8_t townId, entt::entity bEnt) {
 }
 void World::enterSpec18Build(uint8_t townId, entt::entity bEnt) {
   switch (townId) {
-  case (uint8_t)TownCfg::Faction::CASTLE: {
+  case Enum::FACTION_CASTLE: {
     enterTavern(entt::null, bEnt);
     break;
   }
@@ -212,7 +212,7 @@ void World::enterSpec18Build(uint8_t townId, entt::entity bEnt) {
 }
 void World::enterSpec19Build(uint8_t townId, entt::entity bEnt) {
   switch (townId) {
-  case (uint8_t)TownCfg::Faction::CASTLE: {
+  case Enum::FACTION_CASTLE: {
     enterTavern(entt::null, bEnt);
     break;
   }
@@ -227,7 +227,7 @@ void World::enterSpec19Build(uint8_t townId, entt::entity bEnt) {
 }
 void World::enterSpec20Build(uint8_t townId, entt::entity bEnt) {
   switch (townId) {
-  case (uint8_t)TownCfg::Faction::CASTLE: {
+  case Enum::FACTION_CASTLE: {
     enterTavern(entt::null, bEnt);
     break;
   }
@@ -242,7 +242,7 @@ void World::enterSpec20Build(uint8_t townId, entt::entity bEnt) {
 }
 void World::enterSpec21Build(uint8_t townId, entt::entity bEnt) {
   switch (townId) {
-  case (uint8_t)TownCfg::Faction::CASTLE: {
+  case Enum::FACTION_CASTLE: {
     enterTavern(entt::null, bEnt);
     break;
   }

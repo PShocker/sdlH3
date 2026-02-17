@@ -8,6 +8,7 @@
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
+#include "Set/HeroSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/LevelUpSys.h"
 #include "Window/Window.h"
@@ -48,8 +49,8 @@ static void receive() {
   World::exitScrn();
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  auto exp = HeroCfg::heroLevelExp[heroComp.level] -
-             HeroCfg::heroLevelExp[heroComp.level - 1];
+  auto exp = HeroSet::heroLevelExperience[heroComp.level] -
+             HeroSet::heroLevelExperience[heroComp.level - 1];
   heroComp.exp += exp;
   if (LevelUpSys::prepareLvlUp(heroComp)) {
     World::enterLvlup(Global::heroEnt);
@@ -123,8 +124,8 @@ static void draw() {
 
     auto &heroComp =
         World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-    auto exp = HeroCfg::heroLevelExp[heroComp.level] -
-               HeroCfg::heroLevelExp[heroComp.level - 1];
+    auto exp = HeroSet::heroLevelExperience[heroComp.level] -
+               HeroSet::heroLevelExperience[heroComp.level - 1];
     FreeTypeSys::drawCenter(posRect.x + posRect.w / 2,
                             posRect.y + posRect.h + 4,
                             u"+" + FreeTypeSys::str(exp) + u" " + strPool[10]);

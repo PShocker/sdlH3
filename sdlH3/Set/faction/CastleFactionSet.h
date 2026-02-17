@@ -3,60 +3,13 @@
 #include "Enum/Enum.h"
 #include "H3mLoader/H3mObject.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/StructSet.h"
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
-
-struct FactionBuildIncome {
-  uint32_t id;
-  uint32_t minVal;
-  uint32_t maxVal;
-  uint8_t frequency;
-};
-
-struct FactionBuildBonus {
-  uint32_t id;
-  uint32_t subId;
-  float val;
-  bool forceVisit;
-  std::optional<uint8_t> frequency;
-  std::optional<uint32_t> strIndex;
-};
-
-struct FactionBuild {
-  int32_t id;
-  std::string animation;
-  int32_t x;
-  int32_t y;
-  int32_t z;
-  std::string border;
-  std::string area;
-  std::string icon;
-  std::vector<int32_t> require;
-  std::array<uint32_t, 7> cost;
-  std::vector<FactionBuildIncome> income;
-  std::optional<int32_t> upgrades;
-  bool autoMode;
-  std::vector<FactionBuildBonus> bonus;
-};
-
-struct FactionSetI {
-  uint8_t index;
-  uint8_t nativeTerrain;
-  std::array<std::string, 2> creatureBackground;
-  std::vector<std::pair<std::string, SDL_FPoint>> puzzleMap;
-  std::array<std::string, 5> mapObject;
-  std::string musicTheme;
-  std::string guildBackground;
-  std::string townBackground;
-  std::string guildWindow;
-  std::vector<std::vector<std::vector<int32_t>>> hallSlots;
-  std::vector<uint16_t> blacksmith;
-  std::vector<FactionBuild> builds;
-};
 
 struct CastleFactionSet {
   const static inline FactionSetI faction =

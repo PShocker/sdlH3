@@ -33,21 +33,20 @@ static void receive() {
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   auto &gComp = World::registrys[World::level].get<GarRevComp>(Global::goalEnt);
   if (!gComp.visitHeros.contains(heroComp.portrait)) {
-    heroComp.primSkills[1] += 1;
-    heroComp.visitedLog.insert({(uint8_t)ObjectType::GARDEN_OF_REVELATION, 0});
+    heroComp.primSkills[Enum::PRIMARY_SKILL_KNOWLEDGE] += 1;
   }
+  heroComp.visitedEnt.insert(Global::goalEnt);
   gComp.visitHeros.insert(heroComp.portrait);
 }
 
-static std::vector<Button>
-buttonInfo() {
+static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
   Button b;
 
-  b.textures=Global::defCache["iOKAY.def/0"];
-  b.r={bakW / 2 - 32, bakH - 60, 64, 30};
-  b.func=receive;
-  b.disable=false;
+  b.textures = Global::defCache["iOKAY.def/0"];
+  b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+  b.func = receive;
+  b.disable = false;
   v.push_back(b);
 
   return v;

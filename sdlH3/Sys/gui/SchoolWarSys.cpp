@@ -10,6 +10,7 @@
 #include "Lang/Lang.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
+#include "Set/StructSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
@@ -41,15 +42,19 @@ static void receive() {
   auto schMComp =
       World::registrys[World::level].get<SchoolWarComp>(Global::goalEnt);
   if (!schMComp.visitHeros.contains(heroComp.portrait)) {
+    AdventureBonus bonus = {
+        .src = ObjectType::SCHOOL_OF_WAR,
+        .type = Enum::ADVENTURE_PRIMARY_SKILL,
+        .val = 1,
+    };
     if (Global::goalIndex == 0) {
-      heroComp.primSkills[0] += 1;
+      bonus.subType = Enum::PRIMARY_SKILL_ATTACK;
     } else {
-      heroComp.primSkills[1] += 1;
+      bonus.subType = Enum::PRIMARY_SKILL_DEFENCE;
     }
-    heroComp.visitedLog.insert(
-        {(uint8_t)ObjectType::SCHOOL_OF_WAR, Global::goalIndex});
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
   }
-  heroComp.visited.insert((uint8_t)ObjectType::SCHOOL_OF_WAR);
+  heroComp.visited.insert(ObjectType::SCHOOL_OF_WAR);
   schMComp.visitHeros.insert(heroComp.portrait);
 }
 

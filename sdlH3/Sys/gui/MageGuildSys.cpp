@@ -8,6 +8,8 @@
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/FactionSet.h"
+#include "Set/SpellSet.h"
 #include "SpellSys.h"
 #include "Sys/FreeTypeSys.h"
 #include "Window/Window.h"
@@ -21,11 +23,9 @@ void MageGuildSys::visit() {
   auto townComp = &registry.get<TownComp>(townEnt);
 
   std::set<uint8_t> r;
-  for (auto i : {(uint8_t)TownCfg::Building::MAGE_GUILD_1,
-                 (uint8_t)TownCfg::Building::MAGE_GUILD_2,
-                 (uint8_t)TownCfg::Building::MAGE_GUILD_3,
-                 (uint8_t)TownCfg::Building::MAGE_GUILD_4,
-                 (uint8_t)TownCfg::Building::MAGE_GUILD_5}) {
+  for (auto i : {Enum::BUILD_MAGE_GUILD_1, Enum::BUILD_MAGE_GUILD_2,
+                 Enum::BUILD_MAGE_GUILD_3, Enum::BUILD_MAGE_GUILD_4,
+                 Enum::BUILD_MAGE_GUILD_5}) {
     if (townComp->buildings.contains(i)) {
       auto mEnt = townComp->buildings[i];
       auto &mComp = registry.get<MageGuildComp>(mEnt);
@@ -37,21 +37,12 @@ void MageGuildSys::visit() {
     if (h.has_value()) {
       auto heroEnt = h.value();
       auto &heroComp = registry.get<HeroComp>(heroEnt);
-      int8_t wisdom = HeroScrSys::heroSecLevel(
-          heroComp, (uint8_t)HeroCfg::SecondarySkill::WISDOM);
+      auto wisdom = HeroScrSys::heroSecLevel(heroComp, Enum::WISDOM);
       std::set<uint8_t> s;
-      if (wisdom == -1) {
-        // 只能学习1-2级技能
-        auto v1 = SpellCfg::SpellLevels[1];
-        auto v2 = SpellCfg::SpellLevels[2];
-
-        s.insert(v1.begin(), v1.end());
-        s.insert(v2.begin(), v2.end());
-
-      } else {
-        for (auto i = 1; i <= wisdom + 3; i++) {
-          auto v = SpellCfg::SpellLevels[i];
-          s.insert(v.begin(), v.end());
+      for (auto i = 1; i <= wisdom + 3; i++) {
+        auto v = SpellSet::spellsLvl[i];
+        for (auto v2 : v) {
+          s.insert(v2->index);
         }
       }
       heroComp.spells.insert(s.begin(), s.end());
@@ -100,7 +91,7 @@ static void drawSpells() {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   for (uint8_t m = 0; m < spellPositions.size(); m++) {
-    auto buildId = (uint8_t)TownCfg::Building::MAGE_GUILD_1 + m;
+    auto buildId = Enum::BUILD_MAGE_GUILD_1 + m;
     if (townComp->buildings.contains(buildId)) {
       auto ent = townComp->buildings[buildId];
       auto mComp = &registry.get<MageGuildComp>(ent);
@@ -131,7 +122,7 @@ static void drawWindow() {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
-  auto windowStr = TownCfg::guildWindowStr[townComp->id];
+  auto windowStr = FactionSet::fullFactions[townComp->id]->guildWindow;
   auto texture = Global::pcxCache[windowStr][0];
   posRect = {0, 0, 83, 61};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
@@ -167,7 +158,7 @@ static bool clickSpells(uint8_t clickType) {
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
 
   for (uint8_t m = 0; m < spellPositions.size(); m++) {
-    auto buildId = (uint8_t)TownCfg::Building::MAGE_GUILD_1 + m;
+    auto buildId = Enum::BUILD_MAGE_GUILD_1 + m;
     if (townComp->buildings.contains(buildId)) {
       auto ent = townComp->buildings[buildId];
       auto mComp = &registry.get<MageGuildComp>(ent);
@@ -175,7 +166,7 @@ static bool clickSpells(uint8_t clickType) {
         posRect = {leftUp.x + spellPositions[m][i].x,
                    leftUp.y + spellPositions[m][i].y, 83, 61};
         if (SDL_PointInRectFloat(&point, &posRect)) {
-          SpellSys::showSplComfirm(clickType, mComp->spells[i], 0);
+          SpellSys::showSpellComfirm(clickType, mComp->spells[i], 0);
         }
       }
     }

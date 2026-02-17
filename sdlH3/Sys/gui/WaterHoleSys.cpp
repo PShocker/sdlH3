@@ -23,9 +23,15 @@ static void receive() {
       World::registrys[World::level].get<RalFlagComp>(Global::goalEnt);
   if (!ralComp.visitHeros.contains(heroComp.portrait)) {
     heroComp.movement += 1000;
-    heroComp.morale.push_back({(uint8_t)ObjectType::RALLY_FLAG, 1});
+    AdventureBonus bonus = {
+        .src = ObjectType::WATERING_HOLE,
+        .type = Enum::ADVENTURE_MORALE,
+        .subType = 0,
+        .val = 1,
+    };
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_MORALE, bonus});
   }
-  heroComp.visited.insert((uint8_t)ObjectType::RALLY_FLAG);
+  heroComp.visited.insert(ObjectType::WATERING_HOLE);
   ralComp.visitHeros.insert(heroComp.portrait);
   World::exitScrn();
 }

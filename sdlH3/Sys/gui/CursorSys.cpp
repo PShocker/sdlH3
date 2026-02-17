@@ -14,6 +14,7 @@
 #include "H3mLoader/H3mObject.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Set/TerrainSet.h"
 #include "SpellSys.h"
 #include "Sys/HeroSys.h"
 #include "Window/Window.h"
@@ -538,8 +539,9 @@ uint8_t CursorSys::astar(bool click) {
       auto next = path[i + 1];
       auto terrainEnt =
           Global::terrains[World::level][current.x][current.y].back();
-      auto moveCost = TerrainCfg::moveCost.at(
-          World::registrys[World::level].get<TerrainComp>(terrainEnt).index);
+      auto tComp = registry.get<TerrainComp>(terrainEnt);
+      auto moveCost = TerrainSet::terrains[tComp.index].moveCost;
+
       if (std::abs(next.x - current.x) + std::abs(next.y - current.y) == 2) {
         moveCost *= std::numbers::sqrt2;
       }
@@ -806,17 +808,17 @@ bool CursorSys::leftMouseUp(float x, float y) {
           break;
         }
         auto heroComp = &registry.get<HeroComp>(heroEnt);
-        auto skillLevel = SpellSys::heroSplLevel(heroComp, 8).second;
-        auto manaCost = SpellCfg::SpellCost.at(0).at(skillLevel);
-        heroComp->mana -= manaCost;
-        World::iterateSystemsBak.push_back(World::iterateSystems);
-        World::iterateSystems.pop_back();
-        World::iterateSystems.push_back([heroEnt, goalX, goalY]() {
-          Ent::loadBoat("AB01_", goalX + 1, goalY, World::level, 2, 0);
-          Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
-          clearHeroPath();
-          return true;
-        });
+        // auto skillLevel = SpellSys::heroSplLevel(heroComp, 8).second;
+        // auto manaCost = SpellCfg::SpellCost.at(0).at(skillLevel);
+        // heroComp->mana -= manaCost;
+        // World::iterateSystemsBak.push_back(World::iterateSystems);
+        // World::iterateSystems.pop_back();
+        // World::iterateSystems.push_back([heroEnt, goalX, goalY]() {
+        //   Ent::loadBoat("AB01_", goalX + 1, goalY, World::level, 2, 0);
+        //   Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
+        //   clearHeroPath();
+        //   return true;
+        // });
         Global::fadeRect = {0, 0, Global::viewPort.w - 199,
                             Global::viewPort.h - 47};
         World::iterateSystems.push_back(World::enterFadeScrn);
@@ -837,18 +839,18 @@ bool CursorSys::leftMouseUp(float x, float y) {
           break;
         }
         auto heroComp = &registry.get<HeroComp>(heroEnt);
-        auto skillLevel = SpellSys::heroSplLevel(heroComp, 8).second;
-        auto manaCost = SpellCfg::SpellCost.at(1).at(skillLevel);
-        heroComp->mana -= manaCost;
-        World::iterateSystemsBak.push_back(World::iterateSystems);
-        World::iterateSystems.pop_back();
-        World::iterateSystems.push_back([heroEnt, &registry, ent]() {
-          registry.destroy(ent);
-          World::needSort = true;
-          Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
-          clearHeroPath();
-          return true;
-        });
+        auto skillLevel = SpellSys::spellLevel(heroComp, 8).second;
+        // auto manaCost = SpellCfg::SpellCost.at(1).at(skillLevel);
+        // heroComp->mana -= manaCost;
+        // World::iterateSystemsBak.push_back(World::iterateSystems);
+        // World::iterateSystems.pop_back();
+        // World::iterateSystems.push_back([heroEnt, &registry, ent]() {
+        //   registry.destroy(ent);
+        //   World::needSort = true;
+        //   Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
+        //   clearHeroPath();
+        //   return true;
+        // });
         Global::fadeRect = {0, 0, Global::viewPort.w - 199,
                             Global::viewPort.h - 47};
         World::iterateSystems.push_back(World::enterFadeScrn);
@@ -880,18 +882,18 @@ bool CursorSys::leftMouseUp(float x, float y) {
           break;
         }
         auto heroComp = &registry.get<HeroComp>(heroEnt);
-        auto skillLevel = SpellSys::heroSplLevel(heroComp, 8).second;
-        auto manaCost = SpellCfg::SpellCost.at(8).at(skillLevel);
-        heroComp->mana -= manaCost;
-        World::iterateSystemsBak.push_back(World::iterateSystems);
-        World::iterateSystems.pop_back();
-        World::iterateSystems.push_back([heroEnt, goalX, goalY]() {
-          HeroSys::heroTelePort(heroEnt, goalX, goalY);
-          CameraSys::focus(goalX * 32 + 16, goalY * 32 + 16);
-          Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
-          clearHeroPath();
-          return true;
-        });
+        auto skillLevel = SpellSys::spellLevel(heroComp, 8).second;
+        // auto manaCost = SpellCfg::SpellCost.at(8).at(skillLevel);
+        // heroComp->mana -= manaCost;
+        // World::iterateSystemsBak.push_back(World::iterateSystems);
+        // World::iterateSystems.pop_back();
+        // World::iterateSystems.push_back([heroEnt, goalX, goalY]() {
+        //   HeroSys::heroTelePort(heroEnt, goalX, goalY);
+        //   CameraSys::focus(goalX * 32 + 16, goalY * 32 + 16);
+        //   Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
+        //   clearHeroPath();
+        //   return true;
+        // });
         Global::fadeRect = {0, 0, Global::viewPort.w - 199,
                             Global::viewPort.h - 47};
         World::iterateSystems.push_back(World::enterFadeScrn);

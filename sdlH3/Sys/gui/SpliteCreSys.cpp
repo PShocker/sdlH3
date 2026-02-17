@@ -9,6 +9,7 @@
 #include "H3mLoader/H3mObject.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/CreatureSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/base/SliderSys.h"
 #include "Window/Window.h"
@@ -76,8 +77,8 @@ static void drawCreatures() {
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
   auto id = Global::splitCre[0]->first;
   auto group = Global::splitGroup;
-  auto textures = Global::defCache[CreatureCfg::creatureGraphics.at(id) + "/" +
-                                   std::to_string(group)];
+  auto graphic = CreatureSet::fullCreatures[id]->graphics.animation;
+  auto textures = Global::defCache[graphic + "/" + std::to_string(group)];
   DwellingSys::drawCreatureBak(leftUp.x + 20, leftUp.y + 54, id, group,
                                Global::splitFrameIndex % textures.size(), 0xff);
   DwellingSys::drawCreatureBak(leftUp.x + 177, leftUp.y + 54, id, group,
