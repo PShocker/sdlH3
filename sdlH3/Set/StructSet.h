@@ -134,7 +134,7 @@ struct FactionBuildIncome {
 struct FactionBuildBonus {
   uint32_t id;
   uint32_t subId;
-  float val;
+  int32_t val;
   bool forceVisit;
   std::optional<uint8_t> frequency;
   std::optional<uint32_t> strIndex;

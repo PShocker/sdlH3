@@ -551,8 +551,8 @@ static void drawHeroPortraitSpec() {
     posRect.y += 54;
     auto &registry = World::registrys[level];
     auto heroComp = &registry.get<HeroComp>(heroEnt);
-    auto largePor = HeroSet::fullHeros[heroComp->portrait]->largePor;
-    auto texture = Global::pcxCache[largePor][0];
+    auto smallPor = HeroSet::fullHeros[heroComp->portrait]->smallPor;
+    auto texture = Global::pcxCache[smallPor][0];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   }
 

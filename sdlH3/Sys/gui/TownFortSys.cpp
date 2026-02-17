@@ -156,7 +156,7 @@ static void draw() {
     auto bStr = strPool[3043 + (int8_t)bId * 2];
     FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y + 90, bStr);
 
-    auto tStr = FactionSet::fullFactions[townComp->id]->builds[bId].icon;
+    auto tStr = FactionSet::fullFactions[townComp->id]->builds[bId + 1].icon;
     texture = Global::pcxCache[tStr][0];
     posRect = {posRect2.x + 4, posRect2.y + 21, static_cast<float>(texture->w),
                static_cast<float>(texture->h)};

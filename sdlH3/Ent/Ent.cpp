@@ -460,7 +460,7 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
 
     auto buildings =
         std::any_cast<std::set<uint8_t>>(object.data["builtBuildings"]);
-    std::flat_map<uint8_t, entt::entity> builds;
+    std::flat_map<int8_t, entt::entity> builds;
     for (auto i : buildings) {
       builds[i] = Ent::loadBuild(level, ent, i);
     }

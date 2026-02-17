@@ -73,7 +73,7 @@ static void drawBuildIcon() {
           break;
         }
       }
-      auto tStr = FactionSet::fullFactions[townComp->id]->builds[bId].icon;
+      auto tStr = FactionSet::fullFactions[townComp->id]->builds[bId + 1].icon;
       auto texture = Global::pcxCache[tStr][0];
       float posX = 402 - (float)line.size() * 154 / 2 - (line.size() - 1) * 20 +
                    194 * col;
@@ -91,7 +91,7 @@ static void drawBuildIcon() {
         texture = textures[2];
       } else {
         auto buildCost =
-            FactionSet::fullFactions[townComp->id]->builds[bId].cost;
+            FactionSet::fullFactions[townComp->id]->builds[bId + 1].cost;
         auto resource = Global::resources[Global::playerId];
         uint8_t canBuy = 0;
         for (uint8_t i = 0; i < resource.size(); i++) {

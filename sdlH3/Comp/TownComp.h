@@ -13,7 +13,7 @@ struct TownComp {
   uint8_t id;
   std::string name;
   uint8_t nameIndex;
-  std::flat_map<uint8_t, entt::entity> buildings;
+  std::flat_map<int8_t, entt::entity> buildings;
   std::vector<std::pair<uint16_t, uint32_t>> garCreatures;
   bool hasBuild = false;
   std::array<std::optional<entt::entity>, 2> heroEnt;

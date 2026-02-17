@@ -43,8 +43,8 @@ void HeroListSys::draw(int32_t x, int32_t y, int32_t length, uint8_t page,
     auto &[level, heroEnt] = Global::heros[Global::playerId][index];
     auto &registry = World::registrys[level];
     auto hComp = &registry.get<HeroComp>(heroEnt);
-    auto largePor = HeroSet::fullHeros[hComp->portrait]->largePor;
-    auto texture = Global::pcxCache[largePor][0];
+    auto smallPor = HeroSet::fullHeros[hComp->portrait]->smallPor;
+    auto texture = Global::pcxCache[smallPor][0];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
     if (index == i) {
       SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //

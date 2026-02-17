@@ -45,12 +45,12 @@ static void buy() {
   auto now = Window::dtNow;
   Global::fadeCallBack = [now, townComp, leftUp]() {
     auto build = Global::townBuildBid;
-    auto buildX = FactionSet::fullFactions[townComp->id]->builds[build].x;
-    auto buildY = FactionSet::fullFactions[townComp->id]->builds[build].y;
+    auto buildI = FactionSet::fullFactions[townComp->id]->builds[build + 1];
+    auto buildX = buildI.x;
+    auto buildY = buildI.y;
     SDL_FPoint townPoint = {static_cast<float>(buildX),
                             static_cast<float>(buildY)};
-    auto borderStr =
-        FactionSet::fullFactions[townComp->id]->builds[build].border;
+    auto borderStr = buildI.border;
     auto texture = Global::pcxCache[borderStr][0];
     if (Window::dtNow >= now + 2000) {
       SDL_SetTextureAlphaModFloat(texture, 1);
@@ -122,8 +122,10 @@ static void drawBackGround() {
   }
   FreeTypeSys::drawCenter(leftUp.x + 395 / 2, leftUp.y + 230, title3Str);
 
-  auto tStr =
-      FactionSet::fullFactions[townComp->id]->builds[Global::townBuildBid].icon;
+  auto buildI =
+      FactionSet::fullFactions[townComp->id]->builds[Global::townBuildBid + 1];
+
+  auto tStr = buildI.icon;
   texture = Global::pcxCache[tStr][0];
   posRect = {leftUp.x + 125, leftUp.y + 50, static_cast<float>(texture->w),
              static_cast<float>(texture->h)};

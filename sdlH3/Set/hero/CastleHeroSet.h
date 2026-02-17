@@ -1,16 +1,17 @@
 #pragma once
 
-#include "Set/StructSet.h"
 #include "Enum/Enum.h"
+#include "Set/StructSet.h"
 #include <cstdint>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
+
 struct CastleHeroSet {
   const static inline std::vector<HeroSetI> heros = {
-      {// orrin
+      {// orrin (index 0) - Knight
        .index = 0,
        .clasz = Enum::HERO_CLASS_KNIGHT,
        .female = false,
@@ -22,8 +23,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS000KN.pcx", // Knight 第1个
+       .largePor = "HPL000KN.pcx", // Knight 第1个
        .spec =
            {
                {
@@ -32,7 +33,7 @@ struct CastleHeroSet {
                    .val = 5,
                },
            }},
-      {// valeska
+      {// valeska (index 1) - Knight
        .index = 1,
        .clasz = 0,
        .female = false,
@@ -47,8 +48,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::ARCHER, 7},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS001KN.pcx", // Knight 第2个
+       .largePor = "HPL001KN.pcx", // Knight 第2个
        .spec =
            {
                {
@@ -62,7 +63,7 @@ struct CastleHeroSet {
                    .val = 5,
                },
            }},
-      {// edric
+      {// edric (index 2) - Knight
        .index = 2,
        .clasz = 0,
        .female = false,
@@ -77,8 +78,8 @@ struct CastleHeroSet {
                {Enum::GRIFFIN, 3},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS002KN.pcx", // Knight 第3个
+       .largePor = "HPL002KN.pcx", // Knight 第3个
        .spec =
            {
                {
@@ -92,7 +93,7 @@ struct CastleHeroSet {
                    .val = 5,
                },
            }},
-      {// sylvia
+      {// sylvia (index 3) - Knight
        .index = 3,
        .clasz = 0,
        .female = true,
@@ -107,8 +108,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS003KN.pcx", // Knight 第4个
+       .largePor = "HPL003KN.pcx", // Knight 第4个
        .spec =
            {
                {
@@ -117,7 +118,7 @@ struct CastleHeroSet {
                    .val = 5,
                },
            }},
-      {// lordHaart
+      {// lordHaart (index 4) - Knight
        .index = 4,
        .clasz = 0,
        .female = false,
@@ -132,8 +133,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS004KN.pcx", // Knight 第5个
+       .largePor = "HPL004KN.pcx", // Knight 第5个
        .spec =
            {
                {
@@ -143,7 +144,7 @@ struct CastleHeroSet {
                },
 
            }},
-      {// sorsha
+      {// sorsha (index 5) - Knight
        .index = 5,
        .clasz = 0,
        .female = true,
@@ -158,8 +159,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS005KN.pcx", // Knight 第6个
+       .largePor = "HPL005KN.pcx", // Knight 第6个
        .spec =
            {
                {
@@ -175,7 +176,7 @@ struct CastleHeroSet {
 
            }},
 
-      {// christian
+      {// christian (index 6) - Knight
        .index = 6,
        .clasz = 0,
        .female = false,
@@ -190,8 +191,8 @@ struct CastleHeroSet {
                {Enum::BALLISTA, 1},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS006KN.pcx", // Knight 第7个
+       .largePor = "HPL006KN.pcx", // Knight 第7个
        .spec =
            {
                {
@@ -200,7 +201,7 @@ struct CastleHeroSet {
                    .val = 5,
                },
            }},
-      {// tyris
+      {// tyris (index 7) - Knight
        .index = 7,
        .clasz = 0,
        .female = true,
@@ -215,8 +216,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS007KN.pcx", // Knight 第8个
+       .largePor = "HPL007KN.pcx", // Knight 第8个
        .spec =
            {
                {
@@ -230,7 +231,7 @@ struct CastleHeroSet {
                    .val = 5,
                },
            }},
-      {// rion
+      {// rion (index 8) - Cleric
        .index = 8,
        .clasz = 0,
        .female = false,
@@ -245,8 +246,8 @@ struct CastleHeroSet {
                {Enum::FIRST_AID_TENT, 1},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS008CL.pcx", // Cleric 第1个
+       .largePor = "HPL008CL.pcx", // Cleric 第1个
        .spec =
            {
                {
@@ -257,7 +258,7 @@ struct CastleHeroSet {
 
            },
        .spells = {Enum::STONE_SKIN}},
-      {// adela
+      {// adela (index 9) - Cleric
        .index = 9,
        .clasz = 0,
        .female = true,
@@ -272,8 +273,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS009CL.pcx", // Cleric 第2个
+       .largePor = "HPL009CL.pcx", // Cleric 第2个
        .spec =
            {
                {
@@ -283,7 +284,7 @@ struct CastleHeroSet {
                },
            },
        .spells = {Enum::BLESS}},
-      {// cuthbert
+      {// cuthbert (index 10) - Cleric
        .index = 10,
        .clasz = 0,
        .female = false,
@@ -298,8 +299,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS010CL.pcx", // Cleric 第3个
+       .largePor = "HPL010CL.pcx", // Cleric 第3个
        .spec =
            {
                {
@@ -311,7 +312,7 @@ struct CastleHeroSet {
            },
        .spells = {Enum::WEAKNESS}},
 
-      {// adelaide
+      {// adelaide (index 11) - Cleric
        .index = 11,
        .clasz = 0,
        .female = true,
@@ -325,8 +326,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS011CL.pcx", // Cleric 第4个
+       .largePor = "HPL011CL.pcx", // Cleric 第4个
        .spec =
            {
                {
@@ -338,7 +339,7 @@ struct CastleHeroSet {
            },
        .spells = {Enum::FROST_RING}},
 
-      {// ingham
+      {// ingham (index 12) - Cleric
        .index = 12,
        .clasz = 0,
        .female = false,
@@ -353,8 +354,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS012CL.pcx", // Cleric 第5个
+       .largePor = "HPL012CL.pcx", // Cleric 第5个
        .spec =
            {
                {
@@ -369,7 +370,7 @@ struct CastleHeroSet {
                },
            },
        .spells = {Enum::CURSE}},
-      {// sanya
+      {// sanya (index 13) - Cleric
        .index = 13,
        .clasz = 0,
        .female = true,
@@ -384,8 +385,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS013CL.pcx", // Cleric 第6个
+       .largePor = "HPL013CL.pcx", // Cleric 第6个
        .spec =
            {
                {
@@ -397,7 +398,7 @@ struct CastleHeroSet {
            },
        .spells = {Enum::DISPEL}},
 
-      {// loynis
+      {// loynis (index 14) - Cleric
        .index = 14,
        .clasz = 0,
        .female = false,
@@ -412,8 +413,8 @@ struct CastleHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS014CL.pcx", // Cleric 第7个
+       .largePor = "HPL014CL.pcx", // Cleric 第7个
        .spec =
            {
                {
@@ -425,7 +426,7 @@ struct CastleHeroSet {
            },
        .spells = {Enum::PRAYER}},
       {
-          // caitlin
+          // caitlin (index 15) - Cleric
           .index = 15,
           .clasz = 0,
           .female = true,
@@ -440,8 +441,8 @@ struct CastleHeroSet {
                   {Enum::ARCHER, 7},
                   {Enum::GRIFFIN, 3},
               },
-          .smallPor = "",
-          .largePor = "",
+          .smallPor = "HPS015CL.pcx", // Cleric 第8个
+          .largePor = "HPL015CL.pcx", // Cleric 第8个
           .spec =
               {
                   {

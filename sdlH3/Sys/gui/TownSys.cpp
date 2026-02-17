@@ -34,7 +34,6 @@
 #include "Window/Window.h"
 #include "World/World.h"
 #include "base/TownListSys.h"
-#include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
 #include <functional>
@@ -47,8 +46,8 @@
 #include <utility>
 #include <vector>
 
-static std::optional<uint8_t> mouseBuildId;
-static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[8];
+static std::optional<int8_t> mouseBuildId;
+static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[256];
 
 static void showBuildComfirm(uint8_t lvl, entt::entity townEnt, uint8_t bId,
                              uint8_t confirmType) {
@@ -68,7 +67,7 @@ static void showBuildComfirm(uint8_t lvl, entt::entity townEnt, uint8_t bId,
     FreeTypeSys::setColor(255, 255, 255, 255);
     FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 40,
                             strPool[3044 + (int8_t)bId * 2]);
-    auto tStr = FactionSet::fullFactions[townComp->id]->builds[bId].icon;
+    auto tStr = FactionSet::fullFactions[townComp->id]->builds[bId + 1].icon;
     auto texture = Global::pcxCache[tStr][0];
     SDL_FRect posRect{leftUp.x + confirmbakW / 2 - texture->w / 2,
                       leftUp.y + 75, static_cast<float>(texture->w),
@@ -130,16 +129,17 @@ static uint8_t mageGuildLevel(uint8_t lvl, entt::entity townEnt) {
   return 0;
 }
 
-static std::unordered_set<uint8_t> townUpGradeBuild(uint8_t lvl,
-                                                    entt::entity townEnt) {
+static std::unordered_set<int8_t> townUpGradeBuild(uint8_t lvl,
+                                                   entt::entity townEnt) {
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
-  std::unordered_set<uint8_t> builds;
-  std::unordered_set<uint8_t> temp;
+  std::unordered_set<int8_t> builds;
+  std::unordered_set<int8_t> temp;
   auto buildInfo = FactionSet::fullFactions[townComp->id]->builds;
   for (auto [bId, ent] : townComp->buildings) {
-    if (buildInfo[bId].upgrades.has_value()) {
-      temp.insert(buildInfo[bId].upgrades.value());
+    auto bInfo = buildInfo[bId + 1];
+    if (bInfo.upgrades.has_value()) {
+      temp.insert(bInfo.upgrades.value());
     }
   }
 
@@ -326,7 +326,7 @@ void TownSys::heroVisit() {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto id = townComp->id;
-  for (auto [bId,ent] : townComp->buildings) {
+  for (auto [bId, ent] : townComp->buildings) {
     if (visitBuild(bId) != 0xff) {
       switch (bId) {
       case Enum::BUILD_SPECIAL_10: {
@@ -503,17 +503,18 @@ static void drawBuilds() {
 
   auto builds = townUpGradeBuild(level, townEnt);
   mouseBuildId = std::nullopt;
-  std::multimap<int8_t, uint8_t> sortBuild;
+  std::multimap<int8_t, int8_t> sortBuild;
   for (auto bId : builds) {
-    auto z = FactionSet::fullFactions[townComp->id]->builds[bId].z;
+    auto buildI = FactionSet::fullFactions[townComp->id]->builds[bId + 1];
+    auto z = buildI.z;
     sortBuild.insert({z, bId});
   }
   for (auto [z, bId] : sortBuild) {
-    auto buildStr =
-        FactionSet::fullFactions[townComp->id]->builds[bId].animation;
+    auto buildI = FactionSet::fullFactions[townComp->id]->builds[bId + 1];
+    auto buildStr = buildI.animation;
     auto textures = Global::defCache[buildStr + "/0"];
-    auto buildX = FactionSet::fullFactions[townComp->id]->builds[bId].x;
-    auto buildY = FactionSet::fullFactions[townComp->id]->builds[bId].y;
+    auto buildX = buildI.x;
+    auto buildY = buildI.y;
     SDL_FPoint townPoint = {static_cast<float>(buildX),
                             static_cast<float>(buildY)};
     auto frame = Global::bldFrameIndex % textures.size();
@@ -524,12 +525,9 @@ static void drawBuilds() {
         posRect.y <= mousePoint.y && mousePoint.y < posRect.y + posRect.h) {
       uint32_t point = (mousePoint.x - posRect.x) +
                        textures[0]->w * (mousePoint.y - posRect.y);
-      if (!townAreaBuilds[townComp->id].contains(bId) &&
-          !FactionSet::fullFactions[townComp->id]->builds[bId].area.empty()) {
+      if (!townAreaBuilds[townComp->id].contains(bId) && !buildI.area.empty()) {
         townAreaBuilds[townComp->id][bId] =
-            Pcx("./Data/H3bitmap.lod/" +
-                FactionSet::fullFactions[townComp->id]->builds[bId].area)
-                .loadArea();
+            Pcx("./Data/H3bitmap.lod/" + buildI.area).loadArea();
       }
       if (townAreaBuilds[townComp->id].contains(bId) &&
           townAreaBuilds[townComp->id][bId][point]) {
@@ -541,12 +539,12 @@ static void drawBuilds() {
   auto funcPtr = topFunc.target<bool (*)()>();
   auto top = (funcPtr && *topFunc.target<bool (*)()>() == TownSys::run);
   for (auto [z, bId] : sortBuild) {
-    auto buildStr =
-        FactionSet::fullFactions[townComp->id]->builds[bId].animation;
+    auto buildI = FactionSet::fullFactions[townComp->id]->builds[bId + 1];
+    auto buildStr = buildI.animation;
     auto textures = Global::defCache[buildStr + "/0"];
     auto frame = Global::bldFrameIndex % textures.size();
-    auto buildX = FactionSet::fullFactions[townComp->id]->builds[bId].x;
-    auto buildY = FactionSet::fullFactions[townComp->id]->builds[bId].y;
+    auto buildX = buildI.x;
+    auto buildY = buildI.y;
     SDL_FPoint townPoint = {static_cast<float>(buildX),
                             static_cast<float>(buildY)};
     posRect = {leftUp.x + townPoint.x, leftUp.y + townPoint.y,
@@ -555,8 +553,7 @@ static void drawBuilds() {
     SDL_RenderTexture(Window::renderer, textures[0], nullptr, &posRect);
     SDL_RenderTexture(Window::renderer, textures[frame], nullptr, &posRect);
     if (mouseBuildId == bId && top) {
-      auto texture = Global::pcxCache
-          [FactionSet::fullFactions[townComp->id]->builds[bId].area][0];
+      auto texture = Global::pcxCache[buildI.border][0];
       SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
     }
   }
