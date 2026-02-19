@@ -100,9 +100,10 @@ struct Global {
   static inline uint64_t bldFrameTime;
   static inline uint64_t bldFrameIndex;
 
-  static inline uint64_t dweFrameTime;
-  static inline uint64_t dweFrameIndex;
-  static inline uint64_t dweGroup;
+  static inline std::array<uint64_t, 8> dweFrameTime;
+  static inline std::array<uint64_t, 8> dweFrameIndex;
+  static inline std::array<uint64_t, 8> dweGroup;
+
   static inline uint8_t dweIndex;
   static inline uint32_t dweSliderNum;
 
@@ -176,10 +177,6 @@ struct Global {
   static inline std::array<uint64_t, 8> townFortFrameTime;
   static inline std::array<uint64_t, 8> townFortFrameIndex;
   static inline std::array<uint64_t, 8> townFortGroup;
-
-  static inline std::array<uint64_t, 8> warFacFrameTime;
-  static inline std::array<uint64_t, 8> warFacFrameIndex;
-  static inline std::array<uint64_t, 8> warFacGroup;
 
   static inline uint8_t viewWorldScale;
 

@@ -34,7 +34,7 @@ struct CreatureSet {
       SDL_Color{0, 0, 0, 0}        // TRANSPARENCY
   };
 
-  static inline std::vector<CreatureSetI *> fullCreatures;
+  static inline std::vector<const CreatureSetI *> fullCreatures;
 
   static void init();
 };

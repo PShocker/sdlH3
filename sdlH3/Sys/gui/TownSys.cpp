@@ -162,9 +162,8 @@ uint32_t TownSys::townDweNum(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
   return r;
 }
 
-std::vector<TownDweInc> TownSys::townDweInc(uint8_t lvl, entt::entity townEnt,
-                                            uint8_t bId) {
-  std::vector<TownDweInc> r;
+uint32_t TownSys::townDweInc(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
+  uint32_t r;
   uint8_t dweLevel = 0;
   switch (bId) {
   case Enum::BUILD_DWELLING_LEVEL_1:
@@ -205,14 +204,23 @@ std::vector<TownDweInc> TownSys::townDweInc(uint8_t lvl, entt::entity townEnt,
   }
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
-  for (auto [k, v] : townComp->buildings) {
-    if (auto iComp = registry.try_get<TownDweIncComp>(v); iComp != nullptr) {
-      if (iComp->level == dweLevel) {
-        TownDweInc t;
-        t.id = (uint8_t)Enum::DWEINCTYPE::BUILD;
-        t.subId = k;
-        t.num = iComp->num;
-        r.push_back(t);
+  auto upGradeBuild = townUpGradeBuild(lvl, townEnt);
+  for (auto k : upGradeBuild) {
+    auto buildI = FactionSet::fullFactions[townComp->id]->builds.at(k);
+    for (auto &bonus : buildI.bonus) {
+      if (bonus.id == Enum::CREATURE_GROWTH) {
+        if (dweLevel == bonus.subId) {
+          r += bonus.val;
+        }
+      }
+      if (bonus.id == Enum::CREATURE_GROWTH_RATE) {
+        if (dweLevel == bonus.subId) {
+          auto buildEnt = townComp->buildings[bId];
+          auto dComp = registry.get<DwellingComp>(buildEnt);
+          auto creatureId = dComp.creatures.back().first.back();
+          auto baseNum = CreatureSet::fullCreatures[creatureId]->growth;
+          r += bonus.val;
+        }
       }
     }
   }
@@ -225,53 +233,52 @@ std::vector<TownDweInc> TownSys::townDweInc(uint8_t lvl, entt::entity townEnt,
     for (auto it = range.first; it != range.second; ++it) {
       ArtifactBonus &value = it->second;
       if (value.subType == dweLevel) {
-        TownDweInc t;
-        t.id = (uint8_t)Enum::DWEINCTYPE::ARTIFACT;
-        t.subId = value.src;
-        t.num = value.val;
-        r.push_back(t);
+        r += value.val;
       }
     }
   }
-  auto buildEnt = townComp->buildings[bId];
-  auto dComp = registry.get<DwellingComp>(buildEnt);
-  auto creatureId = dComp.creatures.back().first.back();
-  auto baseNum = CreatureSet::fullCreatures[creatureId]->growth;
-  TownDweInc t;
-  t.id = (uint8_t)Enum::DWEINCTYPE::BASE;
-  t.subId = 0;
-  t.num = baseNum;
-  r.push_back(t);
-
-  auto fortLvl = fortLevel(lvl, townEnt);
-  if (fortLvl != 0xff) {
-    t.id = (uint8_t)Enum::DWEINCTYPE::BUILD;
-    t.subId = Enum::BUILD_FORT + fortLvl;
-    t.num = baseNum * fortLvl * 0.5;
-    r.push_back(t);
-  }
-
   return r;
 }
 
-std::vector<TownDwe> TownSys::townDweBuilds(uint8_t lvl, entt::entity townEnt) {
-  std::vector<TownDwe> r;
-  std::vector<TownDwe> rSpecial;
+std::set<int8_t> TownSys::townDweBuilds(uint8_t lvl, entt::entity townEnt) {
+  std::set<int8_t> r;
   auto &registry = World::registrys[lvl];
-  auto townComp = &registry.get<TownComp>(townEnt);
-  auto os = townUpGradeBuild(lvl, townEnt);
-  std::set<uint8_t> s(os.begin(), os.end());
-  for (auto bId : s) {
-    auto buildEnt = townComp->buildings[bId];
-    if (registry.all_of<DwellingComp>(buildEnt)) {
-      if (bId <= 21) {
-        rSpecial.push_back({bId, buildEnt});
-      } else {
-        r.push_back({bId, buildEnt});
-      }
-    }
+  auto &townComp = registry.get<TownComp>(townEnt);
+  if (townComp.buildings.contains(Enum::BUILD_DWELLING_UPGRADE_LEVEL_1)) {
+    r.insert(Enum::BUILD_DWELLING_UPGRADE_LEVEL_1);
+  } else if (townComp.buildings.contains(Enum::BUILD_DWELLING_LEVEL_1)) {
+    r.insert(Enum::BUILD_DWELLING_LEVEL_1);
   }
-  r.insert(r.end(), rSpecial.begin(), rSpecial.end());
+  if (townComp.buildings.contains(Enum::BUILD_DWELLING_UPGRADE_LEVEL_2)) {
+    r.insert(Enum::BUILD_DWELLING_UPGRADE_LEVEL_2);
+  } else if (townComp.buildings.contains(Enum::BUILD_DWELLING_LEVEL_2)) {
+    r.insert(Enum::BUILD_DWELLING_LEVEL_2);
+  }
+  if (townComp.buildings.contains(Enum::BUILD_DWELLING_UPGRADE_LEVEL_3)) {
+    r.insert(Enum::BUILD_DWELLING_UPGRADE_LEVEL_3);
+  } else if (townComp.buildings.contains(Enum::BUILD_DWELLING_LEVEL_3)) {
+    r.insert(Enum::BUILD_DWELLING_LEVEL_3);
+  }
+  if (townComp.buildings.contains(Enum::BUILD_DWELLING_UPGRADE_LEVEL_4)) {
+    r.insert(Enum::BUILD_DWELLING_UPGRADE_LEVEL_4);
+  } else if (townComp.buildings.contains(Enum::BUILD_DWELLING_LEVEL_4)) {
+    r.insert(Enum::BUILD_DWELLING_LEVEL_4);
+  }
+  if (townComp.buildings.contains(Enum::BUILD_DWELLING_UPGRADE_LEVEL_5)) {
+    r.insert(Enum::BUILD_DWELLING_UPGRADE_LEVEL_5);
+  } else if (townComp.buildings.contains(Enum::BUILD_DWELLING_LEVEL_5)) {
+    r.insert(Enum::BUILD_DWELLING_LEVEL_5);
+  }
+  if (townComp.buildings.contains(Enum::BUILD_DWELLING_UPGRADE_LEVEL_6)) {
+    r.insert(Enum::BUILD_DWELLING_UPGRADE_LEVEL_6);
+  } else if (townComp.buildings.contains(Enum::BUILD_DWELLING_LEVEL_6)) {
+    r.insert(Enum::BUILD_DWELLING_LEVEL_6);
+  }
+  if (townComp.buildings.contains(Enum::BUILD_DWELLING_UPGRADE_LEVEL_7)) {
+    r.insert(Enum::BUILD_DWELLING_UPGRADE_LEVEL_7);
+  } else if (townComp.buildings.contains(Enum::BUILD_DWELLING_LEVEL_7)) {
+    r.insert(Enum::BUILD_DWELLING_LEVEL_7);
+  }
   return r;
 }
 
@@ -764,7 +771,7 @@ static void drawCres() {
       {static_cast<float>(187), static_cast<float>(507), 32, 32}};
   uint8_t i = 0;
   for (auto &dwe : builds) {
-    auto dComp = registry.get<DwellingComp>(dwe.ent);
+    auto dComp = registry.get<DwellingComp>(townComp->buildings[dwe]);
     auto creatureId = dComp.creatures.back().first.back() + 2;
     auto textures = Global::defCache["CPRSMALL.def/0"];
     auto texture = textures[creatureId];
@@ -775,7 +782,7 @@ static void drawCres() {
     auto num = dComp.creatures.back().second;
     FreeTypeSys::setSize(13);
     FreeTypeSys::setColor(255, 255, 255, 255);
-    FreeTypeSys::drawCenter(posRect.x + 16, posRect.y + 40, num);
+    FreeTypeSys::drawCenter(posRect.x + 16, posRect.y + 29, num);
     i++;
   }
 }
@@ -923,7 +930,8 @@ static bool clickCres(uint8_t clickType) {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
-  auto builds = TownSys::townDweBuilds(level, townEnt);
+  auto buildSet = TownSys::townDweBuilds(level, townEnt);
+  std::vector<int8_t> builds(buildSet.begin(),buildSet.end());
   const SDL_FRect posRects[] = {
       // 第一行（i = 0, 1, 2）
       {static_cast<float>(22), static_cast<float>(459), 32, 32},
@@ -937,7 +945,8 @@ static bool clickCres(uint8_t clickType) {
       {static_cast<float>(187), static_cast<float>(507), 32, 32}};
   for (uint8_t i = 0; i < builds.size(); i++) {
     auto &dwe = builds[i];
-    auto dComp = registry.get<DwellingComp>(dwe.ent);
+    auto dweEnt=townComp->buildings[dwe];
+    auto dComp = registry.get<DwellingComp>(dweEnt);
     auto creatureId = dComp.creatures.back().first.back() + 2;
     posRect = posRects[i];
     posRect.x += leftUp.x;
@@ -945,7 +954,7 @@ static bool clickCres(uint8_t clickType) {
     if (SDL_PointInRectFloat(&point, &posRect)) {
       if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
         entt::entity srcEnt;
-        auto goalEnt = dwe.ent;
+        auto goalEnt = dweEnt;
         if (townComp->heroEnt[0].has_value()) {
           srcEnt = townComp->heroEnt[0].value();
         } else {
@@ -965,35 +974,6 @@ static bool clickCres(uint8_t clickType) {
                                   strPool[12 + creatureId]);
 
           FreeTypeSys::setColor(255, 255, 255, 255);
-          auto iv = TownSys::townDweInc(level, townEnt, dwe.bId);
-          uint32_t growth = 0;
-          for (uint8_t i = 0; i < iv.size(); i++) {
-            auto v = iv[i];
-            auto id = v.id;
-            auto subId = v.subId;
-            growth += v.num;
-            switch (id) {
-            case (uint8_t)Enum::DWEINCTYPE::BASE: {
-              auto str = strPool[3797] + u"+" + FreeTypeSys::str(v.num);
-              FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 40,
-                                      str);
-              break;
-            }
-            case (uint8_t)Enum::DWEINCTYPE::ARTIFACT: {
-              auto str = strPool[3797] + u"+" + FreeTypeSys::str(v.num);
-              FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 40,
-                                      str);
-              break;
-            }
-            case (uint8_t)Enum::DWEINCTYPE::BUILD: {
-              break;
-            }
-            default: {
-              break;
-            }
-            }
-          }
-
           auto texture = Global::defCache["TWCRPORT.def/0"][creatureId + 2];
           SDL_FRect posRect{leftUp.x + confirmbakW / 2 - texture->w / 2,
                             leftUp.y + 75, static_cast<float>(texture->w),

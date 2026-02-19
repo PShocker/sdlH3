@@ -1,7 +1,4 @@
 #include "Global.h"
-#include "Set/FactionSet.h"
-#include "Set/HeroSet.h"
-#include "Set/TerrainSet.h"
 #include "Comp/GateComp.h"
 #include "Comp/GrailComp.h"
 #include "Comp/HeroComp.h"
@@ -23,6 +20,9 @@
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_stdinc.h"
+#include "Set/FactionSet.h"
+#include "Set/HeroSet.h"
+#include "Set/TerrainSet.h"
 #include "Sys/gui/LevelUpSys.h"
 #include "Sys/gui/TavernSys.h"
 #include "Window/Window.h"
@@ -48,7 +48,7 @@ void loadPcx() {
         "ThCsPIK1.pcx", "ThCsCRS1.pcx", "ThCsGR1.pcx", "ThCsSWD1.pcx",
         "ThCsMON1.pcx", "ThCsCv1.pcx", "ThCsANG1.pcx", "ThCsPIK2.pcx",
         "ThCsCRS2.pcx", "ThCsGR2.pcx", "ThCsSWD2.pcx", "ThCsMON2.pcx",
-        "ThCsCV2.pcx", "ThCsANG2.pcx", "ThCsAng1.PCX", "TPMAGECS.pcx",
+        "ThCsCv2.pcx", "ThCsANG2.pcx", "ThCsAng1.PCX", "TPMAGECS.pcx",
         "TPMAGE.pcx", "VWorld.pcx", "univbldg.pcx", "TPCASNEU.pcx",
         "PUZZLOGO.pcx", "PUZCAS00.pcx", "PUZCAS01.pcx", "PUZCAS02.pcx",
         "PUZCAS03.pcx", "PUZCAS04.pcx", "PUZCAS05.pcx", "PUZCAS06.pcx",
@@ -417,8 +417,8 @@ void loadDef() {
         "tsbtns.def",         "TPTAV01.DEF",        "TPTAV02.DEF"};
     for (const auto &filePath : filePaths) {
       Def def("./Data/H3sprite.lod/" + filePath);
-      for (uint8_t j = 0; j < def.offset.size(); j++) {
-        Global::defCache[filePath + "/" + std::to_string(j)] = def.loadGroup(j);
+      for (auto &[k, v] : def.offset) {
+        Global::defCache[filePath + "/" + std::to_string(k)] = def.loadGroup(k);
       }
     }
   };

@@ -768,6 +768,9 @@ void World::enterDwe(entt::entity heroEnt, entt::entity goalEnt) {
   Global::goalEnt = goalEnt;
 
   Global::dweIndex = 0;
+  Global::dweGroup = {};
+  Global::dweFrameIndex = {};
+  Global::dweFrameTime = {};
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
@@ -818,6 +821,7 @@ void World::enterWarMachineFac(entt::entity heroEnt, entt::entity goalEnt) {
   Global::goalEnt = goalEnt;
 
   Global::dweIndex = 0;
+  Global::dweGroup.fill(2);
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
@@ -1407,8 +1411,7 @@ void World::enterCreature(std::pair<uint8_t, entt::entity> creHeroPair,
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
-void World::enterWarMachine(std::pair<uint8_t, uint16_t> crePair,
-                            uint8_t creType) {
+void World::enterWarMachine(uint16_t warMId, uint8_t warMType) {
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(WarMachineSys::run);
@@ -1418,8 +1421,8 @@ void World::enterWarMachine(std::pair<uint8_t, uint16_t> crePair,
   RMouseUpSys.push_back(WarMachineSys::rightMouseUp);
   keyUpSys.push_back(WarMachineSys::keyUp);
 
-  Global::creType = creType;
-  Global::crePair = crePair;
+  Global::creType = warMType;
+  Global::crePair = {warMId, 1};
   Global::creGroup = 2;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;

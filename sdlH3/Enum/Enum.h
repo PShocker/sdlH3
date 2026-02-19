@@ -338,6 +338,7 @@ struct Enum {
     MAGIC_RESISTANCE,      // 魔法抵抗
     DRAGON,                // 龙
     DRAGON_TWO_HEX_ATTACK, // 龙息
+    WAR_MACHINE,           // 战争机器
 
     // 特殊能力属性
     const_no_melee_penalty,     // 无近战惩罚
@@ -709,13 +710,12 @@ struct Enum {
   };
 
   enum ADVENTURE_BONUS_TYPE {
-   // 主要技能
+    // 主要技能
     ADVENTURE_PRIMARY_SKILL,
     // 士气和幸运
     ADVENTURE_MORALE,
     ADVENTURE_LUCK,
   };
-
 
   enum ARTIFACT_SLOT : uint8_t {
     HEAD,
@@ -1001,7 +1001,7 @@ struct Enum {
     ACTION_GET_HIT = 3,
     ACTION_DEFEND = 4,
     ACTION_ATTCK = 11,
-    ACTION_SHOOT_UP = 11,
+    ACTION_SHOOT_UP = 14,
     ACTION_START_MOVE = 20,
     ACTION_STOP_MOVE = 21,
   };

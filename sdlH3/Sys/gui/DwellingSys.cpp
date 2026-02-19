@@ -96,8 +96,6 @@ static void buy() {
       }
     }
     close();
-  } else {
-    World::enterConfirm(100, 100, ((uint8_t)Enum::SCNTYPE::MOD));
   }
 }
 
@@ -178,9 +176,9 @@ static void drawCreatures() {
     auto p = pos[i];
     auto id = creatures[i].first;
     auto defPath = CreatureSet::fullCreatures.at(id)->graphics.animation;
-    auto group = Global::dweGroup;
+    auto &group = Global::dweGroup[i];
     auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
-    auto index = Global::dweFrameIndex % textures.size();
+    auto index = Global::dweFrameIndex[i] % textures.size();
     auto colorType = Global::dweIndex == i ? 1 : 0;
     DwellingSys::drawCreatureBak(leftUp.x + p.x, leftUp.y + p.y, id, group,
                                  index, colorType);
@@ -302,7 +300,30 @@ static void drawCost() {
 }
 
 uint32_t DwellingSys::maxCount() {
+  auto &registry = World::registrys[World::level];
   auto creatures = cres();
+  auto creatureId = creatures[Global::dweIndex].first;
+  auto creatureNum = creatures[Global::dweIndex].second;
+  std::vector<std::pair<uint16_t, uint32_t>> *cres;
+  if (registry.all_of<HeroComp>(Global::heroEnt)) {
+    auto heroComp = &registry.get<HeroComp>(Global::heroEnt);
+    cres = &heroComp->creatures;
+  } else {
+    // townComp
+    auto townComp = &registry.get<TownComp>(Global::heroEnt);
+    cres = &townComp->garCreatures;
+  }
+  uint32_t r = 0;
+
+  for (auto [id, val] : creatures) {
+    if (val == 0 || id == creatureId) {
+      r = 1;
+    }
+  }
+  if (r == 0) {
+    return 0;
+  }
+
   auto id = creatures[Global::dweIndex].first;
   auto cost = CreatureSet::fullCreatures[id]->cost;
   uint32_t maxCount = UINT32_MAX;
@@ -333,9 +354,13 @@ static void drawSlider() {
 
 static void dweAnimate() {
   auto creatures = cres();
-  auto id = creatures.front().first;
-  CreatureSys::creAnimate(Global::dweFrameTime, Global::dweFrameIndex,
-                          Global::dweGroup, id);
+  for (uint8_t i = 0; i < creatures.size(); i++) {
+    auto &frameTime = Global::dweFrameTime[i];
+    auto &frameIndex = Global::dweFrameIndex[i];
+    auto &group = Global::dweGroup[i];
+    auto id = creatures[i].first;
+    CreatureSys::creAnimate(frameTime, frameIndex, group, id);
+  }
 }
 
 bool DwellingSys::run() {

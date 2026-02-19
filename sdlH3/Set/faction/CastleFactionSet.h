@@ -56,6 +56,7 @@ struct CastleFactionSet {
           .guildBackground = "TPMAGE.pcx",
           .townBackground = "TBCSBACK.pcx",
           .guildWindow = "TPMAGECS.pcx",
+          .hallBackground = "TPTHBKCS.pcx",
           .hallSlots =
               {
                   {
@@ -214,7 +215,7 @@ struct CastleFactionSet {
                       .z = 1,
                       .border = "TOCSH401.pcx",
                       .area = "TZCSH401.pcx",
-                      .icon = "ThCsHal3.pcx",
+                      .icon = "ThCsHal4.pcx",
                       .require =
                           {
                               Enum::BUILD_CASTLE,
@@ -597,7 +598,7 @@ struct CastleFactionSet {
                   {
                       .id = Enum::BUILD_SPECIAL_18,
                       .animation = "TBCSSPEC.def",
-                      .x = 553,
+                      .x = 533,
                       .y = 71,
                       .z = -4,
                       .border = "TOCSLT01.pcx",
@@ -642,13 +643,13 @@ struct CastleFactionSet {
                   },
                   {
                       .id = Enum::BUILD_SPECIAL_20,
-                      .animation = "TBCSSPEC.def",
-                      .x = 553,
-                      .y = 71,
-                      .z = -4,
-                      .border = "TOCSLT01.pcx",
-                      .area = "TZCSLT01.pcx",
-                      .icon = "ThCsLite.pcx",
+                      .animation = "TBCSEXT0.def",
+                      .x = 384,
+                      .y = 193,
+                      .z = -2,
+                      .border = "TOCSCAVM.pcx",
+                      .area = "TZCSCAVM.pcx",
+                      .icon = "ThCsCv2S.pcx",
                       .require = {},
                       .cost = {},
                       .income = {},
@@ -739,7 +740,7 @@ struct CastleFactionSet {
                       .z = -1,
                       .border = "TOCSGR1N.pcx",
                       .area = "TZCSGR1N.pcx",
-                      .icon = "ThCsGR1N.pcx",
+                      .icon = "ThCsGR1.pcx",
                       .require = {Enum::BUILD_DWELLING_LEVEL_4},
                       .cost = {},
                       .upgrades = std::nullopt,
@@ -753,7 +754,7 @@ struct CastleFactionSet {
                       .z = -1,
                       .border = "TOCSGR2N.pcx",
                       .area = "TZCSGR2N.pcx",
-                      .icon = "ThCsGR2N.pcx",
+                      .icon = "ThCsGR2.pcx",
                       .require = {},
                       .cost = {},
                       .upgrades = Enum::BUILD_DWELLING_LEVEL_3,
@@ -770,8 +771,16 @@ struct CastleFactionSet {
                       .icon = "ThCsGR1H.pcx",
                       .require = {},
                       .cost = {},
-                      .upgrades = std::nullopt,
+                      .upgrades = Enum::BUILD_DWELLING_UPGRADE_LEVEL_3,
                       .autoMode = false,
+                      .bonus =
+                          {
+                              {
+                                  .id = Enum::CREATURE_GROWTH,
+                                  .subId = 3,
+                                  .val = 3,
+                              },
+                          },
                   },
                   {
                       .id = Enum::BUILD_DWELLING_LEVEL_4,
@@ -845,7 +854,7 @@ struct CastleFactionSet {
                       .z = -1,
                       .border = "TOCSC101.pcx",
                       .area = "TZCSCAV1.pcx",
-                      .icon = "ThCsCAV1.pcx",
+                      .icon = "ThCsCv1.pcx",
                       .require = {Enum::BUILD_SPECIAL_20},
                       .cost = {},
                       .upgrades = std::nullopt,
@@ -859,7 +868,7 @@ struct CastleFactionSet {
                       .z = -1,
                       .border = "TOCSCAV2.pcx",
                       .area = "TZCSCAV2.pcx",
-                      .icon = "ThCsCAV2.pcx",
+                      .icon = "ThCsCv2.pcx",
                       .require = {},
                       .cost = {},
                       .upgrades = Enum::BUILD_DWELLING_LEVEL_6,
@@ -892,6 +901,46 @@ struct CastleFactionSet {
                       .cost = {},
                       .upgrades = Enum::BUILD_DWELLING_LEVEL_7,
                       .autoMode = false,
+                  },
+                  {
+                      .id = Enum::BUILD_SHIP,
+                      .animation = "TBCSBOAT.def",
+                      .x = 478,
+                      .y = 134,
+                      .z = -3,
+                  },
+                  {
+                      .id = Enum::BUILD_HORDE_UPGRADE_1,
+                  },
+                  {
+                      .id = Enum::BUILD_HORDE_UPGRADE_2,
+                  },
+                  {
+                      .id = Enum::BUILD_HORDE_UPGRADE_3,
+                      .animation = "TBCSHRD2.def",
+                      .x = 76,
+                      .y = 35,
+                      .z = -1,
+                      .border = "TOCSGR2H.pcx",
+                      .area = "TZCSGR2H.pcx",
+                      .require = {Enum::BUILD_DWELLING_UPGRADE_LEVEL_3},
+                      .upgrades = Enum::BUILD_HORDE_3,
+                      .autoMode = true,
+                  },
+                  {
+                      .id = Enum::BUILD_HORDE_UPGRADE_4,
+                  },
+                  {
+                      .id = Enum::BUILD_HORDE_UPGRADE_5,
+                  },
+                  {
+                      .id = Enum::BUILD_EXTRA_ANIMATE_1,
+                  },
+                  {
+                      .id = Enum::BUILD_EXTRA_ANIMATE_2,
+                  },
+                  {
+                      .id = Enum::BUILD_EXTRA_ANIMATE_3,
                   },
               },
   };

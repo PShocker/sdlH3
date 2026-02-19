@@ -83,8 +83,10 @@
 #include "Point/Point.h"
 #include "SDL3/SDL_rect.h"
 #include "Set/CreatureSet.h"
+#include "Set/FactionSet.h"
 #include "Set/HeroSet.h"
 #include "Set/SpellSet.h"
+#include "Set/StructSet.h"
 #include "Set/objects/DwellingSet.h"
 #include "World/World.h"
 #include "entt/entity/entity.hpp"
@@ -93,6 +95,7 @@
 #include <cstdint>
 #include <flat_map>
 #include <format>
+#include <map>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -132,6 +135,38 @@ HeroComp Ent::loadDefaultHeroComp(uint8_t hId) {
   heroComp.creatures.resize(7, {0xffff, 0});
   heroComp.artifacts.assign(19, 0xffff);
   return heroComp;
+}
+
+void Ent::fixBuild(uint8_t level, entt::entity townEnt) {
+  auto &registry = World::registrys[level];
+  auto &townComp = registry.get<TownComp>(townEnt);
+  auto factionBuild = FactionSet::fullFactions[townComp.id]->builds;
+  std::set<int8_t> buildSet;
+  for (auto build : factionBuild) {
+    if (build.autoMode == true) {
+      buildSet.insert(build.id);
+    }
+  }
+  for (auto &bId : buildSet) {
+    auto build = FactionSet::fullFactions[townComp.id]->builds.at(bId + 1);
+    bool upgrade_bool = true;
+    if (build.upgrades.has_value()) {
+      if (townComp.buildings.contains(build.upgrades.value())) {
+        upgrade_bool = true;
+      } else {
+        upgrade_bool = false;
+      }
+    }
+    bool require_bool = true;
+    for (auto r : build.require) {
+      if (!townComp.buildings.contains(r)) {
+        continue;
+      }
+    }
+    if (require_bool && upgrade_bool) {
+      townComp.buildings.insert({build.id, entt::null});
+    }
+  }
 }
 
 entt::entity Ent::loadBuild(uint8_t level, entt::entity townEnt,
@@ -280,6 +315,12 @@ entt::entity Ent::loadBuild(uint8_t level, entt::entity townEnt,
     registry.emplace<TavernComp>(ent);
     break;
   }
+  case Enum::BUILD_BLACKSMITH: {
+    ent = registry.create();
+    auto &wComp = registry.emplace<WarMachineFacComp>(ent);
+    wComp.warMachines = FactionSet::fullFactions[townId]->blacksmith;
+    break;
+  }
   default: {
     break;
   }
@@ -390,6 +431,7 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     hComp.spells = hero.spells;
     hComp.artifactsInBackpack = hero.artifactsInBackpack;
     hComp.artifacts = hero.artifacts;
+    hComp.artifacts.assign(19, 0xffff);
 
     if (!object.data.contains("heroDefaultPrimSkills")) {
       hComp.primSkills = hero.primSkills;
@@ -465,13 +507,17 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
       builds[i] = Ent::loadBuild(level, ent, i);
     }
     townComp->buildings = builds;
-
+    Ent::fixBuild(level, ent);
     texturePath = texturePath + "/" + std::to_string(playerIdComp->id);
     break;
   }
   case ObjectType::WAR_MACHINE_FACTORY: {
     auto wComp = &registry.emplace<WarMachineFacComp>(ent);
-    wComp->warMachines = {{0, 1}, {1, 1}, {2, 1}, {2, 1}};
+    wComp->warMachines = {
+        Enum::BALLISTA,
+        Enum::FIRST_AID_TENT,
+        Enum::AMMO_CART,
+    };
     break;
   }
   case ObjectType::CREATURE_GENERATOR1:
@@ -481,10 +527,6 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     auto dwellingComp = &registry.emplace<DwellingComp>(ent);
     dwellingComp->id = object.subId;
 
-    // auto creatures =
-    //     DwellingCfg::dweCreature[object.id -
-    //                              (uint8_t)ObjectType::CREATURE_GENERATOR1]
-    //         .at(object.subId);
     auto i = object.id - ObjectType::CREATURE_GENERATOR1;
     auto creatures = DwellingSet::fullDwellings[i]->at(object.subId).creatures;
     for (auto creature : creatures) {

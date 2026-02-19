@@ -161,22 +161,27 @@ void CreatureSys::creAnimate(uint64_t &creFrameTime, uint64_t &creFrameIndex,
       auto graphic = CreatureSet::fullCreatures[id]->graphics.animation;
 
       bool hasStartMove = Global::defCache.contains(graphic + "/20");
+      bool hasMove = Global::defCache.contains(graphic + "/0");
       if (hasStartMove) {
-        arr = {
-            Enum::ACTION_START_MOVE, Enum::ACTION_ATTCK,   Enum::ACTION_DEFEND,
-            Enum::ACTION_STAND,      Enum::ACTION_GET_HIT,
-        };
-      } else {
-        arr = {
-            Enum::ACTION_ATTCK,
-            Enum::ACTION_DEFEND,
-            Enum::ACTION_STAND,
-            Enum::ACTION_GET_HIT,
-        };
+        arr.push_back(Enum::ACTION_START_MOVE);
+      } else if (hasMove) {
+        arr.push_back(Enum::ACTION_MOVE);
       }
-      bool hasStoptMove = Global::defCache.contains(graphic + "/21");
+      bool hasShot = Global::defCache.contains(graphic + "/14");
+      if (hasShot) {
+        arr.push_back(Enum::ACTION_SHOOT_UP);
+      }
+      bool hasAtk = Global::defCache.contains(graphic + "/11");
+      if (hasAtk) {
+        arr.push_back(Enum::ACTION_ATTCK);
+      }
+      bool hasStand = Global::defCache.contains(graphic + "/2");
+      if (hasStand) {
+        arr.push_back(Enum::ACTION_STAND);
+      }
       switch (group) {
       case Enum::ACTION_MOVE: {
+        bool hasStoptMove = Global::defCache.contains(graphic + "/21");
         if (hasStoptMove) {
           arr = {
               Enum::ACTION_MOVE,

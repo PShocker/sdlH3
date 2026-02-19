@@ -19,5 +19,6 @@ struct Ent {
   static void load(H3mData &data);
   static entt::entity loadBuild(uint8_t level, entt::entity townEnt,
                                 uint8_t buildId);
+  static void fixBuild(uint8_t level, entt::entity townEnt);
   static int64_t loadZorder(int32_t i, H3mObject &object);
 };

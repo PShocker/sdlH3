@@ -5,6 +5,7 @@
 #include "Pal/PlayerPal.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_mouse.h"
+#include "Set/CreatureSet.h"
 #include "Set/HeroSet.h"
 #include "Sys/AudioSys.h"
 #include "Sys/FreeTypeSys.h"
@@ -42,6 +43,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
   // init Set
   HeroSet::init();
+  CreatureSet::init();
 
   H3mData data("./Maps/Untitled.h3m");
   data.init();

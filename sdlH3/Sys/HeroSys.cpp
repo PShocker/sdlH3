@@ -568,6 +568,7 @@ static void handleMine(entt::entity heroEnt, entt::entity goalEnt) {
 
 static void handleWarMachine(entt::entity heroEnt, entt::entity goalEnt) {
   auto playerId = World::registrys[World::level].get<PlayerIdComp>(heroEnt).id;
+  Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
   Global::goalIndex = 0;
   auto count = WarMachineFacSys::maxCount();

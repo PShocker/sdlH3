@@ -89,12 +89,12 @@ static void draw() {
   auto dwes = TownSys::townDweBuilds(level, townEnt);
   SDL_FRect *slotPtr = slot7;
   uint8_t spBid;
-  for (auto d : dwes) {
-    if (d.bId == Enum::BUILD_SPECIAL_10 || d.bId == Enum::BUILD_SPECIAL_18 ||
-        d.bId == Enum::BUILD_SPECIAL_19 || d.bId == Enum::BUILD_SPECIAL_20 ||
-        d.bId == Enum::BUILD_SPECIAL_21) {
+  for (auto d :
+       {Enum::BUILD_SPECIAL_10, Enum::BUILD_SPECIAL_18, Enum::BUILD_SPECIAL_19,
+        Enum::BUILD_SPECIAL_20, Enum::BUILD_SPECIAL_21}) {
+    if (dwes.contains(d)) {
       slotPtr = slot8;
-      spBid = d.bId;
+      spBid = d;
       break;
     }
   }
@@ -171,11 +171,7 @@ static void draw() {
                                   group, index, 0xff);
 
     if (hasBuild) {
-      auto iv = TownSys::townDweInc(level, townEnt, bId);
-      uint32_t growth = 0;
-      for (auto v : iv) {
-        growth += v.num;
-      }
+      auto growth = TownSys::townDweInc(level, townEnt, bId);
       FreeTypeSys::drawLeft(posRect2.x + 380, posRect2.y + 106,
                             growth); // growth
 
@@ -193,11 +189,11 @@ static void fortAnimate() {
 
   uint8_t spBid = 0;
   auto dwes = TownSys::townDweBuilds(level, townEnt);
-  for (auto d : dwes) {
-    if (d.bId == Enum::BUILD_SPECIAL_10 || d.bId == Enum::BUILD_SPECIAL_18 ||
-        d.bId == Enum::BUILD_SPECIAL_19 || d.bId == Enum::BUILD_SPECIAL_20 ||
-        d.bId == Enum::BUILD_SPECIAL_21) {
-      spBid = d.bId;
+  for (auto d :
+       {Enum::BUILD_SPECIAL_10, Enum::BUILD_SPECIAL_18, Enum::BUILD_SPECIAL_19,
+        Enum::BUILD_SPECIAL_20, Enum::BUILD_SPECIAL_21}) {
+    if (dwes.contains(d)) {
+      spBid = d;
       break;
     }
   }
@@ -250,8 +246,9 @@ static bool clickSlot(uint8_t clickType) {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
-  auto dweSize = TownSys::townDweBuilds(level, townEnt).size();
   auto dwes = TownSys::townDweBuilds(level, townEnt);
+  std::vector<int8_t> v(dwes.begin(), dwes.end());
+  auto dweSize = v.size();
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   SDL_FRect *slotPtr;
   if (dweSize == 7) {
@@ -264,9 +261,10 @@ static bool clickSlot(uint8_t clickType) {
                slotPtr[i].h};
     if (SDL_PointInRectFloat(&point, &posRect)) {
       if (townComp->heroEnt[0].has_value()) {
-        World::enterDwe(townComp->heroEnt[0].value(), dwes[i].ent);
+        World::enterDwe(townComp->heroEnt[0].value(),
+                        townComp->buildings[v[i]]);
       } else {
-        World::enterDwe(entt::null, dwes[i].ent);
+        World::enterDwe(entt::null, townComp->buildings[v[i]]);
       }
       return true;
     }
