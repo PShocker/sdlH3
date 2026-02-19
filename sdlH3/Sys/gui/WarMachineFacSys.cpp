@@ -151,7 +151,9 @@ void WarMachineFacSys::drawMachineBak(float x, float y, uint16_t id,
   } else {
     SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
   }
-  SDL_RenderRect(Window::renderer, &posRect);
+  if (colorType != 0xff) {
+    SDL_RenderRect(Window::renderer, &posRect);
+  }
   drawWarMachine(x, y, id, group, index, CreatureSet::OV_COLOR_TRANSPARENCY);
 }
 
@@ -248,9 +250,9 @@ uint32_t WarMachineFacSys::maxCount() {
     maxCount = std::min(r / cost[i], maxCount);
   }
   uint32_t count = 1;
-
   return std::min(maxCount, count);
 }
+
 static void drawSlider() {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
@@ -325,8 +327,10 @@ static bool clickMachine(uint8_t clickType) {
         if (Global::dweIndex == i) {
           creType = (uint8_t)Enum::CRETYPE::MOD_DWE;
           World::enterWarMachine(wComp->warMachines[i], creType);
+        } else {
+          Global::dweIndex = i;
+          toMax();
         }
-        Global::dweIndex = i;
       } else {
         creType = (uint8_t)Enum::CRETYPE::POP_DWE;
         World::enterWarMachine(wComp->warMachines[i], creType);

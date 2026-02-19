@@ -4,6 +4,7 @@
 #include <any>
 #include <array>
 #include <cstdint>
+#include <flat_map>
 #include <map>
 #include <set>
 #include <string>
@@ -57,7 +58,7 @@ struct CreatureSetI {
   CreatureSetGraphics graphics;
   CreatureSetSound sounds;
   CreatureSetAttribute attribute;
-  std::map<uint8_t, std::any> abilities;
+  std::flat_map<uint8_t, std::any> abilities;
   uint32_t growth;
   uint32_t experience;
   std::array<uint32_t, 7> cost;

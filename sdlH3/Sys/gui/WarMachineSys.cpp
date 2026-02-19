@@ -1,14 +1,15 @@
 #include "WarMachineSys.h"
 #include "AdvMapSys.h"
 
-
 #include "Comp/HeroComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "Set/CreatureSet.h"
 #include "Sys/FreeTypeSys.h"
+#include "Sys/gui/CreatureSys.h"
 #include "WarMachineFacSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
@@ -83,15 +84,16 @@ static void drawBackGround() {
 }
 
 static void drawMachine() {
-  // SDL_FRect posRect;
-  // SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
-  //                   static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
-  // auto id = Global::crePair.first;
-  // auto group = Global::creGroup;
-  // auto defPath = WarMachineCfg::warMachineGraphics.at(id);
-  // auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
-  // WarMachineFacSys::drawMachineBak(leftUp.x + 20, leftUp.y + 47, id, group,
-  //                                  Global::creFrameIndex % textures.size(), 0);
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
+                    static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
+  auto id = Global::crePair.first;
+  auto group = Global::creGroup;
+  auto defPath = CreatureSet::fullCreatures[id]->graphics.animation;
+  auto textures = Global::defCache[defPath + "/" + std::to_string(group)];
+  WarMachineFacSys::drawMachineBak(leftUp.x + 20, leftUp.y + 47, id, group,
+                                   Global::creFrameIndex % textures.size(),
+                                   0xff);
 }
 
 static void drawButton() {
@@ -105,7 +107,8 @@ static void drawButton() {
 }
 
 bool WarMachineSys::run() {
-
+  CreatureSys::creAnimate(Global::creFrameTime, Global::creFrameIndex,
+                          Global::creGroup, Global::crePair.first);
   drawBackGround();
   drawMachine();
   drawButton();

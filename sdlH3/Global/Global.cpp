@@ -30,8 +30,10 @@
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
+#include <flat_map>
 #include <map>
 #include <optional>
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -415,6 +417,7 @@ void loadDef() {
         "hsbtns4.DEF",        "hsbtns2.DEF",        "hsbtns6.DEF",
         "hsbtns7.DEF",        "hsbtns8.DEF",        "hsbtns9.DEF",
         "tsbtns.def",         "TPTAV01.DEF",        "TPTAV02.DEF"};
+
     for (const auto &filePath : filePaths) {
       Def def("./Data/H3sprite.lod/" + filePath);
       for (auto &[k, v] : def.offset) {
@@ -803,8 +806,7 @@ void Global::startGame() {
 
     Global::herosIndex.fill(0xff);
     Global::townsIndex.fill(0xffff);
-
-    std::map<uint32_t, entt::entity> heroMap[2][8];
+    std::flat_map<uint32_t, entt::entity> heroMap[2][8];
     for (auto i : {0, 1}) {
       auto registry = &World::registrys[i];
       for (auto ent : registry->view<HeroComp, ObjectComp, PlayerIdComp>()) {

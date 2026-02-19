@@ -3,6 +3,7 @@
 #include "Set/StructSet.h"
 #include <cstddef>
 #include <cstdint>
+#include <flat_map>
 #include <map>
 #include <vector>
 
@@ -368,7 +369,7 @@ struct CastleCreatureSet {
                   {
                       {Enum::const_raises_morale, 1},
                       {Enum::const_hate,
-                       std::map<uint16_t, float>{
+                       std::flat_map<uint16_t, float>{
                            {Enum::DEVIL, 0.5},
                            {Enum::ARCH_DEVIL, 0.5},
                        }},
@@ -406,7 +407,7 @@ struct CastleCreatureSet {
                   {
                       {Enum::const_raises_morale, 1},
                       {Enum::const_hate,
-                       std::map<uint16_t, float>{
+                       std::flat_map<uint16_t, float>{
                            {Enum::DEVIL, 0.5},
                            {Enum::ARCH_DEVIL, 0.5},
                        }},

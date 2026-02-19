@@ -5,8 +5,8 @@
 #include "Window/Window.h"
 #include <SDL3/SDL.h>
 #include <cstdint>
+#include <flat_map>
 #include <ft2build.h>
-#include <map>
 #include <ranges>
 #include <string>
 #include <tuple>
@@ -18,7 +18,7 @@ static FT_Face face = nullptr;
 static uint8_t size;
 static SDL_Color color;
 
-static std::map<
+static std::flat_map<
     std::tuple<char16_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t>,
     std::tuple<float, int, SDL_Texture *>>
     tCache;

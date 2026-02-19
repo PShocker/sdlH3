@@ -772,6 +772,8 @@ void World::enterDwe(entt::entity heroEnt, entt::entity goalEnt) {
   Global::dweFrameIndex = {};
   Global::dweFrameTime = {};
 
+  Global::dweSliderNum = DwellingSys::maxCount();
+
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
@@ -822,6 +824,8 @@ void World::enterWarMachineFac(entt::entity heroEnt, entt::entity goalEnt) {
 
   Global::dweIndex = 0;
   Global::dweGroup.fill(2);
+
+  Global::dweSliderNum = WarMachineFacSys::maxCount();
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
@@ -1388,6 +1392,7 @@ void World::enterCreature(std::pair<uint8_t, uint16_t> crePair,
 
   Global::creFrameIndex = 0;
   Global::creFrameTime = 0;
+  Global::creGroup = 2;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
@@ -1407,6 +1412,10 @@ void World::enterCreature(std::pair<uint8_t, entt::entity> creHeroPair,
   Global::creType = creType;
   Global::crePair = crePair;
   Global::creHeroPair = creHeroPair;
+
+  Global::creFrameIndex = 0;
+  Global::creFrameTime = 0;
+  Global::creGroup = 2;
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }

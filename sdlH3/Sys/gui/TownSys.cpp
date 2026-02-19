@@ -295,18 +295,24 @@ std::u16string TownSys::townName(uint8_t lvl, entt::entity townEnt) {
   return str;
 }
 
-std::array<uint16_t, 7> TownSys::townInCome(uint8_t lvl, entt::entity townEnt) {
-  std::array<uint16_t, 7> r;
-  r.fill(0);
+std::array<uint32_t, 7> TownSys::townInCome(uint8_t lvl, entt::entity townEnt) {
+  std::array<uint32_t, 7> r = {};
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto townId = townComp->id;
   auto builds = townUpGradeBuild(lvl, townEnt);
   for (const auto bId : builds) {
-    // auto income = FactionSet::fullFactions[townComp->id]->builds[bId].income;
-    // for (auto i = 0; i < 7; ++i) {
-    //   r[i] = r[i] + income[i];
-    // }
+    auto income = FactionSet::fullFactions[townComp->id]->builds[bId].income;
+    for (auto i : income) {
+      if (i.frequency != 1) {
+        continue;
+      }
+      auto minVal = i.minVal;
+      auto maxVal = i.maxVal;
+      std::uniform_int_distribution<uint32_t> dist(minVal, maxVal);
+      auto val = dist(Global::gen);
+      r[i.id] += val;
+    }
   }
   return r;
 }
@@ -931,7 +937,7 @@ static bool clickCres(uint8_t clickType) {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto buildSet = TownSys::townDweBuilds(level, townEnt);
-  std::vector<int8_t> builds(buildSet.begin(),buildSet.end());
+  std::vector<int8_t> builds(buildSet.begin(), buildSet.end());
   const SDL_FRect posRects[] = {
       // 第一行（i = 0, 1, 2）
       {static_cast<float>(22), static_cast<float>(459), 32, 32},
@@ -945,7 +951,7 @@ static bool clickCres(uint8_t clickType) {
       {static_cast<float>(187), static_cast<float>(507), 32, 32}};
   for (uint8_t i = 0; i < builds.size(); i++) {
     auto &dwe = builds[i];
-    auto dweEnt=townComp->buildings[dwe];
+    auto dweEnt = townComp->buildings[dwe];
     auto dComp = registry.get<DwellingComp>(dweEnt);
     auto creatureId = dComp.creatures.back().first.back() + 2;
     posRect = posRects[i];

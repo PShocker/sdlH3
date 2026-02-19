@@ -891,6 +891,7 @@ static void clickBackPage() {
 
   Global::artPageIndex[0] += ArtifactsOfHeroSys::clickPage(
       heroComp, leftUp.x, leftUp.y, Global::artPageIndex[0]);
+  HeroScrSys::heroArtifactUpdate(*heroComp);
 }
 
 bool HeroScrSys::leftMouseUp(float x, float y) {
@@ -1006,7 +1007,7 @@ int32_t HeroScrSys::heroPrim(HeroComp &hComp, uint8_t i) {
   for (auto it = range.first; it != range.second; ++it) {
     ArtifactBonus &bonus = it->second;
     // 处理每个 bonus
-    if (bonus.subType == i + Enum::PRIMARY_SKILL_ATTACK) {
+    if (bonus.subType == (i + Enum::PRIMARY_SKILL_ATTACK)) {
       sum += bonus.val;
     }
   }
@@ -1108,6 +1109,19 @@ int32_t HeroScrSys::heroSight(HeroComp &hComp) {
     }
   }
   return r;
+}
+
+void HeroScrSys::heroArtifactUpdate(HeroComp &hComp) {
+  hComp.artifactBonus.clear();
+  for (auto artifact : hComp.artifacts) {
+    if (artifact == 0xffff) {
+      continue;
+    }
+    auto aSet = ArtifactSet::artifacts[artifact];
+    for (auto &bonus : aSet.bonus) {
+      hComp.artifactBonus.insert({bonus.type, bonus});
+    }
+  }
 }
 
 void HeroScrSys::showResConfirm(uint8_t clickType, uint16_t i) {

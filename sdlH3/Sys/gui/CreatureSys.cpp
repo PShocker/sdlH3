@@ -154,7 +154,7 @@ void CreatureSys::creAnimate(uint64_t &creFrameTime, uint64_t &creFrameIndex,
     auto group = creGroup;
 
     auto graphic = CreatureSet::fullCreatures[id]->graphics.animation;
-    auto textures = Global::defCache[graphic + "/" + std::to_string(group)];
+    auto textures = Global::defCache.at(graphic + "/" + std::to_string(group));
     if (creFrameIndex >= textures.size()) {
       creFrameIndex = 0;
       std::vector<uint8_t> arr;

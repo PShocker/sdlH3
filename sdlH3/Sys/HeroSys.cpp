@@ -30,6 +30,7 @@
 #include "Set/ObjectSet.h"
 #include "Set/StructSet.h"
 #include "Set/TerrainSet.h"
+#include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/CameraSys.h"
 #include "Sys/gui/CursorSys.h"
 #include "Sys/gui/DwellingSys.h"
@@ -552,6 +553,7 @@ static void handleTown(entt::entity heroEnt, entt::entity goalEnt) {
   heroComp->curEnt = goalEnt;
   auto &townComp = World::registrys[World::level].get<TownComp>(goalEnt);
   townComp.heroEnt[1] = heroEnt;
+  AdvMapSys::townFocus(goalEnt, World::level);
   World::enterTownScrn(World::level, goalEnt, (uint8_t)Enum::SCNTYPE::MOD);
 }
 
@@ -572,11 +574,6 @@ static void handleWarMachine(entt::entity heroEnt, entt::entity goalEnt) {
   Global::goalEnt = goalEnt;
   Global::goalIndex = 0;
   auto count = WarMachineFacSys::maxCount();
-  if (count >= 1) {
-    Global::dweSliderNum = 1;
-  } else {
-    Global::dweSliderNum = 0;
-  }
   World::enterWarMachineFac(heroEnt, goalEnt);
 }
 
@@ -588,12 +585,6 @@ static void handleCreatureGentrator(entt::entity heroEnt,
   World::registrys[World::level].get<PlayerIdComp>(goalEnt).id = playerId;
   Global::goalEnt = goalEnt;
   Global::goalIndex = 0;
-  auto count = DwellingSys::maxCount();
-  if (count >= 1) {
-    Global::dweSliderNum = 1;
-  } else {
-    Global::dweSliderNum = 0;
-  }
   World::enterDwe(heroEnt, goalEnt);
 }
 

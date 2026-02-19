@@ -75,7 +75,8 @@ static void buy() {
     cres = &heroComp->creatures;
   } else {
     // townComp
-    auto townComp = &registry.get<TownComp>(Global::heroEnt);
+    auto [lvl, townEnt] = Global::townScnPair;
+    auto townComp = &registry.get<TownComp>(townEnt);
     cres = &townComp->garCreatures;
   }
   int8_t r = -1;
@@ -267,7 +268,7 @@ static void drawCost() {
   auto creatures = cres();
   auto id = creatures[Global::dweIndex].first;
   auto cost = CreatureSet::fullCreatures[id]->cost;
-  std::vector<std::pair<uint8_t, uint8_t>> costVec;
+  std::vector<std::pair<uint32_t, uint32_t>> costVec;
   for (int8_t i = cost.size() - 1; i >= 0; i--) {
     if (cost[i] != 0) {
       costVec.push_back({i, cost[i]});
@@ -310,7 +311,8 @@ uint32_t DwellingSys::maxCount() {
     cres = &heroComp->creatures;
   } else {
     // townComp
-    auto townComp = &registry.get<TownComp>(Global::heroEnt);
+    auto [lvl, townEnt] = Global::townScnPair;
+    auto townComp = &registry.get<TownComp>(townEnt);
     cres = &townComp->garCreatures;
   }
   uint32_t r = 0;
@@ -412,6 +414,7 @@ static bool clickCre(uint8_t clickType) {
           World::enterCreature(cre, (uint8_t)Enum::CRETYPE::MOD_DWE);
         } else {
           Global::dweIndex = i;
+          toMax();
         }
       } else {
         auto cre = creatures[i];
