@@ -206,7 +206,7 @@ uint32_t TownSys::townDweInc(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
   auto townComp = &registry.get<TownComp>(townEnt);
   auto upGradeBuild = townUpGradeBuild(lvl, townEnt);
   for (auto k : upGradeBuild) {
-    auto buildI = FactionSet::fullFactions[townComp->id]->builds.at(k);
+    auto buildI = FactionSet::fullFactions[townComp->id]->builds.at(k + 1);
     for (auto &bonus : buildI.bonus) {
       if (bonus.id == Enum::CREATURE_GROWTH) {
         if (dweLevel == bonus.subId) {
@@ -302,7 +302,8 @@ std::array<uint32_t, 7> TownSys::townInCome(uint8_t lvl, entt::entity townEnt) {
   auto townId = townComp->id;
   auto builds = townUpGradeBuild(lvl, townEnt);
   for (const auto bId : builds) {
-    auto income = FactionSet::fullFactions[townComp->id]->builds[bId].income;
+    auto income =
+        FactionSet::fullFactions[townComp->id]->builds[bId + 1].income;
     for (auto i : income) {
       if (i.frequency != 1) {
         continue;
@@ -680,70 +681,66 @@ static void drawResbar() {
 
 static void drawBottomInfo() {
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
-  auto funcPtr = topFunc.target<bool (*)()>();
-  auto top = (funcPtr && *topFunc.target<bool (*)()>() == TownSys::run);
-  if (top) {
-    SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
-                      (Global::viewPort.h - 600) / 2};
-    SDL_FRect posRect;
-    auto [level, townEnt] = Global::townScnPair;
-    auto &registry = World::registrys[level];
-    auto townComp = &registry.get<TownComp>(townEnt);
-    SDL_FPoint point = {Window::mouseX, Window::mouseY};
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 600) / 2};
+  SDL_FRect posRect;
+  auto [level, townEnt] = Global::townScnPair;
+  auto &registry = World::registrys[level];
+  auto townComp = &registry.get<TownComp>(townEnt);
+  SDL_FPoint point = {Window::mouseX, Window::mouseY};
 
-    FreeTypeSys::setSize(13);
-    FreeTypeSys::setColor(255, 255, 255, 255);
-    auto strPool = *Lang::strPool[Global::langIndex];
-    std::u16string s = u"";
-    for (auto i = 0; i <= 1; i++) {
-      std::vector<std::pair<uint16_t, uint32_t>> *creature;
-      if (townComp->heroEnt[i].has_value()) {
-        auto heroEnt = townComp->heroEnt[i].value();
-        auto heroComp = &registry.get<HeroComp>(heroEnt);
-        creature = &heroComp->creatures;
-        posRect = {leftUp.x + 242, leftUp.y + 387 + i * 96, 58, 64};
-        if (SDL_PointInRectFloat(&point, &posRect)) {
-          auto heroName = strPool[1262 + heroComp->portrait];
-          s += strPool[2862] + heroName + u"(" + strPool[2883 + i] + u")";
-          break;
-        }
-      } else if (i == 0) {
-        creature = &townComp->garCreatures;
+  FreeTypeSys::setSize(13);
+  FreeTypeSys::setColor(255, 255, 255, 255);
+  auto strPool = *Lang::strPool[Global::langIndex];
+  std::u16string s = u"";
+  for (auto i = 0; i <= 1; i++) {
+    std::vector<std::pair<uint16_t, uint32_t>> *creature;
+    if (townComp->heroEnt[i].has_value()) {
+      auto heroEnt = townComp->heroEnt[i].value();
+      auto heroComp = &registry.get<HeroComp>(heroEnt);
+      creature = &heroComp->creatures;
+      posRect = {leftUp.x + 242, leftUp.y + 387 + i * 96, 58, 64};
+      if (SDL_PointInRectFloat(&point, &posRect)) {
+        auto heroName = strPool[1262 + heroComp->portrait];
+        s += strPool[2862] + heroName + u"(" + strPool[2883 + i] + u")";
+        break;
       }
-      for (uint8_t m = 0; m < creature->size(); m++) {
-        auto [id, count] = creature->at(m);
-        posRect = {leftUp.x + 304 + m * 62, leftUp.y + 387 + i * 96, 58, 64};
-        if (SDL_PointInRectFloat(&point, &posRect)) {
-          if (Global::splitOn) {
-            auto *crePtr = &creature->at(m);
-            if (Global::splitCre[0]->first == id ||
-                count == 0 && crePtr != Global::splitCre[0]) {
-              s = strPool[2868];
-            } else {
-              s = strPool[2862];
-            }
+    } else if (i == 0) {
+      creature = &townComp->garCreatures;
+    }
+    for (uint8_t m = 0; m < creature->size(); m++) {
+      auto [id, count] = creature->at(m);
+      posRect = {leftUp.x + 304 + m * 62, leftUp.y + 387 + i * 96, 58, 64};
+      if (SDL_PointInRectFloat(&point, &posRect)) {
+        if (Global::splitOn) {
+          auto *crePtr = &creature->at(m);
+          if (Global::splitCre[0]->first == id ||
+              count == 0 && crePtr != Global::splitCre[0]) {
+            s = strPool[2868];
           } else {
             s = strPool[2862];
           }
+        } else {
+          s = strPool[2862];
         }
       }
     }
+  }
 
-    auto hLevel = hallLevel(level, townEnt);
-    posRect = {leftUp.x + 80, leftUp.y + 413, 38, 38};
+  auto hLevel = hallLevel(level, townEnt);
+  posRect = {leftUp.x + 80, leftUp.y + 413, 38, 38};
+  if (SDL_PointInRectFloat(&point, &posRect)) {
+    s = strPool[2862];
+  }
+  auto fLevel = TownSys::fortLevel(level, townEnt);
+  if (fLevel != 0xff) {
+    posRect = {leftUp.x + 122, leftUp.y + 413, 38, 38};
     if (SDL_PointInRectFloat(&point, &posRect)) {
       s = strPool[2862];
     }
-    auto fLevel = TownSys::fortLevel(level, townEnt);
-    if (fLevel != 0xff) {
-      posRect = {leftUp.x + 122, leftUp.y + 413, 38, 38};
-      if (SDL_PointInRectFloat(&point, &posRect)) {
-        s = strPool[2862];
-      }
-    }
-
-    FreeTypeSys::drawCenter(leftUp.x + 400, leftUp.y + 554, s);
   }
+
+  FreeTypeSys::drawCenter(leftUp.x + 400, leftUp.y + 554, s);
 }
 static void drawTownList() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,

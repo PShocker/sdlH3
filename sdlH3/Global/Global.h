@@ -185,6 +185,8 @@ struct Global {
   static inline std::vector<Audio> audioData;
   static inline SDL_AudioStream *audio;
 
+  static inline SDL_Texture *maskTexture;
+
   static inline std::flat_map<std::string, std::vector<SDL_Texture *>> pcxCache;
   static inline std::flat_map<std::string, std::vector<SDL_Texture *>> defCache;
   static inline std::flat_map<std::string, std::vector<uint8_t>> pcmCache;

@@ -621,182 +621,178 @@ static void drawBottomInfo() {
   if (Global::IMEText.has_value()) {
     return;
   }
-  if (Global::cursorType == (uint8_t)Enum::CURSOR::ADVENTURE ||
-      Global::cursorType == (uint8_t)Enum::CURSOR::FADE) {
-    if (Window::mouseX > Global::viewPort.w - 199 ||
-        Window::mouseY > Global::viewPort.h - 47) {
-      auto v = buttonInfo();
-      return;
-    }
-    if (Window::mouseX + Global::viewPort.x < 0 ||
-        Window::mouseY + Global::viewPort.y < 0 ||
-        Window::mouseX + Global::viewPort.x >= Global::mapSize * 32 ||
-        Window::mouseY + Global::viewPort.y >= Global::mapSize * 32) {
-      return;
-    }
-    SDL_FPoint point = {Window::mouseX + Global::viewPort.x,
-                        Window::mouseY + Global::viewPort.y};
-    auto p = CursorSys::goalPoint(point);
-    uint8_t goalX = p.x;
-    uint8_t goalY = p.y;
+  if (Window::mouseX > Global::viewPort.w - 199 ||
+      Window::mouseY > Global::viewPort.h - 47) {
+    auto v = buttonInfo();
+    return;
+  }
+  if (Window::mouseX + Global::viewPort.x < 0 ||
+      Window::mouseY + Global::viewPort.y < 0 ||
+      Window::mouseX + Global::viewPort.x >= Global::mapSize * 32 ||
+      Window::mouseY + Global::viewPort.y >= Global::mapSize * 32) {
+    return;
+  }
+  SDL_FPoint point = {Window::mouseX + Global::viewPort.x,
+                      Window::mouseY + Global::viewPort.y};
+  auto p = CursorSys::goalPoint(point);
+  uint8_t goalX = p.x;
+  uint8_t goalY = p.y;
 
-    FreeTypeSys::setSize(13);
-    FreeTypeSys::setColor(255, 255, 255, 255);
-    auto strPool = *Lang::strPool[Global::langIndex];
-    std::u16string s = u"";
-    auto [index, ent] =
-        CursorSys::choose(false, Window::mouseX, Window::mouseY);
-    if (ent != entt::null) {
-      auto objectComp = World::registrys[World::level].get<ObjectComp>(ent);
-      switch (objectComp.type) {
-      case (uint8_t)ObjectType::CREATURE_GENERATOR1: {
-        auto &dComp = World::registrys[World::level].get<DwellingComp>(ent);
-        s = strPool[2247 + dComp.id];
-        break;
+  FreeTypeSys::setSize(13);
+  FreeTypeSys::setColor(255, 255, 255, 255);
+  auto strPool = *Lang::strPool[Global::langIndex];
+  std::u16string s = u"";
+  auto [index, ent] = CursorSys::choose(false, Window::mouseX, Window::mouseY);
+  if (ent != entt::null) {
+    auto objectComp = World::registrys[World::level].get<ObjectComp>(ent);
+    switch (objectComp.type) {
+    case (uint8_t)ObjectType::CREATURE_GENERATOR1: {
+      auto &dComp = World::registrys[World::level].get<DwellingComp>(ent);
+      s = strPool[2247 + dComp.id];
+      break;
+    }
+    case (uint8_t)ObjectType::CREATURE_GENERATOR4: {
+      auto &dComp = World::registrys[World::level].get<DwellingComp>(ent);
+      s = strPool[2327 + dComp.id];
+      break;
+    }
+    case (uint8_t)ObjectType::MINE: {
+      auto &mComp = World::registrys[World::level].get<MineComp>(ent);
+      s = strPool[918 + mComp.id];
+      break;
+    }
+    case (uint8_t)ObjectType::HERO: {
+      auto &hComp = World::registrys[World::level].get<HeroComp>(ent);
+      s = strPool[1258 + hComp.portrait];
+      break;
+    }
+    case (uint8_t)ObjectType::TOWN: {
+      auto &tComp = World::registrys[World::level].get<TownComp>(ent);
+      s = strPool[774 + tComp.id * 16 + tComp.nameIndex];
+      break;
+    }
+    default: {
+      s = strPool[926 + objectComp.type];
+      break;
+    }
+    }
+    // 判断是否访问
+    switch (objectComp.type) {
+    case (uint8_t)ObjectType::OBELISK:
+    case (uint8_t)ObjectType::WATER_WHEEL:
+    case (uint8_t)ObjectType::WINDMILL: {
+      if (Global::advVisted[Global::playerId][World::level].contains(ent)) {
+        s += u"(" + strPool[2329] + u")";
       }
-      case (uint8_t)ObjectType::CREATURE_GENERATOR4: {
-        auto &dComp = World::registrys[World::level].get<DwellingComp>(ent);
-        s = strPool[2327 + dComp.id];
-        break;
-      }
-      case (uint8_t)ObjectType::MINE: {
-        auto &mComp = World::registrys[World::level].get<MineComp>(ent);
-        s = strPool[918 + mComp.id];
-        break;
-      }
-      case (uint8_t)ObjectType::HERO: {
-        auto &hComp = World::registrys[World::level].get<HeroComp>(ent);
-        s = strPool[1258 + hComp.portrait];
-        break;
-      }
-      case (uint8_t)ObjectType::TOWN: {
-        auto &tComp = World::registrys[World::level].get<TownComp>(ent);
-        s = strPool[774 + tComp.id * 16 + tComp.nameIndex];
-        break;
-      }
-      default: {
-        s = strPool[926 + objectComp.type];
-        break;
-      }
-      }
-      // 判断是否访问
-      switch (objectComp.type) {
-      case (uint8_t)ObjectType::OBELISK:
-      case (uint8_t)ObjectType::WATER_WHEEL:
-      case (uint8_t)ObjectType::WINDMILL: {
-        if (Global::advVisted[Global::playerId][World::level].contains(ent)) {
+      break;
+    }
+    case (uint8_t)ObjectType::IDOL_OF_FORTUNE:
+    case (uint8_t)ObjectType::TEMPLE:
+    case (uint8_t)ObjectType::STABLES:
+    case (uint8_t)ObjectType::MAGIC_WELL: {
+      if (Global::herosIndex[Global::playerId] < 8) {
+        auto &[level, heroEnt] =
+            Global::heros[Global::playerId]
+                         [Global::herosIndex[Global::playerId]];
+        auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
+        if (hComp.visited.contains(objectComp.type)) {
           s += u"(" + strPool[2329] + u")";
         }
-        break;
       }
-      case (uint8_t)ObjectType::IDOL_OF_FORTUNE:
-      case (uint8_t)ObjectType::TEMPLE:
-      case (uint8_t)ObjectType::STABLES:
-      case (uint8_t)ObjectType::MAGIC_WELL: {
-        if (Global::herosIndex[Global::playerId] < 8) {
-          auto &[level, heroEnt] =
-              Global::heros[Global::playerId]
-                           [Global::herosIndex[Global::playerId]];
-          auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
-          if (hComp.visited.contains(objectComp.type)) {
-            s += u"(" + strPool[2329] + u")";
-          }
-        }
-        break;
-      }
-      case (uint8_t)ObjectType::ARENA: {
-        if (Global::herosIndex[Global::playerId] < 8) {
-          auto &[level, heroEnt] =
-              Global::heros[Global::playerId]
-                           [Global::herosIndex[Global::playerId]];
-          auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
-
-          auto aComp = World::registrys[World::level].get<ArenaComp>(ent);
-          if (aComp.visitHeros.contains(hComp.portrait)) {
-            s += u"(" + strPool[2329] + u")";
-          }
-        }
-        break;
-      }
-      case (uint8_t)ObjectType::MARLETTO_TOWER: {
-        if (Global::herosIndex[Global::playerId] < 8) {
-          auto &[level, heroEnt] =
-              Global::heros[Global::playerId]
-                           [Global::herosIndex[Global::playerId]];
-          auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
-
-          auto mComp = World::registrys[World::level].get<MarlettoComp>(ent);
-          if (mComp.visitHeros.contains(hComp.portrait)) {
-            s += u"(" + strPool[2329] + u")";
-          }
-        }
-        break;
-      }
-      case (uint8_t)ObjectType::MERCENARY_CAMP: {
-        if (Global::herosIndex[Global::playerId] < 8) {
-          auto &[level, heroEnt] =
-              Global::heros[Global::playerId]
-                           [Global::herosIndex[Global::playerId]];
-          auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
-
-          auto mComp = World::registrys[World::level].get<MerCampComp>(ent);
-          if (mComp.visitHeros.contains(hComp.portrait)) {
-            s += u"(" + strPool[2329] + u")";
-          }
-        }
-        break;
-      }
-      case (uint8_t)ObjectType::SCHOOL_OF_WAR: {
-        if (Global::herosIndex[Global::playerId] < 8) {
-          auto &[level, heroEnt] =
-              Global::heros[Global::playerId]
-                           [Global::herosIndex[Global::playerId]];
-          auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
-
-          auto sComp = World::registrys[World::level].get<SchoolWarComp>(ent);
-          if (sComp.visitHeros.contains(hComp.portrait)) {
-            s += u"(" + strPool[2329] + u")";
-          }
-        }
-        break;
-      }
-      case (uint8_t)ObjectType::SCHOOL_OF_MAGIC: {
-        if (Global::herosIndex[Global::playerId] < 8) {
-          auto &[level, heroEnt] =
-              Global::heros[Global::playerId]
-                           [Global::herosIndex[Global::playerId]];
-          auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
-
-          auto sComp = World::registrys[World::level].get<SchoolMagComp>(ent);
-          if (sComp.visitHeros.contains(hComp.portrait)) {
-            s += u"(" + strPool[2329] + u")";
-          }
-        }
-        break;
-      }
-      case (uint8_t)ObjectType::STAR_AXIS: {
-        if (Global::herosIndex[Global::playerId] < 8) {
-          auto &[level, heroEnt] =
-              Global::heros[Global::playerId]
-                           [Global::herosIndex[Global::playerId]];
-          auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
-
-          auto sComp = World::registrys[World::level].get<StarAxisComp>(ent);
-          if (sComp.visitHeros.contains(hComp.portrait)) {
-            s += u"(" + strPool[2329] + u")";
-          }
-        }
-        break;
-      }
-      default: {
-        break;
-      }
-      }
+      break;
     }
-    s += u'(' + FreeTypeSys::str(goalX) + u',' + FreeTypeSys::str(goalY) + u')';
-    FreeTypeSys::drawCenter((Global::viewPort.w - 199) / 2,
-                            (Global::viewPort.h - 46), s);
+    case (uint8_t)ObjectType::ARENA: {
+      if (Global::herosIndex[Global::playerId] < 8) {
+        auto &[level, heroEnt] =
+            Global::heros[Global::playerId]
+                         [Global::herosIndex[Global::playerId]];
+        auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
+
+        auto aComp = World::registrys[World::level].get<ArenaComp>(ent);
+        if (aComp.visitHeros.contains(hComp.portrait)) {
+          s += u"(" + strPool[2329] + u")";
+        }
+      }
+      break;
+    }
+    case (uint8_t)ObjectType::MARLETTO_TOWER: {
+      if (Global::herosIndex[Global::playerId] < 8) {
+        auto &[level, heroEnt] =
+            Global::heros[Global::playerId]
+                         [Global::herosIndex[Global::playerId]];
+        auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
+
+        auto mComp = World::registrys[World::level].get<MarlettoComp>(ent);
+        if (mComp.visitHeros.contains(hComp.portrait)) {
+          s += u"(" + strPool[2329] + u")";
+        }
+      }
+      break;
+    }
+    case (uint8_t)ObjectType::MERCENARY_CAMP: {
+      if (Global::herosIndex[Global::playerId] < 8) {
+        auto &[level, heroEnt] =
+            Global::heros[Global::playerId]
+                         [Global::herosIndex[Global::playerId]];
+        auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
+
+        auto mComp = World::registrys[World::level].get<MerCampComp>(ent);
+        if (mComp.visitHeros.contains(hComp.portrait)) {
+          s += u"(" + strPool[2329] + u")";
+        }
+      }
+      break;
+    }
+    case (uint8_t)ObjectType::SCHOOL_OF_WAR: {
+      if (Global::herosIndex[Global::playerId] < 8) {
+        auto &[level, heroEnt] =
+            Global::heros[Global::playerId]
+                         [Global::herosIndex[Global::playerId]];
+        auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
+
+        auto sComp = World::registrys[World::level].get<SchoolWarComp>(ent);
+        if (sComp.visitHeros.contains(hComp.portrait)) {
+          s += u"(" + strPool[2329] + u")";
+        }
+      }
+      break;
+    }
+    case (uint8_t)ObjectType::SCHOOL_OF_MAGIC: {
+      if (Global::herosIndex[Global::playerId] < 8) {
+        auto &[level, heroEnt] =
+            Global::heros[Global::playerId]
+                         [Global::herosIndex[Global::playerId]];
+        auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
+
+        auto sComp = World::registrys[World::level].get<SchoolMagComp>(ent);
+        if (sComp.visitHeros.contains(hComp.portrait)) {
+          s += u"(" + strPool[2329] + u")";
+        }
+      }
+      break;
+    }
+    case (uint8_t)ObjectType::STAR_AXIS: {
+      if (Global::herosIndex[Global::playerId] < 8) {
+        auto &[level, heroEnt] =
+            Global::heros[Global::playerId]
+                         [Global::herosIndex[Global::playerId]];
+        auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
+
+        auto sComp = World::registrys[World::level].get<StarAxisComp>(ent);
+        if (sComp.visitHeros.contains(hComp.portrait)) {
+          s += u"(" + strPool[2329] + u")";
+        }
+      }
+      break;
+    }
+    default: {
+      break;
+    }
+    }
   }
+  s += u'(' + FreeTypeSys::str(goalX) + u',' + FreeTypeSys::str(goalY) + u')';
+  FreeTypeSys::drawCenter((Global::viewPort.w - 199) / 2,
+                          (Global::viewPort.h - 46), s);
 }
 static void drawHeroList() {
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 4];

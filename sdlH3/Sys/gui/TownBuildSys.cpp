@@ -18,6 +18,7 @@
 #include "TownSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
+#include <algorithm>
 #include <cstdint>
 #include <string>
 

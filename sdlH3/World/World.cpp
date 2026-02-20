@@ -98,6 +98,30 @@
 #include <cstdint>
 #include <utility>
 
+static bool savaMask() {
+  if (Global::maskTexture) {
+    SDL_DestroyTexture(Global::maskTexture);
+  }
+  SDL_Rect r{static_cast<int>(0), static_cast<int>(0),
+             static_cast<int>(Global::viewPort.w),
+             static_cast<int>(Global::viewPort.h)};
+  auto surface = SDL_RenderReadPixels(Window::renderer, &r);
+  Global::maskTexture = SDL_CreateTextureFromSurface(Window::renderer, surface);
+  // SDL_SetRenderDrawColor(Window::renderer, 0, 0, 0, 128);
+
+  // SDL_SetTextureColorMod(Global::maskTexture, 128, 128, 128);
+  SDL_DestroySurface(surface);
+  return true;
+}
+
+static bool renderMask() {
+  SDL_FRect posRect = {0, 0, Global::viewPort.w, Global::viewPort.h};
+  // SDL_SetTextureColorMod(Global::maskTexture, 128, 128, 128);
+
+  SDL_RenderTexture(Window::renderer, Global::maskTexture, nullptr, &posRect);
+  return true;
+}
+
 void World::enterAdvScrn() {
   LMouseUpSys.clear();
   LMouseDownSys.clear();
@@ -145,14 +169,19 @@ void World::enterAdvScrn() {
 void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
   enterScrn();
 
-  iterateSystems.pop_back();
-  iterateSystems.push_back(TownSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(TownSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(TownSys::leftMouseUp);
-  RMouseUpSys.push_back(TownSys::rightMouseUp);
-  RMouseDownSys.push_back(TownSys::rightMouseDown);
-  keyUpSys.push_back(TownSys::keyUp);
+    LMouseUpSys.push_back(TownSys::leftMouseUp);
+    RMouseUpSys.push_back(TownSys::rightMouseUp);
+    RMouseDownSys.push_back(TownSys::rightMouseDown);
+    keyUpSys.push_back(TownSys::keyUp);
+
+    return false;
+  });
 
   Global::townScnPair = {level, ent};
   Global::townScnType = type;
@@ -259,11 +288,16 @@ void World::enterSpec21Build(uint8_t townId, entt::entity bEnt) {
 void World::enterTownHall() {
   enterScrn();
 
-  iterateSystems.pop_back();
-  iterateSystems.push_back(TownHallSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(TownHallSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(TownHallSys::leftMouseUp);
+    LMouseUpSys.push_back(TownHallSys::leftMouseUp);
+
+    return false;
+  });
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
@@ -271,11 +305,16 @@ void World::enterTownHall() {
 void World::enterTownFort() {
   enterScrn();
 
-  iterateSystems.pop_back();
-  iterateSystems.push_back(TownFortSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(TownFortSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(TownFortSys::leftMouseUp);
+    LMouseUpSys.push_back(TownFortSys::leftMouseUp);
+
+    return false;
+  });
 
   Global::townFortFrameIndex = {};
   Global::townFortFrameTime = {};
@@ -289,8 +328,12 @@ bool World::enterFadeScrn() {
   World::iterateSystemsBak.pop_back();
 
   enterScrn();
-  iterateSystems.erase(iterateSystems.begin());
-  iterateSystems.push_back(FadeSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(FadeSys::run);
+    return false;
+  });
 
   if (Global::fadeTexture) {
     SDL_DestroyTexture(Global::fadeTexture);
@@ -301,7 +344,7 @@ bool World::enterFadeScrn() {
              static_cast<int>(Global::fadeRect.h)};
   auto surface = SDL_RenderReadPixels(Window::renderer, &r);
   Global::fadeTexture = SDL_CreateTextureFromSurface(Window::renderer, surface);
-  Global::fadeSpeed = 0.5f;
+  Global::fadeSpeed = 0.7f;
   Global::fadeAlpha = 255;
 
   SDL_DestroySurface(surface);
@@ -756,13 +799,18 @@ void World::enterGarrison(entt::entity heroEnt, entt::entity goalEnt) {
 
 void World::enterDwe(entt::entity heroEnt, entt::entity goalEnt) {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(DwellingSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(DwellingSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(DwellingSys::leftMouseUp);
-  RMouseDownSys.push_back(DwellingSys::rightMouseDown);
-  keyUpSys.push_back(DwellingSys::keyUp);
+    LMouseUpSys.push_back(DwellingSys::leftMouseUp);
+    RMouseDownSys.push_back(DwellingSys::rightMouseDown);
+    keyUpSys.push_back(DwellingSys::keyUp);
+
+    return false;
+  });
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
@@ -797,15 +845,18 @@ void World::enterMageGuild(uint8_t level, entt::entity ent) {
 
 void World::enterTownBuild(uint8_t bId) {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(TownBuildSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(TownBuildSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(TownBuildSys::leftMouseUp);
-  keyUpSys.push_back(TownBuildSys::keyUp);
+    LMouseUpSys.push_back(TownBuildSys::leftMouseUp);
+    keyUpSys.push_back(TownBuildSys::keyUp);
+    return false;
+  });
 
   Global::townBuildBid = bId;
-
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
@@ -1456,7 +1507,8 @@ void World::enterConfirm(float bakW, float bakH, uint8_t confirmType) {
 
 void World::enterScrn() {
   iterateSystemsBak.push_back(iterateSystems);
-  // iterateSystems.clear();
+  iterateSystems.pop_back();
+  iterateSystems.push_back(savaMask);
 
   LMouseUpSysBak.push_back(LMouseUpSys);
   LMouseDownSysBak.push_back(LMouseDownSys);
