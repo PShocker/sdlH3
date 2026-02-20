@@ -21,24 +21,14 @@ static float bakH = 340;
 static void receive() {
   auto sComp =
       World::registrys[World::level].get<SeaChestComp>(Global::goalEnt);
-  Global::fadeCallBack = [sComp]() {
-    World::LMouseUpSysBak.pop_back();
-    World::LMouseDownSysBak.pop_back();
-    World::RMouseUpSysBak.pop_back();
-    World::RMouseDownSysBak.pop_back();
-    World::keyUpSysBak.pop_back();
-    Global::cursorBack.pop_back();
+  World::exitScrn();
 
-    auto &registry = World::registrys[World::level];
+  auto &registry = World::registrys[World::level];
 
-    auto &heroComp = registry.get<HeroComp>(Global::heroEnt);
-    heroComp.artifactsInBackpack.push_back(sComp.artifacts[0]);
-    return true;
-  };
-  World::iterateSystems.pop_back();
-  World::iterateSystems.pop_back();
+  auto &heroComp = registry.get<HeroComp>(Global::heroEnt);
+  heroComp.artifactsInBackpack.push_back(sComp.artifacts[0]);
+
   World::iterateSystemsBak.push_back(World::iterateSystems);
-  World::iterateSystemsBak.back().push_back(CursorSys::run);
   World::iterateSystems.push_back([]() {
     auto &registry = World::registrys[World::level];
     registry.destroy(Global::goalEnt);

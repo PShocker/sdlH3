@@ -25,19 +25,8 @@ static float bakH = 340;
 
 static void receive() {
   auto registry = &World::registrys[World::level];
-  Global::fadeCallBack = []() {
-    World::LMouseUpSysBak.pop_back();
-    World::LMouseDownSysBak.pop_back();
-    World::RMouseUpSysBak.pop_back();
-    World::RMouseDownSysBak.pop_back();
-    World::keyUpSysBak.pop_back();
-    Global::cursorBack.pop_back();
-    return true;
-  };
-  World::iterateSystems.pop_back();
-  World::iterateSystems.pop_back();
+  World::exitScrn();
   World::iterateSystemsBak.push_back(World::iterateSystems);
-  World::iterateSystemsBak.back().push_back(CursorSys::run);
   World::iterateSystems.push_back([registry]() {
     auto heroComp =
         World::registrys[World::level].get<HeroComp>(Global::goalEnt);
@@ -102,7 +91,7 @@ void PrisonSys::draw() {
   auto heroComp = World::registrys[World::level].get<HeroComp>(Global::goalEnt);
   auto portrait =
       heroComp.portrait == 0xff ? heroComp.subId : heroComp.portrait;
-  auto largePor=HeroSet::fullHeros[portrait]->largePor;
+  auto largePor = HeroSet::fullHeros[portrait]->largePor;
   auto texture = Global::pcxCache[largePor][0];
   posRect = {leftUp.x + porPosition.x, leftUp.y + porPosition.y, porPosition.w,
              porPosition.h};

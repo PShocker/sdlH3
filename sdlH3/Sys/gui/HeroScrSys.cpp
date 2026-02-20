@@ -42,22 +42,9 @@ static void close() {
 
 static void dismiss() {
   Global::confirmCallBack = []() {
-    Global::fadeCallBack = []() {
-      for (uint8_t i = 0; i < 2; i++) {
-        World::LMouseUpSysBak.pop_back();
-        World::LMouseDownSysBak.pop_back();
-        World::RMouseUpSysBak.pop_back();
-        World::RMouseDownSysBak.pop_back();
-        World::keyUpSysBak.pop_back();
-        Global::cursorBack.pop_back();
-      }
-      return true;
-    };
-    World::iterateSystems.pop_back();
-    World::iterateSystems.pop_back();
-    World::iterateSystems.pop_back();
+    World::exitScrn();
+    World::exitScrn();
     World::iterateSystemsBak.push_back(World::iterateSystems);
-    World::iterateSystemsBak.back().push_back(CursorSys::run);
     World::iterateSystems.push_back([]() {
       auto [level, heroEnt] = Global::heroScnPair;
       for (uint8_t i = 0; i < Global::heros[Global::playerId].size(); i++) {

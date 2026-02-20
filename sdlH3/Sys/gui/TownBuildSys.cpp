@@ -31,20 +31,17 @@ static void buy() {
   World::exitScrn();
   World::exitScrn();
   World::iterateSystemsBak.push_back(World::iterateSystems);
-
-  World::iterateSystems.push_back([=]() {
-    townComp->buildings[Global::townBuildBid] =
-        Ent::loadBuild(level, townEnt, Global::townBuildBid);
-    return true;
-  });
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-
-  Global::fadeRect = {leftUp.x, leftUp.y, 800, 226};
-  World::iterateSystems.push_back(World::enterFadeScrn);
-
+  Global::fadeRect = {leftUp.x, leftUp.y, 800, 600};
+  World::iterateSystems.push_back([=]() {
+    World::enterFadeScrn();
+    townComp->buildings[Global::townBuildBid] =
+        Ent::loadBuild(level, townEnt, Global::townBuildBid);
+    return false;
+  });
   auto now = Window::dtNow;
-  Global::fadeCallBack = [now, townComp, leftUp]() {
+  Global::fadeCallBack = [=]() {
     auto build = Global::townBuildBid;
     auto buildI = FactionSet::fullFactions[townComp->id]->builds[build + 1];
     auto buildX = buildI.x;

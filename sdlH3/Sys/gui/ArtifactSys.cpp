@@ -19,28 +19,19 @@ static float bakH = 340;
 static void receive() {
   auto afComp =
       World::registrys[World::level].get<ArtifactComp>(Global::goalEnt);
-  Global::fadeCallBack = [afComp]() {
-    World::LMouseUpSysBak.pop_back();
-    World::LMouseDownSysBak.pop_back();
-    World::RMouseUpSysBak.pop_back();
-    World::RMouseDownSysBak.pop_back();
-    World::keyUpSysBak.pop_back();
-    Global::cursorBack.pop_back();
+  World::exitScrn();
 
-    auto &registry = World::registrys[World::level];
-
-    auto &heroComp = registry.get<HeroComp>(Global::heroEnt);
-    heroComp.artifactsInBackpack.push_back(afComp.id);
-    return true;
-  };
   World::iterateSystems.pop_back();
   World::iterateSystems.pop_back();
   World::iterateSystemsBak.push_back(World::iterateSystems);
   World::iterateSystemsBak.back().push_back(CursorSys::run);
-  World::iterateSystems.push_back([]() {
+  World::iterateSystems.push_back([afComp]() {
     auto &registry = World::registrys[World::level];
     registry.destroy(Global::goalEnt);
     World::needSort = true;
+
+    auto &heroComp = registry.get<HeroComp>(Global::heroEnt);
+    heroComp.artifactsInBackpack.push_back(afComp.id);
     return true;
   });
   Global::fadeRect = {0, 0, Global::viewPort.w - 199, Global::viewPort.h - 47};

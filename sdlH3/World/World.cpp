@@ -180,6 +180,8 @@ void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
     RMouseDownSys.push_back(TownSys::rightMouseDown);
     keyUpSys.push_back(TownSys::keyUp);
 
+    CursorSys::run();
+
     return false;
   });
 
@@ -296,6 +298,8 @@ void World::enterTownHall() {
 
     LMouseUpSys.push_back(TownHallSys::leftMouseUp);
 
+    CursorSys::run();
+
     return false;
   });
 
@@ -312,6 +316,7 @@ void World::enterTownFort() {
     iterateSystems.push_back(CursorSys::run);
 
     LMouseUpSys.push_back(TownFortSys::leftMouseUp);
+    CursorSys::run();
 
     return false;
   });
@@ -328,12 +333,8 @@ bool World::enterFadeScrn() {
   World::iterateSystemsBak.pop_back();
 
   enterScrn();
-  iterateSystems.push_back([] {
-    iterateSystems.clear();
-    iterateSystems.push_back(renderMask);
-    iterateSystems.push_back(FadeSys::run);
-    return false;
-  });
+  iterateSystems.push_back(renderMask);
+  iterateSystems.push_back(FadeSys::run);
 
   if (Global::fadeTexture) {
     SDL_DestroyTexture(Global::fadeTexture);
@@ -809,6 +810,8 @@ void World::enterDwe(entt::entity heroEnt, entt::entity goalEnt) {
     RMouseDownSys.push_back(DwellingSys::rightMouseDown);
     keyUpSys.push_back(DwellingSys::keyUp);
 
+    CursorSys::run();
+
     return false;
   });
 
@@ -853,6 +856,9 @@ void World::enterTownBuild(uint8_t bId) {
 
     LMouseUpSys.push_back(TownBuildSys::leftMouseUp);
     keyUpSys.push_back(TownBuildSys::keyUp);
+
+    CursorSys::run();
+
     return false;
   });
 

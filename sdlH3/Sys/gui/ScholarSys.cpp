@@ -54,23 +54,17 @@ static std::pair<uint8_t, uint8_t> bonuse() {
 static void receive() {
   auto &sComp =
       World::registrys[World::level].get<ScholarComp>(Global::goalEnt);
-  Global::fadeCallBack = [sComp]() {
-    World::LMouseUpSysBak.pop_back();
-    World::LMouseDownSysBak.pop_back();
-    World::RMouseUpSysBak.pop_back();
-    World::RMouseDownSysBak.pop_back();
-    World::keyUpSysBak.pop_back();
-    Global::cursorBack.pop_back();
-
-    auto &registry = World::registrys[World::level];
-    auto &heroComp = registry.get<HeroComp>(Global::heroEnt);
-    heroComp.primSkills[sComp.id] += 1;
-    return true;
+  auto &registry = World::registrys[World::level];
+  auto &heroComp = registry.get<HeroComp>(Global::heroEnt);
+  AdventureBonus bonus = {
+      .src = ObjectType::SCHOLAR,
+      .type = Enum::ADVENTURE_PRIMARY_SKILL,
+      .val = 1,
   };
-  World::iterateSystems.pop_back();
-  World::iterateSystems.pop_back();
+  bonus.subType = Enum::PRIMARY_SKILL_ATTACK;
+  heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
+  World::exitScrn();
   World::iterateSystemsBak.push_back(World::iterateSystems);
-  World::iterateSystemsBak.back().push_back(CursorSys::run);
   World::iterateSystems.push_back([]() {
     auto &registry = World::registrys[World::level];
     registry.destroy(Global::goalEnt);
