@@ -3,7 +3,8 @@
 #include "World/World.h"
 #include <any>
 #include <cstdint>
+#include "Set/SpellSet.h"
 
-void StoneSkin(std::any data) {
+void SpellSet::StoneSkin(std::any data) {
   return;
 }

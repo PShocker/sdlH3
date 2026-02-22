@@ -495,11 +495,21 @@ void World::enterKingdom() {
 
 bool World::enterAdvPop() {
   enterScrn();
-  World::iterateSystems.pop_back();
-  World::iterateSystems.push_back(AdvPopSys::run);
-  World::iterateSystems.push_back(CursorSys::run);
 
-  RMouseUpSys.push_back(AdvPopSys::rightMouseUp);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    World::iterateSystems.push_back(AdvPopSys::run);
+    World::iterateSystems.push_back(CursorSys::run);
+
+    RMouseUpSys.push_back(AdvPopSys::rightMouseUp);
+
+    CursorSys::run();
+
+    SDL_SetTextureColorMod(Global::maskTexture, 255, 255, 255);
+
+    return false;
+  });
 
   Global::cursorPoint = {Window::mouseX, Window::mouseY};
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
@@ -870,13 +880,21 @@ void World::enterTownBuild(uint8_t bId) {
 
 void World::enterWarMachineFac(entt::entity heroEnt, entt::entity goalEnt) {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(WarMachineFacSys::run);
-  iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(WarMachineFacSys::leftMouseUp);
-  RMouseDownSys.push_back(WarMachineFacSys::rightMouseDown);
-  keyUpSys.push_back(WarMachineFacSys::keyUp);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+
+    iterateSystems.push_back(WarMachineFacSys::run);
+    iterateSystems.push_back(CursorSys::run);
+
+    LMouseUpSys.push_back(WarMachineFacSys::leftMouseUp);
+    RMouseDownSys.push_back(WarMachineFacSys::rightMouseDown);
+    keyUpSys.push_back(WarMachineFacSys::keyUp);
+
+    CursorSys::run();
+    return false;
+  });
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;

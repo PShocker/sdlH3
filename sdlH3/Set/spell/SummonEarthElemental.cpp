@@ -3,7 +3,8 @@
 #include "World/World.h"
 #include <any>
 #include <cstdint>
+#include "Set/SpellSet.h"
 
-void SummonEarthElemental(std::any data) {
+void SpellSet::SummonEarthElemental(std::any data) {
   return;
 }

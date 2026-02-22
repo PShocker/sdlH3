@@ -1005,4 +1005,10 @@ struct Enum {
     ACTION_START_MOVE = 20,
     ACTION_STOP_MOVE = 21,
   };
+
+  enum SPELL_TYPE {
+    SPELL_TYPE_ADV,
+    SPELL_TYPE_BAT,
+    SPELL_TYPE_CRE,
+  };
 };

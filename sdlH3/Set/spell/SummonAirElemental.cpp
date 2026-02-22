@@ -3,7 +3,8 @@
 #include "World/World.h"
 #include <any>
 #include <cstdint>
+#include "Set/SpellSet.h"
 
-void SummonAirElemental(std::any data) {
+void SpellSet::SummonAirElemental(std::any data) {
   return;
 }

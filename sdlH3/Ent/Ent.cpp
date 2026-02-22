@@ -1291,7 +1291,7 @@ static void loadTerrain(H3mData &data) {
       i.resize(data.header.width);
     }
   }
-  auto loadTerrainInternal =
+  const auto loadTerrainInternal =
       [width = data.header.width](int i, const std::string &filePath,
                                   uint8_t view, uint8_t rotationFlags,
                                   int zOrder, uint8_t index) {

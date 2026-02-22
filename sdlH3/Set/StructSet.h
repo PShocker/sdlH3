@@ -92,12 +92,12 @@ struct SpellAdventure {
 
 struct SpellI {
   uint8_t index;
+  // {土系, 水系, 火系, 气系}
   std::array<bool, 4> school;
   std::array<uint32_t, 4> manaCost;
   uint8_t level;
   uint8_t type;
   void (*func)(std::any);
-  std::any extra;
 };
 
 struct ArtifactBonus {

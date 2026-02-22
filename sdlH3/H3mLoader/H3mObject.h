@@ -207,6 +207,10 @@ enum ObjectType {
   MAGIC_CLOUDS = 229,
   MAGIC_PLAINS2 = 230,
   ROCKLANDS = 231,
+  // Adv Spell
+  LAND,
+  SEA,
+
 };
 
 enum class BuildingIDBase {

@@ -72,7 +72,8 @@ struct Global {
   static inline SDL_FPoint cursorPoint;
   static inline std::vector<uint8_t> cursorBack;
   static inline uint8_t cursorSpellGoal;
-  static inline uint8_t cursorSpellI;
+  static inline uint8_t cursorSpellIndex;
+  static inline uint8_t cursorSpellRange;
   static inline std::function<void()> cursorSpellBack;
 
   static inline SDL_Texture *fadeTexture;

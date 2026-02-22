@@ -790,119 +790,165 @@ bool CursorSys::leftMouseUp(float x, float y) {
     auto p = CursorSys::goalPoint(point);
     uint8_t goalX = p.x;
     uint8_t goalY = p.y;
-    switch ((Enum::CRADVNTR)Global::cursorIndex) {
-    case Enum::CRADVNTR::T1_SAIL: {
-      SDL_FRect posRect = {positionComp->point.x + 32 - 1 * 32,
-                           positionComp->point.y + 32 - 1 * 32, 96, 96};
-      if (SDL_PointInRectFloat(&point, &posRect)) {
-        goalX = std::clamp(goalX, (uint8_t)(heroX - 1), (uint8_t)(heroX + 1));
-        goalY = std::clamp(goalY, (uint8_t)(heroY - 1), (uint8_t)(heroY + 1));
-        auto goalPoint = goalX + goalY * Global::mapSize;
-        if (!Global::waterBlock[World::level].contains(goalPoint)) {
-          break;
-        }
-        auto [_, ent] =
-            CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
-                              goalY * 32 - Global::viewPort.y);
-        if (ent != entt::null) {
-          break;
-        }
-        auto heroComp = &registry.get<HeroComp>(heroEnt);
-        // auto skillLevel = SpellSys::heroSplLevel(heroComp, 8).second;
-        // auto manaCost = SpellCfg::SpellCost.at(0).at(skillLevel);
-        // heroComp->mana -= manaCost;
-        // World::iterateSystemsBak.push_back(World::iterateSystems);
-        // World::iterateSystems.pop_back();
-        // World::iterateSystems.push_back([heroEnt, goalX, goalY]() {
-        //   Ent::loadBoat("AB01_", goalX + 1, goalY, World::level, 2, 0);
-        //   Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
-        //   clearHeroPath();
-        //   return true;
-        // });
-        Global::fadeRect = {0, 0, Global::viewPort.w - 199,
-                            Global::viewPort.h - 47};
-        World::iterateSystems.push_back(World::enterFadeScrn);
+    auto goalPoint = goalX + goalY * Global::mapSize;
+    SDL_FRect posRect = {
+        positionComp->point.x + 32 - Global::cursorSpellRange * 32,
+        positionComp->point.y + 32 - Global::cursorSpellRange * 32,
+        static_cast<float>(Global::cursorSpellRange * 2 * 32 + 32),
+        static_cast<float>(Global::cursorSpellRange * 2 * 32 + 32)};
+    if (!SDL_PointInRectFloat(&point, &posRect)) {
+      return false;
+    }
+    switch (Global::cursorSpellGoal) {
+    case ObjectType::LAND: {
+      if (Global::rockBlock[World::level].contains(goalPoint) ||
+          Global::waterBlock[World::level].contains(goalPoint)) {
+        return false;
+      }
+      auto [_, ent] = CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
+                                        goalY * 32 - Global::viewPort.y);
+      if (ent != entt::null) {
+        return false;
       }
       break;
     }
-    case Enum::CRADVNTR::SCUTTLE_BOAT: {
-      auto [_, ent] = CursorSys::choose(false, x, y);
-      SDL_FRect posRect = {positionComp->point.x + 32 - 1 * 32,
-                           positionComp->point.y + 32 - 1 * 32, 96, 96};
-      if (SDL_PointInRectFloat(&point, &posRect)) {
-        goalX = std::clamp(goalX, (uint8_t)(heroX - 1), (uint8_t)(heroX + 1));
-        goalY = std::clamp(goalY, (uint8_t)(heroY - 1), (uint8_t)(heroY + 1));
-        auto [_, ent] =
-            CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
-                              goalY * 32 - Global::viewPort.y);
-        if (!registry.all_of<BoatComp>(ent)) {
-          break;
-        }
-        auto heroComp = &registry.get<HeroComp>(heroEnt);
-        auto skillLevel = SpellSys::spellLevel(heroComp, 8).second;
-        // auto manaCost = SpellCfg::SpellCost.at(1).at(skillLevel);
-        // heroComp->mana -= manaCost;
-        // World::iterateSystemsBak.push_back(World::iterateSystems);
-        // World::iterateSystems.pop_back();
-        // World::iterateSystems.push_back([heroEnt, &registry, ent]() {
-        //   registry.destroy(ent);
-        //   World::needSort = true;
-        //   Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
-        //   clearHeroPath();
-        //   return true;
-        // });
-        Global::fadeRect = {0, 0, Global::viewPort.w - 199,
-                            Global::viewPort.h - 47};
-        World::iterateSystems.push_back(World::enterFadeScrn);
+    case ObjectType::SEA: {
+      if (!Global::waterBlock[World::level].contains(goalPoint)) {
+        return false;
+      }
+      auto [_, ent] = CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
+                                        goalY * 32 - Global::viewPort.y);
+      if (ent != entt::null) {
+        return false;
       }
       break;
     }
-    case Enum::CRADVNTR::TELEPORT: {
-      SDL_FRect posRect = {positionComp->point.x + 32 - 7 * 32,
-                           positionComp->point.y + 32 - 7 * 32, 15 * 32,
-                           15 * 32};
-      if (SDL_PointInRectFloat(&point, &posRect)) {
-        uint8_t minX = std::max((int16_t)heroX - 7, 0);
-        uint8_t maxX = std::min((int16_t)heroX + 7, Global::mapSize);
+    default: {
+      auto [_, ent] = CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
+                                        goalY * 32 - Global::viewPort.y);
+      auto oComp = registry.get<ObjectComp>(ent);
+      if (oComp.type != Global::cursorSpellGoal) {
+        return false;
+      }
+    }
+    }
+    Global::cursorSpellBack();
+    return false;
 
-        uint8_t minY = std::max((int16_t)heroY - 7, 0);
-        uint8_t maxY = std::min((int16_t)heroY + 7, Global::mapSize);
+    // switch ((Enum::CRADVNTR)Global::cursorIndex) {
+    // case Enum::CRADVNTR::T1_SAIL: {
+    //   SDL_FRect posRect = {positionComp->point.x + 32 - 1 * 32,
+    //                        positionComp->point.y + 32 - 1 * 32, 96, 96};
+    //   if (SDL_PointInRectFloat(&point, &posRect)) {
+    //     goalX = std::clamp(goalX, (uint8_t)(heroX - 1), (uint8_t)(heroX + 1));
+    //     goalY = std::clamp(goalY, (uint8_t)(heroY - 1), (uint8_t)(heroY + 1));
+    //     auto goalPoint = goalX + goalY * Global::mapSize;
+    //     if (!Global::waterBlock[World::level].contains(goalPoint)) {
+    //       break;
+    //     }
+    //     auto [_, ent] =
+    //         CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
+    //                           goalY * 32 - Global::viewPort.y);
+    //     if (ent != entt::null) {
+    //       break;
+    //     }
+    //     auto heroComp = &registry.get<HeroComp>(heroEnt);
+    //     // auto skillLevel = SpellSys::heroSplLevel(heroComp, 8).second;
+    //     // auto manaCost = SpellCfg::SpellCost.at(0).at(skillLevel);
+    //     // heroComp->mana -= manaCost;
+    //     // World::iterateSystemsBak.push_back(World::iterateSystems);
+    //     // World::iterateSystems.pop_back();
+    //     // World::iterateSystems.push_back([heroEnt, goalX, goalY]() {
+    //     //   Ent::loadBoat("AB01_", goalX + 1, goalY, World::level, 2, 0);
+    //     //   Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
+    //     //   clearHeroPath();
+    //     //   return true;
+    //     // });
+    //     Global::cursorSpellBack();
+    //     Global::fadeRect = {0, 0, Global::viewPort.w - 199,
+    //                         Global::viewPort.h - 47};
+    //     World::iterateSystems.push_back(World::enterFadeScrn);
+    //   }
+    //   break;
+    // }
+    // case Enum::CRADVNTR::SCUTTLE_BOAT: {
+    //   auto [_, ent] = CursorSys::choose(false, x, y);
+    //   SDL_FRect posRect = {positionComp->point.x + 32 - 1 * 32,
+    //                        positionComp->point.y + 32 - 1 * 32, 96, 96};
+    //   if (SDL_PointInRectFloat(&point, &posRect)) {
+    //     goalX = std::clamp(goalX, (uint8_t)(heroX - 1), (uint8_t)(heroX + 1));
+    //     goalY = std::clamp(goalY, (uint8_t)(heroY - 1), (uint8_t)(heroY + 1));
+    //     auto [_, ent] =
+    //         CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
+    //                           goalY * 32 - Global::viewPort.y);
+    //     if (!registry.all_of<BoatComp>(ent)) {
+    //       break;
+    //     }
+    //     auto heroComp = &registry.get<HeroComp>(heroEnt);
+    //     auto skillLevel = SpellSys::spellLevel(heroComp, 8).second;
+    //     // auto manaCost = SpellCfg::SpellCost.at(1).at(skillLevel);
+    //     // heroComp->mana -= manaCost;
+    //     // World::iterateSystemsBak.push_back(World::iterateSystems);
+    //     // World::iterateSystems.pop_back();
+    //     // World::iterateSystems.push_back([heroEnt, &registry, ent]() {
+    //     //   registry.destroy(ent);
+    //     //   World::needSort = true;
+    //     //   Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
+    //     //   clearHeroPath();
+    //     //   return true;
+    //     // });
+    //     Global::fadeRect = {0, 0, Global::viewPort.w - 199,
+    //                         Global::viewPort.h - 47};
+    //     World::iterateSystems.push_back(World::enterFadeScrn);
+    //   }
+    //   break;
+    // }
+    // case Enum::CRADVNTR::TELEPORT: {
+    //   SDL_FRect posRect = {positionComp->point.x + 32 - 7 * 32,
+    //                        positionComp->point.y + 32 - 7 * 32, 15 * 32,
+    //                        15 * 32};
+    //   if (SDL_PointInRectFloat(&point, &posRect)) {
+    //     uint8_t minX = std::max((int16_t)heroX - 7, 0);
+    //     uint8_t maxX = std::min((int16_t)heroX + 7, Global::mapSize);
 
-        goalX = std::clamp(goalX, minX, maxX);
-        goalY = std::clamp(goalY, minY, maxY);
-        auto goalPoint = goalX + goalY * Global::mapSize;
-        if (Global::rockBlock[World::level].contains(goalPoint) ||
-            Global::waterBlock[World::level].contains(goalPoint)) {
-          break;
-        }
-        auto [_, ent] =
-            CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
-                              goalY * 32 - Global::viewPort.y);
-        if (ent != entt::null) {
-          break;
-        }
-        auto heroComp = &registry.get<HeroComp>(heroEnt);
-        auto skillLevel = SpellSys::spellLevel(heroComp, 8).second;
-        // auto manaCost = SpellCfg::SpellCost.at(8).at(skillLevel);
-        // heroComp->mana -= manaCost;
-        // World::iterateSystemsBak.push_back(World::iterateSystems);
-        // World::iterateSystems.pop_back();
-        // World::iterateSystems.push_back([heroEnt, goalX, goalY]() {
-        //   HeroSys::heroTelePort(heroEnt, goalX, goalY);
-        //   CameraSys::focus(goalX * 32 + 16, goalY * 32 + 16);
-        //   Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
-        //   clearHeroPath();
-        //   return true;
-        // });
-        Global::fadeRect = {0, 0, Global::viewPort.w - 199,
-                            Global::viewPort.h - 47};
-        World::iterateSystems.push_back(World::enterFadeScrn);
-      }
-      break;
-    }
-    default:
-      break;
-    }
+    //     uint8_t minY = std::max((int16_t)heroY - 7, 0);
+    //     uint8_t maxY = std::min((int16_t)heroY + 7, Global::mapSize);
+
+    //     goalX = std::clamp(goalX, minX, maxX);
+    //     goalY = std::clamp(goalY, minY, maxY);
+    //     auto goalPoint = goalX + goalY * Global::mapSize;
+    //     if (Global::rockBlock[World::level].contains(goalPoint) ||
+    //         Global::waterBlock[World::level].contains(goalPoint)) {
+    //       break;
+    //     }
+    //     auto [_, ent] =
+    //         CursorSys::choose(false, goalX * 32 - Global::viewPort.x,
+    //                           goalY * 32 - Global::viewPort.y);
+    //     if (ent != entt::null) {
+    //       break;
+    //     }
+    //     auto heroComp = &registry.get<HeroComp>(heroEnt);
+    //     auto skillLevel = SpellSys::spellLevel(heroComp, 8).second;
+    //     // auto manaCost = SpellCfg::SpellCost.at(8).at(skillLevel);
+    //     // heroComp->mana -= manaCost;
+    //     // World::iterateSystemsBak.push_back(World::iterateSystems);
+    //     // World::iterateSystems.pop_back();
+    //     // World::iterateSystems.push_back([heroEnt, goalX, goalY]() {
+    //     //   HeroSys::heroTelePort(heroEnt, goalX, goalY);
+    //     //   CameraSys::focus(goalX * 32 + 16, goalY * 32 + 16);
+    //     //   Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
+    //     //   clearHeroPath();
+    //     //   return true;
+    //     // });
+    //     Global::fadeRect = {0, 0, Global::viewPort.w - 199,
+    //                         Global::viewPort.h - 47};
+    //     World::iterateSystems.push_back(World::enterFadeScrn);
+    //   }
+    //   break;
+    // }
+    // default:
+    //   break;
+    // }
     return false;
   }
   case (uint8_t)Enum::CURSOR::ADVENTURE: {

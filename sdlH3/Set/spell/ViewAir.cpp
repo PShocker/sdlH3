@@ -3,7 +3,8 @@
 #include "World/World.h"
 #include <any>
 #include <cstdint>
+#include "Set/SpellSet.h"
 
-void ViewAir(std::any data) {
+void SpellSet::ViewAir(std::any data) {
   return;
 }

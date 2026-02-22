@@ -5,8 +5,9 @@
 #include <any>
 #include <cstdint>
 #include <utility>
+#include "Set/SpellSet.h"
 
-void WaterWalk(std::any data) {
+void SpellSet::WaterWalk(std::any data) {
   auto [heroEnt, level] = std::any_cast<std::pair<entt::entity, uint8_t>>(data);
   auto registry = &World::registrys[World::level];
   registry->get<HeroComp>(heroEnt).moveType = HeroComp::WATER_WALK;

@@ -6,8 +6,9 @@
 #include <any>
 #include <cstdint>
 #include <utility>
+#include "Set/SpellSet.h"
 
-void TownPortal(std::any data) {
+void SpellSet::TownPortal(std::any data) {
   auto [heroEnt, level] = std::any_cast<std::pair<entt::entity, uint8_t>>(data);
   World::enterTownPortal();
   AdvMapSys::heroFocus();

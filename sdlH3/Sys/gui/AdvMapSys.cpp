@@ -236,23 +236,12 @@ static void drawSpellMask() {
       Global::heros[Global::playerId][Global::herosIndex[Global::playerId]];
   auto heroEnt = heroPair.second;
   auto positionComp = &registry.get<PositionComp>(heroEnt);
-  auto cursorIndex = Global::cursorIndex;
-  switch ((Enum::CRADVNTR)Global::cursorIndex) {
-  case Enum::CRADVNTR::T1_SAIL:
-  case Enum::CRADVNTR::SCUTTLE_BOAT: {
-    BorderSys::drawMaskWithHole(positionComp->point.x, positionComp->point.y,
-                                96, 96, 128);
-    break;
-  }
-  case Enum::CRADVNTR::TELEPORT: {
-    BorderSys::drawMaskWithHole(positionComp->point.x + 32 - 7 * 32,
-                                positionComp->point.y + 32 - 7 * 32, 15 * 32,
-                                15 * 32, 128);
-    break;
-  }
-  default:
-    break;
-  }
+
+  BorderSys::drawMaskWithHole(
+      positionComp->point.x + 32 - Global::cursorSpellRange * 32,
+      positionComp->point.y + 32 - Global::cursorSpellRange * 32,
+      (Global::cursorSpellRange * 2 + 1) * 32,
+      (Global::cursorSpellRange * 2 + 1) * 32, 128);
 }
 
 static void drawAdvMap() {

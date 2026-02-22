@@ -3,7 +3,8 @@
 #include "World/World.h"
 #include <any>
 #include <cstdint>
+#include "Set/SpellSet.h"
 
-void Teleport(std::any data) {
+void SpellSet::Teleport(std::any data) {
   return;
 }

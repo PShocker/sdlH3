@@ -3,7 +3,8 @@
 #include "World/World.h"
 #include <any>
 #include <cstdint>
+#include "Set/SpellSet.h"
 
-void TitansLightningBolt(std::any data) {
+void SpellSet::TitansLightningBolt(std::any data) {
   return;
 }

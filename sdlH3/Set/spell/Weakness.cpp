@@ -3,7 +3,8 @@
 #include "World/World.h"
 #include <any>
 #include <cstdint>
+#include "Set/SpellSet.h"
 
-void Weakness(std::any data) {
+void SpellSet::Weakness(std::any data) {
   return;
 }
