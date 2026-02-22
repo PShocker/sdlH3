@@ -186,3 +186,11 @@ struct ObjectSetI {
   std::vector<std::pair<uint16_t, uint32_t>> guards; // <creatureType, amount>
   std::vector<uint16_t> creatures; // 生物类型ID列表，支持多级兵种
 };
+
+struct HeroClazz {
+  uint8_t id;
+  std::vector<uint8_t> lowPrimRate;
+  std::vector<uint8_t> highPrimRate;
+  std::vector<uint8_t> defaultPrim;
+  std::vector<uint8_t> secSkillRate;
+};

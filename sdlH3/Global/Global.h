@@ -8,6 +8,7 @@
 #include <array>
 #include <cstdint>
 #include <flat_map>
+#include <flat_set>
 #include <functional>
 #include <optional>
 #include <random>
@@ -25,7 +26,7 @@ struct Global {
   static inline uint8_t langIndex = 1;
 
   static inline uint8_t playerId = 0;
-  static inline std::vector<std::set<uint8_t>> playerAlliance = {{0, 1}};
+  static inline std::vector<std::flat_set<uint8_t>> playerAlliance = {{0, 1}};
 
   static inline std::array<std::array<uint32_t, 7>, 8> resources;
 
@@ -33,10 +34,10 @@ struct Global {
                            2>
       terrains;
 
-  static inline std::array<std::set<int32_t>, 2> landBlock;
-  static inline std::array<std::set<int32_t>, 2> waterBlock;
-  static inline std::array<std::set<int32_t>, 2> rockBlock;
-  static inline std::array<std::set<int32_t>, 2> coastalBlock;
+  static inline std::array<std::flat_set<int32_t>, 2> landBlock;
+  static inline std::array<std::flat_set<int32_t>, 2> waterBlock;
+  static inline std::array<std::flat_set<int32_t>, 2> rockBlock;
+  static inline std::array<std::flat_set<int32_t>, 2> coastalBlock;
 
   static inline std::array<SDL_Texture *, 2> miniMaps;
   static inline std::array<SDL_Texture *, 2> puzzleMaps;
@@ -61,7 +62,7 @@ struct Global {
   static inline uint64_t advStatTime;
   static inline std::vector<std::tuple<SDL_Point, SDL_Color, std::u16string>>
       advStrs;
-  static inline std::array<std::array<std::set<entt::entity>, 2>, 8> advVisted;
+  static inline std::array<std::array<std::flat_set<entt::entity>, 2>, 8> advVisted;
 
   static inline std::array<uint8_t, 8> advHeroPage;
   static inline std::array<uint8_t, 8> advTownPage;
@@ -147,7 +148,7 @@ struct Global {
   static inline std::optional<SDL_Point> puzzleOffset;
   static inline uint64_t puzzleFadeTime;
 
-  static inline std::array<std::set<uint8_t>, 8> puzzle;
+  static inline std::array<std::flat_set<uint8_t>, 8> puzzle;
 
   static inline std::pair<uint8_t, entt::entity> heroScnPair;
   static inline uint8_t heroScnType;

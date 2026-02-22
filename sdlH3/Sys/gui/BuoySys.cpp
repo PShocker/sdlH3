@@ -17,7 +17,7 @@ static float bakH = 340;
 static bool visited() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  if (heroComp.visited.contains((uint8_t)ObjectType::BUOY)) {
+  if (heroComp.visited.contains(ObjectType::BUOY)) {
     return true;
   } else {
     return false;

@@ -179,9 +179,9 @@ bool LevelUpSys::prepareLvlUp(HeroComp &heroComp) {
   auto level = heroComp.level;
   auto exp = heroComp.exp;
   if (exp >= HeroSet::heroLevelExperience[level]) {
-    auto primChance = HeroSet::heroLowPrimChance.at(heroComp.subId);
-    Global::lvlPrimIndex = randomId(primChance);
-    auto secChance = HeroSet::heroSecondarySkills.at(heroComp.subId);
+    auto lowPrimRate = HeroSet::heroClazz.at(heroComp.subId).lowPrimRate;
+    Global::lvlPrimIndex = randomId(lowPrimRate);
+    auto secChance = HeroSet::heroClazz.at(heroComp.subId).secSkillRate;
     std::vector<uint8_t> secChance2;
     secChance2.assign(28, 0);
     uint8_t r = 0;

@@ -30,6 +30,15 @@ struct TerrainSet {
           .horseSound = "horse00.wav",
           .horseSoundPenalty = "horse00.wav",
       },
+      {
+          .index = Enum::TERRAIN_SAND,
+          .moveCost = 100,
+          .minimapUnblocked = SDL_Color{82, 56, 8, 255},
+          .minimapBlocked = SDL_Color{57, 40, 8, 255},
+          .music = "Dirt.wav",
+          .horseSound = "horse00.wav",
+          .horseSoundPenalty = "horse00.wav",
+      },
   };
 
   const static inline std::array moveCost = {

@@ -108,8 +108,9 @@ static bool savaMask() {
   auto surface = SDL_RenderReadPixels(Window::renderer, &r);
   Global::maskTexture = SDL_CreateTextureFromSurface(Window::renderer, surface);
   // SDL_SetRenderDrawColor(Window::renderer, 0, 0, 0, 128);
-
-  // SDL_SetTextureColorMod(Global::maskTexture, 128, 128, 128);
+  if (World::iterateSystemsBak.size() <= 1) {
+    SDL_SetTextureColorMod(Global::maskTexture, 128, 128, 128);
+  }
   SDL_DestroySurface(surface);
   return true;
 }
@@ -148,6 +149,8 @@ void World::enterAdvScrn() {
   iterateSystems.push_back(HeroSys::run);
   iterateSystems.push_back(AudioSys::run);
   iterateSystems.push_back(CursorSys::run);
+
+  iterateSystemsBak.clear();
 
   RMouseUpSys.push_back(CursorSys::rightMouseUp);
 
@@ -333,7 +336,6 @@ bool World::enterFadeScrn() {
   World::iterateSystemsBak.pop_back();
 
   enterScrn();
-  iterateSystems.push_back(renderMask);
   iterateSystems.push_back(FadeSys::run);
 
   if (Global::fadeTexture) {
@@ -1114,13 +1116,20 @@ void World::enterCorpse(entt::entity heroEnt, entt::entity goalEnt) {
 
 void World::enterArtifact(entt::entity heroEnt, entt::entity goalEnt) {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(ArtifactSys::run);
-  iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(ArtifactSys::leftMouseUp);
-  RMouseDownSys.push_back(ArtifactSys::rightMouseDown);
-  keyUpSys.push_back(ArtifactSys::keyUp);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(ArtifactSys::run);
+    iterateSystems.push_back(CursorSys::run);
+
+    LMouseUpSys.push_back(ArtifactSys::leftMouseUp);
+    RMouseDownSys.push_back(ArtifactSys::rightMouseDown);
+    keyUpSys.push_back(ArtifactSys::keyUp);
+    CursorSys::run();
+
+    return false;
+  });
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
