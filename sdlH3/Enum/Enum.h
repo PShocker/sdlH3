@@ -102,13 +102,13 @@ struct Enum {
   };
 
   enum RESTYPE : uint8_t {
-    CRYSTAL = 0,
-    GEM = 1,
-    MERCURY = 2,
-    ORE = 3,
-    SULFUR = 4,
-    WOOD = 5,
-    GOLD = 6,
+    WOOD = 0,
+    MERCURY,
+    ORE,
+    SULFUR,
+    CRYSTAL,
+    GEM,
+    GOLD,
 
     // 随机资源
     RAMDOM_RESOURCE

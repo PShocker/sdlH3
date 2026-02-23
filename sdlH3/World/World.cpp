@@ -720,7 +720,7 @@ void World::enterScholar(entt::entity heroEnt, entt::entity goalEnt) {
     LMouseUpSys.push_back(ScholarSys::leftMouseUp);
     RMouseDownSys.push_back(ScholarSys::rightMouseDown);
     keyUpSys.push_back(ScholarSys::keyUp);
-    
+
     CursorSys::run();
 
     return false;
@@ -776,23 +776,28 @@ void World::enterLvlup(entt::entity heroEnt) {
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
-void World::enterVideo(const std::string &path, float x, float y) {
-  iterateSystems.pop_back();
-  iterateSystems.push_back(VideoSys::run);
-  iterateSystems.push_back(CursorSys::run);
-  VideoSys::init(path.c_str(), x, y);
-}
-
 void World::enterTavern(entt::entity heroEnt, entt::entity goalEnt) {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(TavernSys::run);
-  iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(TavernSys::leftMouseUp);
-  RMouseDownSys.push_back(TavernSys::rightMouseDown);
-  keyUpSys.push_back(TavernSys::keyUp);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(TavernSys::run);
 
+    iterateSystems.push_back(VideoSys::run);
+    iterateSystems.push_back(CursorSys::run);
+
+    LMouseUpSys.push_back(TavernSys::leftMouseUp);
+    RMouseDownSys.push_back(TavernSys::rightMouseDown);
+    keyUpSys.push_back(TavernSys::keyUp);
+
+    CursorSys::run();
+
+    return false;
+  });
+
+  TavernSys::refreshHero(Global::playerId, 0);
+  TavernSys::refreshHero(Global::playerId, 1);
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
   Global::goalIndex = 0;
@@ -808,7 +813,7 @@ void World::enterTavern(entt::entity heroEnt, entt::entity goalEnt) {
 
   auto leftX = (Global::viewPort.w - 395) / 2 + 70;
   auto leftY = (Global::viewPort.h - 504) / 2 + 56;
-  enterVideo("./Video/TAVERN.BIK", leftX, leftY);
+  VideoSys::init("./Video/TAVERN.BIK", leftX, leftY);
 }
 
 void World::enterGarrison(entt::entity heroEnt, entt::entity goalEnt) {

@@ -277,7 +277,7 @@ static void handleResource(entt::entity goalEnt) {
   });
   Global::fadeRect = {0, 0, Global::viewPort.w - 199, Global::viewPort.h - 47};
   World::iterateSystems.push_back(World::enterFadeScrn);
-
+  
   Global::fadeCallBack =
       [rComp = World::registrys[World::level].get<ResourceComp>(goalEnt)]() {
         Global::resources[Global::playerId][rComp.id] += rComp.count;

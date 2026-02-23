@@ -13,8 +13,8 @@
 #include "World/World.h"
 #include <cstdint>
 
-auto goldValue = 1000;
-auto woodValue = 10;
+auto goldValue = 0;
+auto woodValue = 0;
 
 static void close() { World::exitScrn(); }
 
@@ -49,19 +49,9 @@ static void buy() {
     auto m = shipyObjectComp.x + dir.x + shipyObjectComp.accessTiles[0].first;
     auto n = shipyObjectComp.y + dir.y + shipyObjectComp.accessTiles[0].second;
     if (!block.contains(m + n * Global::mapSize)) {
-      Global::fadeCallBack = []() {
-        World::LMouseUpSysBak.pop_back();
-        World::LMouseDownSysBak.pop_back();
-        World::RMouseUpSysBak.pop_back();
-        World::RMouseDownSysBak.pop_back();
-        World::keyUpSysBak.pop_back();
-        Global::cursorBack.pop_back();
-        return true;
-      };
-      World::iterateSystems.pop_back();
-      World::iterateSystems.pop_back();
+
+      World::exitScrn();
       World::iterateSystemsBak.push_back(World::iterateSystems);
-      World::iterateSystemsBak.back().push_back(CursorSys::run);
       World::iterateSystems.push_back([m, n]() {
         Ent::loadBoat("AB01_.def", m + 1, n, World::level, 2, 0);
         Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
@@ -120,15 +110,19 @@ static void drawBackGround() {
   FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
                           strPool[926 + (uint8_t)ObjectType::SHIPYARD]);
 
-  auto goldPic = Global::defCache["RESOURCE.def"][(uint8_t)Enum::RESTYPE::GOLD];
-  auto woodPic = Global::defCache["RESOURCE.def"][(uint8_t)Enum::RESTYPE::WOOD];
+  auto goldPic =
+      Global::defCache["RESOURCE.def/0"][(uint8_t)Enum::RESTYPE::GOLD];
+  auto woodPic =
+      Global::defCache["RESOURCE.def/0"][(uint8_t)Enum::RESTYPE::WOOD];
 
   posRect = {leftUp.x + 100, leftUp.y + 244, static_cast<float>(goldPic->w),
              static_cast<float>(goldPic->h)};
+  texture = goldPic;
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
   posRect = {leftUp.x + 196, leftUp.y + 244, static_cast<float>(woodPic->w),
              static_cast<float>(woodPic->h)};
+  texture = woodPic;
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
   FreeTypeSys::drawCenter(leftUp.x + 118, leftUp.y + 294, goldValue);

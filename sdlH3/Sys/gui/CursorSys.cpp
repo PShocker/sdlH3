@@ -928,7 +928,7 @@ bool CursorSys::rightMouseDown(float x, float y) {
       return false;
     }
     World::enterAdvPop();
-    return true;
+    return false;
   } else if (Global::cursorType == (uint8_t)Enum::CURSOR::SPELL) {
     Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
   }

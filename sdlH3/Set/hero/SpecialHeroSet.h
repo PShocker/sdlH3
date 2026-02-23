@@ -10,7 +10,7 @@
 
 struct SpecialHeroSet {
   const static inline std::vector<HeroSetI> heros = {
-      {// sirMullich
+      {// sirMullich (索引144)
        .index = 144,
        .clasz = Enum::HERO_CLASS_KNIGHT, // 骑士 = 0
        .female = false,
@@ -24,8 +24,8 @@ struct SpecialHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS130KN.pcx",
+       .largePor = "HPL130KN.pcx",
        .spec =
            {
                {
@@ -33,11 +33,10 @@ struct SpecialHeroSet {
                    .val = 2,
                },
            }},
-      {// adrienne
+      {// adrienne (索引145)
        .index = 145,
        .clasz = Enum::HERO_CLASS_WITCH, // 女巫 = 15
        .female = true,
-
        .secSkill =
            {
                {Enum::WISDOM, Enum::BASIC},
@@ -49,11 +48,11 @@ struct SpecialHeroSet {
                {Enum::LIZARDMAN, 8},
                {Enum::SERPENT_FLY, 5},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS000SH.pcx",
+       .largePor = "HPL000SH.pcx",
        .spec = {},
        .spells = {Enum::INFERNO}},
-      {// catherine
+      {// catherine (索引146)
        .index = 146,
        .clasz = Enum::HERO_CLASS_KNIGHT, // 骑士 = 0
        .female = true,
@@ -68,8 +67,8 @@ struct SpecialHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS128QC.pcx",
+       .largePor = "HPL128QC.pcx",
        .spec =
            {
                {
@@ -83,7 +82,7 @@ struct SpecialHeroSet {
                    .val = 5,
                },
            }},
-      {// dracon
+      {// dracon (索引147)
        .index = 147,
        .clasz = Enum::HERO_CLASS_WIZARD, // 术士 = 5
        .female = false,
@@ -97,8 +96,8 @@ struct SpecialHeroSet {
                {Enum::STONE_GARGOYLE, 8},
                {Enum::IRON_GOLEM, 4},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS003SH.pcx",
+       .largePor = "HPL003SH.pcx",
        .spec =
            {
                {
@@ -123,7 +122,7 @@ struct SpecialHeroSet {
                },
            },
        .spells = {Enum::HASTE}},
-      {// gelu
+      {// gelu (索引148)
        .index = 148,
        .clasz = Enum::HERO_CLASS_RANGER, // 游侠 = 2
        .female = false,
@@ -137,8 +136,8 @@ struct SpecialHeroSet {
                {Enum::CENTAUR, 12},
                {Enum::DWARF, 6},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS004SH.pcx",
+       .largePor = "HPL004SH.pcx",
        .spec =
            {
                {
@@ -162,7 +161,7 @@ struct SpecialHeroSet {
                    .val = Enum::SHARPSHOOTER,
                },
            }},
-      {// kilgor
+      {// kilgor (索引149)
        .index = 149,
        .clasz = Enum::HERO_CLASS_BARBARIAN, // 野蛮人 = 12
        .female = false,
@@ -176,8 +175,8 @@ struct SpecialHeroSet {
                {Enum::ORC, 10},
                {Enum::WOLF_RIDER, 6},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS005SH.pcx",
+       .largePor = "HPL005SH.pcx",
        .spec =
            {
                {
@@ -191,7 +190,7 @@ struct SpecialHeroSet {
                    .val = 5,
                },
            }},
-      {// undeadHaart
+      {// undeadHaart (索引150)
        .index = 150,
        .clasz = Enum::HERO_CLASS_DEATH_KNIGHT, // 死亡骑士 = 8
        .female = false,
@@ -205,8 +204,8 @@ struct SpecialHeroSet {
                {Enum::WALKING_DEAD, 10},
                {Enum::WIGHT, 5},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS006SH.pcx",
+       .largePor = "HPL006SH.pcx",
        .spec =
            {
                {
@@ -221,11 +220,10 @@ struct SpecialHeroSet {
                },
            },
        .spells = {Enum::SLOW}},
-      {// mutare
+      {// mutare (索引151)
        .index = 151,
        .clasz = Enum::HERO_CLASS_OVERLORD, // 领主 = 10
        .female = true,
-
        .secSkill =
            {
                {Enum::ESTATES, Enum::BASIC},
@@ -237,8 +235,8 @@ struct SpecialHeroSet {
                {Enum::HARPY, 9},
                {Enum::BEHOLDER, 6},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS007SH.pcx",
+       .largePor = "HPL007SH.pcx",
        .spec =
            {
                {
@@ -248,7 +246,7 @@ struct SpecialHeroSet {
                },
            },
        .spells = {Enum::MAGIC_ARROW}},
-      {// roland
+      {// roland (索引152)
        .index = 152,
        .clasz = Enum::HERO_CLASS_KNIGHT, // 骑士 = 0
        .female = false,
@@ -263,8 +261,8 @@ struct SpecialHeroSet {
                {Enum::ARCHER, 7},
                {Enum::GRIFFIN, 3},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS009SH.pcx",
+       .largePor = "HPL009SH.pcx",
        .spec =
            {
                {
@@ -278,7 +276,7 @@ struct SpecialHeroSet {
                    .val = 5,
                },
            }},
-      {// mutareDrake
+      {// mutareDrake (索引153)
        .index = 153,
        .clasz = Enum::HERO_CLASS_OVERLORD, // 领主 = 10
        .female = true,
@@ -293,8 +291,8 @@ struct SpecialHeroSet {
                {Enum::HARPY, 4},
                {Enum::EVIL_EYE, 2},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS008SH.pcx",
+       .largePor = "HPL008SH.pcx",
        .spec =
            {
                {
@@ -303,7 +301,7 @@ struct SpecialHeroSet {
                },
            },
        .spells = {Enum::MAGIC_ARROW}},
-      {// boragus
+      {// boragus (索引154)
        .index = 154,
        .clasz = Enum::HERO_CLASS_BARBARIAN, // 野蛮人 = 12
        .female = false,
@@ -318,8 +316,8 @@ struct SpecialHeroSet {
                {Enum::WOLF_RIDER, 4},
                {Enum::ORC, 2},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS001SH.pcx",
+       .largePor = "HPL001SH.pcx",
        .spec =
            {
                {
@@ -333,7 +331,7 @@ struct SpecialHeroSet {
                    .val = 5,
                },
            }},
-      {// xeron
+      {// xeron (索引155)
        .index = 155,
        .clasz = Enum::HERO_CLASS_DEMON, // 魔鬼 = 6
        .female = false,
@@ -348,8 +346,8 @@ struct SpecialHeroSet {
                {Enum::HELL_HOUND, 4},
                {Enum::HELL_HOUND, 2},
            },
-       .smallPor = "",
-       .largePor = "",
+       .smallPor = "HPS131DM.pcx",
+       .largePor = "HPL131DM.pcx",
        .spec =
            {
                {
@@ -363,7 +361,7 @@ struct SpecialHeroSet {
                    .val = 4,
                },
                {
-                   .id = Enum::SPECIAL_STACKS_SPEED,
+                   .id = Enum::SPECIAL_SPECIAL_UPGRADE,
                    .val = 1,
                },
            }},

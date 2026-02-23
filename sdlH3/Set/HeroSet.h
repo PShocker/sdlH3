@@ -21,7 +21,7 @@ struct HeroSet {
       48022,  57226,  68471,  82165,  98798,  118757, 142508, 171009,
       205210, 246252, 295502, 354602, 425522, 510626};
 
-  const static inline std::vector<HeroClazz> heroClazz = {
+  const static inline std::vector<HeroClazz> heroClasz = {
       // Knight (索引 0)
       {
           .id = Enum::HERO_CLASS_KNIGHT,
@@ -185,7 +185,7 @@ struct HeroSet {
                            6, 6, 6, 6, 8, 1, 1, 4, 1, 1, 8, 8, 0, 4},
       },
   };
-  
+
   const static inline std::array townHeros = {
       &CastleHeroSet::heros,     &RampartHeroSet::heros,
       &TowerHeroSet::heros,      &InfernoHeroSet::heros,
@@ -193,6 +193,8 @@ struct HeroSet {
       &StrongholdHeroSet::heros, &FortressHeroSet::heros,
       &ConfluxHeroSet::heros,    &SpecialHeroSet::heros,
   };
+
+  static inline std::array<std::vector<const HeroSetI *>, 18> fullHerosClasz;
 
   static inline std::vector<const HeroSetI *> fullHeros;
 

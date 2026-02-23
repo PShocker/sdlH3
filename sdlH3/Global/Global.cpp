@@ -951,8 +951,8 @@ void Global::startGame() {
     }
   };
   const auto loadTavernHero = []() {
-    TavernSys::refreshHero(Global::playerId, 0);
-    TavernSys::refreshHero(Global::playerId, 1);
+    Global::tavernHeros[0][0] = entt::null;
+    Global::tavernHeros[0][1] = entt::null;
   };
   // loadObelisk();
   // loadPuzzle();

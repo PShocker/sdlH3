@@ -20,37 +20,47 @@
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
 
-void TavernSys::refreshHero(uint8_t playerId, uint8_t index) {
-  int arr[101];
-  for (int i = 0; i <= 100; ++i) {
-    arr[i] = i;
+bool TavernSys::refreshHero(uint8_t playerId, uint8_t index,
+                            uint8_t heroClasz) {
+  auto heros = HeroSet::fullHerosClasz[heroClasz];
+  std::set<uint8_t> s;
+  for (uint8_t i = 0; i < heros.size(); ++i) {
+    s.insert(heros[i]->index);
   }
-  std::set<int> numbers(arr, arr + 101);
   for (auto m : {0, 1}) {
     auto &registry = World::registrys[m];
     for (auto ent : registry.view<HeroComp>()) {
-      auto hComp = registry.get<HeroComp>(ent);
-      numbers.erase(hComp.portrait);
+      auto &hComp = registry.get<HeroComp>(ent);
+      s.erase(hComp.portrait);
     }
   }
-  if (numbers.size() > 0) {
-    int random = rand() % numbers.size();
-    auto it = std::next(numbers.begin(), random);
-
-    auto heroEnt = World::registrys[0].create();
-    auto hId = *it;
-    auto hComp = Ent::loadDefaultHeroComp(hId);
-    World::registrys[0].emplace<HeroComp>(heroEnt, hComp);
-
-    numbers.erase(it);
-    Global::tavernHeros[playerId][index] = heroEnt;
+  if (s.empty()) {
+    return false;
   }
+  std::uniform_int_distribution<> dist(0, s.size() - 1);
+  auto it = std::ranges::begin(s);
+  std::ranges::advance(it, dist(Global::gen));
+
+  auto heroEnt = World::registrys[0].create();
+  auto hId = *it;
+  auto hComp = Ent::loadDefaultHeroComp(hId);
+  World::registrys[0].emplace<HeroComp>(heroEnt, hComp);
+
+  Global::tavernHeros[playerId][index] = heroEnt;
+  return true;
+}
+
+bool TavernSys::refreshHero(uint8_t playerId, uint8_t index) {
+  if (Global::tavernHeros[playerId][index] == entt::null) {
+    refreshHero(playerId, index, 0);
+  }
+  return true;
 }
 
 static bool canBuy() {
   bool r = false;
   auto &gold = Global::resources[Global::playerId][6];
-  if (gold >= 2500) {
+  if (gold >= 0) {
     r = true;
   }
   if (Global::goalIndex == 0xff) {
@@ -74,21 +84,8 @@ static void close() {
 
 static void buy() {
   auto registry = &World::registrys[World::level];
-  Global::fadeCallBack = []() {
-    World::LMouseUpSysBak.pop_back();
-    World::LMouseDownSysBak.pop_back();
-    World::RMouseUpSysBak.pop_back();
-    World::RMouseDownSysBak.pop_back();
-    World::keyUpSysBak.pop_back();
-    Global::cursorBack.pop_back();
-    return true;
-  };
-  VideoSys::close();
-  World::iterateSystems.pop_back();
-  World::iterateSystems.pop_back();
-  World::iterateSystems.pop_back();
+  World::exitScrn();
   World::iterateSystemsBak.push_back(World::iterateSystems);
-  World::iterateSystemsBak.back().push_back(CursorSys::run);
   World::iterateSystems.push_back([registry]() {
     auto ent = Global::tavernHeros[Global::playerId][Global::goalIndex];
     auto hComp = World::registrys[0].get<HeroComp>(ent);
@@ -101,6 +98,8 @@ static void buy() {
       auto y = oComp.y + oComp.accessTiles[0].second;
       heroEnt =
           Ent::loadHero(hComp, Global::playerId, x, y, World::level, 2, 0);
+      auto &hComp = registry.get<HeroComp>(heroEnt);
+      hComp.curEnt = townEnt;
       auto &tComp = registry.get<TownComp>(townEnt);
       tComp.heroEnt[1] = heroEnt;
       SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
