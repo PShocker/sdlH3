@@ -8,6 +8,7 @@
 #include "SDL3/SDL_rect.h"
 #include "Set/SpellSet.h"
 #include "Sys/FreeTypeSys.h"
+#include "Sys/gui/CursorSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include <any>
@@ -28,7 +29,7 @@
 
 std::pair<uint8_t, uint8_t> SpellSys::spellLevel(HeroComp *heroComp,
                                                  uint8_t id) {
-  uint8_t r = 0;
+  int8_t r = INT8_MIN;
   uint8_t sch;
   auto school = SpellSet::spells[id].school;
   for (uint8_t i = 0; i < school.size(); i++) {
@@ -121,14 +122,17 @@ static void drawSchoolBook() {
                     (Global::viewPort.h - 595) / 2};
   auto &registry = World::registrys[World::level];
   auto heroComp = registry.get<HeroComp>(Global::heroEnt);
-  auto spellBooks = spellsBook(heroComp);
+  auto spBooks = spellsBook(heroComp);
   // for (auto [spelLevel, spelVal] : spellsMap) {
   for (uint8_t i = 0; i < 16; i++) {
     auto page = Global::splPage * 16;
-    if (page > spellBooks.size()) {
+    if (page > spBooks.size()) {
       break;
     }
-    auto spelVal = spellBooks[page + i];
+    if (page + i >= spBooks.size()) {
+      break;
+    }
+    auto spelVal = spBooks[page + i];
     posRect = {splSlot[i].x + leftUp.x, splSlot[i].y + leftUp.y, 78, 65};
     auto textures = Global::defCache["Spells.DEF/0"];
     auto texture = textures[spelVal];
@@ -316,13 +320,13 @@ static bool clickSpell(uint8_t clickType) {
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   auto &registry = World::registrys[World::level];
   auto &heroComp = registry.get<HeroComp>(Global::heroEnt);
-  auto spellBooks = spellsBook(heroComp);
+  auto spBooks = spellsBook(heroComp);
   for (uint8_t i = 0; i < 16; i++) {
     auto page = Global::splPage * 16;
-    if (page > spellBooks.size()) {
+    if (page > spBooks.size()) {
       break;
     }
-    auto spelVal = spellBooks[page + i];
+    auto spelVal = spBooks[page + i];
     posRect = {splSlot[i].x + leftUp.x, splSlot[i].y + leftUp.y, 78, 65};
     auto [skillSch, skillLevel] = SpellSys::spellLevel(&heroComp, spelVal);
     auto secLevel =
@@ -331,6 +335,7 @@ static bool clickSpell(uint8_t clickType) {
     if (SDL_PointInRectFloat(&point, &posRect) && heroComp.mana >= manaCost) {
       if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
         SpellSet::spells[spelVal].func(NULL);
+        CursorSys::clearHeroPath();
       } else {
         SpellSys::showSpellComfirm(clickType, spelVal, skillLevel);
       }

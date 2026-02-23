@@ -1,13 +1,14 @@
 #include "AnimateSys.h"
 #include "Comp/TextureComp.h"
+#include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include <cstdint>
+#include <flat_map>
 #include <string>
-#include <unordered_map>
 
-static const std::unordered_map<std::string, uint8_t> delayMap = {
+static const std::flat_map<std::string, uint8_t> delayMap = {
     {"AH00_.def/5", 60}, {"AH00_.def/6", 60}, {"AH00_.def/7", 60},
     {"AH00_.def/8", 60}, {"AH00_.def/9", 60}, {"AH01_.def/5", 60},
     {"AH01_.def/6", 60}, {"AH01_.def/7", 60}, {"AH01_.def/8", 60},
@@ -40,6 +41,9 @@ static const std::unordered_map<std::string, uint8_t> delayMap = {
     {"AH17_.def/7", 60}, {"AH17_.def/8", 60}, {"AH17_.def/9", 60}};
 
 bool AnimateSys::run() {
+  if ((Enum::CURSOR)Global::cursorType == Enum::CURSOR::FADE) {
+    return true;
+  }
   auto &registry = World::registrys[World::level];
   for (auto ent : registry.view<TextureComp>()) {
     auto textureComp = &registry.get<TextureComp>(ent);

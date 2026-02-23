@@ -7,6 +7,7 @@
 
 #include "H3mLoader/H3mObject.h"
 #include "Set/SpellSet.h"
+#include "Sys/HeroSys.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/CursorSys.h"
 #include "Sys/gui/SpellSys.h"
@@ -15,7 +16,7 @@
 #include <any>
 #include <cstdint>
 
-void DimensionDoor(std::any data) {
+void SpellSet::DimensionDoor(std::any data) {
   World::enterAdvScrn();
   Global::cursorType = (uint8_t)Enum::CURSOR::SPELL;
   Global::cursorSpellIndex = (uint8_t)Enum::CRADVNTR::TELEPORT;
@@ -45,10 +46,10 @@ void DimensionDoor(std::any data) {
       auto p = CursorSys::goalPoint(point);
       uint8_t goalX = p.x;
       uint8_t goalY = p.y;
-      goalX = std::clamp(goalX, (uint8_t)(heroX - 1), (uint8_t)(heroX + 1));
-      goalY = std::clamp(goalY, (uint8_t)(heroY - 1), (uint8_t)(heroY + 1));
 
-      Ent::loadBoat("AB01_", goalX + 1, goalY, World::level, 2, 0);
+      HeroSys::heroTelePort(heroEnt, goalX, goalY);
+      AdvMapSys::heroFocus();
+
       Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
       CursorSys::clearHeroPath();
       return true;

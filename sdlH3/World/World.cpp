@@ -672,13 +672,21 @@ void World::enterWarTomb(entt::entity heroEnt, entt::entity goalEnt) {
 
 void World::enterPrison(entt::entity heroEnt, entt::entity goalEnt) {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(PrisonSys::run);
-  iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(PrisonSys::leftMouseUp);
-  RMouseDownSys.push_back(PrisonSys::rightMouseDown);
-  keyUpSys.push_back(PrisonSys::keyUp);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(PrisonSys::run);
+    iterateSystems.push_back(CursorSys::run);
+
+    LMouseUpSys.push_back(PrisonSys::leftMouseUp);
+    RMouseDownSys.push_back(PrisonSys::rightMouseDown);
+    keyUpSys.push_back(PrisonSys::keyUp);
+
+    CursorSys::run();
+
+    return false;
+  });
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
@@ -702,13 +710,21 @@ void World::enterWitchHut(entt::entity heroEnt, entt::entity goalEnt) {
 
 void World::enterScholar(entt::entity heroEnt, entt::entity goalEnt) {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(ScholarSys::run);
-  iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(ScholarSys::leftMouseUp);
-  RMouseDownSys.push_back(ScholarSys::rightMouseDown);
-  keyUpSys.push_back(ScholarSys::keyUp);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(ScholarSys::run);
+    iterateSystems.push_back(CursorSys::run);
+
+    LMouseUpSys.push_back(ScholarSys::leftMouseUp);
+    RMouseDownSys.push_back(ScholarSys::rightMouseDown);
+    keyUpSys.push_back(ScholarSys::keyUp);
+    
+    CursorSys::run();
+
+    return false;
+  });
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;

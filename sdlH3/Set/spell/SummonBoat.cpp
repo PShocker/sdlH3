@@ -59,5 +59,4 @@ void SpellSet::SummonBoat(std::any data) {
     World::iterateSystems.push_back(World::enterFadeScrn);
   };
   return;
-  return;
 }

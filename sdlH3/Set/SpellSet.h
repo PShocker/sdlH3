@@ -107,62 +107,62 @@ struct SpellSet {
           .type = Enum::SPELL_TYPE_ADV,
           .func = ScuttleBoat,
       },
-    //   {
-    //       .index = 2,                         // 透视之眼
-    //       .school = {true, true, true, true}, // 全学派
-    //       .manaCost = {4, 2, 2, 2},
-    //       .level = 2,
-    //       .type = Enum::SPELL_TYPE_ADV,
-    //       .func = Visions,
-    //   },
-    //   {
-    //       .index = 3,                            // 透视大地
-    //       .school = {true, false, false, false}, // 土系
-    //       .manaCost = {2, 1, 1, 1},
-    //       .level = 1,
-    //       .type = Enum::SPELL_TYPE_ADV,
-    //       .func = ViewEarth,
-    //   },
-    //   {
-    //       .index = 4,                            // 伪装大法
-    //       .school = {false, false, false, true}, // 气系
-    //       .manaCost = {4, 2, 2, 2},
-    //       .level = 2,
-    //       .type = Enum::SPELL_TYPE_ADV,
-    //       .func = Disguise,
-    //   },
-    //   {
-    //       .index = 5,                            // 透视大气
-    //       .school = {false, false, false, true}, // 气系
-    //       .manaCost = {2, 1, 1, 1},
-    //       .level = 1,
-    //       .type = Enum::SPELL_TYPE_ADV,
-    //       .func = ViewAir,
-    //   },
-    //   {
-    //       .index = 6,                            // 飞行奇术
-    //       .school = {false, false, false, true}, // 气系
-    //       .manaCost = {20, 15, 15, 15},
-    //       .level = 5,
-    //       .type = Enum::SPELL_TYPE_ADV,
-    //       .func = Fly,
-    //   },
-    //   {
-    //       .index = 7,                            // 凌波微步
-    //       .school = {false, true, false, false}, // 水系
-    //       .manaCost = {12, 8, 8, 8},
-    //       .level = 4,
-    //       .type = Enum::SPELL_TYPE_ADV,
-    //       .func = WaterWalk,
-    //   },
-    //   {
-    //       .index = 8,                            // 异次元之门
-    //       .school = {false, false, false, true}, // 气系
-    //       .manaCost = {25, 20, 20, 20},
-    //       .level = 5,
-    //       .type = Enum::SPELL_TYPE_ADV,
-    //       .func = DimensionDoor,
-    //   },
+      {
+          .index = 2,                         // 透视之眼
+          .school = {true, true, true, true}, // 全学派
+          .manaCost = {4, 2, 2, 2},
+          .level = 2,
+          .type = Enum::SPELL_TYPE_ADV,
+          .func = Visions,
+      },
+      {
+          .index = 3,                            // 透视大地
+          .school = {true, false, false, false}, // 土系
+          .manaCost = {2, 1, 1, 1},
+          .level = 1,
+          .type = Enum::SPELL_TYPE_ADV,
+          .func = ViewEarth,
+      },
+      {
+          .index = 4,                            // 伪装大法
+          .school = {false, false, false, true}, // 气系
+          .manaCost = {4, 2, 2, 2},
+          .level = 2,
+          .type = Enum::SPELL_TYPE_ADV,
+          .func = Disguise,
+      },
+      {
+          .index = 5,                            // 透视大气
+          .school = {false, false, false, true}, // 气系
+          .manaCost = {2, 1, 1, 1},
+          .level = 1,
+          .type = Enum::SPELL_TYPE_ADV,
+          .func = ViewAir,
+      },
+      {
+          .index = 6,                            // 飞行奇术
+          .school = {false, false, false, true}, // 气系
+          .manaCost = {20, 15, 15, 15},
+          .level = 5,
+          .type = Enum::SPELL_TYPE_ADV,
+          .func = Fly,
+      },
+      {
+          .index = 7,                            // 凌波微步
+          .school = {false, true, false, false}, // 水系
+          .manaCost = {12, 8, 8, 8},
+          .level = 4,
+          .type = Enum::SPELL_TYPE_ADV,
+          .func = WaterWalk,
+      },
+      {
+          .index = 8,                            // 异次元之门
+          .school = {false, false, false, true}, // 气系
+          .manaCost = {25, 20, 20, 20},
+          .level = 5,
+          .type = Enum::SPELL_TYPE_ADV,
+          .func = DimensionDoor,
+      },
     //   {
     //       .index = 9,                            // 时空之门
     //       .school = {true, false, false, false}, // 土系
