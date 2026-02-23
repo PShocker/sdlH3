@@ -846,9 +846,19 @@ void CursorSys::clearHeroPath() {
       std::unordered_set<int32_t> block;
       block.insert(Global::rockBlock[World::level].begin(),
                    Global::rockBlock[World::level].end());
-      if (heroComp->moveType != HeroComp::BOAT) {
+      switch (heroComp->moveType) {
+      case HeroComp::HORSE:
+      case HeroComp::FLY:
+      case HeroComp::WATER_WALK: {
         block.insert(Global::waterBlock[World::level].begin(),
                      Global::waterBlock[World::level].end());
+        break;
+      }
+      case HeroComp::BOAT: {
+        block.insert(Global::landBlock[World::level].begin(),
+                     Global::landBlock[World::level].end());
+        break;
+      }
       }
       for (auto ent : registry.view<ObjectComp>()) {
         if (registry.get<PositionComp>(ent).z == INT32_MIN) {
@@ -927,7 +937,9 @@ bool CursorSys::rightMouseDown(float x, float y) {
       CursorSys::clearHeroPath();
       return false;
     }
-    World::enterAdvPop();
+    if (World::iterateSystemsBak.empty()) {
+      World::enterAdvPop();
+    }
     return false;
   } else if (Global::cursorType == (uint8_t)Enum::CURSOR::SPELL) {
     Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
