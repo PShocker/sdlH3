@@ -617,6 +617,7 @@ struct Enum {
     HERO_MOVENT_LAND,
     HERO_MOVENT_SEA,
     HERO_MANA,
+    HERO_EXPERIENCE,
   };
 
   enum ARTIFACT_BONUS_TYPE {

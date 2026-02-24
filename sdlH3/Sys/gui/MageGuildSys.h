@@ -8,5 +8,5 @@ struct MageGuildSys {
   static bool rightMouseDown(float x, float y);
   static bool keyUp(uint16_t key);
 
-  static void visit();
+  static void study();
 };

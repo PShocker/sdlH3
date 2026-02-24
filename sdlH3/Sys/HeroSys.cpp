@@ -277,7 +277,7 @@ static void handleResource(entt::entity goalEnt) {
   });
   Global::fadeRect = {0, 0, Global::viewPort.w - 199, Global::viewPort.h - 47};
   World::iterateSystems.push_back(World::enterFadeScrn);
-  
+
   Global::fadeCallBack =
       [rComp = World::registrys[World::level].get<ResourceComp>(goalEnt)]() {
         Global::resources[Global::playerId][rComp.id] += rComp.count;
@@ -697,6 +697,7 @@ static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
     break;
   case ObjectType::SHIPYARD:
     handleShipy(heroEnt, goalEnt);
+    registry.get<HeroComp>(heroEnt).curEnt = goalEnt;
     break;
   case ObjectType::TAVERN:
     World::enterTavern(heroEnt, goalEnt);
@@ -859,6 +860,10 @@ static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
     break;
   case ObjectType::STAR_AXIS:
     World::enterStarAxis(heroEnt, goalEnt);
+    registry.get<HeroComp>(heroEnt).curEnt = goalEnt;
+    break;
+  case ObjectType::STABLES:
+    World::enterStables(heroEnt, goalEnt);
     registry.get<HeroComp>(heroEnt).curEnt = goalEnt;
     break;
   default:

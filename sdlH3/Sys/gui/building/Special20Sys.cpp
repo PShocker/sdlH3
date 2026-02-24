@@ -24,7 +24,6 @@ static void receive() {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto id = townComp->id;
-
 }
 
 static std::vector<Button> buttonInfo() {
@@ -46,7 +45,6 @@ static void draw() {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto id = townComp->id;
-
 }
 
 static void drawButton() {
@@ -64,7 +62,4 @@ bool Special20Sys::run() {
   draw();
   drawButton();
   return true;
-}
-
-void Special20Sys::visit() {
 }

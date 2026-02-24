@@ -47,7 +47,6 @@ static void draw() {
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto id = townComp->id;
- 
 }
 
 static void drawButton() {
@@ -66,5 +65,3 @@ bool Special19Sys::run() {
   drawButton();
   return true;
 }
-
-void Special19Sys::visit() {}

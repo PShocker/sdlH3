@@ -73,6 +73,3 @@ bool Special10Sys::run() {
   drawButton();
   return true;
 }
-
-void Special10Sys::visit() {
-}

@@ -63,6 +63,3 @@ bool Special18Sys::run() {
   drawButton();
   return true;
 }
-
-void Special18Sys::visit() {
-}

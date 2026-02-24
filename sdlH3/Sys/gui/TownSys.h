@@ -16,8 +16,7 @@ struct TownSys {
   static bool rightMouseDown(float x, float y);
   static bool keyUp(uint16_t key);
 
-  static void heroVisit();
-  static uint8_t visitBuild(uint8_t bId);
+  static void heroTownBonus();
   static std::array<uint32_t, 7> townInCome(uint8_t lvl, entt::entity townEnt);
   static std::u16string townName(uint8_t lvl, entt::entity townEnt);
   static std::set<int8_t> townDweBuilds(uint8_t lvl, entt::entity townEnt);

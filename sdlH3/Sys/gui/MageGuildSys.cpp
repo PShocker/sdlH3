@@ -17,7 +17,7 @@
 #include <cstdint>
 #include <vector>
 
-void MageGuildSys::visit() {
+void MageGuildSys::study() {
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);

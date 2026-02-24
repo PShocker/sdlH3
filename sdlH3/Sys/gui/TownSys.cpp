@@ -30,10 +30,12 @@
 #include "Sys/gui/building/Special10Sys.h"
 #include "Sys/gui/building/Special18Sys.h"
 #include "Sys/gui/building/Special19Sys.h"
+#include "Sys/gui/building/Special20Sys.h"
 #include "Sys/gui/building/Special21Sys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include "base/TownListSys.h"
+#include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
 #include <functional>
@@ -323,60 +325,59 @@ std::array<uint32_t, 7> TownSys::townInCome(uint8_t lvl, entt::entity townEnt) {
   return r;
 }
 
-uint8_t TownSys::visitBuild(uint8_t bId) {
-  uint8_t r = 0xff;
-  auto [level, townEnt] = Global::townScnPair;
-  auto &registry = World::registrys[level];
-  auto townComp = &registry.get<TownComp>(townEnt);
-  for (auto i : {0, 1}) {
-    if (townComp->heroEnt[i].has_value()) {
-      auto heroEnt = townComp->heroEnt[i].value();
-      auto &heroComp = registry.get<HeroComp>(heroEnt);
-      if (townComp->visitHeros[bId].contains(heroComp.portrait)) {
-        return i;
-      }
-    }
-  }
-  return r;
-}
-
-void TownSys::heroVisit() {
+void TownSys::heroTownBonus() {
+  entt::entity hEnt = entt::null;
   auto [level, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[level];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto id = townComp->id;
   for (auto [bId, ent] : townComp->buildings) {
-    auto i = visitBuild(bId);
-    if (i != 0xff) {
-      Global::heroEnt = townComp->heroEnt[i].value();
-      switch (bId) {
-      case Enum::BUILD_SPECIAL_10: {
-        Special10Sys::visit();
-        break;
-      }
-      case Enum::BUILD_SPECIAL_18: {
-        Special18Sys::visit();
-        break;
-      }
-      case Enum::BUILD_SPECIAL_19: {
-        Special19Sys::visit();
-        break;
-      }
-      case Enum::BUILD_SPECIAL_20: {
-        Special19Sys::visit();
-        break;
-      }
-      case Enum::BUILD_SPECIAL_21: {
-        Special21Sys::visit();
-        break;
-      }
-      default: {
-        break;
-      }
+    for (auto index : {0, 1}) {
+      if (townComp->heroEnt[index].has_value()) {
+        auto heroEnt = townComp->heroEnt[index].value();
+        auto &heroComp = registry.get<HeroComp>(heroEnt);
+        if (!townComp->visitHeros[bId].contains(heroComp.portrait)) {
+          hEnt = heroEnt;
+        }
       }
     }
+    if (hEnt == entt::null) {
+      continue;
+    }
+    auto buildI = FactionSet::fullFactions[townComp->id]->builds[bId + 1];
+    std::vector<FactionBuildBonus> m;
+    for (auto i : buildI.bonus) {
+      if (i.id == Enum::HERO_PRIMAYRY_SKILL || i.id == Enum::HERO_MANA ||
+          i.id == Enum::HERO_MOVENT_LAND || i.id == Enum::HERO_EXPERIENCE) {
+        m.push_back(i);
+      }
+    }
+    if (m.empty()) {
+      continue;
+    }
+    auto confirmbakW = 500;
+    auto confirmbakH = 300;
+    Global::confirmdraw = [confirmbakW, confirmbakH, bId]() {
+      SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
+                        Global::viewPort.h / 2 - confirmbakH / 2};
+      auto strPool = *Lang::strPool[Global::langIndex];
+
+      FreeTypeSys::setSize(13);
+      FreeTypeSys::setColor(240, 224, 104, 255);
+      FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
+                              strPool[3043 + (int8_t)bId * 2]);
+      FreeTypeSys::setColor(255, 255, 255, 255);
+      auto str = strPool[3044 + (int8_t)bId * 2];
+      auto str2 = str + u"\n" + u"(" + u"heroName" + u")";
+      FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 40, str2);
+    };
+    Global::confirmOnlyOK = true;
+    Global::confirmCallBack = []() { World::exitScrn(); };
+    auto type = ((uint8_t)Enum::SCNTYPE::MOD);
+    World::enterConfirm(confirmbakW, confirmbakH, type);
+    break;
   }
-  MageGuildSys::visit();
+  MageGuildSys::study();
 }
 
 static void close() {

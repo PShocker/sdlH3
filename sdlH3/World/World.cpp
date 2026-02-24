@@ -69,6 +69,7 @@
 #include "Sys/gui/SirensSys.h"
 #include "Sys/gui/SpellSys.h"
 #include "Sys/gui/SpliteCreSys.h"
+#include "Sys/gui/StablesSys.h"
 #include "Sys/gui/StarAxisSys.h"
 #include "Sys/gui/TavernSys.h"
 #include "Sys/gui/TempleSys.h"
@@ -174,7 +175,7 @@ void World::enterAdvScrn() {
 void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
   enterScrn();
 
-  iterateSystems.push_back([] {
+  iterateSystems.push_back([type] {
     iterateSystems.clear();
     iterateSystems.push_back(renderMask);
     iterateSystems.push_back(TownSys::run);
@@ -186,6 +187,10 @@ void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
     keyUpSys.push_back(TownSys::keyUp);
 
     CursorSys::run();
+
+    if (type == (uint8_t)Enum::SCNTYPE::MOD) {
+      TownSys::heroTownBonus();
+    }
 
     return false;
   });
@@ -211,9 +216,6 @@ void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
   }
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
-  if (type == (uint8_t)Enum::SCNTYPE::MOD) {
-    TownSys::heroVisit();
-  }
 }
 
 void World::enterSpec10Build(uint8_t townId, entt::entity bEnt) {
@@ -1549,20 +1551,42 @@ void World::enterWarMachine(uint16_t warMId, uint8_t warMType) {
 
 void World::enterStables(entt::entity heroEnt, entt::entity goalEnt) {
   enterScrn();
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(StablesSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
+    LMouseUpSys.push_back(StablesSys::leftMouseUp);
+    keyUpSys.push_back(StablesSys::keyUp);
+
+    CursorSys::run();
+
+    return false;
+  });
+
+  Global::heroEnt = heroEnt;
+  Global::goalEnt = goalEnt;
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
 void World::enterConfirm(float bakW, float bakH, uint8_t confirmType) {
   enterScrn();
 
-  iterateSystems.pop_back();
-  iterateSystems.push_back(ConfirmSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(ConfirmSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(ConfirmSys::leftMouseUp);
-  RMouseUpSys.push_back(ConfirmSys::rightMouseUp);
-  keyUpSys.push_back(ConfirmSys::keyUp);
+    LMouseUpSys.push_back(ConfirmSys::leftMouseUp);
+    RMouseUpSys.push_back(ConfirmSys::rightMouseUp);
+    keyUpSys.push_back(ConfirmSys::keyUp);
+
+    CursorSys::run();
+
+    return false;
+  });
 
   Global::confirmBakW = bakW;
   Global::confirmBakH = bakH;
