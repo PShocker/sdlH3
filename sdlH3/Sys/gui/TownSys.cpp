@@ -49,13 +49,55 @@
 static std::optional<int8_t> mouseBuildId;
 static std::unordered_map<uint8_t, std::vector<bool>> townAreaBuilds[256];
 
-static void showBuildComfirm(uint8_t lvl, entt::entity townEnt, uint8_t bId,
-                             uint8_t confirmType) {
+static uint8_t dweLevel(uint8_t bId) {
+  uint8_t dweLevel = 0;
+  switch (bId) {
+  case Enum::BUILD_DWELLING_LEVEL_1:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_1: {
+    dweLevel = 1;
+    break;
+  }
+  case Enum::BUILD_DWELLING_LEVEL_2:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_2: {
+    dweLevel = 2;
+    break;
+  }
+  case Enum::BUILD_DWELLING_LEVEL_3:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_3: {
+    dweLevel = 3;
+    break;
+  }
+  case Enum::BUILD_DWELLING_LEVEL_4:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_4: {
+    dweLevel = 4;
+    break;
+  }
+  case Enum::BUILD_DWELLING_LEVEL_5:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_5: {
+    dweLevel = 5;
+    break;
+  }
+  case Enum::BUILD_DWELLING_LEVEL_6:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_6: {
+    dweLevel = 6;
+    break;
+  }
+  case Enum::BUILD_DWELLING_LEVEL_7:
+  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_7: {
+    dweLevel = 7;
+    break;
+  }
+  }
+  return dweLevel;
+}
+
+void TownSys::showBuildComfirm(uint8_t bId, uint8_t confirmType) {
+  auto [lvl, townEnt] = Global::townScnPair;
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto &buildings = townComp->buildings;
-  auto confirmbakW = 480;
-  auto confirmbakH = 220;
+  float confirmbakW = 480;
+  float confirmbakH = 220;
   Global::confirmdraw = [=]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};
@@ -164,44 +206,7 @@ uint32_t TownSys::townDweNum(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
 
 uint32_t TownSys::townDweInc(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
   uint32_t r;
-  uint8_t dweLevel = 0;
-  switch (bId) {
-  case Enum::BUILD_DWELLING_LEVEL_1:
-  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_1: {
-    dweLevel = 1;
-    break;
-  }
-  case Enum::BUILD_DWELLING_LEVEL_2:
-  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_2: {
-    dweLevel = 2;
-    break;
-  }
-  case Enum::BUILD_DWELLING_LEVEL_3:
-  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_3: {
-    dweLevel = 3;
-    break;
-  }
-  case Enum::BUILD_DWELLING_LEVEL_4:
-  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_4: {
-    dweLevel = 4;
-    break;
-  }
-  case Enum::BUILD_DWELLING_LEVEL_5:
-  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_5: {
-    dweLevel = 5;
-    break;
-  }
-  case Enum::BUILD_DWELLING_LEVEL_6:
-  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_6: {
-    dweLevel = 6;
-    break;
-  }
-  case Enum::BUILD_DWELLING_LEVEL_7:
-  case Enum::BUILD_DWELLING_UPGRADE_LEVEL_7: {
-    dweLevel = 7;
-    break;
-  }
-  }
+  uint8_t dLevel = dweLevel(bId);
   auto &registry = World::registrys[lvl];
   auto townComp = &registry.get<TownComp>(townEnt);
   auto upGradeBuild = townUpGradeBuild(lvl, townEnt);
@@ -209,12 +214,12 @@ uint32_t TownSys::townDweInc(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
     auto buildI = FactionSet::fullFactions[townComp->id]->builds.at(k + 1);
     for (auto &bonus : buildI.bonus) {
       if (bonus.id == Enum::CREATURE_GROWTH) {
-        if (dweLevel == bonus.subId) {
+        if (dLevel == bonus.subId) {
           r += bonus.val;
         }
       }
       if (bonus.id == Enum::CREATURE_GROWTH_RATE) {
-        if (dweLevel == bonus.subId) {
+        if (dLevel == bonus.subId) {
           auto buildEnt = townComp->buildings[bId];
           auto dComp = registry.get<DwellingComp>(buildEnt);
           auto creatureId = dComp.creatures.back().first.back();
@@ -232,7 +237,7 @@ uint32_t TownSys::townDweInc(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
     // 遍历所有值
     for (auto it = range.first; it != range.second; ++it) {
       ArtifactBonus &value = it->second;
-      if (value.subType == dweLevel) {
+      if (value.subType == dLevel) {
         r += value.val;
       }
     }
@@ -341,7 +346,9 @@ void TownSys::heroVisit() {
   auto townComp = &registry.get<TownComp>(townEnt);
   auto id = townComp->id;
   for (auto [bId, ent] : townComp->buildings) {
-    if (visitBuild(bId) != 0xff) {
+    auto i = visitBuild(bId);
+    if (i != 0xff) {
+      Global::heroEnt = townComp->heroEnt[i].value();
       switch (bId) {
       case Enum::BUILD_SPECIAL_10: {
         Special10Sys::visit();
@@ -965,9 +972,10 @@ static bool clickCres(uint8_t clickType) {
         }
         World::enterDwe(srcEnt, goalEnt);
       } else {
-        auto confirmbakW = 480;
-        auto confirmbakH = 220;
-        Global::confirmdraw = [=]() {
+        float confirmbakW = 480;
+        float confirmbakH = 220;
+        Global::confirmdraw = [confirmbakW, confirmbakH, creatureId, dwe,
+                               townComp]() {
           SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                             Global::viewPort.h / 2 - confirmbakH / 2};
           auto strPool = *Lang::strPool[Global::langIndex];
@@ -984,6 +992,32 @@ static bool clickCres(uint8_t clickType) {
           SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
           SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
           SDL_RenderRect(Window::renderer, &posRect);
+          auto [level, townEnt] = Global::townScnPair;
+          auto upGradeBuild = townUpGradeBuild(level, townEnt);
+          uint8_t dLevel = dweLevel(dwe);
+          for (auto k : upGradeBuild) {
+            auto buildI =
+                FactionSet::fullFactions[townComp->id]->builds.at(k + 1);
+            for (auto &bonus : buildI.bonus) {
+              if (bonus.id == Enum::CREATURE_GROWTH) {
+                if (dLevel == bonus.subId) {
+                  FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
+                                          bonus.val);
+                }
+              } else if (bonus.id == Enum::CREATURE_GROWTH_RATE) {
+                if (dLevel == bonus.subId) {
+                  auto buildEnt = townComp->buildings[dwe];
+                  auto &registry = World::registrys[level];
+                  auto dComp = registry.get<DwellingComp>(buildEnt);
+                  auto creatureId = dComp.creatures.back().first.back();
+                  auto baseNum = CreatureSet::fullCreatures[creatureId]->growth;
+                  auto growth = baseNum * bonus.val;
+                  FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
+                                          bonus.val);
+                }
+              }
+            }
+          }
         };
         Global::confirmOnlyOK = true;
         Global::confirmCallBack = std::nullopt;
@@ -1002,7 +1036,7 @@ static void clickCapitol(uint8_t clickType) {
   } else {
     auto [level, townEnt] = Global::townScnPair;
     auto buildId = mouseBuildId.value();
-    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
+    TownSys::showBuildComfirm(buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
@@ -1012,7 +1046,7 @@ static void clickFort(uint8_t clickType) {
   } else {
     auto [level, townEnt] = Global::townScnPair;
     auto buildId = mouseBuildId.value();
-    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
+    TownSys::showBuildComfirm(buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
@@ -1043,9 +1077,8 @@ static void clickBlackSmith(uint8_t clickType) {
                           ((uint8_t)Enum::SCNTYPE::MOD));
     }
   } else {
-    auto [level, townEnt] = Global::townScnPair;
     auto buildId = mouseBuildId.value();
-    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
+    TownSys::showBuildComfirm(buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
@@ -1064,7 +1097,7 @@ static void clickDwe(uint8_t clickType) {
     }
     World::enterDwe(srcEnt, goalEnt);
   } else {
-    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
+    TownSys::showBuildComfirm(buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
@@ -1074,7 +1107,7 @@ static void clickMageGuild(uint8_t clickType) {
     World::enterMageGuild(level, townEnt);
   } else {
     auto buildId = mouseBuildId.value();
-    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
+    TownSys::showBuildComfirm(buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
@@ -1112,7 +1145,7 @@ static void clickSpecial(uint8_t clickType) {
     }
   } else {
     auto [level, townEnt] = Global::townScnPair;
-    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
+    TownSys::showBuildComfirm(buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
@@ -1120,9 +1153,9 @@ static void clickGrail(uint8_t clickType) {
   auto [level, townEnt] = Global::townScnPair;
   auto buildId = mouseBuildId.value();
   if (clickType == (uint8_t)Enum::CLICKTYPE::L_UP) {
-    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::MOD);
+    TownSys::showBuildComfirm(buildId, (uint8_t)Enum::SCNTYPE::MOD);
   } else {
-    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
+    TownSys::showBuildComfirm(buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 
@@ -1134,7 +1167,7 @@ static void clickShipyard(uint8_t clickType) {
     auto townComp = &registry.get<TownComp>(townEnt);
     World::enterShipyard(townEnt, townComp->buildings[buildId]);
   } else {
-    showBuildComfirm(level, townEnt, buildId, (uint8_t)Enum::SCNTYPE::POP);
+    TownSys::showBuildComfirm(buildId, (uint8_t)Enum::SCNTYPE::POP);
   }
 }
 

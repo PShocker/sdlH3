@@ -1,8 +1,10 @@
 #include "World.h"
 
+#include "Comp/HeroComp.h"
 #include "Comp/PositionComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
+#include "H3mLoader/H3mObject.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
@@ -232,7 +234,6 @@ void World::enterSpec10Build(uint8_t townId, entt::entity bEnt) {
 void World::enterSpec18Build(uint8_t townId, entt::entity bEnt) {
   switch (townId) {
   case Enum::FACTION_CASTLE: {
-    enterTavern(entt::null, bEnt);
     break;
   }
   default: {
@@ -262,7 +263,11 @@ void World::enterSpec19Build(uint8_t townId, entt::entity bEnt) {
 void World::enterSpec20Build(uint8_t townId, entt::entity bEnt) {
   switch (townId) {
   case Enum::FACTION_CASTLE: {
-    enterTavern(entt::null, bEnt);
+    auto heroEnt = Global::heroEnt;
+    auto hComp = World::registrys[World::level].get<HeroComp>(heroEnt);
+    if (!hComp.visited.contains(ObjectType::STABLES)) {
+      enterStables(heroEnt, entt::null);
+    }
     break;
   }
   default: {
@@ -1538,6 +1543,12 @@ void World::enterWarMachine(uint16_t warMId, uint8_t warMType) {
   Global::creType = warMType;
   Global::crePair = {warMId, 1};
   Global::creGroup = 2;
+
+  Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+}
+
+void World::enterStables(entt::entity heroEnt, entt::entity goalEnt) {
+  enterScrn();
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }

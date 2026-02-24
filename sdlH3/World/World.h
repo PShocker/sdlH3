@@ -125,6 +125,7 @@ struct World {
                             std::pair<uint8_t, uint16_t> crePair,
                             uint8_t creType);
   static void enterWarMachine(uint16_t warMId, uint8_t warMType);
+  static void enterStables(entt::entity heroEnt, entt::entity goalEnt);
   static void enterScrn();
 
   static void exitScrn();

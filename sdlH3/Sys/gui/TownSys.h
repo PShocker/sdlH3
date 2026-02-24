@@ -24,4 +24,5 @@ struct TownSys {
   static uint32_t townDweInc(uint8_t lvl, entt::entity townEnt, uint8_t bId);
   static uint32_t townDweNum(uint8_t lvl, entt::entity townEnt, uint8_t bId);
   static uint8_t fortLevel(uint8_t lvl, entt::entity townEnt);
+  static void showBuildComfirm(uint8_t bId, uint8_t confirmType);
 };
