@@ -6,12 +6,13 @@
 #include <flat_map>
 #include <optional>
 #include <set>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 struct TownComp {
   uint8_t id;
-  std::string name;
+  std::u16string name;
   uint8_t nameIndex;
   std::flat_map<int8_t, entt::entity> buildings;
   std::vector<std::pair<uint16_t, uint32_t>> garCreatures;

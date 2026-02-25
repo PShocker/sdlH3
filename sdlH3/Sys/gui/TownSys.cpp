@@ -355,8 +355,15 @@ void TownSys::heroTownBonus() {
     if (m.empty()) {
       continue;
     }
-    auto confirmbakW = 500;
-    auto confirmbakH = 300;
+    if (m.size() == 1 && m[0].id == Enum::HERO_MOVENT_LAND) {
+      // 需要判断是否访问过马厩
+      auto &heroComp = registry.get<HeroComp>(hEnt);
+      if (heroComp.visited.contains(ObjectType::STABLES)) {
+        continue;
+      }
+    }
+    float confirmbakW = 500;
+    float confirmbakH = 300;
     Global::confirmdraw = [confirmbakW, confirmbakH, bId]() {
       SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                         Global::viewPort.h / 2 - confirmbakH / 2};
@@ -372,7 +379,32 @@ void TownSys::heroTownBonus() {
       FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 40, str2);
     };
     Global::confirmOnlyOK = true;
-    Global::confirmCallBack = []() { World::exitScrn(); };
+    Global::confirmCallBack = [m, hEnt, townComp, bId]() {
+      World::exitScrn();
+      auto [level, townEnt] = Global::townScnPair;
+      auto &registry = World::registrys[level];
+      auto &heroComp = registry.get<HeroComp>(hEnt);
+      townComp->visitHeros[bId].insert(heroComp.portrait);
+      for (auto i : m) {
+        switch (i.id) {
+        case Enum::HERO_PRIMAYRY_SKILL: {
+          AdventureBonus bonus = {
+              .src = ObjectType::BUILD,
+              .type = Enum::ADVENTURE_PRIMARY_SKILL,
+              .subType = static_cast<uint8_t>(i.subId),
+              .val = i.val,
+          };
+          heroComp.adventureBonus.insert(
+              {Enum::ADVENTURE_PRIMARY_SKILL, bonus});
+          break;
+        }
+        case Enum::HERO_MOVENT_LAND: {
+          heroComp.visited.insert(ObjectType::STABLES);
+          break;
+        }
+        }
+      }
+    };
     auto type = ((uint8_t)Enum::SCNTYPE::MOD);
     World::enterConfirm(confirmbakW, confirmbakH, type);
     break;
@@ -709,7 +741,8 @@ static void drawBottomInfo() {
       creature = &heroComp->creatures;
       posRect = {leftUp.x + 242, leftUp.y + 387 + i * 96, 58, 64};
       if (SDL_PointInRectFloat(&point, &posRect)) {
-        auto heroName = strPool[1262 + heroComp->portrait];
+        auto heroName = AdvMapSys::heroName(*heroComp);
+
         s += strPool[2862] + heroName + u"(" + strPool[2883 + i] + u")";
         break;
       }
@@ -982,8 +1015,8 @@ static bool clickCres(uint8_t clickType) {
           auto strPool = *Lang::strPool[Global::langIndex];
           FreeTypeSys::setSize(13);
           FreeTypeSys::setColor(240, 224, 104, 255);
-          FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
-                                  strPool[12 + creatureId]);
+          auto cName = strPool[12 + creatureId];
+          FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15, cName);
 
           FreeTypeSys::setColor(255, 255, 255, 255);
           auto texture = Global::defCache["TWCRPORT.def/0"][creatureId + 2];

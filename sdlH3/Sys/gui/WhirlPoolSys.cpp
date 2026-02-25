@@ -72,11 +72,12 @@ static void drawBackGround() {
   auto y = Global::viewPort.h / 2;
   AdvPopSys::drawBackGround(x, y, bakW, bakH, Global::playerId);
 
-  auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 15,
-                          strPool[926 + (uint8_t)ObjectType::HUT_OF_MAGI]);
+  auto strPool = *Lang::strPool[Global::langIndex];
+  auto oName = strPool[926 + ObjectType::WHIRLPOOL];
+
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 15, oName);
 }
 
 static void drawButton() {

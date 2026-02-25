@@ -552,7 +552,8 @@ static void drawHeroPortraitSpec() {
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   FreeTypeSys::setSize(15);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  auto heroName = strPool[1259 + heroComp->portrait];
+  auto heroName = AdvMapSys::heroName(*heroComp);
+
   FreeTypeSys::drawCenter(posRect.x + 170, posRect.y + 10, heroName);
   FreeTypeSys::setColor(255, 255, 255, 255);
   auto str = FreeTypeSys::str(heroComp->level) + strPool[2174] +

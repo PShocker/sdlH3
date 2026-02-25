@@ -117,6 +117,7 @@ HeroComp Ent::loadDefaultHeroComp(uint8_t hId) {
   heroComp.artifacts.assign(19, 0xffff);
 
   heroComp.secSkills = defaultHero->secSkill;
+  heroComp.name = u"";
 
   for (auto pair : defaultHero->defaultCre) {
     switch (pair.first) {
@@ -416,6 +417,9 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     if (object.data.contains("moveType")) {
       hComp.moveType = std::any_cast<uint8_t>(object.data["moveType"]);
     }
+    if (!hero.name.empty()) {
+      hComp.name = std::u16string{hero.name.begin(), hero.name.end()};
+    }
     hComp.exp = hero.exp;
     if (!hero.secSkills.empty()) {
       hComp.secSkills = hero.secSkills;
@@ -472,8 +476,26 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     if (townComp->garCreatures.empty()) {
       townComp->garCreatures.assign(7, {0xffff, 0});
     }
+    auto townName = std::any_cast<std::string>(object.data["name"]);
+    if (townName.empty()) {
+      townComp->name = std::u16string{townName.begin(), townName.end()};
+    } else {
+      // townName
+      townComp->nameIndex = 0;
+      for (auto i : {0, 1}) {
+        auto &r = World::registrys[i];
+        for (auto [e, tComp] : r.view<TownComp>().each()) {
+          if (e == ent || !tComp.name.empty()) {
+            continue;
+          }
+          if (tComp.id == townComp->id) {
+            townComp->nameIndex++;
+          }
+        }
+      }
+      townComp->nameIndex = townComp->nameIndex % 16;
+    }
 
-    townComp->name = std::any_cast<std::string>(object.data["name"]);
     townComp->forbidBuildings =
         std::any_cast<std::set<uint8_t>>(object.data["forbidBuildings"]);
     townComp->obligatorySpells =
@@ -484,20 +506,7 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     auto playerIdComp = &registry.emplace<PlayerIdComp>(ent);
     playerIdComp->id = std::any_cast<uint8_t>(object.data["playerId"]);
     playerIdComp->id = playerIdComp->id == 0xff ? 8 : playerIdComp->id;
-    // townName
-    townComp->nameIndex = 0;
-    for (auto i : {0, 1}) {
-      auto &r = World::registrys[i];
-      for (auto [e, tComp] : r.view<TownComp>().each()) {
-        if (e == ent || !tComp.name.empty()) {
-          continue;
-        }
-        if (tComp.id == townComp->id) {
-          townComp->nameIndex++;
-        }
-      }
-    }
-    townComp->nameIndex = townComp->nameIndex % 16;
+
     townComp->heroEnt = {std::nullopt, std::nullopt};
 
     auto buildings =

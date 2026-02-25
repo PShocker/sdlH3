@@ -113,9 +113,10 @@ static void drawBackGround() {
 
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  FreeTypeSys::drawCenter(
-      Global::viewPort.w / 2, posRect.y + 15,
-      strPool[926 + (uint8_t)ObjectType::WAR_MACHINE_FACTORY]);
+
+  auto oName = strPool[926 + ObjectType::WAR_MACHINE_FACTORY];
+
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, posRect.y + 15, oName);
 }
 
 static void drawWarMachine(float x, float y, uint16_t id, uint16_t group,

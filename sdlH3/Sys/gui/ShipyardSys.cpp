@@ -107,8 +107,10 @@ static void drawBackGround() {
   auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
-                          strPool[926 + (uint8_t)ObjectType::SHIPYARD]);
+
+  auto oName = strPool[926 + ObjectType::SHIPYARD];
+
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15, oName);
 
   auto goldPic =
       Global::defCache["RESOURCE.def/0"][(uint8_t)Enum::RESTYPE::GOLD];

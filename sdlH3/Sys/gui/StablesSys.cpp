@@ -27,10 +27,10 @@ static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
   Button b;
 
-  b.textures=Global::defCache["iOKAY.def/0"];
-  b.r={bakW / 2 - 32, bakH - 60, 64, 30};
-  b.func=receive;
-  b.disable=false;
+  b.textures = Global::defCache["iOKAY.def/0"];
+  b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+  b.func = receive;
+  b.disable = false;
   v.push_back(b);
 
   return v;
@@ -44,8 +44,9 @@ static void drawBackGround() {
   auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 15,
-                          strPool[926 + (uint8_t)ObjectType::SWAN_POND]);
+  auto oName = strPool[926 + ObjectType::STABLES];
+
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 15, oName);
   return;
 }
 

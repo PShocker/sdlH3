@@ -16,6 +16,7 @@
 #include "SDL3/SDL_render.h"
 #include "Set/HeroSet.h"
 #include "Sys/FreeTypeSys.h"
+#include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/CursorSys.h"
 #include "TownSys.h"
 #include "Window/Window.h"
@@ -117,7 +118,7 @@ void AdvPopSys::drawHeroInfo(float x, float y, uint8_t level,
       HeroScrSys::heroPrim(*heroComp, Enum::PRIMARY_SKILL_KNOWLEDGE));
   FreeTypeSys::drawCenter(posRect.x + 155, posRect.y + 87, heroComp->mana);
 
-  auto heroName = strPool[1258 + heroComp->portrait];
+  auto heroName = AdvMapSys::heroName(*heroComp);
   FreeTypeSys::draw(posRect.x + 64, posRect.y, heroName);
 
   auto mor = HeroScrSys::heroMor(*heroComp);

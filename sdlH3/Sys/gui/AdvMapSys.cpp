@@ -546,7 +546,7 @@ static void drawHeroStat() {
     FreeTypeSys::drawCenter(posRect.x + 155, posRect.y + 87, heroComp->mana);
 
     auto strPool = *Lang::strPool[Global::langIndex];
-    auto heroName = strPool[1258 + heroComp->portrait];
+    auto heroName = AdvMapSys::heroName(*heroComp);
     FreeTypeSys::draw(posRect.x + 64, posRect.y, heroName);
 
     auto mor = HeroScrSys::heroMor(*heroComp);
@@ -652,7 +652,7 @@ static void drawBottomInfo() {
     }
     case (uint8_t)ObjectType::HERO: {
       auto &hComp = World::registrys[World::level].get<HeroComp>(ent);
-      s = strPool[1258 + hComp.portrait];
+      s = AdvMapSys::heroName(hComp);
       break;
     }
     case (uint8_t)ObjectType::TOWN: {
@@ -1292,5 +1292,25 @@ void AdvMapSys::townFocus(entt::entity townEnt, uint8_t level) {
       }
       break;
     }
+  }
+}
+
+std::u16string AdvMapSys::heroName(HeroComp &hComp) {
+  if (!hComp.name.empty()) {
+    return hComp.name;
+  } else {
+    auto strPool = *Lang::strPool[Global::langIndex];
+    auto name = strPool[1262 + hComp.portrait];
+    return name;
+  }
+}
+
+std::u16string AdvMapSys::townName(TownComp &tComp) {
+  if (!tComp.name.empty()) {
+    return tComp.name;
+  } else {
+    auto strPool = *Lang::strPool[Global::langIndex];
+    auto name = strPool[774 + tComp.id * 16 + tComp.nameIndex];
+    return name;
   }
 }

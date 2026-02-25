@@ -29,7 +29,43 @@ static void view() {
     Global::hutMagTime = Window::dtNow + WATCH_TIME;
   } else {
     World::exitScrn();
+    return;
   }
+  World::exitScrn();
+  World::enterScrn();
+  World::iterateSystems.push_back([]() {
+    if (Global::hutMagIndex >= 0) {
+      auto registry = &World::registrys[World::level];
+      auto view = registry->view<MagEyeComp>();
+      if (Global::hutMagIndex + 1 > view->size()) {
+        auto positionComp = &registry->get<PositionComp>(Global::heroEnt);
+        CameraSys::focus(positionComp->point.x + 48,
+                         positionComp->point.y + 48);
+        World::exitScrn();
+        return false;
+      }
+      std::vector<entt::entity> v(view.begin(), view.end());
+      auto ent = v[Global::hutMagIndex];
+      auto &oComp = registry->get<ObjectComp>(ent);
+      auto playerIdComp = &registry->get<PlayerIdComp>(Global::heroEnt);
+
+      for (const auto point : FogSys::generateVerticalHexagon(5)) {
+        int16_t rX =
+            std::clamp((int)oComp.x + point.x, 0, (int)Global::mapSize - 1);
+        int16_t rY =
+            std::clamp((int)oComp.y + point.y, 0, (int)Global::mapSize - 1);
+        Global::fogs[playerIdComp->id][World::level]
+                    [rX + rY * Global::mapSize] = true;
+      }
+
+      CameraSys::focus(oComp.x * 32 + 16, oComp.y * 32 + 16);
+      if (Global::hutMagTime <= Window::dtNow) {
+        Global::hutMagTime = Window::dtNow + WATCH_TIME;
+        Global::hutMagIndex += 1;
+      }
+    }
+    return true;
+  });
 }
 
 static std::vector<Button> buttonInfo() {
@@ -46,67 +82,30 @@ static std::vector<Button> buttonInfo() {
 }
 
 static void drawBackGround() {
-  if (Global::hutMagIndex == -1) {
-    auto x = Global::viewPort.w / 2;
-    auto y = Global::viewPort.h / 2;
-    AdvPopSys::drawBackGround(x, y, bakW, bakH, Global::playerId);
+  auto x = Global::viewPort.w / 2;
+  auto y = Global::viewPort.h / 2;
+  AdvPopSys::drawBackGround(x, y, bakW, bakH, Global::playerId);
 
-    auto strPool = *Lang::strPool[Global::langIndex];
-    FreeTypeSys::setSize(13);
-    FreeTypeSys::setColor(240, 224, 104, 255);
-    FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 15,
-                            strPool[926 + (uint8_t)ObjectType::HUT_OF_MAGI]);
-  }
+  auto strPool = *Lang::strPool[Global::langIndex];
+  FreeTypeSys::setSize(13);
+  FreeTypeSys::setColor(240, 224, 104, 255);
+  auto oName = strPool[926 + ObjectType::HUT_OF_MAGI];
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 15, oName);
 }
 
 static void drawButton() {
-  if (Global::hutMagIndex == -1) {
-    SDL_FRect posRect;
-    SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                      Global::viewPort.h / 2 - bakH / 2};
-    auto v = buttonInfo();
-    auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
-    auto top = (*topFunc.target<bool (*)()>() == HutMagSys::run);
-    AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
-  }
+  SDL_FRect posRect;
+  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
+                    Global::viewPort.h / 2 - bakH / 2};
+  auto v = buttonInfo();
+  auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
+  auto top = (*topFunc.target<bool (*)()>() == HutMagSys::run);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
 }
 
-static bool drawMagEye() {
-  if (Global::hutMagIndex >= 0) {
-    auto registry = &World::registrys[World::level];
-    auto view = registry->view<MagEyeComp>();
-    if (Global::hutMagIndex + 1 > view->size()) {
-      auto positionComp = &registry->get<PositionComp>(Global::heroEnt);
-      CameraSys::focus(positionComp->point.x + 48, positionComp->point.y + 48);
-      World::exitScrn();
-      return false;
-    }
-    std::vector<entt::entity> v(view.begin(), view.end());
-    auto ent = v[Global::hutMagIndex];
-    auto &oComp = registry->get<ObjectComp>(ent);
-    auto playerIdComp = &registry->get<PlayerIdComp>(Global::heroEnt);
-
-    for (const auto point : FogSys::generateVerticalHexagon(5)) {
-      int16_t rX =
-          std::clamp((int)oComp.x + point.x, 0, (int)Global::mapSize - 1);
-      int16_t rY =
-          std::clamp((int)oComp.y + point.y, 0, (int)Global::mapSize - 1);
-      Global::fogs[playerIdComp->id][World::level][rX + rY * Global::mapSize] =
-          true;
-    }
-
-    CameraSys::focus(oComp.x * 32 + 16, oComp.y * 32 + 16);
-    if (Global::hutMagTime <= Window::dtNow) {
-      Global::hutMagTime = Window::dtNow + WATCH_TIME;
-      Global::hutMagIndex += 1;
-    }
-  }
-  return true;
-}
 bool HutMagSys::run() {
   drawBackGround();
   drawButton();
-  drawMagEye();
   return true;
 }
 

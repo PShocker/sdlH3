@@ -73,8 +73,9 @@ static void drawBackGround() {
   auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15,
-                          strPool[926 + (uint8_t)ObjectType::UNIVERSITY]);
+  auto oName = strPool[926 + ObjectType::UNIVERSITY];
+  
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15, oName);
   if (Global::goalIndex == 0xff) {
     auto texture = Global::pcxCache["UNIVERS1.PCX"][Global::playerId];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);

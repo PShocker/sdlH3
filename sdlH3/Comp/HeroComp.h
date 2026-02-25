@@ -6,9 +6,11 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <string>
 #include <vector>
 
 struct HeroComp {
+  std::u16string name;
   entt::entity flagEnt;
   std::optional<entt::entity> goalEnt;
   std::optional<entt::entity> curEnt;

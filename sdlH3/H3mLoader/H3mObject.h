@@ -210,6 +210,7 @@ enum ObjectType {
   // Adv Spell
   LAND,
   SEA,
+  BUILD,
 
 };
 

@@ -35,10 +35,10 @@ static void receive() {
   auto &mComp =
       World::registrys[World::level].get<StarAxisComp>(Global::goalEnt);
   if (!visited()) {
-        AdventureBonus bonus = {
+    AdventureBonus bonus = {
         .src = ObjectType::STAR_AXIS,
         .type = Enum::ADVENTURE_PRIMARY_SKILL,
-        .subType=Enum::PRIMARY_SKILL_SPELLPOWER,
+        .subType = Enum::PRIMARY_SKILL_SPELLPOWER,
         .val = 1,
     };
     heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
@@ -68,8 +68,9 @@ static void drawBackGround() {
   auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2,
-                          strPool[926 + (uint8_t)ObjectType::STAR_AXIS]);
+  auto oName = strPool[926 + ObjectType::STAR_AXIS];
+
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2, oName);
   return;
 }
 

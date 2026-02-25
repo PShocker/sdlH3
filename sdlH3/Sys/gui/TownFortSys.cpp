@@ -162,8 +162,8 @@ static void draw() {
                static_cast<float>(texture->h)};
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
-    auto cStr = strPool[12 + creatureId];
-    FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y, cStr);
+    auto cName = strPool[12 + creatureId];
+    FreeTypeSys::drawCenter(posRect2.x + 79, posRect2.y, cName);
 
     auto group = Global::townFortGroup[i];
     auto index = Global::townFortFrameIndex[i];

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Comp/HeroComp.h"
+#include "Comp/ObjectComp.h"
+#include "Comp/TownComp.h"
 #include "SDL3/SDL_render.h"
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
@@ -20,7 +23,6 @@ struct AdvMapSys {
   static void drawResBar(float x, float y);
 
   static void heroFocus();
-  static void heroName();
   static void heroFocus(entt::entity heroEnt, uint8_t level);
   static void townFocus(entt::entity townEnt, uint8_t level);
   static bool run();
@@ -34,4 +36,7 @@ struct AdvMapSys {
                            uint8_t clickType);
   static bool drawButtonsText(float x, float y, float pX, float pY,
                               std::vector<Button> &v);
+
+  static std::u16string heroName(HeroComp &hComp);
+  static std::u16string townName(TownComp &tComp);
 };
