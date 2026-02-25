@@ -391,15 +391,21 @@ void World::exitScrn() {
 bool World::enterHeroScrn(uint8_t level, entt::entity ent, uint8_t type) {
   enterScrn();
 
-  iterateSystems.pop_back();
-  iterateSystems.push_back(HeroScrSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(HeroScrSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(HeroScrSys::leftMouseUp);
-  LMouseDownSys.push_back(HeroScrSys::leftMouseDown);
-  RMouseUpSys.push_back(HeroScrSys::rightMouseUp);
-  RMouseDownSys.push_back(HeroScrSys::rightMouseDown);
-  keyUpSys.push_back(HeroScrSys::keyUp);
+    LMouseUpSys.push_back(HeroScrSys::leftMouseUp);
+    LMouseDownSys.push_back(HeroScrSys::leftMouseDown);
+    RMouseUpSys.push_back(HeroScrSys::rightMouseUp);
+    RMouseDownSys.push_back(HeroScrSys::rightMouseDown);
+    keyUpSys.push_back(HeroScrSys::keyUp);
+    CursorSys::run();
+
+    return false;
+  });
 
   Global::artPair = {0xff, 0xffff};
   Global::artPageIndex[0] = 0;
@@ -415,11 +421,17 @@ bool World::enterHeroScrn(uint8_t level, entt::entity ent, uint8_t type) {
 void World::enterTownPortal() {
   enterScrn();
 
-  iterateSystems.pop_back();
-  iterateSystems.push_back(TownPortalSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(TownPortalSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  keyUpSys.push_back(TownPortalSys::keyUp);
+    keyUpSys.push_back(TownPortalSys::keyUp);
+    CursorSys::run();
+
+    return false;
+  });
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
@@ -427,15 +439,20 @@ void World::enterTownPortal() {
 void World::enterSplitCre() {
   enterScrn();
 
-  iterateSystems.pop_back();
-  iterateSystems.push_back(SpliteCreSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(SpliteCreSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(SpliteCreSys::leftMouseUp);
-  RMouseDownSys.push_back(SpliteCreSys::rightMouseDown);
-  keyUpSys.push_back(SpliteCreSys::keyUp);
+    LMouseUpSys.push_back(SpliteCreSys::leftMouseUp);
+    RMouseDownSys.push_back(SpliteCreSys::rightMouseDown);
+    keyUpSys.push_back(SpliteCreSys::keyUp);
 
-  keyUpSys.push_back(SpliteCreSys::keyUp);
+    CursorSys::run();
+
+    return false;
+  });
 
   Global::splitSliderNum = Global::splitCre[1]->second + 1;
   Global::splitFrameIndex = 0;
@@ -448,14 +465,21 @@ void World::enterHeroTrade(entt::entity heroEnt, entt::entity goalEnt,
                            uint8_t goalLevel) {
   enterScrn();
 
-  iterateSystems.pop_back();
-  iterateSystems.push_back(HeroTradeSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(HeroTradeSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(HeroTradeSys::leftMouseUp);
-  LMouseDownSys.push_back(HeroTradeSys::leftMouseDown);
-  RMouseDownSys.push_back(HeroTradeSys::rightMouseDown);
-  keyUpSys.push_back(HeroTradeSys::keyUp);
+    LMouseUpSys.push_back(HeroTradeSys::leftMouseUp);
+    LMouseDownSys.push_back(HeroTradeSys::leftMouseDown);
+    RMouseDownSys.push_back(HeroTradeSys::rightMouseDown);
+    keyUpSys.push_back(HeroTradeSys::keyUp);
+
+    CursorSys::run();
+
+    return false;
+  });
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
@@ -490,12 +514,19 @@ void World::enterLearn(entt::entity heroEnt, entt::entity goalEnt,
 void World::enterKingdom() {
   enterScrn();
 
-  iterateSystems.pop_back();
-  iterateSystems.push_back(KingdomSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(KingdomSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(KingdomSys::leftMouseUp);
-  keyUpSys.push_back(KingdomSys::keyUp);
+    LMouseUpSys.push_back(KingdomSys::leftMouseUp);
+    keyUpSys.push_back(KingdomSys::keyUp);
+
+    CursorSys::run();
+
+    return false;
+  });
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
@@ -526,14 +557,24 @@ bool World::enterAdvPop() {
 
 void World::enterSpell(entt::entity heroEnt) {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(SpellSys::run);
-  iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(SpellSys::leftMouseUp);
-  RMouseDownSys.push_back(SpellSys::rightMouseDown);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(SpellSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  keyUpSys.push_back(SpellSys::keyUp);
+    LMouseUpSys.push_back(SpellSys::leftMouseUp);
+    RMouseDownSys.push_back(SpellSys::rightMouseDown);
+
+    keyUpSys.push_back(SpellSys::keyUp);
+
+    CursorSys::run();
+
+    SDL_SetTextureColorMod(Global::maskTexture, 255, 255, 255);
+
+    return false;
+  });
 
   Global::splSchool = 4;
   Global::splBattle = false;
@@ -544,12 +585,22 @@ void World::enterSpell(entt::entity heroEnt) {
 
 void World::enterAdvOpt() {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(AdvOptionSys::run);
-  iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(AdvOptionSys::leftMouseUp);
-  keyUpSys.push_back(AdvOptionSys::keyUp);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(AdvOptionSys::run);
+    iterateSystems.push_back(CursorSys::run);
+
+    LMouseUpSys.push_back(AdvOptionSys::leftMouseUp);
+    keyUpSys.push_back(AdvOptionSys::keyUp);
+
+    CursorSys::run();
+
+    SDL_SetTextureColorMod(Global::maskTexture, 255, 255, 255);
+
+    return false;
+  });
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
@@ -1491,13 +1542,24 @@ void World::enterAltarSac(entt::entity heroEnt, entt::entity goalEnt) {
 void World::enterCreature(std::pair<uint8_t, uint16_t> crePair,
                           uint8_t creType) {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(CreatureSys::run);
-  iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(CreatureSys::leftMouseUp);
-  RMouseUpSys.push_back(CreatureSys::rightMouseUp);
-  keyUpSys.push_back(CreatureSys::keyUp);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(CreatureSys::run);
+    iterateSystems.push_back(CursorSys::run);
+
+    LMouseUpSys.push_back(CreatureSys::leftMouseUp);
+    RMouseUpSys.push_back(CreatureSys::rightMouseUp);
+    keyUpSys.push_back(CreatureSys::keyUp);
+
+    CursorSys::run();
+
+    if (iterateSystemsBak.size() <= 1) {
+      SDL_SetTextureColorMod(Global::maskTexture, 255, 255, 255);
+    }
+    return false;
+  });
 
   Global::creType = creType;
   Global::crePair = crePair;
@@ -1512,35 +1574,26 @@ void World::enterCreature(std::pair<uint8_t, uint16_t> crePair,
 void World::enterCreature(std::pair<uint8_t, entt::entity> creHeroPair,
                           std::pair<uint8_t, uint16_t> crePair,
                           uint8_t creType) {
-  enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(CreatureSys::run);
-  iterateSystems.push_back(CursorSys::run);
-
-  LMouseUpSys.push_back(CreatureSys::leftMouseUp);
-  RMouseUpSys.push_back(CreatureSys::rightMouseUp);
-  keyUpSys.push_back(CreatureSys::keyUp);
-
-  Global::creType = creType;
-  Global::crePair = crePair;
+  enterCreature(crePair, creType);
   Global::creHeroPair = creHeroPair;
-
-  Global::creFrameIndex = 0;
-  Global::creFrameTime = 0;
-  Global::creGroup = 2;
-
-  Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
 void World::enterWarMachine(uint16_t warMId, uint8_t warMType) {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(WarMachineSys::run);
-  iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(WarMachineSys::leftMouseUp);
-  RMouseUpSys.push_back(WarMachineSys::rightMouseUp);
-  keyUpSys.push_back(WarMachineSys::keyUp);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(WarMachineSys::run);
+    iterateSystems.push_back(CursorSys::run);
+
+    LMouseUpSys.push_back(WarMachineSys::leftMouseUp);
+    RMouseUpSys.push_back(WarMachineSys::rightMouseUp);
+    keyUpSys.push_back(WarMachineSys::keyUp);
+    CursorSys::run();
+
+    return false;
+  });
 
   Global::creType = warMType;
   Global::crePair = {warMId, 1};
