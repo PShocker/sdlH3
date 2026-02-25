@@ -79,7 +79,7 @@ static void drawBackGround() {
   auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  auto oName = strPool[926 + ObjectType::TREASURE_CHEST];
+  auto oName = strPool[927 + ObjectType::TREASURE_CHEST];
 
   FreeTypeSys::drawCenter(x, y - bakH / 2 + 15, oName);
 }

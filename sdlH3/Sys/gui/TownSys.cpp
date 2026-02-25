@@ -232,8 +232,8 @@ uint32_t TownSys::townDweInc(uint8_t lvl, entt::entity townEnt, uint8_t bId) {
     }
   }
   if (townComp->heroEnt[0].has_value()) {
-    auto heroEnt = townComp->heroEnt[0];
-    auto &hComp = registry.get<HeroComp>(townEnt);
+    auto heroEnt = townComp->heroEnt[0].value();
+    auto &hComp = registry.get<HeroComp>(heroEnt);
     auto i = Enum::ARTIFACT_CREATURE_GROWTH;
     auto range = hComp.artifactBonus.equal_range(i);
     // 遍历所有值

@@ -86,7 +86,7 @@ static void drawBackGround() {
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
   auto strPool = *Lang::strPool[Global::langIndex];
-  auto oName = strPool[926 + ObjectType::WITCH_HUT];
+  auto oName = strPool[927 + ObjectType::WITCH_HUT];
 
   FreeTypeSys::drawCenter(x, y - bakH / 2 + 15, oName);
 

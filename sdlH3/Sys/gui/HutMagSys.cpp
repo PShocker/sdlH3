@@ -12,6 +12,7 @@
 #include "Sys/FogSys.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/CameraSys.h"
+#include "Sys/gui/CursorSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include <cstdint>
@@ -66,6 +67,7 @@ static void view() {
     }
     return true;
   });
+  World::iterateSystems.push_back(CursorSys::run);
 }
 
 static std::vector<Button> buttonInfo() {
@@ -89,7 +91,7 @@ static void drawBackGround() {
   auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  auto oName = strPool[926 + ObjectType::HUT_OF_MAGI];
+  auto oName = strPool[927 + ObjectType::HUT_OF_MAGI];
   FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 15, oName);
 }
 

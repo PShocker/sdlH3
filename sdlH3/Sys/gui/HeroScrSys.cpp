@@ -1218,7 +1218,7 @@ void HeroScrSys::showLukComfirm(uint8_t clickType, HeroComp &hComp) {
     auto y = leftUp.y + 60;
     // for (auto p : hComp.luck) {
     //   y += 20;
-    //   str = strPool[926 + p.first];
+    //   str = strPool[927 + p.first];
     //   auto num = p.second >= 0 ? u"+" + FreeTypeSys::str(p.second)
     //                            : u"-" + FreeTypeSys::str(p.second);
     //   FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y,
@@ -1319,7 +1319,7 @@ void HeroScrSys::showMorComfirm(uint8_t clickType, HeroComp &hComp) {
     auto y = leftUp.y + 60;
     // for (auto p : hComp.morale) {
     //   y += 20;
-    //   str = strPool[926 + p.first];
+    //   str = strPool[927 + p.first];
     //   auto num = p.second >= 0 ? u"+" + FreeTypeSys::str(p.second)
     //                            : u"-" + FreeTypeSys::str(p.second);
     //   FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y,

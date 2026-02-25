@@ -6,12 +6,36 @@
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "Lang/Lang.h"
+#include "SDL3/SDL_rect.h"
+#include "SDL3/SDL_render.h"
 #include "Sys/FreeTypeSys.h"
+#include "Window/Window.h"
 #include "World/World.h"
+#include <cstddef>
 #include <cstdint>
 
 static float bakW = 450;
-static float bakH = 340;
+static float bakH = 240;
+
+static bool visited() {
+  auto &heroComp =
+      World::registrys[World::level].get<HeroComp>(Global::heroEnt);
+  if (heroComp.visited.contains((uint8_t)ObjectType::STABLES)) {
+    return true;
+  }
+  return false;
+}
+
+static bool upgrade() {
+  auto &heroComp =
+      World::registrys[World::level].get<HeroComp>(Global::heroEnt);
+  for (auto [creId, num] : heroComp.creatures) {
+    if (creId == Enum::CAVALIER) {
+      return true;
+    }
+  }
+  return false;
+}
 
 static void receive() {
   World::exitScrn();
@@ -19,6 +43,11 @@ static void receive() {
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   if (!heroComp.visited.contains((uint8_t)ObjectType::STABLES)) {
     heroComp.movement += 100;
+    for (auto &[creId, num] : heroComp.creatures) {
+      if (creId == Enum::CAVALIER) {
+        creId = Enum::CHAMPION;
+      }
+    }
   }
   heroComp.visited.insert((uint8_t)ObjectType::STABLES);
 }
@@ -44,16 +73,41 @@ static void drawBackGround() {
   auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  auto oName = strPool[926 + ObjectType::STABLES];
+  auto oName = strPool[927 + ObjectType::STABLES];
 
   FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 15, oName);
   return;
 }
 
 static void draw() {
+  auto x = Global::viewPort.w / 2;
+  auto y = Global::viewPort.h / 2;
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
+
+  auto strPool = *Lang::strPool[Global::langIndex];
+  FreeTypeSys::setSize(13);
+  FreeTypeSys::setColor(255, 255, 255, 255);
+  if (visited()) {
+    FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 40,
+                            strPool[717]);
+  } else {
+    if (upgrade()) {
+      FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 40,
+                              strPool[719]);
+      auto texture = Global::defCache["TWCRPORT.def/0"][Enum::CHAMPION + 2];
+      SDL_FRect posRect{Global::viewPort.w / 2 - texture->w / 2,
+                        y - bakH / 2 + 90, static_cast<float>(texture->w),
+                        static_cast<float>(texture->h)};
+      SDL_RenderTexture(Window::renderer, texture, NULL, &posRect);
+      SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
+      SDL_RenderRect(Window::renderer, &posRect);
+    } else {
+      FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 40,
+                              strPool[718]);
+    }
+  }
 }
 
 static void drawButton() {

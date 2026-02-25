@@ -65,7 +65,7 @@ static void drawBackGround() {
   auto strPool = *Lang::strPool[Global::langIndex];
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  auto oName = strPool[926 + ObjectType::LIBRARY_OF_ENLIGHTENMENT];
+  auto oName = strPool[927 + ObjectType::LIBRARY_OF_ENLIGHTENMENT];
 
   FreeTypeSys::drawCenter(Global::viewPort.w / 2, y - bakH / 2 + 15, oName);
   return;

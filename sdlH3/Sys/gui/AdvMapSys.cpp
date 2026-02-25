@@ -661,7 +661,7 @@ static void drawBottomInfo() {
       break;
     }
     default: {
-      s = strPool[926 + objectComp.type];
+      s = strPool[927 + objectComp.type];
       break;
     }
     }

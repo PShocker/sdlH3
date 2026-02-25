@@ -134,7 +134,7 @@ static void drawBackGround() {
   //   FreeTypeSys::setSize(13);
   //   FreeTypeSys::setColor(240, 224, 104, 255);
   //   FreeTypeSys::drawCenter(x, y - bakH / 2 + 15,
-  //                           strPool[926 +
+  //                           strPool[927 +
   //                           (uint8_t)ObjectType::TREASURE_CHEST]);
 
   return;

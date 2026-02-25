@@ -108,7 +108,7 @@ static void drawBackGround() {
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
 
-  auto oName = strPool[926 + ObjectType::SHIPYARD];
+  auto oName = strPool[927 + ObjectType::SHIPYARD];
 
   FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15, oName);
 
