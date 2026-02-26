@@ -607,12 +607,21 @@ void World::enterAdvOpt() {
 
 void World::enterViewWorld() {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(ViewWorldSys::run);
-  iterateSystems.push_back(CursorSys::run);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    // iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(ViewWorldSys::run);
+    iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(ViewWorldSys::leftMouseUp);
-  keyUpSys.push_back(ViewWorldSys::keyUp);
+    LMouseUpSys.push_back(ViewWorldSys::leftMouseUp);
+    keyUpSys.push_back(ViewWorldSys::keyUp);
+
+    CursorSys::run();
+    
+    SDL_SetRenderDrawColor(Window::renderer, 0, 0, 0, 255);
+
+    return false;
+  });
 
   Global::viewWorldScale = 2;
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;

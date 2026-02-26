@@ -59,8 +59,8 @@ static void drawBackGround() {
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
   auto strPool = *Lang::strPool[Global::langIndex];
-  std::u16string s = strPool[951];
-  FreeTypeSys::drawCenter(x, y - bakH / 2 + 15, s);
+  auto oName = strPool[927 + ObjectType::FAERIE_RING];
+  FreeTypeSys::drawCenter(x, y - bakH / 2 + 15, oName);
 
   return;
 }

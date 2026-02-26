@@ -5,10 +5,13 @@
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 
+#include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
+#include "Lang/Lang.h"
 #include "SDL3/SDL_render.h"
 #include "Set/ArtifactSet.h"
 #include "Set/CreatureSet.h"
+#include "Sys/FreeTypeSys.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/base/AltArtPanelSys.h"
 #include "Sys/gui/base/ArtifactsOfHeroSys.h"
@@ -213,6 +216,10 @@ static void drawBackGround() {
   posRect = {leftUp.x, leftUp.y, static_cast<float>(texture->w),
              static_cast<float>(texture->h)};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+
+  auto strPool = *Lang::strPool[Global::langIndex];
+  auto oName = strPool[927 + ObjectType::ALTAR_OF_SACRIFICE];
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15, oName);
 }
 
 static void draw() {
