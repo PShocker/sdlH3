@@ -2,10 +2,10 @@
 
 #include "Enum/Enum.h"
 #include "SDL3/SDL_pixels.h"
-#include <array>
+#include "Set/StructSet.h"
 #include <cstdint>
-#include <flat_set>
 #include <string>
+#include <vector>
 
 struct TerrainSetI {
   uint8_t index;
@@ -15,7 +15,8 @@ struct TerrainSetI {
   std::string music;
   std::string horseSound;
   std::string horseSoundPenalty;
-  std::flat_set<uint8_t> battleFields;
+  std::vector<uint8_t> battleFields;
+  TerrainSetSound sound;
 };
 
 struct TerrainSet {
@@ -30,6 +31,12 @@ struct TerrainSet {
           .music = "Dirt.wav",
           .horseSound = "horse00.wav",
           .horseSoundPenalty = "horse00.wav",
+          .battleFields =
+              {
+                  Enum::BATTLE_FIELD_DIRT_BIRCHES,
+                  Enum::BATTLE_FIELD_DIRT_HILLS,
+                  Enum::BATTLE_FIELD_DIRT_PINES,
+              },
       },
       // 1: SAND
       {
@@ -40,6 +47,7 @@ struct TerrainSet {
           .music = "Sand.wav",
           .horseSound = "horse_sand.wav",
           .horseSoundPenalty = "horse_sand_penalty.wav",
+          .battleFields = {Enum::BATTLE_FIELD_SAND_MESAS},
       },
       // 2: GRASS
       {
@@ -50,6 +58,11 @@ struct TerrainSet {
           .music = "Grass.wav",
           .horseSound = "horse_grass.wav",
           .horseSoundPenalty = "horse_grass_penalty.wav",
+          .battleFields =
+              {
+                  Enum::BATTLE_FIELD_GRASS_HILLS,
+                  Enum::BATTLE_FIELD_GRASS_PINES,
+              },
       },
       // 3: SNOW
       {
@@ -60,6 +73,11 @@ struct TerrainSet {
           .music = "Snow.wav",
           .horseSound = "horse_snow.wav",
           .horseSoundPenalty = "horse_snow_penalty.wav",
+          .battleFields =
+              {
+                  Enum::BATTLE_FIELD_SNOW_MOUNTAINS,
+                  Enum::BATTLE_FIELD_SNOW_TREES,
+              },
       },
       // 4: SWAMP
       {
@@ -70,6 +88,10 @@ struct TerrainSet {
           .music = "Swamp.wav",
           .horseSound = "horse_swamp.wav",
           .horseSoundPenalty = "horse_swamp_penalty.wav",
+          .battleFields =
+              {
+                  Enum::BATTLE_FIELD_SWAMP_TREES,
+              },
       },
       // 5: ROUGH
       {
@@ -80,6 +102,10 @@ struct TerrainSet {
           .music = "Rough.wav",
           .horseSound = "horse_rough.wav",
           .horseSoundPenalty = "horse_rough_penalty.wav",
+          .battleFields =
+              {
+                  Enum::BATTLE_FIELD_ROUGH,
+              },
       },
       // 6: SUBTERRA
       {
@@ -90,6 +116,10 @@ struct TerrainSet {
           .music = "Subterra.wav",
           .horseSound = "horse_subterra.wav",
           .horseSoundPenalty = "horse_subterra_penalty.wav",
+          .battleFields =
+              {
+                  Enum::BATTLE_FIELD_SUBTERRANEAN,
+              },
       },
       // 7: LAVA
       {
@@ -100,17 +130,27 @@ struct TerrainSet {
           .music = "Lava.wav",
           .horseSound = "horse_lava.wav",
           .horseSoundPenalty = "horse_lava_penalty.wav",
+          .battleFields =
+              {
+                  Enum::BATTLE_FIELD_LAVA,
+              },
       },
       // 8: WATER
-      {
-          .index = Enum::TERRAIN_WATER,
-          .moveCost = 100,
-          .minimapUnblocked = SDL_Color{8, 81, 148, 255},
-          .minimapBlocked = SDL_Color{8, 81, 148, 255},
-          .music = "Water.wav",
-          .horseSound = "horse_water.wav",
-          .horseSoundPenalty = "horse_water_penalty.wav",
-      },
+      {.index = Enum::TERRAIN_WATER,
+       .moveCost = 100,
+       .minimapUnblocked = SDL_Color{8, 81, 148, 255},
+       .minimapBlocked = SDL_Color{8, 81, 148, 255},
+       .music = "Water.wav",
+       .horseSound = "horse_water.wav",
+       .horseSoundPenalty = "horse_water_penalty.wav",
+       .battleFields =
+           {
+               Enum::BATTLE_FIELD_SHIP,
+           },
+       .sound =
+           {
+               .ambient = "LOOPOCEA.wav",
+           }},
       // 9: ROCK
       {
           .index = Enum::TERRAIN_ROCK,
@@ -120,60 +160,10 @@ struct TerrainSet {
           .music = "Rock.wav",
           .horseSound = "horse_rock.wav",
           .horseSoundPenalty = "horse_rock_penalty.wav",
+          .battleFields =
+              {
+                  Enum::BATTLE_FIELD_ROCKLANDS,
+              },
       },
-  };
-
-  const static inline std::array moveCost = {
-      100, // 0: dirt
-      150, // 1: sand
-      100, // 2: grass
-      150, // 3: snow
-      175, // 4: swamp
-      125, // 5: rough
-      100, // 6: subterra
-      100, // 7: lava
-      100, // 8: water
-      255, // 9: rock (原值为-1，用255表示不可通行)
-      75,  // 10: dirtRoad
-      65,  // 11: gravelRoad
-      50   // 12: cobblestoneRoad
-  };
-
-  const static inline std::array<SDL_Color, 16> minimapUnblocked = {
-      SDL_Color{82, 56, 8, 255},     // 0: dirt
-      SDL_Color{222, 207, 140, 255}, // 1: sand
-      SDL_Color{0, 65, 0, 255},      // 2: grass
-      SDL_Color{181, 199, 198, 255}, // 3: snow
-      SDL_Color{74, 134, 107, 255},  // 4: swamp
-      SDL_Color{132, 113, 49, 255},  // 5: rough
-      SDL_Color{132, 48, 0, 255},    // 6: subterra
-      SDL_Color{74, 73, 74, 255},    // 7: lava
-      SDL_Color{8, 81, 148, 255},    // 8: water
-      SDL_Color{0, 0, 0, 255},       // 9: rock
-      SDL_Color{0, 0, 0, 0},         // 10:
-      SDL_Color{0, 0, 0, 0},         // 11:
-      SDL_Color{0, 0, 0, 0},         // 12:
-      SDL_Color{0, 0, 0, 0},         // 13:
-      SDL_Color{0, 0, 0, 0},         // 14:
-      SDL_Color{0, 0, 0, 0}          // 15:
-  };
-
-  const static inline std::array<SDL_Color, 16> minimapBlocked = {
-      SDL_Color{57, 40, 8, 255},     // 0: dirt (阻塞状态)
-      SDL_Color{165, 158, 107, 255}, // 1: sand (阻塞状态)
-      SDL_Color{0, 48, 0, 255},      // 2: grass (阻塞状态)
-      SDL_Color{140, 158, 156, 255}, // 3: snow (阻塞状态)
-      SDL_Color{33, 89, 66, 255},    // 4: swamp (阻塞状态)
-      SDL_Color{99, 81, 33, 255},    // 5: rough (阻塞状态)
-      SDL_Color{90, 8, 0, 255},      // 6: subterra (阻塞状态)
-      SDL_Color{41, 40, 41, 255},    // 7: lava (阻塞状态)
-      SDL_Color{8, 81, 148, 255},    // 8: water (阻塞状态)
-      SDL_Color{0, 0, 0, 255},       // 9: rock (阻塞状态)
-      SDL_Color{0, 0, 0, 0},         // 10:
-      SDL_Color{0, 0, 0, 0},         // 11:
-      SDL_Color{0, 0, 0, 0},         // 12:
-      SDL_Color{0, 0, 0, 0},         // 13:
-      SDL_Color{0, 0, 0, 0},         // 14:
-      SDL_Color{0, 0, 0, 0}          // 15:
   };
 };

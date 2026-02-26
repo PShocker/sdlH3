@@ -187,10 +187,17 @@ struct ObjectSetI {
   std::vector<uint16_t> creatures; // 生物类型ID列表，支持多级兵种
 };
 
-struct HeroClazz {
+struct HeroClasz {
   uint8_t id;
+  uint8_t faction;
   std::vector<uint8_t> lowPrimRate;
   std::vector<uint8_t> highPrimRate;
   std::vector<uint8_t> defaultPrim;
   std::vector<uint8_t> secSkillRate;
+  std::array<std::string, 2> animation;
+  std::array<std::string, 2> battle;
+};
+
+struct TerrainSetSound {
+  std::string ambient;
 };

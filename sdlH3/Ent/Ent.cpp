@@ -84,6 +84,7 @@
 #include "SDL3/SDL_rect.h"
 #include "Set/CreatureSet.h"
 #include "Set/FactionSet.h"
+#include "Set/HeroClassSet.h"
 #include "Set/HeroSet.h"
 #include "Set/SpellSet.h"
 #include "Set/StructSet.h"
@@ -423,9 +424,6 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     hComp.exp = hero.exp;
     if (!hero.secSkills.empty()) {
       hComp.secSkills = hero.secSkills;
-      for (auto &p : hComp.secSkills) {
-        p.second -= 1;
-      }
     }
     if (!hero.creatureSet.creatures.empty()) {
       hComp.creatures = hero.creatureSet.creatures;
@@ -442,7 +440,8 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     }
 
     auto direct = std::any_cast<uint8_t>(object.data["direct"]);
-    texturePath = std::format("AH{:02d}_.def/{}", object.subId, direct);
+    texturePath = HeroClassSet::heroClasz[object.subId].animation[0] + "/" +
+                  std::to_string(direct);
 
     auto playerIdComp = &registry.emplace<PlayerIdComp>(ent);
     playerIdComp->id = hero.playerId;

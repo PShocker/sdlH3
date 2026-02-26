@@ -5,6 +5,7 @@
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/HeroClassSet.h"
 #include "Set/HeroSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/gui/AdvMapSys.h"
@@ -179,9 +180,9 @@ bool LevelUpSys::prepareLvlUp(HeroComp &heroComp) {
   auto level = heroComp.level;
   auto exp = heroComp.exp;
   if (exp >= HeroSet::heroLevelExperience[level]) {
-    auto lowPrimRate = HeroSet::heroClasz.at(heroComp.subId).lowPrimRate;
+    auto lowPrimRate = HeroClassSet::heroClasz.at(heroComp.subId).lowPrimRate;
     Global::lvlPrimIndex = randomId(lowPrimRate);
-    auto secChance = HeroSet::heroClasz.at(heroComp.subId).secSkillRate;
+    auto secChance = HeroClassSet::heroClasz.at(heroComp.subId).secSkillRate;
     std::vector<uint8_t> secChance2;
     secChance2.assign(28, 0);
     uint8_t r = 0;

@@ -27,6 +27,7 @@
 #include "Lang/Lang.h"
 #include "Point/Point.h"
 #include "SDL3/SDL_rect.h"
+#include "Set/HeroClassSet.h"
 #include "Set/ObjectSet.h"
 #include "Set/StructSet.h"
 #include "Set/TerrainSet.h"
@@ -144,8 +145,8 @@ static void handleLand(entt::entity heroEnt, entt::entity goalEnt,
     // 加载船只并更新纹理
     Ent::loadBoat(texture.path, heroObj.x, heroObj.y, World::level,
                   direct - '0', heroPos.flip);
-    texture.path = std::format("AH{:02d}_.def/", heroComp.subId) + direct;
-
+    texture.path = HeroClassSet::heroClasz[heroComp.subId].animation[0] + "/" +
+                   std::to_string(direct);
     // 更新旗帜
     auto &flagTexture = registry.get<TextureComp>(heroComp.flagEnt);
     auto &playerId = registry.get<PlayerIdComp>(heroEnt);

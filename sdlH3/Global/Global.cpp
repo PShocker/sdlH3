@@ -17,6 +17,7 @@
 #include "H3mLoader/H3mObject.h"
 #include "Pal/PlayerPal.h"
 #include "Pcx/Pcx.h"
+#include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_stdinc.h"
@@ -775,19 +776,16 @@ void Global::startGame() {
                           static_cast<int>(positionComp->point.y / 32)};
         auto x = positon.x * 4;
         auto y = positon.y * Global::mapSize * 4;
+        SDL_Color color;
         if (block.contains(y + x)) {
-          auto color = TerrainSet::minimapBlocked.at(terrainComp->index);
-          pixels[y + x] = color.r;
-          pixels[y + x + 1] = color.g;
-          pixels[y + x + 2] = color.b;
-          pixels[y + x + 3] = color.a;
+          color = TerrainSet::terrains[terrainComp->index].minimapBlocked;
         } else {
-          auto color = TerrainSet::minimapUnblocked.at(terrainComp->index);
-          pixels[y + x] = color.r;
-          pixels[y + x + 1] = color.g;
-          pixels[y + x + 2] = color.b;
-          pixels[y + x + 3] = color.a;
+          color = TerrainSet::terrains[terrainComp->index].minimapUnblocked;
         }
+        pixels[y + x] = color.r;
+        pixels[y + x + 1] = color.g;
+        pixels[y + x + 2] = color.b;
+        pixels[y + x + 3] = color.a;
       }
       SDL_UpdateTexture(Global::miniMaps[i], NULL, pixels, Global::mapSize * 4);
       SDL_free(pixels);

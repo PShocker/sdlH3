@@ -1007,17 +1007,17 @@ int32_t HeroScrSys::heroMaxMana(HeroComp &hComp) {
   auto kno = HeroScrSys::heroPrim(hComp, Enum::PRIMARY_SKILL_KNOWLEDGE);
   r = kno * 10;
   for (auto p : hComp.secSkills) {
-    if (p.first == 24) {
+    if (p.first == Enum::INTELLIGENCE) {
       switch (p.second) {
-      case 0: {
+      case Enum::BASIC: {
         r *= 1.25;
         break;
       }
-      case 1: {
+      case Enum::ADVANCED: {
         r *= 1.5;
         break;
       }
-      case 2: {
+      case Enum::EXPERT: {
         r *= 2;
         break;
       }
@@ -1040,7 +1040,7 @@ int32_t HeroScrSys::heroMor(HeroComp &hComp) {
   // 辅助技能
   for (auto p : hComp.secSkills) {
     if (p.first == Enum::LEADERSHIP) {
-      r += p.second + 1;
+      r += p.second;
       break;
     }
   }
