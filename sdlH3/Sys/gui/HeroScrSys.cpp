@@ -1092,7 +1092,7 @@ int32_t HeroScrSys::heroSight(HeroComp &hComp) {
   // 辅助技能
   for (auto p : hComp.secSkills) {
     if (p.first == Enum::SCOUTING) {
-      r += p.second + 1;
+      r += p.second;
       break;
     }
   }
@@ -1235,10 +1235,10 @@ void HeroScrSys::showLukComfirm(uint8_t clickType, HeroComp &hComp) {
     //   FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y, str + num);
     // }
     for (auto p : hComp.secSkills) {
-      if (p.first == 6) {
+      if (p.first == Enum::LUCK) {
         y += 20;
         str = strPool[5 + p.second] + strPool[1156];
-        auto num = u"+" + FreeTypeSys::str(p.second + 1);
+        auto num = u"+" + FreeTypeSys::str(p.second);
         FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, y, str + num);
         break;
       }

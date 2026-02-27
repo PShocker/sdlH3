@@ -126,6 +126,7 @@ struct World {
                             uint8_t creType);
   static void enterWarMachine(uint16_t warMId, uint8_t warMType);
   static void enterStables(entt::entity heroEnt, entt::entity goalEnt);
+  static void enterBattle(entt::entity heroEnt, entt::entity goalEnt);
   static void enterScrn();
 
   static void exitScrn();

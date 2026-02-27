@@ -1632,6 +1632,27 @@ void World::enterStables(entt::entity heroEnt, entt::entity goalEnt) {
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
+void World::enterBattle(entt::entity heroEnt, entt::entity goalEnt) {
+  enterScrn();
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(StablesSys::run);
+    iterateSystems.push_back(CursorSys::run);
+
+    LMouseUpSys.push_back(StablesSys::leftMouseUp);
+    keyUpSys.push_back(StablesSys::keyUp);
+
+    CursorSys::run();
+
+    return false;
+  });
+
+  Global::heroEnt = heroEnt;
+  Global::goalEnt = goalEnt;
+  Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+}
+
 void World::enterConfirm(float bakW, float bakH, uint8_t confirmType) {
   enterScrn();
 

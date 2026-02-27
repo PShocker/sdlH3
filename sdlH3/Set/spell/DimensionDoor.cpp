@@ -6,7 +6,9 @@
 #include "Global/Global.h"
 
 #include "H3mLoader/H3mObject.h"
+#include "Lang/Lang.h"
 #include "Set/SpellSet.h"
+#include "Sys/FreeTypeSys.h"
 #include "Sys/HeroSys.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/CursorSys.h"
@@ -18,11 +20,39 @@
 
 void SpellSet::DimensionDoor(std::any data) {
   World::enterAdvScrn();
+
+  AdvMapSys::heroFocus();
+
+  auto &registry = World::registrys[World::level];
+  auto heroPair =
+      Global::heros[Global::playerId][Global::herosIndex[Global::playerId]];
+  auto heroEnt = heroPair.second;
+
+  auto heroComp = &registry.get<HeroComp>(heroEnt);
+
+  if (heroComp->moveType == HeroComp::BOAT) {
+    float confirmbakW = 200;
+    float confirmbakH = 200;
+    Global::confirmdraw = [confirmbakW, confirmbakH]() {
+      SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
+                        Global::viewPort.h / 2 - confirmbakH / 2};
+      auto strPool = *Lang::strPool[Global::langIndex];
+      FreeTypeSys::setSize(13);
+      FreeTypeSys::setColor(240, 224, 104, 255);
+      FreeTypeSys::drawCenter(leftUp.x + confirmbakW / 2, leftUp.y + 15,
+                              strPool[0]);
+    };
+    Global::confirmOnlyOK = true;
+    Global::confirmCallBack = std::nullopt;
+    auto type = ((uint8_t)Enum::SCNTYPE::MOD);
+    World::enterConfirm(confirmbakW, confirmbakH, type);
+    return;
+  }
+
   Global::cursorType = (uint8_t)Enum::CURSOR::SPELL;
   Global::cursorSpellIndex = (uint8_t)Enum::CRADVNTR::TELEPORT;
   Global::cursorSpellRange = 7;
   Global::cursorSpellGoal = ObjectType::LAND;
-  AdvMapSys::heroFocus();
 
   Global::cursorSpellBack = []() {
     auto &registry = World::registrys[World::level];

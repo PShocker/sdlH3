@@ -158,6 +158,51 @@ struct FactionBuild {
   std::vector<FactionBuildBonus> bonus;
 };
 
+struct FactionSiegeGate {
+  SDL_FPoint arch;
+  SDL_FPoint gate;
+};
+
+struct FactionSiegeMoat {
+  SDL_FPoint bank;
+  SDL_FPoint moat;
+};
+
+struct FactionSiegeStatic {
+  SDL_FPoint background;
+  SDL_FPoint bottom;
+  SDL_FPoint top;
+};
+
+struct FactionSiegeTowerI {
+  SDL_FPoint battlement;
+  SDL_FPoint creature;
+  SDL_FPoint tower;
+};
+
+struct FactionSiegeTower {
+  FactionSiegeTowerI bottom;
+  FactionSiegeTowerI keep;
+  FactionSiegeTowerI top;
+};
+
+struct FactionSiegeWall {
+  SDL_FPoint bottom;
+  SDL_FPoint bottomMid;
+  SDL_FPoint upper;
+  SDL_FPoint upperMid;
+};
+
+struct FactionSiege {
+  uint16_t shooter;
+  std::string imagePrefix;
+  FactionSiegeGate gate;
+  FactionSiegeMoat moat;
+  FactionSiegeStatic stc;
+  FactionSiegeTower tower;
+  FactionSiegeWall wall;
+};
+
 struct FactionSetI {
   uint8_t index;
   uint8_t nativeTerrain;
@@ -172,6 +217,7 @@ struct FactionSetI {
   std::vector<std::vector<std::vector<int32_t>>> hallSlots;
   std::vector<uint16_t> blacksmith;
   std::vector<FactionBuild> builds;
+  FactionSiege siege;
 };
 
 struct ObjectSetSound {
