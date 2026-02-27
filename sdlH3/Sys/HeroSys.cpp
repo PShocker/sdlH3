@@ -145,8 +145,8 @@ static void handleLand(entt::entity heroEnt, entt::entity goalEnt,
     // 加载船只并更新纹理
     Ent::loadBoat(texture.path, heroObj.x, heroObj.y, World::level,
                   direct - '0', heroPos.flip);
-    texture.path = HeroClassSet::heroClasz[heroComp.subId].animation[0] + "/" +
-                   std::to_string(direct);
+    texture.path =
+        HeroClassSet::heroClasz[heroComp.subId].animation[0] + "/" + direct;
     // 更新旗帜
     auto &flagTexture = registry.get<TextureComp>(heroComp.flagEnt);
     auto &playerId = registry.get<PlayerIdComp>(heroEnt);
@@ -518,8 +518,9 @@ static void handleBoat(entt::entity heroEnt, entt::entity goalEnt) {
   removeAudio(0);
 }
 
-static void handleMonster(entt::entity goalEnt) {
+static void handleMonster(entt::entity heroEnt, entt::entity goalEnt) {
   // TODO: 实现怪物处理逻辑
+  World::enterBattle(heroEnt, goalEnt, World::level);
 }
 
 static void handleHeroMeet(entt::entity heroEnt, uint8_t level0,
@@ -655,7 +656,7 @@ static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
     handleMono(heroEnt, goalEnt);
     break;
   case ObjectType::MONSTER:
-    handleMonster(goalEnt);
+    handleMonster(heroEnt, goalEnt);
     break;
   case ObjectType::ARTIFACT:
     World::enterArtifact(heroEnt, goalEnt);

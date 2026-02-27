@@ -19,10 +19,6 @@
 #include <cstdint>
 
 void SpellSet::DimensionDoor(std::any data) {
-  World::enterAdvScrn();
-
-  AdvMapSys::heroFocus();
-
   auto &registry = World::registrys[World::level];
   auto heroPair =
       Global::heros[Global::playerId][Global::herosIndex[Global::playerId]];
@@ -49,6 +45,9 @@ void SpellSet::DimensionDoor(std::any data) {
     return;
   }
 
+  World::enterAdvScrn();
+
+  AdvMapSys::heroFocus();
   Global::cursorType = (uint8_t)Enum::CURSOR::SPELL;
   Global::cursorSpellIndex = (uint8_t)Enum::CRADVNTR::TELEPORT;
   Global::cursorSpellRange = 7;

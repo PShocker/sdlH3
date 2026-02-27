@@ -6,30 +6,15 @@
 #include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
+#include "SDL3/SDL_rect.h"
+#include "SDL3/SDL_render.h"
 #include "Sys/FreeTypeSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include <vector>
 
-static float bakW = 450;
-static float bakH = 340;
-
-static bool visited() {
-  auto &heroComp =
-      World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  if (heroComp.visited.contains(ObjectType::BUOY)) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-static void receive() {
-  auto &heroComp =
-      World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  heroComp.visited.insert((uint8_t)ObjectType::BUOY);
-  World::exitScrn();
-}
+static float bakW = 800;
+static float bakH = 556;
 
 static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
@@ -37,7 +22,7 @@ static std::vector<Button> buttonInfo() {
 
   b.textures = Global::defCache["iOKAY.def/0"];
   b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-  b.func = receive;
+  // b.func = receive;
   b.disable = false;
   v.push_back(b);
 
@@ -45,31 +30,18 @@ static std::vector<Button> buttonInfo() {
 }
 
 static void drawBackGround() {
-  auto x = Global::viewPort.w / 2;
-  auto y = Global::viewPort.h / 2;
-  AdvPopSys::drawBackGround(x, y, bakW, bakH, Global::playerId);
-
+  SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
+                    (Global::viewPort.h - 556) / 2};
+  auto texture = Global::pcxCache["CMBKBCH.pcx"][0];
+  SDL_FRect posRect = {leftUp.x, leftUp.y, static_cast<float>(texture->w),
+                       static_cast<float>(texture->h)};
+  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
   auto strPool = *Lang::strPool[Global::langIndex];
   auto oName = strPool[927 + ObjectType::BUOY];
-  FreeTypeSys::drawCenter(x, y - bakH / 2 + 15, oName);
 
   return;
-}
-
-const SDL_FRect morPosition = {bakW / 2 - 41, bakH / 3, 82, 93};
-
-static void drawMor(entt::entity ent) {
-  SDL_FRect posRect;
-  SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                    Global::viewPort.h / 2 - bakH / 2};
-  auto texture = Global::defCache["imrl82.def/0"][4];
-  posRect = {leftUp.x + morPosition.x, leftUp.y + morPosition.y, morPosition.w,
-             morPosition.h};
-  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-  SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
-  SDL_RenderRect(Window::renderer, &posRect);
 }
 
 static void drawButton() {
@@ -83,27 +55,9 @@ static void drawButton() {
 }
 
 bool BattleSys::run() {
-
   drawBackGround();
-  drawMor(Global::goalEnt);
   drawButton();
   return true;
-}
-
-static bool clickMor(uint8_t clickType) {
-  if (!visited()) {
-    SDL_FRect posRect;
-    SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
-                      Global::viewPort.h / 2 - bakH / 2};
-    SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
-    posRect = {leftUp.x + morPosition.x, leftUp.y + morPosition.y,
-               morPosition.w, morPosition.h};
-    if (SDL_PointInRectFloat(&point, &posRect)) {
-      HeroScrSys::showMorComfirm(clickType);
-      return true;
-    }
-  }
-  return false;
 }
 
 bool BattleSys::leftMouseUp(float x, float y) {
@@ -111,7 +65,6 @@ bool BattleSys::leftMouseUp(float x, float y) {
                     Global::viewPort.h / 2 - bakH / 2};
   auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
-
   if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
     return false;
   }
@@ -120,17 +73,12 @@ bool BattleSys::leftMouseUp(float x, float y) {
 
 bool BattleSys::rightMouseDown(float x, float y) {
   auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
-
-  if (clickMor(clickType)) {
-    return false;
-  }
   return true;
 }
 
 bool BattleSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    receive();
     break;
   }
   default:

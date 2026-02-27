@@ -24,6 +24,7 @@
 #include "Sys/gui/AltarSacSys.h"
 #include "Sys/gui/ArenaSys.h"
 #include "Sys/gui/ArtifactSys.h"
+#include "Sys/gui/BattleSys.h"
 #include "Sys/gui/BuoySys.h"
 #include "Sys/gui/CameraSys.h"
 #include "Sys/gui/CartographerSys.h"
@@ -571,7 +572,7 @@ void World::enterSpell(entt::entity heroEnt) {
 
     CursorSys::run();
 
-    SDL_SetTextureColorMod(Global::maskTexture, 255, 255, 255);
+    // SDL_SetTextureColorMod(Global::maskTexture, 255, 255, 255);
 
     return false;
   });
@@ -617,7 +618,7 @@ void World::enterViewWorld() {
     keyUpSys.push_back(ViewWorldSys::keyUp);
 
     CursorSys::run();
-    
+
     SDL_SetRenderDrawColor(Window::renderer, 0, 0, 0, 255);
 
     return false;
@@ -1632,16 +1633,17 @@ void World::enterStables(entt::entity heroEnt, entt::entity goalEnt) {
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
-void World::enterBattle(entt::entity heroEnt, entt::entity goalEnt) {
+void World::enterBattle(entt::entity heroEnt, entt::entity goalEnt,
+                        uint8_t goalLevel) {
   enterScrn();
   iterateSystems.push_back([] {
     iterateSystems.clear();
     iterateSystems.push_back(renderMask);
-    iterateSystems.push_back(StablesSys::run);
+    iterateSystems.push_back(BattleSys::run);
     iterateSystems.push_back(CursorSys::run);
 
-    LMouseUpSys.push_back(StablesSys::leftMouseUp);
-    keyUpSys.push_back(StablesSys::keyUp);
+    LMouseUpSys.push_back(BattleSys::leftMouseUp);
+    keyUpSys.push_back(BattleSys::keyUp);
 
     CursorSys::run();
 
@@ -1650,6 +1652,7 @@ void World::enterBattle(entt::entity heroEnt, entt::entity goalEnt) {
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
+  Global::goalLevel = goalLevel;
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 
