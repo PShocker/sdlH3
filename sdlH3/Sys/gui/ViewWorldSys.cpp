@@ -37,21 +37,19 @@ static void drawBackGround() {
 static void draw() {
   auto viewPort = Global::viewPort;
   auto scale = Global::viewWorldScale;
-  auto centerX = Global::viewPort.x + Global::viewPort.w / 2;
-  auto centerY = Global::viewPort.y + Global::viewPort.h / 2;
   Global::viewPort.w = Global::viewPort.w * scale;
   Global::viewPort.h = Global::viewPort.h * scale;
-  Global::viewPort.x = centerX - Global::viewPort.w / 2;
-  Global::viewPort.y = centerY - Global::viewPort.h / 2;
   auto texture = SDL_CreateTexture(Window::renderer, SDL_PIXELFORMAT_UNKNOWN,
                                    SDL_TEXTUREACCESS_TARGET, Global::viewPort.w,
                                    Global::viewPort.h);
   SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
   SDL_SetRenderTarget(Window::renderer, texture);
+  SDL_SetRenderDrawColor(Window::renderer, 255, 0, 0, 255);
+  SDL_RenderClear(Window::renderer);
   // render
   RenderSys::run();
   SDL_SetRenderTarget(Window::renderer, nullptr);
-  SDL_FRect posRect = {0, 0, viewPort.w, viewPort.h};
+  SDL_FRect posRect = {0, 0, viewPort.w - 192, viewPort.h};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
   SDL_DestroyTexture(texture);

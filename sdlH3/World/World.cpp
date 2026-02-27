@@ -607,10 +607,9 @@ void World::enterAdvOpt() {
 
 void World::enterViewWorld() {
   enterScrn();
-
   iterateSystems.push_back([] {
     iterateSystems.clear();
-    iterateSystems.push_back(renderMask);
+    // iterateSystems.push_back(renderMask);
     iterateSystems.push_back(ViewWorldSys::run);
     iterateSystems.push_back(CursorSys::run);
 
@@ -618,6 +617,8 @@ void World::enterViewWorld() {
     keyUpSys.push_back(ViewWorldSys::keyUp);
 
     CursorSys::run();
+    
+    SDL_SetRenderDrawColor(Window::renderer, 0, 0, 0, 255);
 
     return false;
   });

@@ -4,6 +4,7 @@
 #include "Comp/ArtifactComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
+#include "H3mLoader/H3mObject.h"
 #include "HeroScrSys.h"
 #include "Lang/Lang.h"
 #include "Sys/FreeTypeSys.h"
@@ -60,7 +61,8 @@ static void drawBackGround() {
 
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
-  FreeTypeSys::drawCenter(x, y - bakH / 2 + 15, strPool[930]);
+  auto oName = strPool[927 + ObjectType::ARTIFACT];
+  FreeTypeSys::drawCenter(x, y - bakH / 2 + 15, oName);
   return;
 }
 

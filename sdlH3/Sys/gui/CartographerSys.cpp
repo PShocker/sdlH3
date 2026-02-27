@@ -3,6 +3,7 @@
 #include "AdvPopSys.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
+#include "H3mLoader/H3mObject.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_rect.h"
 #include "Sys/FreeTypeSys.h"
@@ -83,7 +84,8 @@ static void drawBackGround() {
 
   FreeTypeSys::setColor(240, 224, 104, 255);
   auto strPool = *Lang::strPool[Global::langIndex];
-  FreeTypeSys::drawCenter(x, y - bakH / 2 + 15, strPool[937]);
+  auto oName = strPool[927 + ObjectType::CARTOGRAPHER];
+  FreeTypeSys::drawCenter(x, y - bakH / 2 + 15, oName);
 
   FreeTypeSys::setColor(255, 255, 255, 255);
   auto gold = Global::resources[Global::playerId][6];

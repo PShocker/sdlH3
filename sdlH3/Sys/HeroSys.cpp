@@ -855,8 +855,7 @@ static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
     registry.get<HeroComp>(heroEnt).curEnt = goalEnt;
     break;
   case ObjectType::FREELANCERS_GUILD:
-    Global::makType = (uint8_t)Enum::MARKET::CRE_SELL;
-    World::enterMarket(heroEnt, goalEnt);
+    World::enterFreeGuild(heroEnt, goalEnt);
     registry.get<HeroComp>(heroEnt).curEnt = goalEnt;
     break;
   case ObjectType::STAR_AXIS:

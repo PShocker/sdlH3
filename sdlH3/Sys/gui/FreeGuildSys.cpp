@@ -4,6 +4,7 @@
 #include "Comp/PlayerIdComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
+#include "H3mLoader/H3mObject.h"
 #include "Lang/Lang.h"
 #include "SDL3/SDL_render.h"
 #include "Sys/FreeTypeSys.h"
@@ -20,10 +21,10 @@ static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
   Button b;
 
-  b.textures=Global::defCache["iOKAY.def/0"];
-  b.r={208, 320, 64, 30};
-  b.func=upgrade;
-  b.disable=false;
+  b.textures = Global::defCache["iOKAY.def/0"];
+  b.r = {208, 320, 64, 30};
+  b.func = upgrade;
+  b.disable = false;
   v.push_back(b);
 
   return v;
@@ -43,8 +44,8 @@ static void drawBackGround() {
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(255, 255, 255, 255);
   auto strPool = *Lang::strPool[Global::langIndex];
-  std::u16string s = u"123456";
-  FreeTypeSys::drawCenter(0, 0, s);
+  auto oName = strPool[927 + ObjectType::FREELANCERS_GUILD];
+  FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15, oName);
 }
 
 static void draw() {

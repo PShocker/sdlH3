@@ -60,8 +60,8 @@ static void drawBackGround() {
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
   auto strPool = *Lang::strPool[Global::langIndex];
-  std::u16string s = strPool[977];
-  FreeTypeSys::drawCenter(x + bakW / 2, y - bakH / 2 + 50, s);
+  auto oName = strPool[927 + ObjectType::GARDEN_OF_REVELATION];
+  FreeTypeSys::drawCenter(x + bakW / 2, y - bakH / 2 + 50, oName);
 
   return;
 }
