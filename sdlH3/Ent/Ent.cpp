@@ -536,7 +536,8 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     dwellingComp->id = object.subId;
 
     auto i = object.id - ObjectType::CREATURE_GENERATOR1;
-    auto creatures = DwellingSet::fullDwellings[i]->at(object.subId).creatures;
+    auto creatures =
+        DwellingSet::fullDwellings[i]->at(object.subId).dwe.value().creatures;
     for (auto creature : creatures) {
       auto growth = CreatureSet::fullCreatures[creature]->growth;
       dwellingComp->creatures.push_back(

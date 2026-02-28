@@ -1112,9 +1112,35 @@ void HeroScrSys::heroArtifactUpdate(HeroComp &hComp) {
   }
 }
 
+void HeroScrSys::heroArtifactEquip(HeroComp &hComp) {
+  for (uint8_t i = 0; i < hComp.artifacts.size(); i++) {
+    auto artifact = hComp.artifacts[i];
+    if (artifact == 0xffff) {
+      for (uint8_t m = 0; m < hComp.artifactsInBackpack.size(); m++) {
+        auto artifactPack = hComp.artifactsInBackpack[m];
+        if (artifactPack != 0xffff) {
+          auto slot = ArtifactSet::artifacts[artifactPack].slot;
+          if (slot[i]) {
+            hComp.artifacts[i] = artifactPack;
+            hComp.artifactsInBackpack.erase(hComp.artifactsInBackpack.begin() +
+                                            m);
+            break;
+          }
+        }
+      }
+    }
+    HeroScrSys::heroArtifactUpdate(hComp);
+  }
+
+  for (auto artifact : hComp.artifacts) {
+    if (artifact == 0xffff) {
+    }
+  }
+}
+
 void HeroScrSys::showResConfirm(uint8_t clickType, uint16_t i) {
-  auto confirmbakW = 400;
-  auto confirmbakH = 140;
+  float confirmbakW = 400;
+  float confirmbakH = 140;
   Global::confirmdraw = [confirmbakW, confirmbakH, i]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};
@@ -1139,8 +1165,8 @@ void HeroScrSys::showResConfirm(uint8_t clickType, uint16_t i) {
 }
 
 void HeroScrSys::showArtifactComfirm(uint16_t i) {
-  auto confirmbakW = 400;
-  auto confirmbakH = 140;
+  float confirmbakW = 400;
+  float confirmbakH = 140;
   Global::confirmdraw = [confirmbakW, confirmbakH, i]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};
@@ -1157,8 +1183,8 @@ void HeroScrSys::showArtifactComfirm(uint16_t i) {
 }
 
 void HeroScrSys::showPrimComfirm(uint8_t clickType, uint16_t i) {
-  auto confirmbakW = 400;
-  auto confirmbakH = 160;
+  float confirmbakW = 400;
+  float confirmbakH = 160;
   Global::confirmdraw = [confirmbakW, confirmbakH, i]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};
@@ -1184,8 +1210,8 @@ void HeroScrSys::showPrimComfirm(uint8_t clickType, uint16_t i) {
 }
 
 void HeroScrSys::showLukComfirm(uint8_t clickType, HeroComp &hComp) {
-  auto confirmbakW = 500;
-  auto confirmbakH = 340;
+  float confirmbakW = 500;
+  float confirmbakH = 340;
   Global::confirmdraw = [confirmbakW, confirmbakH, &hComp]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};
@@ -1257,8 +1283,8 @@ void HeroScrSys::showLukComfirm(uint8_t clickType, HeroComp &hComp) {
 }
 
 void HeroScrSys::showLukComfirm(uint8_t clickType) {
-  auto confirmbakW = 400;
-  auto confirmbakH = 200;
+  float confirmbakW = 400;
+  float confirmbakH = 200;
   Global::confirmdraw = [confirmbakW, confirmbakH]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};
@@ -1284,8 +1310,8 @@ void HeroScrSys::showLukComfirm(uint8_t clickType) {
 }
 
 void HeroScrSys::showMorComfirm(uint8_t clickType, HeroComp &hComp) {
-  auto confirmbakW = 500;
-  auto confirmbakH = 340;
+  float confirmbakW = 500;
+  float confirmbakH = 340;
   Global::confirmdraw = [confirmbakW, confirmbakH, &hComp]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};
@@ -1357,8 +1383,8 @@ void HeroScrSys::showMorComfirm(uint8_t clickType, HeroComp &hComp) {
 }
 
 void HeroScrSys::showMorComfirm(uint8_t clickType) {
-  auto confirmbakW = 400;
-  auto confirmbakH = 160;
+  float confirmbakW = 400;
+  float confirmbakH = 160;
   Global::confirmdraw = [confirmbakW, confirmbakH]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};
@@ -1384,8 +1410,8 @@ void HeroScrSys::showMorComfirm(uint8_t clickType) {
 }
 
 void HeroScrSys::showExpComfirm(uint8_t clickType) {
-  auto confirmbakW = 420;
-  auto confirmbakH = 200;
+  float confirmbakW = 420;
+  float confirmbakH = 200;
   Global::confirmdraw = [confirmbakW, confirmbakH]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};
@@ -1446,8 +1472,8 @@ void HeroScrSys::showExpComfirm(uint8_t clickType, HeroComp &hComp) {
 }
 
 void HeroScrSys::showManaComfirm(uint8_t clickType, HeroComp &hComp) {
-  auto confirmbakW = 430;
-  auto confirmbakH = 160;
+  float confirmbakW = 430;
+  float confirmbakH = 160;
 
   Global::confirmdraw = [confirmbakW, confirmbakH, hComp]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
@@ -1474,8 +1500,8 @@ void HeroScrSys::showManaComfirm(uint8_t clickType, HeroComp &hComp) {
 }
 
 void HeroScrSys::showManaComfirm(uint8_t clickType) {
-  auto confirmbakW = 430;
-  auto confirmbakH = 160;
+  float confirmbakW = 430;
+  float confirmbakH = 160;
 
   Global::confirmdraw = [confirmbakW, confirmbakH]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
@@ -1502,8 +1528,8 @@ void HeroScrSys::showManaComfirm(uint8_t clickType) {
 }
 
 void HeroScrSys::showSpeConfirm(uint8_t clickType, uint16_t i) {
-  auto confirmbakW = 430;
-  auto confirmbakH = 160;
+  float confirmbakW = 430;
+  float confirmbakH = 160;
 
   Global::confirmdraw = [confirmbakW, confirmbakH, i]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
@@ -1563,8 +1589,8 @@ void HeroScrSys::showSecSkiComfirm(uint8_t clickType, uint16_t id, uint16_t i) {
 }
 
 void HeroScrSys::showHeroBiosComfirm(uint8_t clickType, uint16_t i) {
-  auto confirmbakW = 600;
-  auto confirmbakH = 360;
+  float confirmbakW = 600;
+  float confirmbakH = 360;
   Global::confirmdraw = [confirmbakW, confirmbakH, i]() {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - confirmbakW / 2,
                       Global::viewPort.h / 2 - confirmbakH / 2};

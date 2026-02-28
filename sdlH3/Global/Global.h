@@ -4,6 +4,7 @@
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "Sys/AudioSys.h"
+#include "Sys/gui/BattleSys.h"
 #include "entt/entity/fwd.hpp"
 #include <array>
 #include <cstdint>
@@ -62,7 +63,8 @@ struct Global {
   static inline uint64_t advStatTime;
   static inline std::vector<std::tuple<SDL_Point, SDL_Color, std::u16string>>
       advStrs;
-  static inline std::array<std::array<std::flat_set<entt::entity>, 2>, 8> advVisted;
+  static inline std::array<std::array<std::flat_set<entt::entity>, 2>, 8>
+      advVisted;
 
   static inline std::array<uint8_t, 8> advHeroPage;
   static inline std::array<uint8_t, 8> advTownPage;
@@ -189,8 +191,9 @@ struct Global {
 
   static inline SDL_Texture *maskTexture;
 
-  static inline uint64_t battleField;
-
+  static inline BattleScrn battleScn;
+  static inline std::array<BattleHero, 2> battleHero;
+  static inline std::array<std::vector<BattleCreature>, 2> battleCre;
 
   static inline std::flat_map<std::string, std::vector<SDL_Texture *>> pcxCache;
   static inline std::flat_map<std::string, std::vector<SDL_Texture *>> defCache;

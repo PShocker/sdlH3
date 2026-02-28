@@ -6,9 +6,15 @@
 #include <utility>
 #include <vector>
 
-struct BattleField {
-  uint8_t battleField;
-  bool townBattle;
+enum BATTLE_FIELD_TYPE {
+  BATTLE_FIELD_TYPE_TOWN,
+  BATTLE_FIELD_TYPE_HERO,
+  BATTLE_FIELD_TYPE_MONSTER,
+};
+
+struct BattleScrn {
+  uint8_t field;
+  uint8_t type;
   std::vector<uint8_t> siege;
   std::vector<uint8_t> siegeBroken;
   std::vector<uint8_t> moat;
@@ -23,6 +29,9 @@ struct BattleHero {
 
 struct BattleCreature {
   uint16_t id;
+  uint8_t action;
+  uint32_t frameIndex;
+  uint32_t frameTime;
   CreatureSetAttribute attribute;
   std::flat_map<uint8_t, std::any> abilities;
   uint32_t num;

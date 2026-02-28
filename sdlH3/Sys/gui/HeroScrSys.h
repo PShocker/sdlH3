@@ -18,6 +18,7 @@ struct HeroScrSys {
   static int32_t heroLuk(HeroComp &hComp);
   static int32_t heroSight(HeroComp &hComp);
   static void heroArtifactUpdate(HeroComp &hComp);
+  static void heroArtifactEquip(HeroComp &hComp);
 
   static int8_t heroSecLevel(HeroComp &hComp, uint8_t i);
 

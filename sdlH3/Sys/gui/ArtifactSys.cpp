@@ -33,6 +33,8 @@ static void receive() {
 
     auto &heroComp = registry.get<HeroComp>(Global::heroEnt);
     heroComp.artifactsInBackpack.push_back(afComp.id);
+
+    HeroScrSys::heroArtifactEquip(heroComp);
     return true;
   });
   Global::fadeRect = {0, 0, Global::viewPort.w - 199, Global::viewPort.h - 47};

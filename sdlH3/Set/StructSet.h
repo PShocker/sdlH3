@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <flat_map>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -226,11 +227,36 @@ struct ObjectSetSound {
   std::vector<std::string> removal;
 };
 
+struct ObjectDwe {
+  std::vector<std::pair<uint16_t, uint32_t>> guards; // <creatureType, amount>
+  std::vector<uint16_t> creatures; // 生物类型ID列表，支持多级兵种
+};
+
+struct ObjectPassive {
+  uint8_t battleField;
+};
+
+struct ObjectCreatureBankBonuse {
+  uint8_t id;
+  uint8_t subId;
+  int32_t val;
+};
+
+struct ObjectCreatureBankI {
+  std::vector<std::pair<uint16_t, uint32_t>> guards;
+  std::vector<ObjectCreatureBankBonuse> bonuse;
+};
+
+struct ObjectCreatureBank {
+  std::vector<ObjectCreatureBankI> banks;
+};
+
 struct ObjectSetI {
   uint8_t index;
   ObjectSetSound sound;
-  std::vector<std::pair<uint16_t, uint32_t>> guards; // <creatureType, amount>
-  std::vector<uint16_t> creatures; // 生物类型ID列表，支持多级兵种
+  std::optional<ObjectDwe> dwe;
+  std::optional<ObjectPassive> passive;
+  std::optional<ObjectCreatureBank> creBank;
 };
 
 struct HeroClasz {

@@ -1,7 +1,9 @@
 #include "World.h"
 
 #include "Comp/HeroComp.h"
+#include "Comp/ObjectComp.h"
 #include "Comp/PositionComp.h"
+#include "Comp/TerrainComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
@@ -9,6 +11,7 @@
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_surface.h"
+#include "Set/TerrainSet.h"
 #include "Sys/AnimateSys.h"
 #include "Sys/AudioSys.h"
 #include "Sys/BorderSys.h"
@@ -1649,6 +1652,28 @@ void World::enterBattle(entt::entity heroEnt, entt::entity goalEnt,
 
     return false;
   });
+
+  auto &r = World::registrys[goalLevel];
+  auto oComp = r.get<ObjectComp>(goalEnt);
+  auto x = oComp.x + oComp.accessTiles[0].first;
+  auto y = oComp.y + oComp.accessTiles[0].second;
+  auto tEnt = Global::terrains[goalLevel][x][y].front();
+  auto tComp = r.get<TerrainComp>(tEnt);
+  Global::battleScn.field = TerrainSet::terrains[tComp.index].battleFields[0];
+  switch (oComp.type) {
+  case ObjectType::HERO: {
+    Global::battleScn.type = BATTLE_FIELD_TYPE_HERO;
+    break;
+  }
+  case ObjectType::TOWN: {
+    Global::battleScn.type = BATTLE_FIELD_TYPE_TOWN;
+    break;
+  }
+  default: {
+    Global::battleScn.type = BATTLE_FIELD_TYPE_MONSTER;
+    break;
+  }
+  }
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
