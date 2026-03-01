@@ -264,7 +264,7 @@ struct HeroClasz {
   uint8_t faction;
   std::vector<uint8_t> lowPrimRate;
   std::vector<uint8_t> highPrimRate;
-  std::vector<uint8_t> defaultPrim;
+  std::array<uint8_t, 4> defaultPrim;
   std::vector<uint8_t> secSkillRate;
   std::array<std::string, 2> animation;
   std::array<std::string, 2> battle;

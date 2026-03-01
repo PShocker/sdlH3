@@ -15,6 +15,7 @@ enum BATTLE_FIELD_TYPE {
 struct BattleScrn {
   uint8_t field;
   uint8_t type;
+  bool tactics;
   std::vector<uint8_t> siege;
   std::vector<uint8_t> siegeBroken;
   std::vector<uint8_t> moat;
@@ -37,6 +38,7 @@ struct BattleCreature {
   uint32_t num;
   uint32_t pos;
   std::vector<std::pair<uint8_t, int32_t>> spelled;
+  uint8_t playerId;
 };
 
 struct BattleSys {

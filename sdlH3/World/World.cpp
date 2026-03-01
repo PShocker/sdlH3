@@ -1373,12 +1373,20 @@ void World::enterLibrary(entt::entity heroEnt, entt::entity goalEnt) {
 
 void World::enterHutMag(entt::entity heroEnt, entt::entity goalEnt) {
   enterScrn();
-  iterateSystems.pop_back();
-  iterateSystems.push_back(HutMagSys::run);
-  iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(HutMagSys::leftMouseUp);
-  keyUpSys.push_back(HutMagSys::keyUp);
+  iterateSystems.push_back([] {
+    iterateSystems.clear();
+    iterateSystems.push_back(renderMask);
+    iterateSystems.push_back(HutMagSys::run);
+    iterateSystems.push_back(CursorSys::run);
+
+    LMouseUpSys.push_back(HutMagSys::leftMouseUp);
+    keyUpSys.push_back(HutMagSys::keyUp);
+
+    CursorSys::run();
+
+    return false;
+  });
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;

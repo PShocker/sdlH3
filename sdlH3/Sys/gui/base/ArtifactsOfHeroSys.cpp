@@ -90,6 +90,9 @@ void ArtifactsOfHeroSys::drawBackPack(HeroComp *heroComp, int32_t x, int32_t y,
     posRect = {static_cast<float>(x + 338 + 46 * (i - index)),
                static_cast<float>(y + 356), 44, 44};
     if (i < heroComp->artifactsInBackpack.size()) {
+      if (heroComp->artifactsInBackpack[i] == 0xffff) {
+        continue;
+      }
       SDL_RenderTexture(
           Window::renderer,
           Global::defCache["Artifact.def/0"][heroComp->artifactsInBackpack[i]],

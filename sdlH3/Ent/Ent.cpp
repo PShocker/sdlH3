@@ -115,7 +115,7 @@ HeroComp Ent::loadDefaultHeroComp(uint8_t hId) {
   heroComp.exp = 0;
   heroComp.level = 1;
   heroComp.moveType = 0;
-  heroComp.artifacts.assign(19, 0xffff);
+  heroComp.primSkills = HeroClassSet::heroClasz[heroComp.subId].defaultPrim;
 
   heroComp.secSkills = defaultHero->secSkill;
   heroComp.name = u"";

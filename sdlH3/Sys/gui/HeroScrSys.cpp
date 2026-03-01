@@ -211,7 +211,7 @@ static bool clickEquip(uint8_t clickType) {
     // 放置物品
     if (isBackpackOperation) {
       if (targetIndex > artifactsBack.size()) {
-        artifactsBack.resize(targetIndex, 0xffff);
+        artifactsBack.resize(targetIndex + 1, 0xffff);
       }
       if (artifactsBack[targetIndex] == 0xffff) {
         artifactsBack[targetIndex] = selectedArtId;
@@ -411,6 +411,9 @@ bool HeroScrSys::leftMouseDown(float x, float y) {
   if (Global::heroScnType == (uint8_t)Enum::SCNTYPE::MOD) {
     auto clickType = (uint8_t)Enum::CLICKTYPE::L_DOWN;
     if (clickEquip(clickType)) {
+      auto [level, ent] = Global::heroScnPair;
+      auto &hComp = World::registrys[level].get<HeroComp>(ent);
+      HeroScrSys::heroArtifactUpdate(hComp);
       return false;
     }
   }
@@ -530,18 +533,8 @@ static void drawHeroPortraitSpec() {
   // render small hero PortraitsSmall
   SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                     (Global::viewPort.h - 586) / 2};
-  posRect = {(float)leftUp.x + 612, leftUp.y + 33, 48, 32};
   auto playerId = Global::playerId;
   auto strPool = *Lang::strPool[Global::langIndex];
-
-  for (auto &[level, heroEnt] : Global::heros[playerId]) {
-    posRect.y += 54;
-    auto &registry = World::registrys[level];
-    auto heroComp = &registry.get<HeroComp>(heroEnt);
-    auto smallPor = HeroSet::fullHeros[heroComp->portrait]->smallPor;
-    auto texture = Global::pcxCache[smallPor][0];
-    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-  }
 
   auto &registry = World::registrys[World::level];
   posRect = {(float)leftUp.x + 18, leftUp.y + 18, 58, 64};
@@ -572,6 +565,21 @@ static void drawHeroPortraitSpec() {
   FreeTypeSys::setColor(255, 255, 255, 255);
   FreeTypeSys::draw(posRect.x + 50, posRect.y + 21,
                     strPool[1862 + heroComp->portrait]);
+}
+
+static void drawHeroPorList() {
+  SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
+                    (Global::viewPort.h - 586) / 2};
+  auto playerId = Global::playerId;
+  SDL_FRect posRect = {(float)leftUp.x + 612, leftUp.y + 33, 48, 32};
+  for (auto &[level, heroEnt] : Global::heros[playerId]) {
+    posRect.y += 54;
+    auto &registry = World::registrys[level];
+    auto heroComp = &registry.get<HeroComp>(heroEnt);
+    auto smallPor = HeroSet::fullHeros[heroComp->portrait]->smallPor;
+    auto texture = Global::pcxCache[smallPor][0];
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  }
 }
 
 const static std::vector<SDL_FRect> primPosition = {
@@ -793,6 +801,7 @@ bool HeroScrSys::run() {
   drawPrim();
   drawButton();
   drawHeroPortraitSpec();
+  drawHeroPorList();
   drawMoraleLuck();
   drawHeroSecSkill();
   drawCreature();
@@ -879,7 +888,6 @@ static void clickBackPage() {
 
   Global::artPageIndex[0] += ArtifactsOfHeroSys::clickPage(
       heroComp, leftUp.x, leftUp.y, Global::artPageIndex[0]);
-  HeroScrSys::heroArtifactUpdate(*heroComp);
 }
 
 bool HeroScrSys::leftMouseUp(float x, float y) {
@@ -956,6 +964,9 @@ bool HeroScrSys::rightMouseDown(float x, float y) {
     }
 
     if (clickEquip(clickType)) {
+      auto [level, ent] = Global::heroScnPair;
+      auto &hComp = World::registrys[level].get<HeroComp>(ent);
+      HeroScrSys::heroArtifactUpdate(hComp);
       return false;
     }
     if (clickCre(clickType)) {
@@ -1112,28 +1123,21 @@ void HeroScrSys::heroArtifactUpdate(HeroComp &hComp) {
   }
 }
 
-void HeroScrSys::heroArtifactEquip(HeroComp &hComp) {
-  for (uint8_t i = 0; i < hComp.artifacts.size(); i++) {
-    auto artifact = hComp.artifacts[i];
-    if (artifact == 0xffff) {
-      for (uint8_t m = 0; m < hComp.artifactsInBackpack.size(); m++) {
-        auto artifactPack = hComp.artifactsInBackpack[m];
-        if (artifactPack != 0xffff) {
-          auto slot = ArtifactSet::artifacts[artifactPack].slot;
-          if (slot[i]) {
-            hComp.artifacts[i] = artifactPack;
-            hComp.artifactsInBackpack.erase(hComp.artifactsInBackpack.begin() +
-                                            m);
-            break;
-          }
-        }
+void HeroScrSys::heroArtifactEquip(HeroComp &hComp, uint8_t packIndex) {
+  if (hComp.artifactsInBackpack[packIndex] != 0xffff) {
+    auto artifact = hComp.artifactsInBackpack[packIndex];
+    auto slot = ArtifactSet::artifacts[artifact].slot;
+    for (uint8_t i = 0; i < slot.size(); i++) {
+      if (slot[i] == false) {
+        continue;
       }
-    }
-    HeroScrSys::heroArtifactUpdate(hComp);
-  }
-
-  for (auto artifact : hComp.artifacts) {
-    if (artifact == 0xffff) {
+      if (hComp.artifacts[i] == 0xffff) {
+        hComp.artifacts[i] = artifact;
+        hComp.artifactsInBackpack.erase(hComp.artifactsInBackpack.begin() +
+                                        packIndex);
+        HeroScrSys::heroArtifactUpdate(hComp);
+        return;
+      }
     }
   }
 }
