@@ -25,14 +25,14 @@ Pcx::Pcx(std::string filePath) : reader(filePath) {
       palette[i].b = reader.readU8();
       palette[i].a = SDL_ALPHA_OPAQUE;
 
-      for (uint8_t i = 0; i < std::size(sourcePalette); i++) {
-        if (sourcePalette[i].r == palette[i].r &&
-            sourcePalette[i].g == palette[i].g &&
-            sourcePalette[i].b == palette[i].b) {
-          palette[i].r = targetPalette[i].r;
-          palette[i].g = targetPalette[i].g;
-          palette[i].b = targetPalette[i].b;
-          palette[i].a = targetPalette[i].a;
+      for (uint8_t m = 0; m < std::size(sourcePalette); m++) {
+        if (sourcePalette[m].r == palette[i].r &&
+            sourcePalette[m].g == palette[i].g &&
+            sourcePalette[m].b == palette[i].b) {
+          palette[i].r = targetPalette[m].r;
+          palette[i].g = targetPalette[m].g;
+          palette[i].b = targetPalette[m].b;
+          palette[i].a = targetPalette[m].a;
         }
       }
     }

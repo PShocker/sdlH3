@@ -11,10 +11,15 @@
 #include "Sys/FreeTypeSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
+#include <cstdint>
 #include <vector>
 
 static float bakW = 800;
 static float bakH = 600;
+
+static const int BFIELD_WIDTH = 17;
+static const int BFIELD_HEIGHT = 11;
+static const int BFIELD_SIZE = BFIELD_WIDTH * BFIELD_HEIGHT;
 
 static std::vector<Button> buttonInfo() {
   std::vector<Button> v;
@@ -39,7 +44,7 @@ static void drawBackGround() {
   SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255);
   SDL_SetRenderDrawBlendMode(Window::renderer, SDL_BLENDMODE_BLEND);
   SDL_RenderRect(Window::renderer, &posRect);
-  
+
   texture = Global::pcxCache["COPLACBR.pcx"][Global::playerId];
   posRect.y = leftUp.y + 556;
   posRect.w = texture->w;
@@ -64,9 +69,33 @@ static void drawButton() {
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
 }
 
+static SDL_FRect hexPositionLocal(uint32_t hex) {
+  auto hexX = hex % BFIELD_WIDTH;
+  auto hexY = hex / BFIELD_WIDTH;
+  SDL_FRect r;
+  r.x = 14 + ((hexY) % 2 == 0 ? 22 : 0) + 44 * hexX;
+  r.y = 86 + 42 * hexY;
+  r.w = 45;
+  r.h = 52;
+  return r;
+}
+
+static void drawCell() {
+  for (int i = 0; i < BFIELD_SIZE; ++i) {
+    if (i % BFIELD_WIDTH == 0)
+      continue;
+    if (i % BFIELD_WIDTH == BFIELD_WIDTH - 1)
+      continue;
+    auto r = hexPositionLocal(i);
+    auto texture = Global::pcxCache["CCELLGRD.pcx"][0];
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &r);
+  }
+}
+
 bool BattleSys::run() {
   drawBackGround();
   drawButton();
+  drawCell();
   return true;
 }
 

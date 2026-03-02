@@ -22,14 +22,14 @@ Def::Def(std::string filePath) : reader(filePath) {
     palette[i].b = reader.readU8();
     palette[i].a = SDL_ALPHA_OPAQUE;
 
-    for (uint8_t i = 0; i < std::size(Pcx::sourcePalette); i++) {
-      if (Pcx::sourcePalette[i].r == palette[i].r &&
-          Pcx::sourcePalette[i].g == palette[i].g &&
-          Pcx::sourcePalette[i].b == palette[i].b) {
-        palette[i].r = Pcx::targetPalette[i].r;
-        palette[i].g = Pcx::targetPalette[i].g;
-        palette[i].b = Pcx::targetPalette[i].b;
-        palette[i].a = Pcx::targetPalette[i].a;
+    for (uint8_t m = 0; m < std::size(Pcx::sourcePalette); m++) {
+      if (Pcx::sourcePalette[m].r == palette[i].r &&
+          Pcx::sourcePalette[m].g == palette[i].g &&
+          Pcx::sourcePalette[m].b == palette[i].b) {
+        palette[i].r = Pcx::targetPalette[m].r;
+        palette[i].g = Pcx::targetPalette[m].g;
+        palette[i].b = Pcx::targetPalette[m].b;
+        palette[i].a = Pcx::targetPalette[m].a;
       }
     }
   }
