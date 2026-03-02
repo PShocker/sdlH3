@@ -277,7 +277,11 @@ static void warAnimate() {
     auto &frameIndex = Global::dweFrameIndex[i];
     auto &group = Global::dweGroup[i];
     auto id = mhs[i];
-    CreatureSys::creAnimate(frameTime, frameIndex, group, id);
+    frameTime += Window::deltaTime;
+    if (frameTime >= 90) {
+      frameTime = 0;
+      frameIndex += 1;
+    }
   }
 }
 

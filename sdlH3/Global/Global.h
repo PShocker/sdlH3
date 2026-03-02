@@ -1,5 +1,6 @@
 #pragma once
 
+#include "H3mLoader/H3mData.h"
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
@@ -25,6 +26,8 @@ struct Global {
   static inline std::mt19937 gen = std::mt19937(rd());
 
   static inline uint8_t langIndex = 1;
+
+  static inline H3mData mapData;
 
   static inline uint8_t playerId = 0;
   static inline std::vector<std::flat_set<uint8_t>> playerAlliance = {{0, 1}};

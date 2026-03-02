@@ -20,4 +20,5 @@ struct Reader {
 
   Reader(std::string filePath);
   Reader(void *buffer, uint32_t size);
+  Reader() = default;
 };
