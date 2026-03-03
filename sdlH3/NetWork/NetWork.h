@@ -1,5 +1,5 @@
 #pragma once
 
-struct NetWork{
-
+struct NetWork {
+  static void init();
 };

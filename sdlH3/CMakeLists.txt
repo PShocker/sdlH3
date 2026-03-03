@@ -8,6 +8,9 @@ include_directories("${CMAKE_SOURCE_DIR}/3rdparty/entt/src")
 include_directories("C:/SDL3-3.4.0/include")
 link_directories("C:/SDL3-3.4.0/lib/x64")
 
+include_directories("C:/libuv-1.x/include")
+link_directories("C:/libuv-1.x/build")
+
 # ffmpeg
 include_directories("C:/ffmpeg-master-latest-win64-gpl-shared/include")
 link_directories("C:/ffmpeg-master-latest-win64-gpl-shared/lib")
@@ -24,6 +27,8 @@ target_link_libraries(main PRIVATE SDL3)
 target_link_libraries(main PRIVATE freetype)
 
 target_link_libraries(main PRIVATE avcodec avformat avutil swscale swresample)
+
+target_link_libraries(main PRIVATE uv)
 
 if (MSVC)
     add_compile_options(/WX)  # MSVC 的 "警告视为错误"
