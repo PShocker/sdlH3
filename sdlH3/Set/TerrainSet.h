@@ -17,6 +17,7 @@ struct TerrainSetI {
   std::string horseSoundPenalty;
   std::vector<uint8_t> battleFields;
   TerrainSetSound sound;
+  std::vector<uint8_t> benefitFaction;
 };
 
 struct TerrainSet {

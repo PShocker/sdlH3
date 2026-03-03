@@ -1422,7 +1422,7 @@ static void loadTerrain(H3mData &data) {
       }
       loadTerrainInternal(i, path, terrain.riverDir,
                           (terrain.extTileFlags & 0b00001100) >> 2,
-                          INT32_MIN + 2, terrain.riverType + 13);
+                          INT32_MIN + 2, terrain.riverType + 12);
     }
     if (terrain.roadType != 0) {
       switch (terrain.roadType) {
@@ -1446,7 +1446,7 @@ static void loadTerrain(H3mData &data) {
       }
       loadTerrainInternal(i, path, terrain.roadDir,
                           (terrain.extTileFlags & 0b00110000) >> 4,
-                          INT32_MIN + 3, terrain.roadType + 10);
+                          INT32_MIN + 3, terrain.roadType + 9);
     }
   }
 };

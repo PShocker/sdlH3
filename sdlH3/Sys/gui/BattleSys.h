@@ -16,9 +16,11 @@ struct BattleScrn {
   uint8_t field;
   uint8_t type;
   bool tactics;
+  bool animate;
   std::vector<uint8_t> siege;
   std::vector<uint8_t> siegeBroken;
   std::vector<uint8_t> moat;
+  uint8_t creatureIndex;
 };
 
 struct BattleHero {
@@ -33,6 +35,7 @@ struct BattleCreature {
   uint8_t action;
   uint32_t frameIndex;
   uint32_t frameTime;
+  uint32_t frameGroup;
   CreatureSetAttribute attribute;
   std::flat_map<uint8_t, std::any> abilities;
   uint32_t num;

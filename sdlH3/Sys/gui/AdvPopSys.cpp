@@ -6,6 +6,7 @@
 #include "Comp/PlayerIdComp.h"
 #include "Comp/PositionComp.h"
 #include "Comp/ResourceComp.h"
+#include "Comp/TerrainComp.h"
 #include "Comp/TextureComp.h"
 #include "Comp/TownComp.h"
 #include "Global/Global.h"
@@ -640,6 +641,21 @@ bool AdvPopSys::run() {
   } else {
     // no obj
     drawBackGround(x, y, 300, 190, Global::playerId);
+    SDL_FPoint point = {x + Global::viewPort.x, y + Global::viewPort.y};
+    auto p = CursorSys::goalPoint(point);
+    uint8_t goalX = p.x;
+    uint8_t goalY = p.y;
+    auto ters = Global::terrains[World::level][goalX][goalY];
+    y = y - 80;
+    for (auto ent : ters) {
+      auto tComp = World::registrys[World::level].get<TerrainComp>(ent);
+      auto strPool = *Lang::strPool[Global::langIndex];
+      FreeTypeSys::setSize(13);
+      FreeTypeSys::setColor(240, 224, 104, 255);
+      FreeTypeSys::drawCenter(x, y, strPool[3814 + tComp.index]);
+      y += 20;
+      FreeTypeSys::drawCenter(x, y, strPool[3831 + tComp.index]);
+    }
   }
   return true;
 }

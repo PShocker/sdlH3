@@ -215,10 +215,10 @@ void H3mData::readPlayerInfo() {
 
     if (features.levelAB) {
       reader.skip(1); // TODO: check meaning?
-      size_t heroCount = reader.readU32();
-      for (size_t pp = 0; pp < heroCount; ++pp) {
-        auto heroId = reader.readU8();
-        auto heroName = reader.readString();
+      playerInfos[i].heroCount = reader.readU32();
+      for (size_t pp = 0; pp < playerInfos[i].heroCount; ++pp) {
+        playerInfos[i].heroId.push_back(reader.readU8());
+        playerInfos[i].heroName.push_back(reader.readString());
       }
     }
   }

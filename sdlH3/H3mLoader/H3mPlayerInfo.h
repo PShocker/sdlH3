@@ -31,6 +31,10 @@ struct H3mPlayerInfo {
   /// unpredicted value), -1 if none (not always -1)
   int8_t mainCustomHeroId;
 
+  uint32_t heroCount;
+  std::vector<uint8_t> heroId;
+  std::vector<std::string> heroName;
+
   std::vector<int8_t> heroesNames; /// list of placed heroes on the map
   bool hasMainTown;                /// The default value is false.
   bool generateHeroAtMainTown;     /// The default value is false.
