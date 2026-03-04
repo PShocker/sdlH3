@@ -2,6 +2,7 @@
 #include "Ent/Ent.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mData.h"
+#include "NetWork/NetWork.h"
 #include "Pal/PlayerPal.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_mouse.h"
@@ -36,37 +37,39 @@ int32_t width = 800;
 int32_t height = 600;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
-  if (argc == 3) {
-    width = SDL_atoi(argv[1]);
-    height = SDL_atoi(argv[2]);
-  }
-  std::srand(std::time(0));
+  // if (argc == 3) {
+  //   width = SDL_atoi(argv[1]);
+  //   height = SDL_atoi(argv[2]);
+  // }
+  // std::srand(std::time(0));
 
-  // init Set
-  HeroSet::init();
-  CreatureSet::init();
-  SpellSet::init();
+  // // init Set
+  // HeroSet::init();
+  // CreatureSet::init();
+  // SpellSet::init();
 
-  Global::mapData = H3mData("./Maps/Untitled.h3m");
-  Global::mapData.init();
-  Global::mapW = Global::mapData.header.width * 32;
-  Global::mapH = Global::mapData.header.height * 32;
-  Global::viewPort = {0, 0, (float)width, (float)height};
+  // Global::mapData = H3mData("./Maps/Untitled.h3m");
+  // Global::mapData.init();
+  // Global::mapW = Global::mapData.header.width * 32;
+  // Global::mapH = Global::mapData.header.height * 32;
+  // Global::viewPort = {0, 0, (float)width, (float)height};
 
-  Global::mapSize = Global::mapData.header.width;
+  // Global::mapSize = Global::mapData.header.width;
 
-  Window::createWindow("H3Test", width, height);
-  PlayerPal::init();
-  Global::init();
-  BMPFont::init();
-  Ent::load(Global::mapData);
-  Global::startGame();
-  FreeTypeSys::init(1);
-  AudioSys::init();
+  // Window::createWindow("H3Test", width, height);
+  // PlayerPal::init();
+  // Global::init();
+  // BMPFont::init();
+  // Ent::load(Global::mapData);
+  // Global::startGame();
+  // FreeTypeSys::init(1);
+  // AudioSys::init();
 
-  World::enterAdvScrn();
+  // World::enterAdvScrn();
 
-  SDL_HideCursor();
+  // SDL_HideCursor();
+
+  NetWork::init("0.0.0.0", 8888);
 
   return SDL_APP_CONTINUE;
 }

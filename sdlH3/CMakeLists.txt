@@ -45,6 +45,7 @@ if(WIN32)
 
         set_target_properties(main PROPERTIES
                 RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+        target_link_libraries(main PRIVATE ws2_32)
 endif()
 
 if(APPLE)
