@@ -19,6 +19,7 @@ link_directories("C:/ffmpeg-master-latest-win64-gpl-shared/lib")
 # link_directories("C:/FFMPEG-WEB/lib")
 
 file(GLOB_RECURSE ALL_CPP_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+list(FILTER ALL_CPP_FILES EXCLUDE REGEX ".*CMakeFiles.*")
 add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${ALL_CPP_FILES})
 
 target_link_libraries(main PRIVATE zlibstatic)

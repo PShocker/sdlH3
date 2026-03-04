@@ -69,7 +69,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
   // SDL_HideCursor();
 
-  NetWork::init("0.0.0.0", 8888);
+  NetWork::init();
 
   return SDL_APP_CONTINUE;
 }

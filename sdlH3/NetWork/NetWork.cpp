@@ -27,8 +27,7 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
     uv_ip4_name((const struct sockaddr_in *)addr, sender_ip, 16);
     sender_port = ntohs(((const struct sockaddr_in *)addr)->sin_port);
   }
-  const NetworkPacket *packet =
-      reinterpret_cast<const NetworkPacket *>(buf->base);
+  auto packet = (const NetworkPacket *)(buf->base);
 
   printf("Received %ld bytes from %s:%d: %.*s\n", nread, sender_ip, sender_port,
          (int)nread, buf->base);
@@ -72,20 +71,29 @@ bool NetWork::send(const uint8_t *data, size_t length, std::string pos_addr_str,
   return true;
 }
 
-void NetWork::init(std::string src_addr_str, uint32_t src_port) {
-  server_port = src_port;
+void NetWork::init() {
   loop = uv_default_loop();
   // 1. 创建UDP句柄
   uv_udp_init(loop, &server_socket);
 
   // 绑定到 IPv4 和 IPv6
   struct sockaddr_in recv_addr;
-  uv_ip4_addr(src_addr_str.c_str(), server_port, &recv_addr);
+  uv_ip4_addr("0.0.0.0", 0, &recv_addr);
   auto r = uv_udp_bind(&server_socket, (const struct sockaddr *)&recv_addr,
                        UV_UDP_REUSEADDR);
   if (r < 0) {
     std::abort();
   }
+  // 4. 获取系统实际分配的端口号
+  struct sockaddr_in assigned_addr;
+  int namelen = sizeof(assigned_addr);
+  r = uv_udp_getsockname(&server_socket, (struct sockaddr *)&assigned_addr,
+                         &namelen);
+  if (r) {
+    fprintf(stderr, "Getsockname error: %s\n", uv_strerror(r));
+    std::abort();
+  }
+  server_port = ntohs(assigned_addr.sin_port);
   // 4. 开始接收数据
   r = uv_udp_recv_start(&server_socket, alloc_cb, on_recv);
   if (r < 0) {
@@ -102,8 +110,9 @@ void NetWork::init(std::string src_addr_str, uint32_t src_port) {
   pack.type = (1);
   std::string msg = "nihaoShocker!";
   memcpy(pack.data, msg.c_str(), msg.size());
-  send(reinterpret_cast<const uint8_t *>(&pack), sizeof(pack), "127.0.0.1",
-       8888);
+  pack.data_len = msg.size();
+  send(reinterpret_cast<const uint8_t *>(&pack), sizeof(pack) + pack.data_len,
+       "127.0.0.1", 8888);
   // 6. 运行事件循环
   uv_run(loop, UV_RUN_DEFAULT);
 }
