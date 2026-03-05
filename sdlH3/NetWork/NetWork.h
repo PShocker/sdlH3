@@ -1,9 +1,8 @@
 #pragma once
 
+#include "NetWork/packet/MushRoom.h"
 #include <cstdint>
-#include <string>
 struct NetWork {
   static void init();
-  static bool send(const uint8_t *data, size_t length, std::string pos_addr_str,
-                   uint32_t pos_port);
+  static bool sendUDP(const uint8_t *data, size_t length, ipClient &client);
 };

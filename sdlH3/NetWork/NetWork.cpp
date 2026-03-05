@@ -1,9 +1,53 @@
 #include "NetWork/NetWork.h"
-#include "NetWork/packet/Packet.h"
+#include "NetWork/packet/MushRoom.h"
 #include <cstdint>
 #include <cstdlib>
+#include <ctime>
+#include <ranges>
 #include <string>
 #include <uv.h>
+
+static uv_udp_t server_socket = {};
+static uint32_t server_port = 0;
+static uv_loop_t *loop = nullptr;
+
+static std::vector<ipClient> clients;
+static uint32_t heartbeat_interval = 0;
+static ipClient mushroom = {
+    .ip = "127.0.0.1",
+    .port = 8888,
+};
+
+static bool sayHello() {
+  // 5. 模拟发送消息：给自己发一条消息
+  // 注意：实际应用中，你可能在收到某个事件或消息时调用 send_message
+  NetworkHelloRequest r = {.version = 1};
+  NetworkPacket pack = {
+      .magic = 0x1234,
+      .timestamp = static_cast<uint64_t>(time(nullptr)),
+      .type = PACKET_HELLO_REQUEST,
+      .data_len = sizeof(r),
+  };
+  memcpy(pack.data, &r, pack.data_len);
+  NetWork::sendUDP((const uint8_t *)(&pack), sizeof(pack) + pack.data_len,
+                   mushroom);
+  return true;
+}
+
+static bool sayEnter() {
+  NetworkPacket pack = {
+      .magic = 0x1234,
+      .timestamp = static_cast<uint64_t>(time(nullptr)),
+      .type = PACKET_ENTER_REQUEST,
+      .data_len = 0,
+  };
+  NetWork::sendUDP((const uint8_t *)(&pack), sizeof(pack) + pack.data_len,
+                   mushroom);
+  return true;
+}
+
+static bool sayHi() {
+}
 
 // 接收回调：当收到数据时被调用
 static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
@@ -28,7 +72,42 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
     sender_port = ntohs(((const struct sockaddr_in *)addr)->sin_port);
   }
   auto packet = (const NetworkPacket *)(buf->base);
-
+  // dispatch
+  switch (packet->type) {
+  case PACKET_HELLO_RESPONSE: {
+    auto r = (const NetworkHelloResponse *)packet->data;
+    heartbeat_interval = r->heartbeat_interval;
+    sayEnter();
+    break;
+  }
+  case PACKET_ENTER_RESPONSE: {
+    std::string ips((char *)&packet->data, packet->data_len);
+    ipClient client;
+    for (const auto &outer : ips | std::views::split(',')) {
+      std::string item(outer.begin(), outer.end());
+      uint8_t i = 0;
+      for (const auto &s : item | std::views::split(':')) {
+        std::string str(s.begin(), s.end());
+        switch (i) {
+        case 0: {
+          client.ip = str;
+          break;
+        }
+        case 1: {
+          client.port = std::stoi(str);
+          break;
+        }
+        }
+        i++;
+      }
+      clients.push_back(client);
+    }
+    break;
+  }
+  default: {
+    break;
+  }
+  }
   printf("Received %ld bytes from %s:%d: %.*s\n", nread, sender_ip, sender_port,
          (int)nread, buf->base);
 
@@ -42,16 +121,12 @@ static void alloc_cb(uv_handle_t *handle, size_t suggested_size,
   buf->len = suggested_size;
 }
 
-static uv_udp_t server_socket = {};
-static uint32_t server_port = 0;
-static uv_loop_t *loop = nullptr;
-
-bool NetWork::send(const uint8_t *data, size_t length, std::string pos_addr_str,
-                   uint32_t pos_port) {
+bool NetWork::sendUDP(const uint8_t *data, size_t length, ipClient &client) {
   // 3. 准备目标地址（用于发送）
   uv_udp_send_t *send_req = (uv_udp_send_t *)malloc(sizeof(uv_udp_send_t));
   sockaddr_in send_addr = {};
-  uv_ip4_addr(pos_addr_str.c_str(), pos_port, &send_addr);
+  uv_ip4_addr(client.ip.c_str(), client.port, &send_addr);
+
   uv_buf_t buf = uv_buf_init((char *)data, length);
 
   // 使用在 main 中初始化好的目标地址 send_addr
@@ -102,17 +177,9 @@ void NetWork::init() {
   }
   printf("Started receiving on port %d...\n", server_port);
 
-  // 5. 模拟发送消息：给自己发一条消息
-  // 注意：实际应用中，你可能在收到某个事件或消息时调用 send_message
-  NetworkPacket pack;
-  pack.magic = (1234);
-  pack.timestamp = (9872);
-  pack.type = (1);
-  std::string msg = "nihaoShocker!";
-  memcpy(pack.data, msg.c_str(), msg.size());
-  pack.data_len = msg.size();
-  send(reinterpret_cast<const uint8_t *>(&pack), sizeof(pack) + pack.data_len,
-       "127.0.0.1", 8888);
+  // SAY HELLO
+  sayHello();
+
   // 6. 运行事件循环
   uv_run(loop, UV_RUN_DEFAULT);
 }
