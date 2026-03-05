@@ -11,7 +11,7 @@ enum PACKET_TYPE {
 };
 
 struct ipClient {
-  std::string ip;
+  uint32_t ip;
   uint16_t port;
   uint64_t timestamp;
   uint64_t heartbeat;
@@ -29,8 +29,8 @@ struct NetworkHelloResponse {
 struct NetworkEnterRequest {};
 
 struct NetworkEnterResponse {
-   std::string ips;
-  //  ip1:port1,ip2:port2
+  uint32_t ip;
+  uint16_t port;
 };
 
 struct NetworkPacket {

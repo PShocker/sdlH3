@@ -13,14 +13,11 @@ static uv_loop_t *loop = nullptr;
 
 static std::vector<ipClient> clients;
 static uint32_t heartbeat_interval = 0;
-static ipClient mushroom = {
-    .ip = "127.0.0.1",
-    .port = 8888,
-};
+
+const static std::string mushroom_ip = "127.0.0.1";
+const static uint32_t mushroom_port = 8888;
 
 static bool sayHello() {
-  // 5. 模拟发送消息：给自己发一条消息
-  // 注意：实际应用中，你可能在收到某个事件或消息时调用 send_message
   NetworkHelloRequest r = {.version = 1};
   NetworkPacket pack = {
       .magic = 0x1234,
@@ -29,8 +26,8 @@ static bool sayHello() {
       .data_len = sizeof(r),
   };
   memcpy(pack.data, &r, pack.data_len);
-  NetWork::sendUDP((const uint8_t *)(&pack), sizeof(pack) + pack.data_len,
-                   mushroom);
+  NetWork::sendUDP((uint8_t *)(&pack), sizeof(pack) + pack.data_len,
+                   mushroom_ip, mushroom_port);
   return true;
 }
 
@@ -41,13 +38,12 @@ static bool sayEnter() {
       .type = PACKET_ENTER_REQUEST,
       .data_len = 0,
   };
-  NetWork::sendUDP((const uint8_t *)(&pack), sizeof(pack) + pack.data_len,
-                   mushroom);
+  NetWork::sendUDP((uint8_t *)(&pack), sizeof(pack) + pack.data_len,
+                   mushroom_ip, mushroom_port);
   return true;
 }
 
-static bool sayHi() {
-}
+static bool sayHi() {}
 
 // 接收回调：当收到数据时被调用
 static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
@@ -81,27 +77,12 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
     break;
   }
   case PACKET_ENTER_RESPONSE: {
-    std::string ips((char *)&packet->data, packet->data_len);
-    ipClient client;
-    for (const auto &outer : ips | std::views::split(',')) {
-      std::string item(outer.begin(), outer.end());
-      uint8_t i = 0;
-      for (const auto &s : item | std::views::split(':')) {
-        std::string str(s.begin(), s.end());
-        switch (i) {
-        case 0: {
-          client.ip = str;
-          break;
-        }
-        case 1: {
-          client.port = std::stoi(str);
-          break;
-        }
-        }
-        i++;
-      }
-      clients.push_back(client);
-    }
+    auto r = (const NetworkEnterResponse *)packet->data;
+    ipClient client = {
+        .ip = r->ip,
+        .port = r->port,
+    };
+    clients.push_back(client);
     break;
   }
   default: {
@@ -121,17 +102,18 @@ static void alloc_cb(uv_handle_t *handle, size_t suggested_size,
   buf->len = suggested_size;
 }
 
-bool NetWork::sendUDP(const uint8_t *data, size_t length, ipClient &client) {
-  // 3. 准备目标地址（用于发送）
+bool NetWork::sendUDP(uint8_t *data, size_t len, uint32_t ip, uint16_t port) {
   uv_udp_send_t *send_req = (uv_udp_send_t *)malloc(sizeof(uv_udp_send_t));
-  sockaddr_in send_addr = {};
-  uv_ip4_addr(client.ip.c_str(), client.port, &send_addr);
+  sockaddr_in send_addr;
+  send_addr.sin_family = AF_INET;
+  send_addr.sin_port = htons(port);
+  send_addr.sin_addr.s_addr = ip;
 
-  uv_buf_t buf = uv_buf_init((char *)data, length);
+  uv_buf_t buf = uv_buf_init((char *)data, len);
 
   // 使用在 main 中初始化好的目标地址 send_addr
   auto r = uv_udp_send(
-      send_req, &server_socket, &buf, 1, (const struct sockaddr *)&send_addr,
+      send_req, &server_socket, &buf, 1, (const sockaddr *)&send_addr,
       [](uv_udp_send_t *req, int status) {
         if (status < 0) {
           fprintf(stderr, "Send error: %s\n", uv_strerror(status));
@@ -144,6 +126,13 @@ bool NetWork::sendUDP(const uint8_t *data, size_t length, ipClient &client) {
     return false;
   }
   return true;
+}
+
+bool NetWork::sendUDP(uint8_t *data, size_t len, std::string ip,
+                      uint16_t port) {
+  sockaddr_in send_addr = {};
+  uv_ip4_addr(ip.c_str(), port, &send_addr);
+  return sendUDP(data, len, (uint32_t)(send_addr.sin_addr.s_addr), port);
 }
 
 void NetWork::init() {
