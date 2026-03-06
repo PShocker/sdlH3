@@ -1,5 +1,6 @@
 #include "NetWork/NetWork.h"
 #include "NetWork/packet/MushRoom.h"
+#include "packet/Packet.h"
 #include <cstdint>
 #include <cstdlib>
 #include <ctime>
@@ -16,7 +17,8 @@ static uv_timer_t fresh_client_timer;
 
 // key:ip,port
 static std::flat_map<std::pair<uint32_t, uint16_t>, ipClient> clients;
-static std::pair<uint32_t, uint16_t> host;
+static std::flat_map<uint32_t, std::pair<uint32_t, uint16_t>> hosts;
+static uint32_t scene = 0;
 static uint32_t heartbeat_interval = 0;
 
 const static std::string mushroom_ip = "127.0.0.1";
@@ -65,6 +67,18 @@ static void sayHeartBeat(uv_timer_t *handle) {
   return;
 }
 
+static void sayHost(uint32_t ip, uint16_t port) {
+  NetworkHostRequest r = {.scene = scene};
+  NetworkPacket pack = {
+      .magic = 0x1234,
+      .timestamp = static_cast<uint64_t>(time(nullptr)),
+      .type = PACKET_HOST_REQUEST,
+      .data_len = sizeof(r),
+  };
+  memcpy(pack.data, &r, pack.data_len);
+  NetWork::sendUDP((uint8_t *)(&pack), sizeof(pack) + pack.data_len, ip, port);
+}
+
 static void freshClient(uv_timer_t *handle) {
   uint64_t now = static_cast<uint64_t>(time(nullptr));
   std::erase_if(clients, [=](const auto &item) {
@@ -105,7 +119,6 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
   case PACKET_HELLO_RESPONSE: {
     auto r = (const NetworkHelloResponse *)packet->data;
     heartbeat_interval = r->heartbeat_interval;
-    auto clients_number = r->clients_number;
     sayEnter();
     // 创建定时器
     auto interval = heartbeat_interval * 1000;
@@ -141,6 +154,12 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
     };
     auto key = std::make_pair(client.ip, client.port);
     clients.insert({key, client});
+    sayHost(r->ip, r->port);
+    break;
+  }
+  case PACKET_HOST_REQUEST: {
+    auto r = (const NetworkHostRequest *)packet->data;
+    hosts[r->scene] = {client.ip, client.port};
     break;
   }
   default: {

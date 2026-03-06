@@ -2,12 +2,12 @@
 #include <cstdint>
 
 enum PACKET_TYPE {
-  PACKET_ASK_HOST_RESPONSE = 8,
+  PACKET_HOST_REQUEST = 8,
 };
 
 #pragma pack(push, 1)
-struct NetworkAskHostRequest {
-    // 场景id
-    uint32_t scnId;
+struct NetworkHostRequest {
+  // 场景id
+  uint32_t scene;
 };
 #pragma pack(pop)

@@ -28,7 +28,6 @@ struct NetworkHelloRequest {
 
 struct NetworkHelloResponse {
   uint32_t heartbeat_interval; // 心跳间隔(秒)
-  uint32_t clients_number;
 };
 
 struct NetworkEnterRequest {};
