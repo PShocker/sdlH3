@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <ctime>
+#include <flat_map>
 #include <ranges>
 #include <string>
 #include <uv.h>
@@ -10,8 +11,12 @@
 static uv_udp_t server_socket = {};
 static uint32_t server_port = 0;
 static uv_loop_t *loop = nullptr;
+static uv_timer_t say_heartbeat_timer;
+static uv_timer_t fresh_client_timer;
 
-static std::vector<ipClient> clients;
+// key:ip,port
+static std::flat_map<std::pair<uint32_t, uint16_t>, ipClient> clients;
+static std::pair<uint32_t, uint16_t> host;
 static uint32_t heartbeat_interval = 0;
 
 const static std::string mushroom_ip = "127.0.0.1";
@@ -43,7 +48,32 @@ static bool sayEnter() {
   return true;
 }
 
-static bool sayHi() {}
+static void sayHeartBeat(uv_timer_t *handle) {
+  NetworkPacket pack = {
+      .magic = 0x1234,
+      .timestamp = static_cast<uint64_t>(time(nullptr)),
+      .type = PACKET_HEARTBEAT_REQUEST,
+      .data_len = 0,
+  };
+  NetWork::sendUDP((uint8_t *)(&pack), sizeof(pack) + pack.data_len,
+                   mushroom_ip, mushroom_port);
+  //  除此之外，外需要广播给所有的在线用户
+  for (const auto &[ip, port] : clients | std::views::keys) {
+    NetWork::sendUDP((uint8_t *)(&pack), sizeof(pack) + pack.data_len, ip,
+                     port);
+  }
+  return;
+}
+
+static void freshClient(uv_timer_t *handle) {
+  uint64_t now = static_cast<uint64_t>(time(nullptr));
+  std::erase_if(clients, [=](const auto &item) {
+    const auto &[key, client] = item;
+    // 检查是否超时
+    auto duration = now - client.heartbeat;
+    return duration >= heartbeat_interval * 10;
+  });
+}
 
 // 接收回调：当收到数据时被调用
 static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
@@ -54,11 +84,68 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
     free(buf->base);
     return;
   }
-
   if (nread == 0) {
     // 没有数据或收到空包
     free(buf->base);
     return;
+  }
+
+  auto packet = (const NetworkPacket *)(buf->base);
+
+  auto addr_in = (const struct sockaddr_in *)addr;
+  ipClient client = {
+      .ip = (uint32_t)(addr_in->sin_addr.s_addr),
+      .port = ntohs(addr_in->sin_port),
+      .timestamp = packet->timestamp,
+      .heartbeat = packet->timestamp,
+  };
+
+  // dispatch
+  switch (packet->type) {
+  case PACKET_HELLO_RESPONSE: {
+    auto r = (const NetworkHelloResponse *)packet->data;
+    heartbeat_interval = r->heartbeat_interval;
+    auto clients_number = r->clients_number;
+    sayEnter();
+    // 创建定时器
+    auto interval = heartbeat_interval * 1000;
+    uv_timer_init(loop, &say_heartbeat_timer);
+    uv_timer_start(&say_heartbeat_timer, sayHeartBeat, 0, interval);
+    // 创建定时器
+    uv_timer_init(loop, &fresh_client_timer);
+    uv_timer_start(&fresh_client_timer, freshClient, 0, interval);
+    break;
+  }
+  case PACKET_ENTER_RESPONSE: {
+    auto r = (const NetworkEnterResponse *)packet->data;
+    auto key = std::make_pair(r->ip, r->port);
+    ipClient ct = {
+        .ip = r->ip,
+        .port = r->port,
+        .heartbeat = static_cast<uint64_t>(time(nullptr)),
+    };
+    clients.insert({key, ct});
+    break;
+  }
+  case PACKET_HEARTBEAT_REQUEST: {
+    auto key = std::make_pair(client.ip, client.port);
+    clients[key].heartbeat = static_cast<uint64_t>(time(nullptr));
+    break;
+  }
+  case PACKET_JOIN_REQUEST: {
+    auto r = (const NetworkJoinRequest *)packet->data;
+    ipClient ct = {
+        .ip = r->ip,
+        .port = r->port,
+        .heartbeat = static_cast<uint64_t>(time(nullptr)),
+    };
+    auto key = std::make_pair(client.ip, client.port);
+    clients.insert({key, client});
+    break;
+  }
+  default: {
+    break;
+  }
   }
 
   char sender_ip[17] = {0};
@@ -67,30 +154,7 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
     uv_ip4_name((const struct sockaddr_in *)addr, sender_ip, 16);
     sender_port = ntohs(((const struct sockaddr_in *)addr)->sin_port);
   }
-  auto packet = (const NetworkPacket *)(buf->base);
-  // dispatch
-  switch (packet->type) {
-  case PACKET_HELLO_RESPONSE: {
-    auto r = (const NetworkHelloResponse *)packet->data;
-    heartbeat_interval = r->heartbeat_interval;
-    sayEnter();
-    break;
-  }
-  case PACKET_ENTER_RESPONSE: {
-    auto r = (const NetworkEnterResponse *)packet->data;
-    ipClient client = {
-        .ip = r->ip,
-        .port = r->port,
-    };
-    clients.push_back(client);
-    break;
-  }
-  default: {
-    break;
-  }
-  }
-  printf("Received %ld bytes from %s:%d: %.*s\n", nread, sender_ip, sender_port,
-         (int)nread, buf->base);
+  printf("Received %ld bytes from %s:%d\n", nread, sender_ip, sender_port);
 
   free(buf->base); // 释放由 alloc_cb 分配的内存
 }

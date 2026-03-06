@@ -14,6 +14,7 @@
 #include "Window/Window.h"
 #include "World/World.h"
 #include <cstdint>
+#include <cstdio>
 #include <string>
 #include <zlib.h>
 
@@ -133,4 +134,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
   return r;
 }
 
-void SDL_AppQuit(void *appstate, SDL_AppResult result) { SDL_Quit(); }
+void SDL_AppQuit(void *appstate, SDL_AppResult result) {
+  printf("exit");
+  SDL_Quit();
+}

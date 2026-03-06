@@ -3,11 +3,15 @@
 #include <string>
 #include <vector>
 
-enum PACKET_TYPE {
+enum MUSHROOM_PACKET_TYPE {
   PACKET_HELLO_REQUEST,
   PACKET_HELLO_RESPONSE,
+  PACKET_HEARTBEAT_REQUEST,
+  PACKET_HEARTBEAT_RESPONSE,
   PACKET_ENTER_REQUEST,
   PACKET_ENTER_RESPONSE,
+  PACKET_JOIN_REQUEST,
+  PACKET_JOIN_RESPONSE,
 };
 
 struct ipClient {
@@ -24,9 +28,17 @@ struct NetworkHelloRequest {
 
 struct NetworkHelloResponse {
   uint32_t heartbeat_interval; // 心跳间隔(秒)
+  uint32_t clients_number;
 };
 
 struct NetworkEnterRequest {};
+
+struct NetworkJoinRequest {
+  uint32_t ip;
+  uint16_t port;
+};
+
+struct NetworkJoinResponse {};
 
 struct NetworkEnterResponse {
   uint32_t ip;
