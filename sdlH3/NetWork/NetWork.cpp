@@ -1,6 +1,5 @@
 #include "NetWork/NetWork.h"
-#include "NetWork/packet/MushRoom.h"
-#include "packet/Packet.h"
+#include "NetWork/MushRoom.h"
 #include <cstdint>
 #include <cstdlib>
 #include <ctime>
@@ -157,11 +156,13 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
     sayHost(r->ip, r->port);
     break;
   }
+  // mushroom pack end
   case PACKET_HOST_REQUEST: {
     auto r = (const NetworkHostRequest *)packet->data;
     hosts[r->scene] = {client.ip, client.port};
     break;
   }
+
   default: {
     break;
   }
