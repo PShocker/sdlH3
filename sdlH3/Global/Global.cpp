@@ -15,6 +15,7 @@
 #include "Ent/Ent.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
+#include "NetWork/NetWork.h"
 #include "Pal/PlayerPal.h"
 #include "Pcx/Pcx.h"
 #include "SDL3/SDL_pixels.h"
@@ -24,6 +25,7 @@
 #include "Set/FactionSet.h"
 #include "Set/HeroSet.h"
 #include "Set/TerrainSet.h"
+#include "Sys/NetWorkSys.h"
 #include "Sys/gui/LevelUpSys.h"
 #include "Sys/gui/TavernSys.h"
 #include "Window/Window.h"
@@ -994,4 +996,52 @@ void Global::endGame() {
   Global::townsIndex.fill(0xffff);
 
   Global::heroMove = false;
+}
+
+void Global::enterScene() {
+  std::shared_lock lock(NetWork::hosts_mutex); // 读锁
+  if (NetWork::hosts.contains(0)) {
+    // 存在主机
+    NetWork::isHost = false;
+    return;
+  }
+
+  // 发送主机包，让自己成为主机
+  NetworkHost r = {.scene = NetWork::scene};
+  auto len = sizeof(NetworkHost);
+  // 分配发送缓冲区
+  auto packet = (NetworkPacket *)malloc(sizeof(NetworkPacket) + len);
+  packet->magic = 0x1234;
+  packet->timestamp = static_cast<uint64_t>(time(nullptr));
+  packet->type = NETWORK_EVENT_HOST;
+  packet->data_len = len;
+  memcpy(packet->data, &r, len);
+  NetWorkSys::queuePacket(0, 0, packet);
+  NetWork::scene = 0;
+  NetWork::isHost = true;
+  return;
+}
+
+void Global::exitScene() {
+  if (NetWork::isHost) {
+    NetworkHostExit r = {.scene = NetWork::scene};
+    auto len = sizeof(NetworkHostExit);
+    auto packet = (NetworkPacket *)malloc(sizeof(NetworkHostExit) + len);
+    packet->magic = 0x1234;
+    packet->timestamp = static_cast<uint64_t>(time(nullptr));
+    packet->type = NETWORK_EVENT_HOST_EXIT;
+    packet->data_len = len;
+    memcpy(packet->data, &r, len);
+    NetWorkSys::queuePacket(0, 0, packet);
+  }
+  NetworkSceneExit r = {.scene = NetWork::scene};
+  auto len = sizeof(NetworkSceneExit);
+  auto packet = (NetworkPacket *)malloc(sizeof(NetworkSceneExit) + len);
+  packet->magic = 0x1234;
+  packet->timestamp = static_cast<uint64_t>(time(nullptr));
+  packet->type = NETWORK_EVENT_SCENE_EXIT;
+  packet->data_len = len;
+  memcpy(packet->data, &r, len);
+  NetWorkSys::queuePacket(0, 0, packet);
+  return;
 }

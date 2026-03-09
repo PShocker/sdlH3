@@ -1,9 +1,9 @@
 #include "NetWork/NetWork.h"
 #include "NetWork/MushRoom.h"
+#include "Sys/NetWorkSys.h"
 #include <cstdint>
 #include <cstdlib>
 #include <ctime>
-#include <flat_map>
 #include <ranges>
 #include <string>
 #include <uv.h>
@@ -14,77 +14,75 @@ static uv_loop_t *loop = nullptr;
 static uv_timer_t say_heartbeat_timer;
 static uv_timer_t fresh_client_timer;
 
-// key:ip,port
-static std::flat_map<std::pair<uint32_t, uint16_t>, ipClient> clients;
-static std::flat_map<uint32_t, std::pair<uint32_t, uint16_t>> hosts;
-static uint32_t scene = 0;
-static uint32_t heartbeat_interval = 0;
-
 const static std::string mushroom_ip = "127.0.0.1";
 const static uint32_t mushroom_port = 8888;
 
 static bool sayHello() {
   NetworkHelloRequest r = {.version = 1};
-  NetworkPacket pack = {
-      .magic = 0x1234,
-      .timestamp = static_cast<uint64_t>(time(nullptr)),
-      .type = PACKET_HELLO_REQUEST,
-      .data_len = sizeof(r),
-  };
-  memcpy(pack.data, &r, pack.data_len);
-  NetWork::sendUDP((uint8_t *)(&pack), sizeof(pack) + pack.data_len,
+  auto *packet = (NetworkPacket *)malloc(sizeof(NetworkPacket) + sizeof(r));
+  packet->magic = 0x1234;
+  packet->timestamp = static_cast<uint64_t>(time(nullptr));
+  packet->type = PACKET_HELLO_REQUEST;
+  packet->data_len = sizeof(r);
+  memcpy(packet->data, &r, packet->data_len);
+  NetWork::sendUDP((uint8_t *)(packet), sizeof(*packet) + packet->data_len,
                    mushroom_ip, mushroom_port);
+  free(packet);
   return true;
 }
 
 static bool sayEnter() {
-  NetworkPacket pack = {
-      .magic = 0x1234,
-      .timestamp = static_cast<uint64_t>(time(nullptr)),
-      .type = PACKET_ENTER_REQUEST,
-      .data_len = 0,
-  };
-  NetWork::sendUDP((uint8_t *)(&pack), sizeof(pack) + pack.data_len,
-                   mushroom_ip, mushroom_port);
+  auto *packet = (NetworkPacket *)malloc(sizeof(NetworkPacket));
+  packet->magic = 0x1234;
+  packet->timestamp = static_cast<uint64_t>(time(nullptr));
+  packet->type = PACKET_ENTER_REQUEST;
+  packet->data_len = 0;
+  NetWork::sendUDP((uint8_t *)(packet), sizeof(*packet), mushroom_ip,
+                   mushroom_port);
+  free(packet);
   return true;
 }
 
 static void sayHeartBeat(uv_timer_t *handle) {
-  NetworkPacket pack = {
-      .magic = 0x1234,
-      .timestamp = static_cast<uint64_t>(time(nullptr)),
-      .type = PACKET_HEARTBEAT_REQUEST,
-      .data_len = 0,
-  };
-  NetWork::sendUDP((uint8_t *)(&pack), sizeof(pack) + pack.data_len,
-                   mushroom_ip, mushroom_port);
+  auto *packet = (NetworkPacket *)malloc(sizeof(NetworkPacket));
+  packet->magic = 0x1234;
+  packet->timestamp = static_cast<uint64_t>(time(nullptr));
+  packet->type = PACKET_HEARTBEAT_REQUEST;
+  packet->data_len = 0;
+
+  NetWork::sendUDP((uint8_t *)(packet), sizeof(*packet), mushroom_ip,
+                   mushroom_port);
   //  除此之外，外需要广播给所有的在线用户
-  for (const auto &[ip, port] : clients | std::views::keys) {
-    NetWork::sendUDP((uint8_t *)(&pack), sizeof(pack) + pack.data_len, ip,
-                     port);
+  for (const auto &[ip, port] : NetWork::clients | std::views::keys) {
+    NetWork::sendUDP((uint8_t *)(packet), sizeof(*packet), ip, port);
   }
+  free(packet);
+
   return;
 }
 
 static void sayHost(uint32_t ip, uint16_t port) {
-  NetworkHostRequest r = {.scene = scene};
-  NetworkPacket pack = {
-      .magic = 0x1234,
-      .timestamp = static_cast<uint64_t>(time(nullptr)),
-      .type = PACKET_HOST_REQUEST,
-      .data_len = sizeof(r),
-  };
-  memcpy(pack.data, &r, pack.data_len);
-  NetWork::sendUDP((uint8_t *)(&pack), sizeof(pack) + pack.data_len, ip, port);
+  NetworkHostRequest r = {.scene = NetWork::scene};
+  auto *packet = (NetworkPacket *)malloc(sizeof(NetworkPacket) + sizeof(r));
+  packet->magic = 0x1234;
+  packet->timestamp = static_cast<uint64_t>(time(nullptr));
+  packet->type = NETWORK_EVENT_HOST;
+  packet->data_len = sizeof(r);
+  memcpy(packet->data, &r, packet->data_len);
+
+  NetWork::sendUDP((uint8_t *)(packet), sizeof(&packet) + packet->data_len, ip,
+                   port);
+  free(packet);
+  return;
 }
 
 static void freshClient(uv_timer_t *handle) {
   uint64_t now = static_cast<uint64_t>(time(nullptr));
-  std::erase_if(clients, [=](const auto &item) {
+  std::erase_if(NetWork::clients, [=](const auto &item) {
     const auto &[key, client] = item;
     // 检查是否超时
     auto duration = now - client.heartbeat;
-    return duration >= heartbeat_interval * 10;
+    return duration >= NetWork::heartbeat_interval * 10;
   });
 }
 
@@ -117,10 +115,10 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
   switch (packet->type) {
   case PACKET_HELLO_RESPONSE: {
     auto r = (const NetworkHelloResponse *)packet->data;
-    heartbeat_interval = r->heartbeat_interval;
+    NetWork::heartbeat_interval = r->heartbeat_interval;
     sayEnter();
     // 创建定时器
-    auto interval = heartbeat_interval * 1000;
+    auto interval = NetWork::heartbeat_interval * 1000;
     uv_timer_init(loop, &say_heartbeat_timer);
     uv_timer_start(&say_heartbeat_timer, sayHeartBeat, 0, interval);
     // 创建定时器
@@ -136,12 +134,14 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
         .port = r->port,
         .heartbeat = static_cast<uint64_t>(time(nullptr)),
     };
-    clients.insert({key, ct});
+    std::unique_lock lock(NetWork::clients_mutex);
+    NetWork::clients.insert({key, ct});
     break;
   }
   case PACKET_HEARTBEAT_REQUEST: {
     auto key = std::make_pair(client.ip, client.port);
-    clients[key].heartbeat = static_cast<uint64_t>(time(nullptr));
+    std::unique_lock lock(NetWork::clients_mutex);
+    NetWork::clients[key].heartbeat = static_cast<uint64_t>(time(nullptr));
     break;
   }
   case PACKET_JOIN_REQUEST: {
@@ -152,17 +152,24 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
         .heartbeat = static_cast<uint64_t>(time(nullptr)),
     };
     auto key = std::make_pair(client.ip, client.port);
-    clients.insert({key, client});
+    std::unique_lock lock(NetWork::clients_mutex);
+    NetWork::clients.insert({key, client});
     sayHost(r->ip, r->port);
     break;
   }
   // mushroom pack end
-  case PACKET_HOST_REQUEST: {
+  case NETWORK_EVENT_HOST: {
     auto r = (const NetworkHostRequest *)packet->data;
-    hosts[r->scene] = {client.ip, client.port};
+    std::unique_lock lock(NetWork::hosts_mutex);
+    NetWork::hosts[r->scene] = {client.ip, client.port};
     break;
   }
-
+  case NETWORK_EVENT_HOST_EXIT: {
+    auto r = (const NetworkHostExitRequest *)packet->data;
+    std::unique_lock lock(NetWork::hosts_mutex);
+    NetWork::hosts.erase(r->scene);
+    break;
+  }
   default: {
     break;
   }
@@ -212,6 +219,29 @@ bool NetWork::sendUDP(uint8_t *data, size_t len, uint32_t ip, uint16_t port) {
   return true;
 }
 
+static void on_async_send(uv_async_t *handle) {
+  std::unique_lock lock(NetWork::send_mutex); // 独占锁，写时互斥
+  for (auto r : NetWork::sendVector) {
+    auto ip = r.first.first;
+    auto port = r.first.second;
+    auto packet = r.second;
+    auto data_len = packet->data_len;
+    if (ip == 0 && port == 0) {
+      // 广播
+      std::shared_lock lock(NetWork::clients_mutex); // 读锁
+      for (const auto &[ip, port] : NetWork::clients | std::views::keys) {
+        NetWork::sendUDP((uint8_t *)(packet), sizeof(NetworkPacket) + data_len,
+                         ip, port);
+      }
+    } else {
+      NetWork::sendUDP((uint8_t *)(packet), sizeof(NetworkPacket) + data_len,
+                       ip, port);
+    }
+    free(packet);
+  }
+  NetWork::sendVector.clear();
+}
+
 bool NetWork::sendUDP(uint8_t *data, size_t len, std::string ip,
                       uint16_t port) {
   sockaddr_in send_addr = {};
@@ -253,6 +283,7 @@ void NetWork::init() {
   // SAY HELLO
   sayHello();
 
+  uv_async_init(loop, &async_handle, on_async_send);
   // 6. 运行事件循环
   uv_run(loop, UV_RUN_DEFAULT);
 }

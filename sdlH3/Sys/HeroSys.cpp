@@ -1145,3 +1145,8 @@ bool HeroSys::run() {
   }
   return r;
 }
+
+void HeroSys::recvHeroMove(NetworkPacket *packet) {
+
+  
+}

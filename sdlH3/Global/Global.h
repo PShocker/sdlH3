@@ -202,4 +202,9 @@ struct Global {
   static void init();
   static void startGame();
   static void endGame();
+
+  //   network
+  static void enterScene();
+  static void exitScene();
+
 };
