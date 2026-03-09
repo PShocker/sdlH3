@@ -8,13 +8,10 @@ enum MUSHROOM_PACKET_TYPE {
   PACKET_HELLO_RESPONSE,
   PACKET_HEARTBEAT_REQUEST,
   PACKET_HEARTBEAT_RESPONSE,
-  PACKET_ENTER_REQUEST,
-  PACKET_ENTER_RESPONSE,
-  PACKET_JOIN_REQUEST,
-  PACKET_JOIN_RESPONSE,
-  PACKET_EXIT_REQUEST,
-  PACKET_EXIT_RESPONSE,
+  PACKET_UNICAST,
+  PACKET_BROADCAST,
 };
+
 struct ipClient {
   uint32_t ip;
   uint16_t port;
@@ -22,27 +19,12 @@ struct ipClient {
   uint64_t heartbeat;
 };
 
-#pragma pack(push, 1)
 struct NetworkHelloRequest {
   uint32_t version; // 客户端版本号
 };
 
 struct NetworkHelloResponse {
   uint32_t heartbeat_interval; // 心跳间隔(秒)
-};
-
-struct NetworkEnterRequest {};
-
-struct NetworkJoinRequest {
-  uint32_t ip;
-  uint16_t port;
-};
-
-struct NetworkJoinResponse {};
-
-struct NetworkEnterResponse {
-  uint32_t ip;
-  uint16_t port;
 };
 
 struct NetworkPacket {
@@ -52,4 +34,3 @@ struct NetworkPacket {
   uint16_t data_len;
   uint8_t data[]; // 变长数据
 };
-#pragma pack(pop)
