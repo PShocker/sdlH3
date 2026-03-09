@@ -62,7 +62,7 @@ static void sayHeartBeat(uv_timer_t *handle) {
 }
 
 static void sayHost(uint32_t ip, uint16_t port) {
-  NetworkHostRequest r = {.scene = NetWork::scene};
+  NetworkHost r = {.scene = NetWork::scene};
   auto *packet = (NetworkPacket *)malloc(sizeof(NetworkPacket) + sizeof(r));
   packet->magic = 0x1234;
   packet->timestamp = static_cast<uint64_t>(time(nullptr));
@@ -101,7 +101,7 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
     return;
   }
 
-  auto packet = (const NetworkPacket *)(buf->base);
+  auto packet = (NetworkPacket *)(buf->base);
 
   auto addr_in = (const struct sockaddr_in *)addr;
   ipClient client = {
@@ -157,15 +157,21 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
     sayHost(r->ip, r->port);
     break;
   }
+  case PACKET_EXIT_REQUEST: {
+    auto key = std::make_pair(client.ip, client.port);
+    std::unique_lock lock(NetWork::clients_mutex);
+    NetWork::clients.erase(key);
+    break;
+  }
   // mushroom pack end
   case NETWORK_EVENT_HOST: {
-    auto r = (const NetworkHostRequest *)packet->data;
+    auto r = (const NetworkHost *)packet->data;
     std::unique_lock lock(NetWork::hosts_mutex);
     NetWork::hosts[r->scene] = {client.ip, client.port};
     break;
   }
   case NETWORK_EVENT_HOST_EXIT: {
-    auto r = (const NetworkHostExitRequest *)packet->data;
+    auto r = (const NetworkHostExit *)packet->data;
     std::unique_lock lock(NetWork::hosts_mutex);
     NetWork::hosts.erase(r->scene);
     break;
@@ -173,6 +179,11 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
   default: {
     break;
   }
+  }
+
+  {
+    std::unique_lock lock(NetWork::recv_mutex);
+    NetWork::recvVector.push_back(packet);
   }
 
   char sender_ip[17] = {0};
@@ -286,4 +297,20 @@ void NetWork::init() {
   uv_async_init(loop, &async_handle, on_async_send);
   // 6. 运行事件循环
   uv_run(loop, UV_RUN_DEFAULT);
+}
+
+void NetWork::sayExit() {
+  auto *packet = (NetworkPacket *)malloc(sizeof(NetworkPacket));
+  packet->magic = 0x1234;
+  packet->timestamp = static_cast<uint64_t>(time(nullptr));
+  packet->type = PACKET_EXIT_REQUEST;
+  packet->data_len = 0;
+
+  NetWork::sendUDP((uint8_t *)(packet), sizeof(&packet), mushroom_ip,
+                   mushroom_port);
+  for (const auto &[ip, port] : NetWork::clients | std::views::keys) {
+    NetWork::sendUDP((uint8_t *)(packet), sizeof(NetworkPacket), ip, port);
+  }
+  free(packet);
+  return;
 }
