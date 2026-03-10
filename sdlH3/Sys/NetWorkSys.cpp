@@ -12,30 +12,25 @@ void NetWorkSys::init() {
   recvHandler[NETWORK_EVENT_HERO_MOVE] = HeroSys::recvHeroMove;
 }
 
-void NetWorkSys::queuePacket(uint32_t ip, uint16_t port, NetworkPacket *packet) {
+void NetWorkSys::queuePacket(NetworkPacket *packet) {
   std::unique_lock lock(NetWork::send_mutex); // 独占锁，写时互斥
-  auto key = std::make_pair(ip, port);
-  auto value = std::make_pair(key, packet);
-  NetWork::sendVector.push_back(value);
+  NetWork::sendVector.push_back(packet);
 }
 
-void NetWorkSys::exitScene() {
-
-}
-
-void NetWorkSys::run() {
-  {
-    std::shared_lock lock(NetWork::send_mutex); // 读锁
-    if (!NetWork::sendVector.empty()) {
-      uv_async_send(&NetWork::async_handle);
-    }
-  }
-  {
-    std::shared_lock lock(NetWork::recv_mutex); // 读锁
-    for (auto packet : NetWork::recvVector) {
-      auto type = packet->type;
-      recvHandler[type](packet);
-      free(packet);
-    }
+void NetWorkSys::sendPacket() {
+  std::shared_lock lock(NetWork::send_mutex); // 读锁
+  if (!NetWork::sendVector.empty()) {
+    uv_async_send(&NetWork::async_handle);
   }
 }
+
+void NetWorkSys::recvPacket() {
+  std::shared_lock lock(NetWork::recv_mutex); // 读锁
+  for (auto packet : NetWork::recvVector) {
+    auto type = packet->type;
+    recvHandler[type](packet);
+    free(packet);
+  }
+}
+
+void NetWorkSys::run() {}

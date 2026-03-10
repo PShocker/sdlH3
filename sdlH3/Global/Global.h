@@ -204,7 +204,6 @@ struct Global {
   static void endGame();
 
   //   network
-  static void enterScene();
+  static void enterScene(uint32_t scene);
   static void exitScene();
-
 };
