@@ -1,0 +1,21 @@
+// 心跳包
+table NetHeartbeat {
+    client_time:uint64;
+}
+
+table NetHeartbeatAck {
+    server_time:uint64;
+}
+
+// 联合体：包含所有消息类型
+union NetPacketPayload {
+    NetHeartbeat,
+    NetHeartbeatAck,
+}
+
+// 统一的网络包（最外层包装）
+table NetPacket {
+    payload:NetPacketPayload;          // 实际数据
+}
+
+root_type NetPacket;

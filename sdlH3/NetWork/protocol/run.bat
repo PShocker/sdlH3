@@ -1,0 +1,1 @@
+flatc --cpp -o ./ ./Protocol.fbs
