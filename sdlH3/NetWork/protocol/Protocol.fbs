@@ -7,10 +7,38 @@ table NetHeartbeatAck {
     server_time:uint64;
 }
 
+table NetLogin {
+    client_time:uint64;
+}
+
+table NetLoginAck {
+    client_id:uint64;
+    server_time:uint64;
+}
+
+table NetInScene {
+    scene_id:uint32;
+}
+
+table NetInSceneAck {
+    scene_id:uint32;
+}
+
+table NetExit {
+    client_id:uint64;
+}
+
 // 联合体：包含所有消息类型
 union NetPacketPayload {
     NetHeartbeat,
     NetHeartbeatAck,
+    NetLogin,
+    NetLoginAck,
+    NetInScene,
+    NetInSceneAck,
+    NetOutScene,
+    NetOutSceneAck,
+    NetExit,
 }
 
 // 统一的网络包（最外层包装）
