@@ -8,7 +8,7 @@ void NetServer::sendLogin(uint64_t cId) {
   // 3. 创建Heartbeat表
   auto payload = CreateServerLogin(NetWork::builder, cId);
   // 4. 创建网络包（最外层包装）
-  NetWork::sendPacket(payload, NetPayload_ServerLogin);
+  NetWork::sendPacket(payload, NetPayload_ServerLogin, cId);
   return;
 }
 
@@ -17,7 +17,7 @@ void NetServer::sendInScene(uint64_t cId, uint32_t scene_id,
   // 3. 创建Heartbeat表
   auto payload = CreateServerInScene(NetWork::builder, scene_host, scene_id);
   // 4. 创建网络包（最外层包装）
-  NetWork::sendPacket(payload, NetPayload_ServerInScene);
+  NetWork::sendPacket(payload, NetPayload_ServerInScene, cId);
   return;
 }
 

@@ -56,7 +56,8 @@ static void sendHeartBeat(uv_timer_t *handle) {
   // 3. 创建Heartbeat表
   auto payload = CreateClientHeartbeat(NetWork::builder, now);
   // 4. 创建网络包（最外层包装）
-  NetWork::sendPacket(payload, NetPayload_ClientHeartbeat);
+  NetWork::sendPacket(payload, NetPayload_ClientHeartbeat, NetWork::host_ip,
+                      NetWork::host_port);
   return;
 }
 

@@ -42,39 +42,13 @@ struct NetWork {
   static bool sendUDP(const uint8_t *data, size_t len, std::string ip,
                       uint16_t port);
 
-  template <typename Payload>
-  static void sendPacket(Payload payload, NetPayload payload_type, uint32_t ip,
-                         uint16_t port) {
-    auto packet = CreateNetPacket(builder, payload_type, payload.Union());
-    builder.Finish(packet);
-
-    const uint8_t *buffer = builder.GetBufferPointer();
-    size_t size = builder.GetSize();
-    NetWork::sendUDP(buffer, size, ip, port);
-    builder.Clear();
-  }
-
-  template <typename Payload>
+  template <typename Payload, typename... Args>
   static void sendPacket(Payload payload, NetPayload payload_type,
-                         uint64_t cId) {
+                         Args &&...args) {
     auto packet = CreateNetPacket(builder, payload_type, payload.Union());
     builder.Finish(packet);
-
-    const uint8_t *buffer = builder.GetBufferPointer();
-    size_t size = builder.GetSize();
-    NetWork::sendUDP(buffer, size, cId);
-    builder.Clear();
-  }
-
-  template <typename Payload>
-  static void sendPacket(Payload payload, NetPayload payload_type,
-                         std::string ip, uint16_t port) {
-    auto packet = CreateNetPacket(builder, payload_type, payload.Union());
-    builder.Finish(packet);
-
-    const uint8_t *buffer = builder.GetBufferPointer();
-    size_t size = builder.GetSize();
-    NetWork::sendUDP(buffer, size, ip, port);
+    NetWork::sendUDP(builder.GetBufferPointer(), builder.GetSize(),
+                     std::forward<Args>(args)...);
     builder.Clear();
   }
 };
