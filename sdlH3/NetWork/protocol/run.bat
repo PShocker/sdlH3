@@ -1,1 +1,0 @@
-flatc --cpp --filename-suffix "" --filename-ext "h" -o ./ ./Protocol.fbs

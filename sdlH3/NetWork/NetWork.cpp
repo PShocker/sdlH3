@@ -1,5 +1,12 @@
 #include "NetWork/NetWork.h"
+#include "./protocol/Client.h"
 #include "./protocol/Protocol.h"
+#include "./protocol/Server.h"
+#include "Global/Global.h"
+#include "NetWork.h"
+#include "NetWork/NetClient.h"
+#include "NetWork/NetServer.h"
+#include "NetWork/protocol/Protocol.h"
 #include "flatbuffers/flatbuffer_builder.h"
 #include <cstdint>
 #include <cstdlib>
@@ -14,10 +21,6 @@ static uv_loop_t *loop = nullptr;
 static uv_timer_t send_heartbeat_timer;
 static uv_timer_t fresh_heartbeat_timer;
 
-const static std::string host_ip = "127.0.0.1";
-const static uint32_t host_port = 8888;
-const static uint8_t heartbeat_interval = 5;
-
 // 将uint32 IP和uint16端口组合为uint64
 static uint64_t CombineIPAndPort(uint32_t ip, uint16_t port) {
   // 将ip放入高32位，port放入低32位
@@ -30,82 +33,31 @@ static void SplitIPAndPort(uint64_t combined, uint32_t &ip, uint16_t &port) {
   port = (uint16_t)(combined & 0xFFFF); // 取低16位（注意是16位，不是32位）
 }
 
-static void sendHeartBeat(uv_timer_t *handle) {
-  // 1. 创建FlatBufferBuilder
-  flatbuffers::FlatBufferBuilder builder;
-  // 2. 获取当前时间戳（毫秒）
-  uint64_t now = static_cast<uint64_t>(time(nullptr));
-  // 3. 创建Heartbeat表
-  auto heartbeat = CreateNetHeartbeat(builder, now);
-  // 4. 创建网络包（最外层包装）
-  auto packet = CreateNetPacket(builder,
-                                NetPacketPayload_NetHeartbeat, // payload类型
-                                heartbeat.Union() // 具体的payload数据
-  );
-  // 5. 完成构建（root_type是NetPacket）
-  builder.Finish(packet);
-
-  // 6. 获取构建好的数据
-  const uint8_t *buffer = builder.GetBufferPointer();
-  size_t size = builder.GetSize();
-  NetWork::sendUDP(buffer, size, host_ip, host_port);
-  return;
-}
-
-static void sendLonginAck(uint64_t cId) {
-  // 1. 创建FlatBufferBuilder
-  flatbuffers::FlatBufferBuilder builder;
-  // 3. 创建Heartbeat表
-  auto longinAck = CreateNetLoginAck(builder, cId);
-  // 4. 创建网络包（最外层包装）
-  auto packet = CreateNetPacket(builder,
-                                NetPacketPayload_NetLoginAck, // payload类型
-                                longinAck.Union() // 具体的payload数据
-  );
-  // 5. 完成构建（root_type是NetPacket）
-  builder.Finish(packet);
-
-  // 6. 获取构建好的数据
-  const uint8_t *buffer = builder.GetBufferPointer();
-  size_t size = builder.GetSize();
-  NetWork::sendUDP(buffer, size, cId);
-  return;
-}
-
-static void sendInSceneAck(uint64_t cId, uint32_t scene_id) {
-  // 1. 创建FlatBufferBuilder
-  flatbuffers::FlatBufferBuilder builder;
-  auto inSceneAck = CreateNetInSceneAck(builder, scene_id);
-  // 4. 创建网络包（最外层包装）
-  auto packet = CreateNetPacket(builder,
-                                NetPacketPayload_NetLoginAck, // payload类型
-                                inSceneAck.Union() // 具体的payload数据
-  );
-  // 5. 完成构建（root_type是NetPacket）
-  builder.Finish(packet);
-
-  // 6. 获取构建好的数据
-  const uint8_t *buffer = builder.GetBufferPointer();
-  size_t size = builder.GetSize();
-  NetWork::sendUDP(buffer, size, cId);
-  return;
-}
-
 static void freshHeartBeat(uv_timer_t *handle) {
   uint64_t now = static_cast<uint64_t>(time(nullptr));
   std::vector<uint64_t> to_remove;
   for (const auto &[key, client] : NetWork::clients) {
     auto duration = now - client.heartbeat;
-    if (duration >= heartbeat_interval * 3) {
+    if (duration >= NetWork::heartbeat_interval * 3) {
       to_remove.push_back(key);
     }
   }
   for (auto key : to_remove) {
     auto &client = NetWork::clients[key];
-    if (client.sceneMaster) {
-      // 如果是场景主机，需要产生切换主机事件
-    }
   }
+}
+
+static void sendHeartBeat(uv_timer_t *handle) {
+  if (NetWork::cId == 0) {
+    return;
+  }
+  // 2. 获取当前时间戳（毫秒）
+  uint64_t now = static_cast<uint64_t>(time(nullptr));
+  // 3. 创建Heartbeat表
+  auto payload = CreateClientHeartbeat(NetWork::builder, now);
+  // 4. 创建网络包（最外层包装）
+  NetWork::sendPacket(payload, NetPayload_ClientHeartbeat);
+  return;
 }
 
 // 接收回调：当收到数据时被调用
@@ -128,50 +80,7 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
   auto port = ntohs(addr_in->sin_port);
   auto cId = CombineIPAndPort(ip, port);
 
-  auto packet = GetNetPacket(buf->base);
-  if (!packet) {
-    printf("无效的数据包\n");
-    return;
-  }
-  // 4. 通过union的type判断具体类型
-  switch (packet->payload_type()) {
-  case NetPacketPayload_NetLogin: {
-    NetWork::clients[cId].heartbeat = static_cast<uint64_t>(time(nullptr));
-    sendLonginAck(cId);
-    break;
-  }
-  case NetPacketPayload_NetLoginAck: {
-    auto loginAck = packet->payload_as_NetLoginAck();
-    NetWork::cId = loginAck->client_id();
-    break;
-  }
-  case NetPacketPayload_NetHeartbeat: {
-    // 从union中获取NetHeartbeat
-    auto heartbeat = packet->payload_as_NetHeartbeat();
-    auto time = heartbeat->client_time();
-    NetWork::clients[cId].heartbeat = time;
-    break;
-  }
-  case NetPacketPayload_NetInScene: {
-    auto inScene = packet->payload_as_NetInScene();
-    auto scene = inScene->scene_id();
-    // 直接返回
-    sendLonginAck(cId);
-
-    break;
-  }
-  default:
-    break;
-  }
-
-  // ipClient client = {
-  //     .ip = (uint32_t)(addr_in->sin_addr.s_addr),
-  //     .port = ntohs(addr_in->sin_port),
-  //     .timestamp = packet->timestamp,
-  //     .heartbeat = packet->timestamp,
-  // };
-
-  // dispatch
+  NetServer::handlePacket(cId, buf->base);
 
   char sender_ip[17] = {0};
   int sender_port = 0;
@@ -195,7 +104,7 @@ bool NetWork::sendUDP(const uint8_t *data, size_t len, uint64_t cId) {
   uint32_t ip;
   uint16_t port;
   SplitIPAndPort(cId, ip, port);
-  sendUDP(data, len, ip, port);
+  return sendUDP(data, len, ip, port);
 }
 
 bool NetWork::sendUDP(const uint8_t *data, size_t len, uint32_t ip,
@@ -255,6 +164,9 @@ void NetWork::init() {
     std::abort();
   }
   server_port = ntohs(assigned_addr.sin_port);
+  if (host_port == 0) {
+    host_port = server_port;
+  }
   // 4. 开始接收数据
   r = uv_udp_recv_start(&server_socket, alloc_cb, on_recv);
   if (r < 0) {
@@ -269,6 +181,15 @@ void NetWork::init() {
   // 创建定时器
   uv_timer_init(loop, &fresh_heartbeat_timer);
   uv_timer_start(&fresh_heartbeat_timer, freshHeartBeat, 0, heartbeat_interval);
+}
+
+void NetWork::init(std::string host_ip, uint32_t host_port) {
+  NetWork::host_ip = host_ip;
+  NetWork::host_port = host_port;
+  NetWork::init();
+}
+
+void NetWork::run() {
   // 6. 运行事件循环
   uv_run(loop, UV_RUN_NOWAIT);
 }

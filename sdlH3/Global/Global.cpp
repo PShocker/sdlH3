@@ -15,6 +15,7 @@
 #include "Ent/Ent.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
+#include "NetWork/NetClient.h"
 #include "NetWork/NetWork.h"
 #include "Pal/PlayerPal.h"
 #include "Pcx/Pcx.h"
@@ -25,7 +26,6 @@
 #include "Set/FactionSet.h"
 #include "Set/HeroSet.h"
 #include "Set/TerrainSet.h"
-#include "Sys/NetWorkSys.h"
 #include "Sys/gui/LevelUpSys.h"
 #include "Sys/gui/TavernSys.h"
 #include "Window/Window.h"
@@ -966,6 +966,8 @@ void Global::startGame() {
   loadWhirlpool();
   loadHeroLevel();
   loadTavernHero();
+
+  NetClient::sendLogin();
 }
 
 void Global::endGame() {
@@ -998,25 +1000,8 @@ void Global::endGame() {
   Global::heroMove = false;
 }
 
-// 进入场景，查询谁是主机，需要同步等待
-void Global::enterScene(uint32_t scene) {
-  NetworkHostAsk r = {.scene = NetWork::scene};
-  auto len = sizeof(NetworkHostAsk);
-  // 分配发送缓冲区
-  auto packet = (NetworkPacket *)malloc(sizeof(NetworkPacket) + len);
-  packet->magic = 0x1234;
-  packet->timestamp = static_cast<uint64_t>(time(nullptr));
-  packet->type = PACKET_HOST_REQUEST;
-  packet->sub_type = scene;
-  packet->cast_type = CAST_UNICAST;
-  packet->cast_ip = 0;
-  packet->cast_port = 0;
-  packet->data_len = len;
-  memcpy(packet->data, &r, len);
-  NetWorkSys::queuePacket(packet);
-  NetWorkSys::sendPacket();
-  NetWork::sem.acquire();
+// networkEvent
+void Global::InScene(uint32_t scene) {
+  World::enterAdvScrn();
   return;
 }
-
-void Global::exitScene() { return; }

@@ -1,0 +1,1 @@
+flatc --cpp --filename-suffix "" --filename-ext "h" -o ../ Client.fbs Server.fbs Protocol.fbs

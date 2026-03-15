@@ -13,366 +13,103 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 25 &&
               FLATBUFFERS_VERSION_REVISION == 19,
              "Non-compatible flatbuffers version included");
 
-struct NetHeartbeat;
-struct NetHeartbeatBuilder;
-
-struct NetHeartbeatAck;
-struct NetHeartbeatAckBuilder;
-
-struct NetLogin;
-struct NetLoginBuilder;
-
-struct NetLoginAck;
-struct NetLoginAckBuilder;
-
-struct NetInScene;
-struct NetInSceneBuilder;
-
-struct NetInSceneAck;
-struct NetInSceneAckBuilder;
+#include "Client.h"
+#include "Server.h"
 
 struct NetPacket;
 struct NetPacketBuilder;
 
-enum NetPacketPayload : uint8_t {
-  NetPacketPayload_NONE = 0,
-  NetPacketPayload_NetHeartbeat = 1,
-  NetPacketPayload_NetHeartbeatAck = 2,
-  NetPacketPayload_NetLogin = 3,
-  NetPacketPayload_NetLoginAck = 4,
-  NetPacketPayload_NetInScene = 5,
-  NetPacketPayload_NetInSceneAck = 6,
-  NetPacketPayload_MIN = NetPacketPayload_NONE,
-  NetPacketPayload_MAX = NetPacketPayload_NetInSceneAck
+enum NetPayload : uint8_t {
+  NetPayload_NONE = 0,
+  NetPayload_ClientHeartbeat = 1,
+  NetPayload_ClientLogin = 2,
+  NetPayload_ClientInScene = 3,
+  NetPayload_ClientOutScene = 4,
+  NetPayload_ServerHeartbeat = 5,
+  NetPayload_ServerLogin = 6,
+  NetPayload_ServerInScene = 7,
+  NetPayload_ServerOutScene = 8,
+  NetPayload_MIN = NetPayload_NONE,
+  NetPayload_MAX = NetPayload_ServerOutScene
 };
 
-inline const NetPacketPayload (&EnumValuesNetPacketPayload())[7] {
-  static const NetPacketPayload values[] = {
-    NetPacketPayload_NONE,
-    NetPacketPayload_NetHeartbeat,
-    NetPacketPayload_NetHeartbeatAck,
-    NetPacketPayload_NetLogin,
-    NetPacketPayload_NetLoginAck,
-    NetPacketPayload_NetInScene,
-    NetPacketPayload_NetInSceneAck
+inline const NetPayload (&EnumValuesNetPayload())[9] {
+  static const NetPayload values[] = {
+    NetPayload_NONE,
+    NetPayload_ClientHeartbeat,
+    NetPayload_ClientLogin,
+    NetPayload_ClientInScene,
+    NetPayload_ClientOutScene,
+    NetPayload_ServerHeartbeat,
+    NetPayload_ServerLogin,
+    NetPayload_ServerInScene,
+    NetPayload_ServerOutScene
   };
   return values;
 }
 
-inline const char * const *EnumNamesNetPacketPayload() {
-  static const char * const names[8] = {
+inline const char * const *EnumNamesNetPayload() {
+  static const char * const names[10] = {
     "NONE",
-    "NetHeartbeat",
-    "NetHeartbeatAck",
-    "NetLogin",
-    "NetLoginAck",
-    "NetInScene",
-    "NetInSceneAck",
+    "ClientHeartbeat",
+    "ClientLogin",
+    "ClientInScene",
+    "ClientOutScene",
+    "ServerHeartbeat",
+    "ServerLogin",
+    "ServerInScene",
+    "ServerOutScene",
     nullptr
   };
   return names;
 }
 
-inline const char *EnumNameNetPacketPayload(NetPacketPayload e) {
-  if (::flatbuffers::IsOutRange(e, NetPacketPayload_NONE, NetPacketPayload_NetInSceneAck)) return "";
+inline const char *EnumNameNetPayload(NetPayload e) {
+  if (::flatbuffers::IsOutRange(e, NetPayload_NONE, NetPayload_ServerOutScene)) return "";
   const size_t index = static_cast<size_t>(e);
-  return EnumNamesNetPacketPayload()[index];
+  return EnumNamesNetPayload()[index];
 }
 
-template<typename T> struct NetPacketPayloadTraits {
-  static const NetPacketPayload enum_value = NetPacketPayload_NONE;
+template<typename T> struct NetPayloadTraits {
+  static const NetPayload enum_value = NetPayload_NONE;
 };
 
-template<> struct NetPacketPayloadTraits<NetHeartbeat> {
-  static const NetPacketPayload enum_value = NetPacketPayload_NetHeartbeat;
+template<> struct NetPayloadTraits<ClientHeartbeat> {
+  static const NetPayload enum_value = NetPayload_ClientHeartbeat;
 };
 
-template<> struct NetPacketPayloadTraits<NetHeartbeatAck> {
-  static const NetPacketPayload enum_value = NetPacketPayload_NetHeartbeatAck;
+template<> struct NetPayloadTraits<ClientLogin> {
+  static const NetPayload enum_value = NetPayload_ClientLogin;
 };
 
-template<> struct NetPacketPayloadTraits<NetLogin> {
-  static const NetPacketPayload enum_value = NetPacketPayload_NetLogin;
+template<> struct NetPayloadTraits<ClientInScene> {
+  static const NetPayload enum_value = NetPayload_ClientInScene;
 };
 
-template<> struct NetPacketPayloadTraits<NetLoginAck> {
-  static const NetPacketPayload enum_value = NetPacketPayload_NetLoginAck;
+template<> struct NetPayloadTraits<ClientOutScene> {
+  static const NetPayload enum_value = NetPayload_ClientOutScene;
 };
 
-template<> struct NetPacketPayloadTraits<NetInScene> {
-  static const NetPacketPayload enum_value = NetPacketPayload_NetInScene;
+template<> struct NetPayloadTraits<ServerHeartbeat> {
+  static const NetPayload enum_value = NetPayload_ServerHeartbeat;
 };
 
-template<> struct NetPacketPayloadTraits<NetInSceneAck> {
-  static const NetPacketPayload enum_value = NetPacketPayload_NetInSceneAck;
+template<> struct NetPayloadTraits<ServerLogin> {
+  static const NetPayload enum_value = NetPayload_ServerLogin;
+};
+
+template<> struct NetPayloadTraits<ServerInScene> {
+  static const NetPayload enum_value = NetPayload_ServerInScene;
+};
+
+template<> struct NetPayloadTraits<ServerOutScene> {
+  static const NetPayload enum_value = NetPayload_ServerOutScene;
 };
 
 template <bool B = false>
-bool VerifyNetPacketPayload(::flatbuffers::VerifierTemplate<B> &verifier, const void *obj, NetPacketPayload type);
+bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const void *obj, NetPayload type);
 template <bool B = false>
-bool VerifyNetPacketPayloadVector(::flatbuffers::VerifierTemplate<B> &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types);
-
-struct NetHeartbeat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef NetHeartbeatBuilder Builder;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_CLIENT_TIME = 4
-  };
-  uint64_t client_time() const {
-    return GetField<uint64_t>(VT_CLIENT_TIME, 0);
-  }
-  template <bool B = false>
-  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint64_t>(verifier, VT_CLIENT_TIME, 8) &&
-           verifier.EndTable();
-  }
-};
-
-struct NetHeartbeatBuilder {
-  typedef NetHeartbeat Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_client_time(uint64_t client_time) {
-    fbb_.AddElement<uint64_t>(NetHeartbeat::VT_CLIENT_TIME, client_time, 0);
-  }
-  explicit NetHeartbeatBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<NetHeartbeat> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<NetHeartbeat>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<NetHeartbeat> CreateNetHeartbeat(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t client_time = 0) {
-  NetHeartbeatBuilder builder_(_fbb);
-  builder_.add_client_time(client_time);
-  return builder_.Finish();
-}
-
-struct NetHeartbeatAck FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef NetHeartbeatAckBuilder Builder;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_SERVER_TIME = 4
-  };
-  uint64_t server_time() const {
-    return GetField<uint64_t>(VT_SERVER_TIME, 0);
-  }
-  template <bool B = false>
-  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint64_t>(verifier, VT_SERVER_TIME, 8) &&
-           verifier.EndTable();
-  }
-};
-
-struct NetHeartbeatAckBuilder {
-  typedef NetHeartbeatAck Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_server_time(uint64_t server_time) {
-    fbb_.AddElement<uint64_t>(NetHeartbeatAck::VT_SERVER_TIME, server_time, 0);
-  }
-  explicit NetHeartbeatAckBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<NetHeartbeatAck> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<NetHeartbeatAck>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<NetHeartbeatAck> CreateNetHeartbeatAck(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t server_time = 0) {
-  NetHeartbeatAckBuilder builder_(_fbb);
-  builder_.add_server_time(server_time);
-  return builder_.Finish();
-}
-
-struct NetLogin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef NetLoginBuilder Builder;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_CLIENT_TIME = 4
-  };
-  uint64_t client_time() const {
-    return GetField<uint64_t>(VT_CLIENT_TIME, 0);
-  }
-  template <bool B = false>
-  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint64_t>(verifier, VT_CLIENT_TIME, 8) &&
-           verifier.EndTable();
-  }
-};
-
-struct NetLoginBuilder {
-  typedef NetLogin Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_client_time(uint64_t client_time) {
-    fbb_.AddElement<uint64_t>(NetLogin::VT_CLIENT_TIME, client_time, 0);
-  }
-  explicit NetLoginBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<NetLogin> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<NetLogin>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<NetLogin> CreateNetLogin(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t client_time = 0) {
-  NetLoginBuilder builder_(_fbb);
-  builder_.add_client_time(client_time);
-  return builder_.Finish();
-}
-
-struct NetLoginAck FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef NetLoginAckBuilder Builder;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_CLIENT_ID = 4,
-    VT_SERVER_TIME = 6
-  };
-  uint64_t client_id() const {
-    return GetField<uint64_t>(VT_CLIENT_ID, 0);
-  }
-  uint64_t server_time() const {
-    return GetField<uint64_t>(VT_SERVER_TIME, 0);
-  }
-  template <bool B = false>
-  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint64_t>(verifier, VT_CLIENT_ID, 8) &&
-           VerifyField<uint64_t>(verifier, VT_SERVER_TIME, 8) &&
-           verifier.EndTable();
-  }
-};
-
-struct NetLoginAckBuilder {
-  typedef NetLoginAck Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_client_id(uint64_t client_id) {
-    fbb_.AddElement<uint64_t>(NetLoginAck::VT_CLIENT_ID, client_id, 0);
-  }
-  void add_server_time(uint64_t server_time) {
-    fbb_.AddElement<uint64_t>(NetLoginAck::VT_SERVER_TIME, server_time, 0);
-  }
-  explicit NetLoginAckBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<NetLoginAck> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<NetLoginAck>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<NetLoginAck> CreateNetLoginAck(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t client_id = 0,
-    uint64_t server_time = 0) {
-  NetLoginAckBuilder builder_(_fbb);
-  builder_.add_server_time(server_time);
-  builder_.add_client_id(client_id);
-  return builder_.Finish();
-}
-
-struct NetInScene FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef NetInSceneBuilder Builder;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_SCENE_ID = 4
-  };
-  uint32_t scene_id() const {
-    return GetField<uint32_t>(VT_SCENE_ID, 0);
-  }
-  template <bool B = false>
-  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint32_t>(verifier, VT_SCENE_ID, 4) &&
-           verifier.EndTable();
-  }
-};
-
-struct NetInSceneBuilder {
-  typedef NetInScene Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_scene_id(uint32_t scene_id) {
-    fbb_.AddElement<uint32_t>(NetInScene::VT_SCENE_ID, scene_id, 0);
-  }
-  explicit NetInSceneBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<NetInScene> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<NetInScene>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<NetInScene> CreateNetInScene(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint32_t scene_id = 0) {
-  NetInSceneBuilder builder_(_fbb);
-  builder_.add_scene_id(scene_id);
-  return builder_.Finish();
-}
-
-struct NetInSceneAck FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef NetInSceneAckBuilder Builder;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_SCENE_ID = 4
-  };
-  uint32_t scene_id() const {
-    return GetField<uint32_t>(VT_SCENE_ID, 0);
-  }
-  template <bool B = false>
-  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint32_t>(verifier, VT_SCENE_ID, 4) &&
-           verifier.EndTable();
-  }
-};
-
-struct NetInSceneAckBuilder {
-  typedef NetInSceneAck Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_scene_id(uint32_t scene_id) {
-    fbb_.AddElement<uint32_t>(NetInSceneAck::VT_SCENE_ID, scene_id, 0);
-  }
-  explicit NetInSceneAckBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<NetInSceneAck> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<NetInSceneAck>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<NetInSceneAck> CreateNetInSceneAck(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint32_t scene_id = 0) {
-  NetInSceneAckBuilder builder_(_fbb);
-  builder_.add_scene_id(scene_id);
-  return builder_.Finish();
-}
+bool VerifyNetPayloadVector(::flatbuffers::VerifierTemplate<B> &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types);
 
 struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef NetPacketBuilder Builder;
@@ -380,70 +117,84 @@ struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_PAYLOAD_TYPE = 4,
     VT_PAYLOAD = 6
   };
-  NetPacketPayload payload_type() const {
-    return static_cast<NetPacketPayload>(GetField<uint8_t>(VT_PAYLOAD_TYPE, 0));
+  NetPayload payload_type() const {
+    return static_cast<NetPayload>(GetField<uint8_t>(VT_PAYLOAD_TYPE, 0));
   }
   const void *payload() const {
     return GetPointer<const void *>(VT_PAYLOAD);
   }
   template<typename T> const T *payload_as() const;
-  const NetHeartbeat *payload_as_NetHeartbeat() const {
-    return payload_type() == NetPacketPayload_NetHeartbeat ? static_cast<const NetHeartbeat *>(payload()) : nullptr;
+  const ClientHeartbeat *payload_as_ClientHeartbeat() const {
+    return payload_type() == NetPayload_ClientHeartbeat ? static_cast<const ClientHeartbeat *>(payload()) : nullptr;
   }
-  const NetHeartbeatAck *payload_as_NetHeartbeatAck() const {
-    return payload_type() == NetPacketPayload_NetHeartbeatAck ? static_cast<const NetHeartbeatAck *>(payload()) : nullptr;
+  const ClientLogin *payload_as_ClientLogin() const {
+    return payload_type() == NetPayload_ClientLogin ? static_cast<const ClientLogin *>(payload()) : nullptr;
   }
-  const NetLogin *payload_as_NetLogin() const {
-    return payload_type() == NetPacketPayload_NetLogin ? static_cast<const NetLogin *>(payload()) : nullptr;
+  const ClientInScene *payload_as_ClientInScene() const {
+    return payload_type() == NetPayload_ClientInScene ? static_cast<const ClientInScene *>(payload()) : nullptr;
   }
-  const NetLoginAck *payload_as_NetLoginAck() const {
-    return payload_type() == NetPacketPayload_NetLoginAck ? static_cast<const NetLoginAck *>(payload()) : nullptr;
+  const ClientOutScene *payload_as_ClientOutScene() const {
+    return payload_type() == NetPayload_ClientOutScene ? static_cast<const ClientOutScene *>(payload()) : nullptr;
   }
-  const NetInScene *payload_as_NetInScene() const {
-    return payload_type() == NetPacketPayload_NetInScene ? static_cast<const NetInScene *>(payload()) : nullptr;
+  const ServerHeartbeat *payload_as_ServerHeartbeat() const {
+    return payload_type() == NetPayload_ServerHeartbeat ? static_cast<const ServerHeartbeat *>(payload()) : nullptr;
   }
-  const NetInSceneAck *payload_as_NetInSceneAck() const {
-    return payload_type() == NetPacketPayload_NetInSceneAck ? static_cast<const NetInSceneAck *>(payload()) : nullptr;
+  const ServerLogin *payload_as_ServerLogin() const {
+    return payload_type() == NetPayload_ServerLogin ? static_cast<const ServerLogin *>(payload()) : nullptr;
+  }
+  const ServerInScene *payload_as_ServerInScene() const {
+    return payload_type() == NetPayload_ServerInScene ? static_cast<const ServerInScene *>(payload()) : nullptr;
+  }
+  const ServerOutScene *payload_as_ServerOutScene() const {
+    return payload_type() == NetPayload_ServerOutScene ? static_cast<const ServerOutScene *>(payload()) : nullptr;
   }
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_PAYLOAD_TYPE, 1) &&
            VerifyOffset(verifier, VT_PAYLOAD) &&
-           VerifyNetPacketPayload(verifier, payload(), payload_type()) &&
+           VerifyNetPayload(verifier, payload(), payload_type()) &&
            verifier.EndTable();
   }
 };
 
-template<> inline const NetHeartbeat *NetPacket::payload_as<NetHeartbeat>() const {
-  return payload_as_NetHeartbeat();
+template<> inline const ClientHeartbeat *NetPacket::payload_as<ClientHeartbeat>() const {
+  return payload_as_ClientHeartbeat();
 }
 
-template<> inline const NetHeartbeatAck *NetPacket::payload_as<NetHeartbeatAck>() const {
-  return payload_as_NetHeartbeatAck();
+template<> inline const ClientLogin *NetPacket::payload_as<ClientLogin>() const {
+  return payload_as_ClientLogin();
 }
 
-template<> inline const NetLogin *NetPacket::payload_as<NetLogin>() const {
-  return payload_as_NetLogin();
+template<> inline const ClientInScene *NetPacket::payload_as<ClientInScene>() const {
+  return payload_as_ClientInScene();
 }
 
-template<> inline const NetLoginAck *NetPacket::payload_as<NetLoginAck>() const {
-  return payload_as_NetLoginAck();
+template<> inline const ClientOutScene *NetPacket::payload_as<ClientOutScene>() const {
+  return payload_as_ClientOutScene();
 }
 
-template<> inline const NetInScene *NetPacket::payload_as<NetInScene>() const {
-  return payload_as_NetInScene();
+template<> inline const ServerHeartbeat *NetPacket::payload_as<ServerHeartbeat>() const {
+  return payload_as_ServerHeartbeat();
 }
 
-template<> inline const NetInSceneAck *NetPacket::payload_as<NetInSceneAck>() const {
-  return payload_as_NetInSceneAck();
+template<> inline const ServerLogin *NetPacket::payload_as<ServerLogin>() const {
+  return payload_as_ServerLogin();
+}
+
+template<> inline const ServerInScene *NetPacket::payload_as<ServerInScene>() const {
+  return payload_as_ServerInScene();
+}
+
+template<> inline const ServerOutScene *NetPacket::payload_as<ServerOutScene>() const {
+  return payload_as_ServerOutScene();
 }
 
 struct NetPacketBuilder {
   typedef NetPacket Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_payload_type(NetPacketPayload payload_type) {
+  void add_payload_type(NetPayload payload_type) {
     fbb_.AddElement<uint8_t>(NetPacket::VT_PAYLOAD_TYPE, static_cast<uint8_t>(payload_type), 0);
   }
   void add_payload(::flatbuffers::Offset<void> payload) {
@@ -462,7 +213,7 @@ struct NetPacketBuilder {
 
 inline ::flatbuffers::Offset<NetPacket> CreateNetPacket(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    NetPacketPayload payload_type = NetPacketPayload_NONE,
+    NetPayload payload_type = NetPayload_NONE,
     ::flatbuffers::Offset<void> payload = 0) {
   NetPacketBuilder builder_(_fbb);
   builder_.add_payload(payload);
@@ -471,33 +222,41 @@ inline ::flatbuffers::Offset<NetPacket> CreateNetPacket(
 }
 
 template <bool B>
-inline bool VerifyNetPacketPayload(::flatbuffers::VerifierTemplate<B> &verifier, const void *obj, NetPacketPayload type) {
+inline bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const void *obj, NetPayload type) {
   switch (type) {
-    case NetPacketPayload_NONE: {
+    case NetPayload_NONE: {
       return true;
     }
-    case NetPacketPayload_NetHeartbeat: {
-      auto ptr = reinterpret_cast<const NetHeartbeat *>(obj);
+    case NetPayload_ClientHeartbeat: {
+      auto ptr = reinterpret_cast<const ClientHeartbeat *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case NetPacketPayload_NetHeartbeatAck: {
-      auto ptr = reinterpret_cast<const NetHeartbeatAck *>(obj);
+    case NetPayload_ClientLogin: {
+      auto ptr = reinterpret_cast<const ClientLogin *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case NetPacketPayload_NetLogin: {
-      auto ptr = reinterpret_cast<const NetLogin *>(obj);
+    case NetPayload_ClientInScene: {
+      auto ptr = reinterpret_cast<const ClientInScene *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case NetPacketPayload_NetLoginAck: {
-      auto ptr = reinterpret_cast<const NetLoginAck *>(obj);
+    case NetPayload_ClientOutScene: {
+      auto ptr = reinterpret_cast<const ClientOutScene *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case NetPacketPayload_NetInScene: {
-      auto ptr = reinterpret_cast<const NetInScene *>(obj);
+    case NetPayload_ServerHeartbeat: {
+      auto ptr = reinterpret_cast<const ServerHeartbeat *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case NetPacketPayload_NetInSceneAck: {
-      auto ptr = reinterpret_cast<const NetInSceneAck *>(obj);
+    case NetPayload_ServerLogin: {
+      auto ptr = reinterpret_cast<const ServerLogin *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ServerInScene: {
+      auto ptr = reinterpret_cast<const ServerInScene *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ServerOutScene: {
+      auto ptr = reinterpret_cast<const ServerOutScene *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;
@@ -505,12 +264,12 @@ inline bool VerifyNetPacketPayload(::flatbuffers::VerifierTemplate<B> &verifier,
 }
 
 template <bool B>
-inline bool VerifyNetPacketPayloadVector(::flatbuffers::VerifierTemplate<B> &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types) {
+inline bool VerifyNetPayloadVector(::flatbuffers::VerifierTemplate<B> &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types) {
   if (!values || !types) return !values && !types;
   if (values->size() != types->size()) return false;
   for (::flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
-    if (!VerifyNetPacketPayload(
-        verifier,  values->Get(i), types->GetEnum<NetPacketPayload>(i))) {
+    if (!VerifyNetPayload(
+        verifier,  values->Get(i), types->GetEnum<NetPayload>(i))) {
       return false;
     }
   }

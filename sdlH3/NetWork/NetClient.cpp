@@ -1,0 +1,19 @@
+#include "NetWork/NetClient.h"
+#include "NetWork/NetWork.h"
+#include "protocol/Client.h"
+#include "protocol/Protocol.h"
+
+void NetClient::sendLogin() {
+  uint64_t now = static_cast<uint64_t>(time(nullptr));
+  // 3. 创建Heartbeat表
+  auto payload = CreateClientLogin(NetWork::builder, now);
+  NetWork::sendPacket(payload, NetPayload_ClientLogin);
+  return;
+}
+
+void NetClient::sendInScene(uint32_t scene) {
+  // 3. 创建Heartbeat表
+  auto payload = CreateClientInScene(NetWork::builder, scene);
+  NetWork::sendPacket(payload, NetPayload_ClientInScene);
+  return;
+}

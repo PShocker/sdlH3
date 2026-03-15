@@ -1,0 +1,19 @@
+// 心跳包
+table ClientHeartbeat {
+    client_time:uint64;
+}
+
+table ClientLogin {
+    client_time:uint64;
+}
+
+table ClientInScene {
+    scene_id:uint32;
+}
+
+table ClientOutScene {
+}
+
+table ClientExit {
+    client_id:uint64;
+}
