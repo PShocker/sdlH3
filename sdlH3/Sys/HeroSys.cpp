@@ -25,6 +25,8 @@
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
 #include "Lang/Lang.h"
+#include "NetWork/NetClient.h"
+#include "NetWork/NetWork.h"
 #include "Point/Point.h"
 #include "SDL3/SDL_rect.h"
 #include "Set/HeroClassSet.h"
@@ -1024,7 +1026,11 @@ static void heroMove(entt::entity heroEnt) {
       (int)heroPoint.y == (int)pathPoint.y) {
     registry.destroy(pathEnt);
     World::needSort = true;
-
+    // 网络事件
+    if (NetWork::sceneHost[0] == NetWork::cId) {
+      NetClient::sendHeroMove(heroComp->portrait, objectComp->x - 1,
+                              objectComp->y);
+    }
     heroComp->pathEnts.erase(heroComp->pathEnts.begin());
 
     auto terrainEnt =

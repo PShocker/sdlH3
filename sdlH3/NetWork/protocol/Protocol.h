@@ -25,47 +25,53 @@ enum NetPayload : uint8_t {
   NetPayload_ClientLogin = 2,
   NetPayload_ClientInScene = 3,
   NetPayload_ClientOutScene = 4,
-  NetPayload_ServerHeartbeat = 5,
-  NetPayload_ServerLogin = 6,
-  NetPayload_ServerInScene = 7,
-  NetPayload_ServerOutScene = 8,
+  NetPayload_ClientHeroMove = 5,
+  NetPayload_ServerHeartbeat = 6,
+  NetPayload_ServerLogin = 7,
+  NetPayload_ServerInScene = 8,
+  NetPayload_ServerOutScene = 9,
+  NetPayload_ServerHeroMove = 10,
   NetPayload_MIN = NetPayload_NONE,
-  NetPayload_MAX = NetPayload_ServerOutScene
+  NetPayload_MAX = NetPayload_ServerHeroMove
 };
 
-inline const NetPayload (&EnumValuesNetPayload())[9] {
+inline const NetPayload (&EnumValuesNetPayload())[11] {
   static const NetPayload values[] = {
     NetPayload_NONE,
     NetPayload_ClientHeartbeat,
     NetPayload_ClientLogin,
     NetPayload_ClientInScene,
     NetPayload_ClientOutScene,
+    NetPayload_ClientHeroMove,
     NetPayload_ServerHeartbeat,
     NetPayload_ServerLogin,
     NetPayload_ServerInScene,
-    NetPayload_ServerOutScene
+    NetPayload_ServerOutScene,
+    NetPayload_ServerHeroMove
   };
   return values;
 }
 
 inline const char * const *EnumNamesNetPayload() {
-  static const char * const names[10] = {
+  static const char * const names[12] = {
     "NONE",
     "ClientHeartbeat",
     "ClientLogin",
     "ClientInScene",
     "ClientOutScene",
+    "ClientHeroMove",
     "ServerHeartbeat",
     "ServerLogin",
     "ServerInScene",
     "ServerOutScene",
+    "ServerHeroMove",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameNetPayload(NetPayload e) {
-  if (::flatbuffers::IsOutRange(e, NetPayload_NONE, NetPayload_ServerOutScene)) return "";
+  if (::flatbuffers::IsOutRange(e, NetPayload_NONE, NetPayload_ServerHeroMove)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesNetPayload()[index];
 }
@@ -90,6 +96,10 @@ template<> struct NetPayloadTraits<ClientOutScene> {
   static const NetPayload enum_value = NetPayload_ClientOutScene;
 };
 
+template<> struct NetPayloadTraits<ClientHeroMove> {
+  static const NetPayload enum_value = NetPayload_ClientHeroMove;
+};
+
 template<> struct NetPayloadTraits<ServerHeartbeat> {
   static const NetPayload enum_value = NetPayload_ServerHeartbeat;
 };
@@ -104,6 +114,10 @@ template<> struct NetPayloadTraits<ServerInScene> {
 
 template<> struct NetPayloadTraits<ServerOutScene> {
   static const NetPayload enum_value = NetPayload_ServerOutScene;
+};
+
+template<> struct NetPayloadTraits<ServerHeroMove> {
+  static const NetPayload enum_value = NetPayload_ServerHeroMove;
 };
 
 template <bool B = false>
@@ -136,6 +150,9 @@ struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const ClientOutScene *payload_as_ClientOutScene() const {
     return payload_type() == NetPayload_ClientOutScene ? static_cast<const ClientOutScene *>(payload()) : nullptr;
   }
+  const ClientHeroMove *payload_as_ClientHeroMove() const {
+    return payload_type() == NetPayload_ClientHeroMove ? static_cast<const ClientHeroMove *>(payload()) : nullptr;
+  }
   const ServerHeartbeat *payload_as_ServerHeartbeat() const {
     return payload_type() == NetPayload_ServerHeartbeat ? static_cast<const ServerHeartbeat *>(payload()) : nullptr;
   }
@@ -147,6 +164,9 @@ struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   const ServerOutScene *payload_as_ServerOutScene() const {
     return payload_type() == NetPayload_ServerOutScene ? static_cast<const ServerOutScene *>(payload()) : nullptr;
+  }
+  const ServerHeroMove *payload_as_ServerHeroMove() const {
+    return payload_type() == NetPayload_ServerHeroMove ? static_cast<const ServerHeroMove *>(payload()) : nullptr;
   }
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
@@ -174,6 +194,10 @@ template<> inline const ClientOutScene *NetPacket::payload_as<ClientOutScene>() 
   return payload_as_ClientOutScene();
 }
 
+template<> inline const ClientHeroMove *NetPacket::payload_as<ClientHeroMove>() const {
+  return payload_as_ClientHeroMove();
+}
+
 template<> inline const ServerHeartbeat *NetPacket::payload_as<ServerHeartbeat>() const {
   return payload_as_ServerHeartbeat();
 }
@@ -188,6 +212,10 @@ template<> inline const ServerInScene *NetPacket::payload_as<ServerInScene>() co
 
 template<> inline const ServerOutScene *NetPacket::payload_as<ServerOutScene>() const {
   return payload_as_ServerOutScene();
+}
+
+template<> inline const ServerHeroMove *NetPacket::payload_as<ServerHeroMove>() const {
+  return payload_as_ServerHeroMove();
 }
 
 struct NetPacketBuilder {
@@ -243,6 +271,10 @@ inline bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const
       auto ptr = reinterpret_cast<const ClientOutScene *>(obj);
       return verifier.VerifyTable(ptr);
     }
+    case NetPayload_ClientHeroMove: {
+      auto ptr = reinterpret_cast<const ClientHeroMove *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
     case NetPayload_ServerHeartbeat: {
       auto ptr = reinterpret_cast<const ServerHeartbeat *>(obj);
       return verifier.VerifyTable(ptr);
@@ -257,6 +289,10 @@ inline bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const
     }
     case NetPayload_ServerOutScene: {
       auto ptr = reinterpret_cast<const ServerOutScene *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ServerHeroMove: {
+      auto ptr = reinterpret_cast<const ServerHeroMove *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;

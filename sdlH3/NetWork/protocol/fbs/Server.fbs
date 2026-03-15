@@ -15,3 +15,9 @@ table ServerInScene {
 
 table ServerOutScene {
 }
+
+table ServerHeroMove {
+    por:uint8;
+    x:uint8;
+    y:uint8;
+}

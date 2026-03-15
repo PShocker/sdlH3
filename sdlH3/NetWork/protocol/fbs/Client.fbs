@@ -17,3 +17,9 @@ table ClientOutScene {
 table ClientExit {
     client_id:uint64;
 }
+
+table ClientHeroMove {
+    por:uint8;
+    x:uint8;
+    y:uint8;
+}

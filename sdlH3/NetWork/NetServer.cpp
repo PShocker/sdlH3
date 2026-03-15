@@ -1,6 +1,9 @@
 #include "NetWork/NetServer.h"
 #include "Global/Global.h"
+#include "NetWork.h"
+#include "NetWork/NetClient.h"
 #include "NetWork/NetWork.h"
+#include "NetWork/protocol/Protocol.h"
 #include "protocol/Protocol.h"
 #include "protocol/Server.h"
 
@@ -21,6 +24,15 @@ void NetServer::sendInScene(uint64_t cId, uint32_t scene_id,
   return;
 }
 
+void NetServer::sendHeroMove(uint64_t cId, uint8_t por, uint8_t x, uint8_t y) {
+  auto payload = CreateServerHeroMove(NetWork::builder, por, x, y);
+  auto clients = NetWork::sceneClients[0];
+  clients.erase(cId);
+  for (auto c : clients) {
+    NetWork::sendPacket(payload, NetPayload_ServerHeroMove, c);
+  }
+}
+
 void NetServer::handlePacket(uint64_t cId, void *buf) {
   auto packet = GetNetPacket(buf);
   if (!packet) {
@@ -37,7 +49,7 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
   case NetPayload_ServerLogin: {
     auto payload = packet->payload_as_ServerLogin();
     NetWork::cId = payload->client_id();
-    Global::InScene(0);
+    NetClient::sendInScene(0);
     break;
   }
   case NetPayload_ClientHeartbeat: {
@@ -60,14 +72,34 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
     NetServer::sendInScene(cId, scene, scene_host);
     break;
   }
-  case NetPayload_ServerInScene: {
+  case NetPayload_ClientHeroMove: {
     // 从union中获取NetHeartbeat
-    auto sceneAck = packet->payload_as_ServerInScene();
-    auto sId = sceneAck->scene_id();
+    auto payload = packet->payload_as_ClientHeroMove();
+    auto por = payload->por();
+    auto x = payload->x();
+    auto y = payload->y();
     //
-    Global::InScene(sId);
+    NetServer::sendHeroMove(cId, por, x, y);
     break;
   }
+  case NetPayload_ServerInScene: {
+    // 从union中获取NetHeartbeat
+    auto payload = packet->payload_as_ServerInScene();
+    //
+    auto sId = payload->scene_id();
+    Global::EventInScene(sId);
+    break;
+  }
+  case NetPayload_ServerHeroMove: {
+    // 从union中获取NetHeartbeat
+    auto payload = packet->payload_as_ServerHeroMove();
+    auto por = payload->por();
+    auto x = payload->x();
+    auto y = payload->y();
+    Global::EventHeroMove(por, x, y);
+    break;
+  }
+
   default:
     break;
   }

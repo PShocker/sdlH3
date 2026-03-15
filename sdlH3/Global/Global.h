@@ -209,5 +209,6 @@ struct Global {
   static void NetOutScene();
 
   //   networkEvent
-  static void InScene(uint32_t scene);
+  static void EventInScene(uint32_t scene);
+  static void EventHeroMove(uint8_t por, uint8_t x, uint8_t y);
 };

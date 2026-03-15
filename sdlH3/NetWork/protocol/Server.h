@@ -25,6 +25,9 @@ struct ServerInSceneBuilder;
 struct ServerOutScene;
 struct ServerOutSceneBuilder;
 
+struct ServerHeroMove;
+struct ServerHeroMoveBuilder;
+
 struct ServerHeartbeat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ServerHeartbeatBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -198,6 +201,68 @@ struct ServerOutSceneBuilder {
 inline ::flatbuffers::Offset<ServerOutScene> CreateServerOutScene(
     ::flatbuffers::FlatBufferBuilder &_fbb) {
   ServerOutSceneBuilder builder_(_fbb);
+  return builder_.Finish();
+}
+
+struct ServerHeroMove FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ServerHeroMoveBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_POR = 4,
+    VT_X = 6,
+    VT_Y = 8
+  };
+  uint8_t por() const {
+    return GetField<uint8_t>(VT_POR, 0);
+  }
+  uint8_t x() const {
+    return GetField<uint8_t>(VT_X, 0);
+  }
+  uint8_t y() const {
+    return GetField<uint8_t>(VT_Y, 0);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyField<uint8_t>(verifier, VT_X, 1) &&
+           VerifyField<uint8_t>(verifier, VT_Y, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ServerHeroMoveBuilder {
+  typedef ServerHeroMove Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_por(uint8_t por) {
+    fbb_.AddElement<uint8_t>(ServerHeroMove::VT_POR, por, 0);
+  }
+  void add_x(uint8_t x) {
+    fbb_.AddElement<uint8_t>(ServerHeroMove::VT_X, x, 0);
+  }
+  void add_y(uint8_t y) {
+    fbb_.AddElement<uint8_t>(ServerHeroMove::VT_Y, y, 0);
+  }
+  explicit ServerHeroMoveBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ServerHeroMove> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ServerHeroMove>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ServerHeroMove> CreateServerHeroMove(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    uint8_t x = 0,
+    uint8_t y = 0) {
+  ServerHeroMoveBuilder builder_(_fbb);
+  builder_.add_y(y);
+  builder_.add_x(x);
+  builder_.add_por(por);
   return builder_.Finish();
 }
 
