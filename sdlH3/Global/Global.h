@@ -211,4 +211,6 @@ struct Global {
   //   networkEvent
   static void EventInScene(uint32_t scene);
   static void EventHeroMove(uint8_t por, uint8_t x, uint8_t y);
+  static void EventHeroTeleport(uint8_t por, uint8_t level, uint8_t x,
+                                uint8_t y);
 };

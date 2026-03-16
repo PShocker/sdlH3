@@ -1027,3 +1027,25 @@ void Global::EventHeroMove(uint8_t por, uint8_t x, uint8_t y) {
     }
   }
 }
+
+void Global::EventHeroTeleport(uint8_t por, uint8_t level, uint8_t x,
+                               uint8_t y) {
+  for (uint8_t i : {0, 1}) {
+    auto &registry = World::registrys[i];
+    for (auto ent : registry.view<HeroComp>()) {
+      auto hComp = &registry.get<HeroComp>(ent);
+      if (hComp->portrait == por) {
+        std::vector<SDL_Point> path;
+        auto paths = hComp->pathEnts;
+        path = {{0, 0}, {x, y}};
+        Ent::loadPath(path, ent, 5);
+        paths.append_range(hComp->pathEnts);
+        hComp->pathEnts = paths;
+        World::level = i;
+        hComp->move = true;
+        Global::heroMove = true;
+        AdvMapSys::heroFocus(ent, i);
+      }
+    }
+  }
+}

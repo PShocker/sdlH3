@@ -8,11 +8,13 @@ union NetPayload {
     ClientInScene,
     ClientOutScene,
     ClientHeroMove,
+    ClientHeroTeleport,
     ServerHeartbeat,
     ServerLogin,
     ServerInScene,
     ServerOutScene,
     ServerHeroMove,
+    ServerHeroTeleport,
 }
 // 统一的网络包（最外层包装）
 table NetPacket {

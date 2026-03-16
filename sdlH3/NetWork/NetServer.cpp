@@ -33,6 +33,16 @@ void NetServer::sendHeroMove(uint64_t cId, uint8_t por, uint8_t x, uint8_t y) {
   }
 }
 
+void NetServer::sendHeroTeleport(uint64_t cId, uint8_t por, uint8_t level,
+                                 uint8_t x, uint8_t y) {
+  auto payload = CreateServerHeroTeleport(NetWork::builder, por, level, x, y);
+  auto clients = NetWork::sceneClients[0];
+  clients.erase(cId);
+  for (auto c : clients) {
+    NetWork::sendPacket(payload, NetPayload_ServerHeroTeleport, c);
+  }
+}
+
 void NetServer::handlePacket(uint64_t cId, void *buf) {
   auto packet = GetNetPacket(buf);
   if (!packet) {
@@ -82,6 +92,17 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
     NetServer::sendHeroMove(cId, por, x, y);
     break;
   }
+  case NetPayload_ClientHeroTeleport: {
+    // 从union中获取NetHeartbeat
+    auto payload = packet->payload_as_ClientHeroTeleport();
+    auto por = payload->por();
+    auto level = payload->level();
+    auto x = payload->x();
+    auto y = payload->y();
+    //
+    NetServer::sendHeroMove(cId, por, x, y);
+    break;
+  }
   case NetPayload_ServerInScene: {
     // 从union中获取NetHeartbeat
     auto payload = packet->payload_as_ServerInScene();
@@ -91,6 +112,15 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
     break;
   }
   case NetPayload_ServerHeroMove: {
+    // 从union中获取NetHeartbeat
+    auto payload = packet->payload_as_ServerHeroMove();
+    auto por = payload->por();
+    auto x = payload->x();
+    auto y = payload->y();
+    Global::EventHeroMove(por, x, y);
+    break;
+  }
+  case NetPayload_ServerHeroTeleport: {
     // 从union中获取NetHeartbeat
     auto payload = packet->payload_as_ServerHeroMove();
     auto por = payload->por();
