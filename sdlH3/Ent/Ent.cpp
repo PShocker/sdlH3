@@ -1204,23 +1204,13 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
   return ent;
 }
 
-entt::entity Ent::loadHero(HeroComp &heroComp, uint8_t playerId, uint8_t x,
+entt::entity Ent::loadHero(HeroComp heroComp, uint8_t playerId, uint8_t x,
                            uint8_t y, uint8_t level, uint8_t direct,
                            uint8_t flip) {
   H3mObject object;
-  H3mHero hero;
+  H3mHero hero = {};
   hero.playerId = playerId;
   hero.portrait = heroComp.portrait;
-  hero.creatureSet = H3mCreatureSet(heroComp.creatures);
-  hero.primSkills = heroComp.primSkills;
-  hero.artifacts = heroComp.artifacts;
-  hero.artifactsInBackpack = heroComp.artifactsInBackpack;
-  hero.exp = heroComp.exp;
-  hero.spells = heroComp.spells;
-  for (auto &p : heroComp.secSkills) {
-    p.second += 1;
-  }
-  hero.secSkills = heroComp.secSkills;
   object.printPriority = 0;
   object.id = (uint8_t)ObjectType::HERO;
   object.subId = heroComp.subId;
@@ -1233,8 +1223,11 @@ entt::entity Ent::loadHero(HeroComp &heroComp, uint8_t playerId, uint8_t x,
   object.data["moveType"] = (uint8_t)heroComp.moveType;
   object.usedTiles = {{0x01, 0x07}};
   World::needSort = true;
-
-  return loadObj(object, 0);
+  auto heroEnt = loadObj(object, 0);
+  auto hComp = World::registrys[level].get<HeroComp>(heroEnt);
+  heroComp.flagEnt = hComp.flagEnt;
+  World::registrys[level].replace<HeroComp>(heroEnt, heroComp);
+  return heroEnt;
 }
 
 entt::entity Ent::loadBoat(const std::string &path, uint8_t x, uint8_t y,
@@ -1255,9 +1248,9 @@ entt::entity Ent::loadBoat(const std::string &path, uint8_t x, uint8_t y,
 }
 
 void Ent::loadPath(std::vector<SDL_Point> &path, entt::entity heroEnt,
-                   uint16_t indexCost) {
+                   uint16_t indexCost, uint8_t level) {
 
-  auto &registry = World::registrys[World::level];
+  auto &registry = World::registrys[level];
   std::vector<entt::entity> pathEnts;
   SDL_FPoint lastPoint{static_cast<float>(path[0].x),
                        static_cast<float>(path[0].y)};

@@ -587,7 +587,7 @@ uint8_t CursorSys::astar(bool click) {
       World::needSort = true;
       heroComp->pathEnts.clear();
       // 加载新路径
-      Ent::loadPath(path, heroPair.second, indexCost);
+      Ent::loadPath(path, heroPair.second, indexCost, World::level);
       heroComp->goalEnt = goalEnt;
     }
   }

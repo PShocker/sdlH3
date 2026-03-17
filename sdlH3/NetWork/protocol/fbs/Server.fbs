@@ -19,6 +19,7 @@ table ServerOutScene {
 
 table ServerHeroMove {
     por:uint8;
+    level:uint8;
     x:uint8;
     y:uint8;
 }

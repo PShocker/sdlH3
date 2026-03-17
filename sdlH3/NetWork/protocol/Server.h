@@ -31,6 +31,12 @@ struct ServerHeroMoveBuilder;
 struct ServerHeroTeleport;
 struct ServerHeroTeleportBuilder;
 
+struct ServerHeroRecruit;
+struct ServerHeroRecruitBuilder;
+
+struct ServerHeroDismiss;
+struct ServerHeroDismissBuilder;
+
 struct ServerObjectFade;
 struct ServerObjectFadeBuilder;
 
@@ -226,11 +232,15 @@ struct ServerHeroMove FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ServerHeroMoveBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_POR = 4,
-    VT_X = 6,
-    VT_Y = 8
+    VT_LEVEL = 6,
+    VT_X = 8,
+    VT_Y = 10
   };
   uint8_t por() const {
     return GetField<uint8_t>(VT_POR, 0);
+  }
+  uint8_t level() const {
+    return GetField<uint8_t>(VT_LEVEL, 0);
   }
   uint8_t x() const {
     return GetField<uint8_t>(VT_X, 0);
@@ -242,6 +252,7 @@ struct ServerHeroMove FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyField<uint8_t>(verifier, VT_LEVEL, 1) &&
            VerifyField<uint8_t>(verifier, VT_X, 1) &&
            VerifyField<uint8_t>(verifier, VT_Y, 1) &&
            verifier.EndTable();
@@ -254,6 +265,9 @@ struct ServerHeroMoveBuilder {
   ::flatbuffers::uoffset_t start_;
   void add_por(uint8_t por) {
     fbb_.AddElement<uint8_t>(ServerHeroMove::VT_POR, por, 0);
+  }
+  void add_level(uint8_t level) {
+    fbb_.AddElement<uint8_t>(ServerHeroMove::VT_LEVEL, level, 0);
   }
   void add_x(uint8_t x) {
     fbb_.AddElement<uint8_t>(ServerHeroMove::VT_X, x, 0);
@@ -275,11 +289,13 @@ struct ServerHeroMoveBuilder {
 inline ::flatbuffers::Offset<ServerHeroMove> CreateServerHeroMove(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     uint8_t por = 0,
+    uint8_t level = 0,
     uint8_t x = 0,
     uint8_t y = 0) {
   ServerHeroMoveBuilder builder_(_fbb);
   builder_.add_y(y);
   builder_.add_x(x);
+  builder_.add_level(level);
   builder_.add_por(por);
   return builder_.Finish();
 }
@@ -349,6 +365,150 @@ inline ::flatbuffers::Offset<ServerHeroTeleport> CreateServerHeroTeleport(
     uint8_t x = 0,
     uint8_t y = 0) {
   ServerHeroTeleportBuilder builder_(_fbb);
+  builder_.add_y(y);
+  builder_.add_x(x);
+  builder_.add_level(level);
+  builder_.add_por(por);
+  return builder_.Finish();
+}
+
+struct ServerHeroRecruit FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ServerHeroRecruitBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_POR = 4,
+    VT_LEVEL = 6,
+    VT_X = 8,
+    VT_Y = 10
+  };
+  uint8_t por() const {
+    return GetField<uint8_t>(VT_POR, 0);
+  }
+  uint8_t level() const {
+    return GetField<uint8_t>(VT_LEVEL, 0);
+  }
+  uint8_t x() const {
+    return GetField<uint8_t>(VT_X, 0);
+  }
+  uint8_t y() const {
+    return GetField<uint8_t>(VT_Y, 0);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyField<uint8_t>(verifier, VT_LEVEL, 1) &&
+           VerifyField<uint8_t>(verifier, VT_X, 1) &&
+           VerifyField<uint8_t>(verifier, VT_Y, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ServerHeroRecruitBuilder {
+  typedef ServerHeroRecruit Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_por(uint8_t por) {
+    fbb_.AddElement<uint8_t>(ServerHeroRecruit::VT_POR, por, 0);
+  }
+  void add_level(uint8_t level) {
+    fbb_.AddElement<uint8_t>(ServerHeroRecruit::VT_LEVEL, level, 0);
+  }
+  void add_x(uint8_t x) {
+    fbb_.AddElement<uint8_t>(ServerHeroRecruit::VT_X, x, 0);
+  }
+  void add_y(uint8_t y) {
+    fbb_.AddElement<uint8_t>(ServerHeroRecruit::VT_Y, y, 0);
+  }
+  explicit ServerHeroRecruitBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ServerHeroRecruit> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ServerHeroRecruit>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ServerHeroRecruit> CreateServerHeroRecruit(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    uint8_t level = 0,
+    uint8_t x = 0,
+    uint8_t y = 0) {
+  ServerHeroRecruitBuilder builder_(_fbb);
+  builder_.add_y(y);
+  builder_.add_x(x);
+  builder_.add_level(level);
+  builder_.add_por(por);
+  return builder_.Finish();
+}
+
+struct ServerHeroDismiss FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ServerHeroDismissBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_POR = 4,
+    VT_LEVEL = 6,
+    VT_X = 8,
+    VT_Y = 10
+  };
+  uint8_t por() const {
+    return GetField<uint8_t>(VT_POR, 0);
+  }
+  uint8_t level() const {
+    return GetField<uint8_t>(VT_LEVEL, 0);
+  }
+  uint8_t x() const {
+    return GetField<uint8_t>(VT_X, 0);
+  }
+  uint8_t y() const {
+    return GetField<uint8_t>(VT_Y, 0);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyField<uint8_t>(verifier, VT_LEVEL, 1) &&
+           VerifyField<uint8_t>(verifier, VT_X, 1) &&
+           VerifyField<uint8_t>(verifier, VT_Y, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ServerHeroDismissBuilder {
+  typedef ServerHeroDismiss Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_por(uint8_t por) {
+    fbb_.AddElement<uint8_t>(ServerHeroDismiss::VT_POR, por, 0);
+  }
+  void add_level(uint8_t level) {
+    fbb_.AddElement<uint8_t>(ServerHeroDismiss::VT_LEVEL, level, 0);
+  }
+  void add_x(uint8_t x) {
+    fbb_.AddElement<uint8_t>(ServerHeroDismiss::VT_X, x, 0);
+  }
+  void add_y(uint8_t y) {
+    fbb_.AddElement<uint8_t>(ServerHeroDismiss::VT_Y, y, 0);
+  }
+  explicit ServerHeroDismissBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ServerHeroDismiss> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ServerHeroDismiss>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ServerHeroDismiss> CreateServerHeroDismiss(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    uint8_t level = 0,
+    uint8_t x = 0,
+    uint8_t y = 0) {
+  ServerHeroDismissBuilder builder_(_fbb);
   builder_.add_y(y);
   builder_.add_x(x);
   builder_.add_level(level);

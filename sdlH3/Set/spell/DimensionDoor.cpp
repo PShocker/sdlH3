@@ -7,6 +7,7 @@
 
 #include "H3mLoader/H3mObject.h"
 #include "Lang/Lang.h"
+#include "NetWork/NetClient.h"
 #include "Set/SpellSet.h"
 #include "Sys/FreeTypeSys.h"
 #include "Sys/HeroSys.h"
@@ -60,6 +61,7 @@ void SpellSet::DimensionDoor(std::any data) {
     auto heroEnt = heroPair.second;
 
     auto heroComp = &registry.get<HeroComp>(heroEnt);
+
     auto skillLevel = SpellSys::spellLevel(heroComp, 0);
     auto manaCost = SpellSet::spells[0].manaCost[skillLevel.second];
     heroComp->mana -= manaCost;
@@ -78,6 +80,11 @@ void SpellSet::DimensionDoor(std::any data) {
 
       HeroSys::heroTelePort(heroEnt, goalX, goalY);
       AdvMapSys::heroFocus();
+
+      // 网络事件
+      auto heroComp = &registry.get<HeroComp>(heroEnt);
+      NetClient::sendHeroTeleport(heroComp->portrait, World::level, goalX + 1,
+                                  goalY);
 
       Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
       CursorSys::clearHeroPath();

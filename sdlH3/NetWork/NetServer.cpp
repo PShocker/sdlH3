@@ -1,5 +1,6 @@
 #include "NetWork/NetServer.h"
 #include "Global/Global.h"
+#include "NetEvent.h"
 #include "NetWork.h"
 #include "NetWork/NetClient.h"
 #include "NetWork/NetWork.h"
@@ -11,9 +12,9 @@
 template <typename CreateFunc, typename... Args>
 static void sendServerPacket(uint64_t cId, NetPayload type, CreateFunc func,
                              Args &&...args) {
-  NetWork::builder.Clear();
   auto payload = func(NetWork::builder, std::forward<Args>(args)...);
   auto packet = CreateNetPacket(NetWork::builder, type, payload.Union());
+  NetWork::builder.Finish(packet);
   NetWork::sendUDP(NetWork::builder.GetBufferPointer(),
                    NetWork::builder.GetSize(), cId);
   NetWork::builder.Clear();
@@ -22,9 +23,9 @@ static void sendServerPacket(uint64_t cId, NetPayload type, CreateFunc func,
 template <typename CreateFunc, typename... Args>
 static void sendServerScenePacket(uint64_t cId, NetPayload type,
                                   CreateFunc func, Args &&...args) {
-  NetWork::builder.Clear();
   auto payload = func(NetWork::builder, std::forward<Args>(args)...);
   auto packet = CreateNetPacket(NetWork::builder, type, payload.Union());
+  NetWork::builder.Finish(packet);
   auto clients = NetWork::sceneClients[0];
   clients.erase(cId);
   for (auto otherId : clients) {
@@ -47,15 +48,16 @@ void NetServer::sendInScene(uint64_t cId, uint32_t scene_id,
   return;
 }
 
-void NetServer::sendHeroMove(uint64_t cId, uint8_t por, uint8_t x, uint8_t y) {
+void NetServer::sendHeroMove(uint64_t cId, uint8_t por, uint8_t level,
+                             uint8_t x, uint8_t y) {
   sendServerScenePacket(cId, NetPayload_ServerHeroMove, CreateServerHeroMove,
-                        por, x, y);
+                        por, level, x, y);
   return;
 }
 
 void NetServer::sendHeroTeleport(uint64_t cId, uint8_t por, uint8_t level,
                                  uint8_t x, uint8_t y) {
-  sendServerScenePacket(cId, NetPayload_ServerHeroMove,
+  sendServerScenePacket(cId, NetPayload_ServerHeroTeleport,
                         CreateServerHeroTeleport, por, level, x, y);
   return;
 }
@@ -130,10 +132,11 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
     // 从union中获取NetHeartbeat
     auto payload = packet->payload_as_ClientHeroMove();
     auto por = payload->por();
+    auto level = payload->level();
     auto x = payload->x();
     auto y = payload->y();
     //
-    NetServer::sendHeroMove(cId, por, x, y);
+    NetServer::sendHeroMove(cId, por, level, x, y);
     break;
   }
   case NetPayload_ClientHeroTeleport: {
@@ -152,16 +155,17 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
     auto payload = packet->payload_as_ServerInScene();
     //
     auto sId = payload->scene_id();
-    Global::EventInScene(sId);
+    NetEvent::InScene(sId);
     break;
   }
   case NetPayload_ServerHeroMove: {
     // 从union中获取NetHeartbeat
     auto payload = packet->payload_as_ServerHeroMove();
     auto por = payload->por();
+    auto level = payload->level();
     auto x = payload->x();
     auto y = payload->y();
-    Global::EventHeroMove(por, x, y);
+    NetEvent::HeroMove(por, level, x, y);
     break;
   }
   case NetPayload_ServerHeroTeleport: {
@@ -171,7 +175,7 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
     auto level = payload->level();
     auto x = payload->x();
     auto y = payload->y();
-    Global::EventHeroTeleport(por, level, x, y);
+    NetEvent::HeroTeleport(por, level, x, y);
     break;
   }
 

@@ -27,19 +27,23 @@ enum NetPayload : uint8_t {
   NetPayload_ClientOutScene = 4,
   NetPayload_ClientHeroMove = 5,
   NetPayload_ClientHeroTeleport = 6,
-  NetPayload_ClientObjectFade = 7,
-  NetPayload_ServerHeartbeat = 8,
-  NetPayload_ServerLogin = 9,
-  NetPayload_ServerInScene = 10,
-  NetPayload_ServerOutScene = 11,
-  NetPayload_ServerHeroMove = 12,
-  NetPayload_ServerHeroTeleport = 13,
-  NetPayload_ServerObjectFade = 14,
+  NetPayload_ClientHeroRecruit = 7,
+  NetPayload_ClientHeroDismiss = 8,
+  NetPayload_ClientObjectFade = 9,
+  NetPayload_ServerHeartbeat = 10,
+  NetPayload_ServerLogin = 11,
+  NetPayload_ServerInScene = 12,
+  NetPayload_ServerOutScene = 13,
+  NetPayload_ServerHeroMove = 14,
+  NetPayload_ServerHeroTeleport = 15,
+  NetPayload_ServerHeroRecruit = 16,
+  NetPayload_ServerHeroDismiss = 17,
+  NetPayload_ServerObjectFade = 18,
   NetPayload_MIN = NetPayload_NONE,
   NetPayload_MAX = NetPayload_ServerObjectFade
 };
 
-inline const NetPayload (&EnumValuesNetPayload())[15] {
+inline const NetPayload (&EnumValuesNetPayload())[19] {
   static const NetPayload values[] = {
     NetPayload_NONE,
     NetPayload_ClientHeartbeat,
@@ -48,6 +52,8 @@ inline const NetPayload (&EnumValuesNetPayload())[15] {
     NetPayload_ClientOutScene,
     NetPayload_ClientHeroMove,
     NetPayload_ClientHeroTeleport,
+    NetPayload_ClientHeroRecruit,
+    NetPayload_ClientHeroDismiss,
     NetPayload_ClientObjectFade,
     NetPayload_ServerHeartbeat,
     NetPayload_ServerLogin,
@@ -55,13 +61,15 @@ inline const NetPayload (&EnumValuesNetPayload())[15] {
     NetPayload_ServerOutScene,
     NetPayload_ServerHeroMove,
     NetPayload_ServerHeroTeleport,
+    NetPayload_ServerHeroRecruit,
+    NetPayload_ServerHeroDismiss,
     NetPayload_ServerObjectFade
   };
   return values;
 }
 
 inline const char * const *EnumNamesNetPayload() {
-  static const char * const names[16] = {
+  static const char * const names[20] = {
     "NONE",
     "ClientHeartbeat",
     "ClientLogin",
@@ -69,6 +77,8 @@ inline const char * const *EnumNamesNetPayload() {
     "ClientOutScene",
     "ClientHeroMove",
     "ClientHeroTeleport",
+    "ClientHeroRecruit",
+    "ClientHeroDismiss",
     "ClientObjectFade",
     "ServerHeartbeat",
     "ServerLogin",
@@ -76,6 +86,8 @@ inline const char * const *EnumNamesNetPayload() {
     "ServerOutScene",
     "ServerHeroMove",
     "ServerHeroTeleport",
+    "ServerHeroRecruit",
+    "ServerHeroDismiss",
     "ServerObjectFade",
     nullptr
   };
@@ -116,6 +128,14 @@ template<> struct NetPayloadTraits<ClientHeroTeleport> {
   static const NetPayload enum_value = NetPayload_ClientHeroTeleport;
 };
 
+template<> struct NetPayloadTraits<ClientHeroRecruit> {
+  static const NetPayload enum_value = NetPayload_ClientHeroRecruit;
+};
+
+template<> struct NetPayloadTraits<ClientHeroDismiss> {
+  static const NetPayload enum_value = NetPayload_ClientHeroDismiss;
+};
+
 template<> struct NetPayloadTraits<ClientObjectFade> {
   static const NetPayload enum_value = NetPayload_ClientObjectFade;
 };
@@ -142,6 +162,14 @@ template<> struct NetPayloadTraits<ServerHeroMove> {
 
 template<> struct NetPayloadTraits<ServerHeroTeleport> {
   static const NetPayload enum_value = NetPayload_ServerHeroTeleport;
+};
+
+template<> struct NetPayloadTraits<ServerHeroRecruit> {
+  static const NetPayload enum_value = NetPayload_ServerHeroRecruit;
+};
+
+template<> struct NetPayloadTraits<ServerHeroDismiss> {
+  static const NetPayload enum_value = NetPayload_ServerHeroDismiss;
 };
 
 template<> struct NetPayloadTraits<ServerObjectFade> {
@@ -184,6 +212,12 @@ struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const ClientHeroTeleport *payload_as_ClientHeroTeleport() const {
     return payload_type() == NetPayload_ClientHeroTeleport ? static_cast<const ClientHeroTeleport *>(payload()) : nullptr;
   }
+  const ClientHeroRecruit *payload_as_ClientHeroRecruit() const {
+    return payload_type() == NetPayload_ClientHeroRecruit ? static_cast<const ClientHeroRecruit *>(payload()) : nullptr;
+  }
+  const ClientHeroDismiss *payload_as_ClientHeroDismiss() const {
+    return payload_type() == NetPayload_ClientHeroDismiss ? static_cast<const ClientHeroDismiss *>(payload()) : nullptr;
+  }
   const ClientObjectFade *payload_as_ClientObjectFade() const {
     return payload_type() == NetPayload_ClientObjectFade ? static_cast<const ClientObjectFade *>(payload()) : nullptr;
   }
@@ -204,6 +238,12 @@ struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   const ServerHeroTeleport *payload_as_ServerHeroTeleport() const {
     return payload_type() == NetPayload_ServerHeroTeleport ? static_cast<const ServerHeroTeleport *>(payload()) : nullptr;
+  }
+  const ServerHeroRecruit *payload_as_ServerHeroRecruit() const {
+    return payload_type() == NetPayload_ServerHeroRecruit ? static_cast<const ServerHeroRecruit *>(payload()) : nullptr;
+  }
+  const ServerHeroDismiss *payload_as_ServerHeroDismiss() const {
+    return payload_type() == NetPayload_ServerHeroDismiss ? static_cast<const ServerHeroDismiss *>(payload()) : nullptr;
   }
   const ServerObjectFade *payload_as_ServerObjectFade() const {
     return payload_type() == NetPayload_ServerObjectFade ? static_cast<const ServerObjectFade *>(payload()) : nullptr;
@@ -242,6 +282,14 @@ template<> inline const ClientHeroTeleport *NetPacket::payload_as<ClientHeroTele
   return payload_as_ClientHeroTeleport();
 }
 
+template<> inline const ClientHeroRecruit *NetPacket::payload_as<ClientHeroRecruit>() const {
+  return payload_as_ClientHeroRecruit();
+}
+
+template<> inline const ClientHeroDismiss *NetPacket::payload_as<ClientHeroDismiss>() const {
+  return payload_as_ClientHeroDismiss();
+}
+
 template<> inline const ClientObjectFade *NetPacket::payload_as<ClientObjectFade>() const {
   return payload_as_ClientObjectFade();
 }
@@ -268,6 +316,14 @@ template<> inline const ServerHeroMove *NetPacket::payload_as<ServerHeroMove>() 
 
 template<> inline const ServerHeroTeleport *NetPacket::payload_as<ServerHeroTeleport>() const {
   return payload_as_ServerHeroTeleport();
+}
+
+template<> inline const ServerHeroRecruit *NetPacket::payload_as<ServerHeroRecruit>() const {
+  return payload_as_ServerHeroRecruit();
+}
+
+template<> inline const ServerHeroDismiss *NetPacket::payload_as<ServerHeroDismiss>() const {
+  return payload_as_ServerHeroDismiss();
 }
 
 template<> inline const ServerObjectFade *NetPacket::payload_as<ServerObjectFade>() const {
@@ -335,6 +391,14 @@ inline bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const
       auto ptr = reinterpret_cast<const ClientHeroTeleport *>(obj);
       return verifier.VerifyTable(ptr);
     }
+    case NetPayload_ClientHeroRecruit: {
+      auto ptr = reinterpret_cast<const ClientHeroRecruit *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ClientHeroDismiss: {
+      auto ptr = reinterpret_cast<const ClientHeroDismiss *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
     case NetPayload_ClientObjectFade: {
       auto ptr = reinterpret_cast<const ClientObjectFade *>(obj);
       return verifier.VerifyTable(ptr);
@@ -361,6 +425,14 @@ inline bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const
     }
     case NetPayload_ServerHeroTeleport: {
       auto ptr = reinterpret_cast<const ServerHeroTeleport *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ServerHeroRecruit: {
+      auto ptr = reinterpret_cast<const ServerHeroRecruit *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ServerHeroDismiss: {
+      auto ptr = reinterpret_cast<const ServerHeroDismiss *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case NetPayload_ServerObjectFade: {

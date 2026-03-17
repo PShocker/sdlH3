@@ -9,13 +9,13 @@
 
 struct Ent {
   static HeroComp loadDefaultHeroComp(uint8_t hId);
-  static entt::entity loadHero(HeroComp &heroComp, uint8_t playerId, uint8_t x,
+  static entt::entity loadHero(HeroComp heroComp, uint8_t playerId, uint8_t x,
                                uint8_t y, uint8_t level, uint8_t direct,
                                uint8_t flip);
   static entt::entity loadBoat(const std::string &path, uint8_t x, uint8_t y,
                                uint8_t level, uint8_t direct, uint8_t flip);
   static void loadPath(std::vector<SDL_Point> &path, entt::entity heroEnt,
-                       uint16_t indexCost);
+                       uint16_t indexCost, uint8_t level);
   static void load(H3mData &data);
   static entt::entity loadBuild(uint8_t level, entt::entity townEnt,
                                 uint8_t buildId);

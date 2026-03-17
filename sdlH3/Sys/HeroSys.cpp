@@ -227,9 +227,7 @@ static void handleGate(entt::entity heroEnt, entt::entity goalEnt) {
       registry->get<HeroComp>(newHeroEnt).curEnt = gateEnt;
 
       // 网络事件
-      if (NetWork::sceneHost[0] == NetWork::cId) {
-        NetClient::sendHeroTeleport(heroComp.portrait, gateLevel, gateX, gateY);
-      }
+      NetClient::sendHeroTeleport(heroComp.portrait, gateLevel, gateX, gateY);
       return true;
     });
     Global::fadeRect = {0, 0, Global::viewPort.w - 199,
@@ -1031,10 +1029,9 @@ static void heroMove(entt::entity heroEnt) {
     registry.destroy(pathEnt);
     World::needSort = true;
     // 网络事件
-    if (NetWork::sceneHost[0] == NetWork::cId) {
-      NetClient::sendHeroMove(heroComp->portrait, objectComp->x - 1,
-                              objectComp->y);
-    }
+    NetClient::sendHeroMove(heroComp->portrait, World::level, objectComp->x - 1,
+                            objectComp->y);
+
     heroComp->pathEnts.erase(heroComp->pathEnts.begin());
 
     auto terrainEnt =

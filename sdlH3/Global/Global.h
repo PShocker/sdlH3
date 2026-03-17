@@ -202,15 +202,4 @@ struct Global {
   static void init();
   static void startGame();
   static void endGame();
-
-  //   network
-  static void NetLogin();
-  static void NetInScene(uint32_t scene);
-  static void NetOutScene();
-
-  //   networkEvent
-  static void EventInScene(uint32_t scene);
-  static void EventHeroMove(uint8_t por, uint8_t x, uint8_t y);
-  static void EventHeroTeleport(uint8_t por, uint8_t level, uint8_t x,
-                                uint8_t y);
 };
