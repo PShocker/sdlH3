@@ -443,6 +443,8 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     texturePath = HeroClassSet::heroClasz[object.subId].animation[0] + "/" +
                   std::to_string(direct);
 
+    flip = std::any_cast<uint8_t>(object.data["flip"]);
+
     auto playerIdComp = &registry.emplace<PlayerIdComp>(ent);
     playerIdComp->id = hero.playerId;
 
@@ -453,7 +455,7 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     flagPositionComp->point =
         SDL_FPoint{static_cast<float>((object.position[0] - 2) * 32),
                    static_cast<float>((object.position[1] - 1) * 32)};
-    flagPositionComp->flip = std::any_cast<uint8_t>(object.data["flip"]);
+    flagPositionComp->flip = flip;
     flagPositionComp->z = Ent::loadZorder(i, object);
     flagTextureComp->path =
         std::format("AF0{}.def/{}", playerIdComp->id, direct);
