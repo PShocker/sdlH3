@@ -10,6 +10,7 @@
 #include "flatbuffers/flatbuffer_builder.h"
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
 #include <ranges>
 #include <string>
@@ -31,34 +32,6 @@ static uint64_t CombineIPAndPort(uint32_t ip, uint16_t port) {
 static void SplitIPAndPort(uint64_t combined, uint32_t &ip, uint16_t &port) {
   ip = (uint32_t)(combined >> 32);      // 取高32位
   port = (uint16_t)(combined & 0xFFFF); // 取低16位（注意是16位，不是32位）
-}
-
-static void freshHeartBeat(uv_timer_t *handle) {
-  uint64_t now = static_cast<uint64_t>(time(nullptr));
-  std::vector<uint64_t> to_remove;
-  for (const auto &[key, client] : NetWork::clients) {
-    auto duration = now - client.heartbeat;
-    if (duration >= NetWork::heartbeat_interval * 3) {
-      to_remove.push_back(key);
-    }
-  }
-  for (auto key : to_remove) {
-    auto &client = NetWork::clients[key];
-  }
-}
-
-static void sendHeartBeat(uv_timer_t *handle) {
-  if (NetWork::cId == 0) {
-    return;
-  }
-  // 2. 获取当前时间戳（毫秒）
-  uint64_t now = static_cast<uint64_t>(time(nullptr));
-  // 3. 创建Heartbeat表
-  auto payload = CreateClientHeartbeat(NetWork::builder, now);
-  // 4. 创建网络包（最外层包装）
-  NetWork::sendPacket(payload, NetPayload_ClientHeartbeat, NetWork::host_ip,
-                      NetWork::host_port);
-  return;
 }
 
 // 接收回调：当收到数据时被调用
@@ -110,13 +83,17 @@ bool NetWork::sendUDP(const uint8_t *data, size_t len, uint64_t cId) {
 
 bool NetWork::sendUDP(const uint8_t *data, size_t len, uint32_t ip,
                       uint16_t port) {
+  auto buffer = (uint8_t *)malloc(len);
+  memcpy(buffer, data, len);
   uv_udp_send_t *send_req = (uv_udp_send_t *)malloc(sizeof(uv_udp_send_t));
+  send_req->data = buffer;
+
   sockaddr_in send_addr;
   send_addr.sin_family = AF_INET;
   send_addr.sin_port = htons(port);
   send_addr.sin_addr.s_addr = ip;
 
-  uv_buf_t buf = uv_buf_init((char *)data, len);
+  uv_buf_t buf = uv_buf_init((char *)buffer, len);
 
   // 使用在 main 中初始化好的目标地址 send_addr
   auto r = uv_udp_send(
@@ -125,6 +102,7 @@ bool NetWork::sendUDP(const uint8_t *data, size_t len, uint32_t ip,
         if (status < 0) {
           fprintf(stderr, "Send error: %s\n", uv_strerror(status));
         }
+        free(req->data);
         free(req); // 释放发送请求
       });
   if (r < 0) {
@@ -177,11 +155,6 @@ void NetWork::init() {
   uint32_t heartbeat_interval = 5000;
 
   printf("Started receiving on port %d...\n", server_port);
-  uv_timer_init(loop, &send_heartbeat_timer);
-  uv_timer_start(&send_heartbeat_timer, sendHeartBeat, 0, heartbeat_interval);
-  // 创建定时器
-  uv_timer_init(loop, &fresh_heartbeat_timer);
-  uv_timer_start(&fresh_heartbeat_timer, freshHeartBeat, 0, heartbeat_interval);
 }
 
 void NetWork::init(std::string host_ip, uint32_t host_port) {
@@ -191,6 +164,8 @@ void NetWork::init(std::string host_ip, uint32_t host_port) {
 }
 
 void NetWork::run() {
+  NetClient::sendHeartBeat();
+  NetServer::checkHeartBeat();
   // 6. 运行事件循环
   uv_run(loop, UV_RUN_NOWAIT);
 }

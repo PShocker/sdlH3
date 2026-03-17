@@ -4,27 +4,54 @@
 #include "protocol/Client.h"
 #include "protocol/Protocol.h"
 
+template <typename CreateFunc, typename... Args>
+static void sendClientPacket(NetPayload type, CreateFunc func, Args &&...args) {
+  NetWork::builder.Clear();
+  auto payload = func(NetWork::builder, std::forward<Args>(args)...);
+  auto packet = CreateNetPacket(NetWork::builder, type, payload.Union());
+  NetWork::sendUDP(NetWork::builder.GetBufferPointer(),
+                   NetWork::builder.GetSize(), NetWork::host_ip,
+                   NetWork::host_port);
+  NetWork::builder.Clear();
+}
+
+void NetClient::sendHeartBeat() {
+  static uint64_t last = 0;
+  uint64_t now = static_cast<uint64_t>(time(nullptr));
+  if (now - last < NetWork::heartbeat_interval) {
+    return;
+  }
+  last = now;
+  sendClientPacket(NetPayload_ClientHeartbeat, CreateClientHeartbeat, now);
+  return;
+}
+
 void NetClient::sendLogin() {
   uint64_t now = static_cast<uint64_t>(time(nullptr));
-  // 3. 创建Heartbeat表
-  auto payload = CreateClientLogin(NetWork::builder, now);
-  NetWork::sendPacket(payload, NetPayload_ClientLogin, NetWork::host_ip,
-                      NetWork::host_port);
+  sendClientPacket(NetPayload_ClientLogin, CreateClientLogin, now);
   return;
 }
 
 void NetClient::sendInScene(uint32_t scene) {
-  // 3. 创建Heartbeat表
-  auto payload = CreateClientInScene(NetWork::builder, scene);
-  NetWork::sendPacket(payload, NetPayload_ClientInScene, NetWork::host_ip,
-                      NetWork::host_port);
+  sendClientPacket(NetPayload_ClientInScene, CreateClientInScene, scene);
   return;
 }
 
 void NetClient::sendHeroMove(uint8_t por, uint8_t x, uint8_t y) {
-  // 3. 创建Heartbeat表
-  auto payload = CreateClientHeroMove(NetWork::builder, por, x, y);
-  NetWork::sendPacket(payload, NetPayload_ClientHeroMove, NetWork::host_ip,
-                      NetWork::host_port);
+  sendClientPacket(NetPayload_ClientHeroMove, CreateClientHeroMove, por, x, y);
+  return;
+}
+
+void NetClient::sendHeroTeleport(uint8_t por, uint8_t level, uint8_t x,
+                                 uint8_t y) {
+  sendClientPacket(NetPayload_ClientHeroTeleport, CreateClientHeroTeleport, por,
+                   level, x, y);
+  return;
+}
+
+void NetClient::sendObjectFade(uint8_t type, uint8_t level, uint8_t x,
+                               uint8_t y) {
+  sendClientPacket(NetPayload_ClientObjectFade, CreateClientObjectFade, type,
+                   level, x, y);
   return;
 }

@@ -41,14 +41,4 @@ struct NetWork {
                       uint16_t port);
   static bool sendUDP(const uint8_t *data, size_t len, std::string ip,
                       uint16_t port);
-
-  template <typename Payload, typename... Args>
-  static void sendPacket(Payload payload, NetPayload payload_type,
-                         Args &&...args) {
-    auto packet = CreateNetPacket(builder, payload_type, payload.Union());
-    builder.Finish(packet);
-    NetWork::sendUDP(builder.GetBufferPointer(), builder.GetSize(),
-                     std::forward<Args>(args)...);
-    builder.Clear();
-  }
 };

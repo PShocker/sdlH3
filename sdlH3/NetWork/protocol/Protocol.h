@@ -27,17 +27,19 @@ enum NetPayload : uint8_t {
   NetPayload_ClientOutScene = 4,
   NetPayload_ClientHeroMove = 5,
   NetPayload_ClientHeroTeleport = 6,
-  NetPayload_ServerHeartbeat = 7,
-  NetPayload_ServerLogin = 8,
-  NetPayload_ServerInScene = 9,
-  NetPayload_ServerOutScene = 10,
-  NetPayload_ServerHeroMove = 11,
-  NetPayload_ServerHeroTeleport = 12,
+  NetPayload_ClientObjectFade = 7,
+  NetPayload_ServerHeartbeat = 8,
+  NetPayload_ServerLogin = 9,
+  NetPayload_ServerInScene = 10,
+  NetPayload_ServerOutScene = 11,
+  NetPayload_ServerHeroMove = 12,
+  NetPayload_ServerHeroTeleport = 13,
+  NetPayload_ServerObjectFade = 14,
   NetPayload_MIN = NetPayload_NONE,
-  NetPayload_MAX = NetPayload_ServerHeroTeleport
+  NetPayload_MAX = NetPayload_ServerObjectFade
 };
 
-inline const NetPayload (&EnumValuesNetPayload())[13] {
+inline const NetPayload (&EnumValuesNetPayload())[15] {
   static const NetPayload values[] = {
     NetPayload_NONE,
     NetPayload_ClientHeartbeat,
@@ -46,18 +48,20 @@ inline const NetPayload (&EnumValuesNetPayload())[13] {
     NetPayload_ClientOutScene,
     NetPayload_ClientHeroMove,
     NetPayload_ClientHeroTeleport,
+    NetPayload_ClientObjectFade,
     NetPayload_ServerHeartbeat,
     NetPayload_ServerLogin,
     NetPayload_ServerInScene,
     NetPayload_ServerOutScene,
     NetPayload_ServerHeroMove,
-    NetPayload_ServerHeroTeleport
+    NetPayload_ServerHeroTeleport,
+    NetPayload_ServerObjectFade
   };
   return values;
 }
 
 inline const char * const *EnumNamesNetPayload() {
-  static const char * const names[14] = {
+  static const char * const names[16] = {
     "NONE",
     "ClientHeartbeat",
     "ClientLogin",
@@ -65,19 +69,21 @@ inline const char * const *EnumNamesNetPayload() {
     "ClientOutScene",
     "ClientHeroMove",
     "ClientHeroTeleport",
+    "ClientObjectFade",
     "ServerHeartbeat",
     "ServerLogin",
     "ServerInScene",
     "ServerOutScene",
     "ServerHeroMove",
     "ServerHeroTeleport",
+    "ServerObjectFade",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameNetPayload(NetPayload e) {
-  if (::flatbuffers::IsOutRange(e, NetPayload_NONE, NetPayload_ServerHeroTeleport)) return "";
+  if (::flatbuffers::IsOutRange(e, NetPayload_NONE, NetPayload_ServerObjectFade)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesNetPayload()[index];
 }
@@ -110,6 +116,10 @@ template<> struct NetPayloadTraits<ClientHeroTeleport> {
   static const NetPayload enum_value = NetPayload_ClientHeroTeleport;
 };
 
+template<> struct NetPayloadTraits<ClientObjectFade> {
+  static const NetPayload enum_value = NetPayload_ClientObjectFade;
+};
+
 template<> struct NetPayloadTraits<ServerHeartbeat> {
   static const NetPayload enum_value = NetPayload_ServerHeartbeat;
 };
@@ -132,6 +142,10 @@ template<> struct NetPayloadTraits<ServerHeroMove> {
 
 template<> struct NetPayloadTraits<ServerHeroTeleport> {
   static const NetPayload enum_value = NetPayload_ServerHeroTeleport;
+};
+
+template<> struct NetPayloadTraits<ServerObjectFade> {
+  static const NetPayload enum_value = NetPayload_ServerObjectFade;
 };
 
 template <bool B = false>
@@ -170,6 +184,9 @@ struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const ClientHeroTeleport *payload_as_ClientHeroTeleport() const {
     return payload_type() == NetPayload_ClientHeroTeleport ? static_cast<const ClientHeroTeleport *>(payload()) : nullptr;
   }
+  const ClientObjectFade *payload_as_ClientObjectFade() const {
+    return payload_type() == NetPayload_ClientObjectFade ? static_cast<const ClientObjectFade *>(payload()) : nullptr;
+  }
   const ServerHeartbeat *payload_as_ServerHeartbeat() const {
     return payload_type() == NetPayload_ServerHeartbeat ? static_cast<const ServerHeartbeat *>(payload()) : nullptr;
   }
@@ -187,6 +204,9 @@ struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   const ServerHeroTeleport *payload_as_ServerHeroTeleport() const {
     return payload_type() == NetPayload_ServerHeroTeleport ? static_cast<const ServerHeroTeleport *>(payload()) : nullptr;
+  }
+  const ServerObjectFade *payload_as_ServerObjectFade() const {
+    return payload_type() == NetPayload_ServerObjectFade ? static_cast<const ServerObjectFade *>(payload()) : nullptr;
   }
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
@@ -222,6 +242,10 @@ template<> inline const ClientHeroTeleport *NetPacket::payload_as<ClientHeroTele
   return payload_as_ClientHeroTeleport();
 }
 
+template<> inline const ClientObjectFade *NetPacket::payload_as<ClientObjectFade>() const {
+  return payload_as_ClientObjectFade();
+}
+
 template<> inline const ServerHeartbeat *NetPacket::payload_as<ServerHeartbeat>() const {
   return payload_as_ServerHeartbeat();
 }
@@ -244,6 +268,10 @@ template<> inline const ServerHeroMove *NetPacket::payload_as<ServerHeroMove>() 
 
 template<> inline const ServerHeroTeleport *NetPacket::payload_as<ServerHeroTeleport>() const {
   return payload_as_ServerHeroTeleport();
+}
+
+template<> inline const ServerObjectFade *NetPacket::payload_as<ServerObjectFade>() const {
+  return payload_as_ServerObjectFade();
 }
 
 struct NetPacketBuilder {
@@ -307,6 +335,10 @@ inline bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const
       auto ptr = reinterpret_cast<const ClientHeroTeleport *>(obj);
       return verifier.VerifyTable(ptr);
     }
+    case NetPayload_ClientObjectFade: {
+      auto ptr = reinterpret_cast<const ClientObjectFade *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
     case NetPayload_ServerHeartbeat: {
       auto ptr = reinterpret_cast<const ServerHeartbeat *>(obj);
       return verifier.VerifyTable(ptr);
@@ -329,6 +361,10 @@ inline bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const
     }
     case NetPayload_ServerHeroTeleport: {
       auto ptr = reinterpret_cast<const ServerHeroTeleport *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ServerObjectFade: {
+      auto ptr = reinterpret_cast<const ServerObjectFade *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;

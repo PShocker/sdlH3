@@ -31,6 +31,9 @@ struct ServerHeroMoveBuilder;
 struct ServerHeroTeleport;
 struct ServerHeroTeleportBuilder;
 
+struct ServerObjectFade;
+struct ServerObjectFadeBuilder;
+
 struct ServerHeartbeat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ServerHeartbeatBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -179,9 +182,16 @@ inline ::flatbuffers::Offset<ServerInScene> CreateServerInScene(
 
 struct ServerOutScene FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ServerOutSceneBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_CLIENT_ID = 4
+  };
+  uint64_t client_id() const {
+    return GetField<uint64_t>(VT_CLIENT_ID, 0);
+  }
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<uint64_t>(verifier, VT_CLIENT_ID, 8) &&
            verifier.EndTable();
   }
 };
@@ -190,6 +200,9 @@ struct ServerOutSceneBuilder {
   typedef ServerOutScene Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_client_id(uint64_t client_id) {
+    fbb_.AddElement<uint64_t>(ServerOutScene::VT_CLIENT_ID, client_id, 0);
+  }
   explicit ServerOutSceneBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -202,8 +215,10 @@ struct ServerOutSceneBuilder {
 };
 
 inline ::flatbuffers::Offset<ServerOutScene> CreateServerOutScene(
-    ::flatbuffers::FlatBufferBuilder &_fbb) {
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint64_t client_id = 0) {
   ServerOutSceneBuilder builder_(_fbb);
+  builder_.add_client_id(client_id);
   return builder_.Finish();
 }
 
@@ -338,6 +353,78 @@ inline ::flatbuffers::Offset<ServerHeroTeleport> CreateServerHeroTeleport(
   builder_.add_x(x);
   builder_.add_level(level);
   builder_.add_por(por);
+  return builder_.Finish();
+}
+
+struct ServerObjectFade FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ServerObjectFadeBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_TYPE = 4,
+    VT_LEVEL = 6,
+    VT_X = 8,
+    VT_Y = 10
+  };
+  uint8_t type() const {
+    return GetField<uint8_t>(VT_TYPE, 0);
+  }
+  uint8_t level() const {
+    return GetField<uint8_t>(VT_LEVEL, 0);
+  }
+  uint8_t x() const {
+    return GetField<uint8_t>(VT_X, 0);
+  }
+  uint8_t y() const {
+    return GetField<uint8_t>(VT_Y, 0);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_TYPE, 1) &&
+           VerifyField<uint8_t>(verifier, VT_LEVEL, 1) &&
+           VerifyField<uint8_t>(verifier, VT_X, 1) &&
+           VerifyField<uint8_t>(verifier, VT_Y, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ServerObjectFadeBuilder {
+  typedef ServerObjectFade Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_type(uint8_t type) {
+    fbb_.AddElement<uint8_t>(ServerObjectFade::VT_TYPE, type, 0);
+  }
+  void add_level(uint8_t level) {
+    fbb_.AddElement<uint8_t>(ServerObjectFade::VT_LEVEL, level, 0);
+  }
+  void add_x(uint8_t x) {
+    fbb_.AddElement<uint8_t>(ServerObjectFade::VT_X, x, 0);
+  }
+  void add_y(uint8_t y) {
+    fbb_.AddElement<uint8_t>(ServerObjectFade::VT_Y, y, 0);
+  }
+  explicit ServerObjectFadeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ServerObjectFade> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ServerObjectFade>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ServerObjectFade> CreateServerObjectFade(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t type = 0,
+    uint8_t level = 0,
+    uint8_t x = 0,
+    uint8_t y = 0) {
+  ServerObjectFadeBuilder builder_(_fbb);
+  builder_.add_y(y);
+  builder_.add_x(x);
+  builder_.add_level(level);
+  builder_.add_type(type);
   return builder_.Finish();
 }
 

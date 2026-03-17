@@ -226,6 +226,10 @@ static void handleGate(entt::entity heroEnt, entt::entity goalEnt) {
       registry = &World::registrys[World::level];
       registry->get<HeroComp>(newHeroEnt).curEnt = gateEnt;
 
+      // 网络事件
+      if (NetWork::sceneHost[0] == NetWork::cId) {
+        NetClient::sendHeroTeleport(heroComp.portrait, gateLevel, gateX, gateY);
+      }
       return true;
     });
     Global::fadeRect = {0, 0, Global::viewPort.w - 199,

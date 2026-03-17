@@ -8,5 +8,8 @@ struct NetServer {
   static void sendHeroMove(uint64_t cId, uint8_t por, uint8_t x, uint8_t y);
   static void sendHeroTeleport(uint64_t cId, uint8_t por, uint8_t level,
                                uint8_t x, uint8_t y);
+  static void sendOutScene(uint64_t cId);
+
   static void handlePacket(uint64_t cId, void *buf);
+  static void checkHeartBeat();
 };

@@ -34,6 +34,9 @@ struct ClientHeroMoveBuilder;
 struct ClientHeroTeleport;
 struct ClientHeroTeleportBuilder;
 
+struct ClientObjectFade;
+struct ClientObjectFadeBuilder;
+
 struct ClientHeartbeat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ClientHeartbeatBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -363,6 +366,78 @@ inline ::flatbuffers::Offset<ClientHeroTeleport> CreateClientHeroTeleport(
   builder_.add_x(x);
   builder_.add_level(level);
   builder_.add_por(por);
+  return builder_.Finish();
+}
+
+struct ClientObjectFade FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ClientObjectFadeBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_TYPE = 4,
+    VT_LEVEL = 6,
+    VT_X = 8,
+    VT_Y = 10
+  };
+  uint8_t type() const {
+    return GetField<uint8_t>(VT_TYPE, 0);
+  }
+  uint8_t level() const {
+    return GetField<uint8_t>(VT_LEVEL, 0);
+  }
+  uint8_t x() const {
+    return GetField<uint8_t>(VT_X, 0);
+  }
+  uint8_t y() const {
+    return GetField<uint8_t>(VT_Y, 0);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_TYPE, 1) &&
+           VerifyField<uint8_t>(verifier, VT_LEVEL, 1) &&
+           VerifyField<uint8_t>(verifier, VT_X, 1) &&
+           VerifyField<uint8_t>(verifier, VT_Y, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ClientObjectFadeBuilder {
+  typedef ClientObjectFade Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_type(uint8_t type) {
+    fbb_.AddElement<uint8_t>(ClientObjectFade::VT_TYPE, type, 0);
+  }
+  void add_level(uint8_t level) {
+    fbb_.AddElement<uint8_t>(ClientObjectFade::VT_LEVEL, level, 0);
+  }
+  void add_x(uint8_t x) {
+    fbb_.AddElement<uint8_t>(ClientObjectFade::VT_X, x, 0);
+  }
+  void add_y(uint8_t y) {
+    fbb_.AddElement<uint8_t>(ClientObjectFade::VT_Y, y, 0);
+  }
+  explicit ClientObjectFadeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ClientObjectFade> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ClientObjectFade>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ClientObjectFade> CreateClientObjectFade(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t type = 0,
+    uint8_t level = 0,
+    uint8_t x = 0,
+    uint8_t y = 0) {
+  ClientObjectFadeBuilder builder_(_fbb);
+  builder_.add_y(y);
+  builder_.add_x(x);
+  builder_.add_level(level);
+  builder_.add_type(type);
   return builder_.Finish();
 }
 
