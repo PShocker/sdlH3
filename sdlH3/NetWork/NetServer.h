@@ -9,6 +9,9 @@ struct NetServer {
                            uint8_t y);
   static void sendHeroGoal(uint64_t cId, uint8_t por, uint8_t type,
                            uint8_t level, uint8_t x, uint8_t y);
+  static void sendHeroRecruit(uint64_t cId, uint8_t por, uint8_t level,
+                              uint8_t x, uint8_t y);
+  static void sendHeroDismiss(uint64_t cId, uint8_t por);
   static void sendHeroTeleport(uint64_t cId, uint8_t por, uint8_t level,
                                uint8_t x, uint8_t y);
   static void sendOutScene(uint64_t cId);

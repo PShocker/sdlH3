@@ -43,8 +43,14 @@ struct ClientHeroRecruitBuilder;
 struct ClientHeroDismiss;
 struct ClientHeroDismissBuilder;
 
-struct ClientObjectFade;
-struct ClientObjectFadeBuilder;
+struct ClientHeroEquip;
+struct ClientHeroEquipBuilder;
+
+struct ClientHeroAdvBonuse;
+struct ClientHeroAdvBonuseBuilder;
+
+struct ClientBattleResult;
+struct ClientBattleResultBuilder;
 
 struct ClientHeartbeat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ClientHeartbeatBuilder Builder;
@@ -545,30 +551,15 @@ inline ::flatbuffers::Offset<ClientHeroRecruit> CreateClientHeroRecruit(
 struct ClientHeroDismiss FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ClientHeroDismissBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_POR = 4,
-    VT_LEVEL = 6,
-    VT_X = 8,
-    VT_Y = 10
+    VT_POR = 4
   };
   uint8_t por() const {
     return GetField<uint8_t>(VT_POR, 0);
-  }
-  uint8_t level() const {
-    return GetField<uint8_t>(VT_LEVEL, 0);
-  }
-  uint8_t x() const {
-    return GetField<uint8_t>(VT_X, 0);
-  }
-  uint8_t y() const {
-    return GetField<uint8_t>(VT_Y, 0);
   }
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_POR, 1) &&
-           VerifyField<uint8_t>(verifier, VT_LEVEL, 1) &&
-           VerifyField<uint8_t>(verifier, VT_X, 1) &&
-           VerifyField<uint8_t>(verifier, VT_Y, 1) &&
            verifier.EndTable();
   }
 };
@@ -579,15 +570,6 @@ struct ClientHeroDismissBuilder {
   ::flatbuffers::uoffset_t start_;
   void add_por(uint8_t por) {
     fbb_.AddElement<uint8_t>(ClientHeroDismiss::VT_POR, por, 0);
-  }
-  void add_level(uint8_t level) {
-    fbb_.AddElement<uint8_t>(ClientHeroDismiss::VT_LEVEL, level, 0);
-  }
-  void add_x(uint8_t x) {
-    fbb_.AddElement<uint8_t>(ClientHeroDismiss::VT_X, x, 0);
-  }
-  void add_y(uint8_t y) {
-    fbb_.AddElement<uint8_t>(ClientHeroDismiss::VT_Y, y, 0);
   }
   explicit ClientHeroDismissBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -602,31 +584,99 @@ struct ClientHeroDismissBuilder {
 
 inline ::flatbuffers::Offset<ClientHeroDismiss> CreateClientHeroDismiss(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint8_t por = 0,
-    uint8_t level = 0,
-    uint8_t x = 0,
-    uint8_t y = 0) {
+    uint8_t por = 0) {
   ClientHeroDismissBuilder builder_(_fbb);
-  builder_.add_y(y);
-  builder_.add_x(x);
-  builder_.add_level(level);
   builder_.add_por(por);
   return builder_.Finish();
 }
 
-struct ClientObjectFade FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef ClientObjectFadeBuilder Builder;
+struct ClientHeroEquip FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ClientHeroEquipBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_TYPE = 4,
-    VT_LEVEL = 6,
-    VT_X = 8,
-    VT_Y = 10
+    VT_POR = 4,
+    VT_EQUIP_SLOT = 6,
+    VT_BACK_INDEX = 8
   };
+  uint8_t por() const {
+    return GetField<uint8_t>(VT_POR, 0);
+  }
+  uint8_t equip_slot() const {
+    return GetField<uint8_t>(VT_EQUIP_SLOT, 0);
+  }
+  uint8_t back_index() const {
+    return GetField<uint8_t>(VT_BACK_INDEX, 0);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyField<uint8_t>(verifier, VT_EQUIP_SLOT, 1) &&
+           VerifyField<uint8_t>(verifier, VT_BACK_INDEX, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ClientHeroEquipBuilder {
+  typedef ClientHeroEquip Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_por(uint8_t por) {
+    fbb_.AddElement<uint8_t>(ClientHeroEquip::VT_POR, por, 0);
+  }
+  void add_equip_slot(uint8_t equip_slot) {
+    fbb_.AddElement<uint8_t>(ClientHeroEquip::VT_EQUIP_SLOT, equip_slot, 0);
+  }
+  void add_back_index(uint8_t back_index) {
+    fbb_.AddElement<uint8_t>(ClientHeroEquip::VT_BACK_INDEX, back_index, 0);
+  }
+  explicit ClientHeroEquipBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ClientHeroEquip> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ClientHeroEquip>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ClientHeroEquip> CreateClientHeroEquip(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    uint8_t equip_slot = 0,
+    uint8_t back_index = 0) {
+  ClientHeroEquipBuilder builder_(_fbb);
+  builder_.add_back_index(back_index);
+  builder_.add_equip_slot(equip_slot);
+  builder_.add_por(por);
+  return builder_.Finish();
+}
+
+struct ClientHeroAdvBonuse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ClientHeroAdvBonuseBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_POR = 4,
+    VT_SRC = 6,
+    VT_TYPE = 8,
+    VT_SUB_TYPE = 10,
+    VT_VAL = 12,
+    VT_X = 14,
+    VT_Y = 16
+  };
+  uint8_t por() const {
+    return GetField<uint8_t>(VT_POR, 0);
+  }
+  uint8_t src() const {
+    return GetField<uint8_t>(VT_SRC, 0);
+  }
   uint8_t type() const {
     return GetField<uint8_t>(VT_TYPE, 0);
   }
-  uint8_t level() const {
-    return GetField<uint8_t>(VT_LEVEL, 0);
+  uint8_t sub_type() const {
+    return GetField<uint8_t>(VT_SUB_TYPE, 0);
+  }
+  uint8_t val() const {
+    return GetField<uint8_t>(VT_VAL, 0);
   }
   uint8_t x() const {
     return GetField<uint8_t>(VT_X, 0);
@@ -637,52 +687,152 @@ struct ClientObjectFade FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyField<uint8_t>(verifier, VT_SRC, 1) &&
            VerifyField<uint8_t>(verifier, VT_TYPE, 1) &&
-           VerifyField<uint8_t>(verifier, VT_LEVEL, 1) &&
+           VerifyField<uint8_t>(verifier, VT_SUB_TYPE, 1) &&
+           VerifyField<uint8_t>(verifier, VT_VAL, 1) &&
            VerifyField<uint8_t>(verifier, VT_X, 1) &&
            VerifyField<uint8_t>(verifier, VT_Y, 1) &&
            verifier.EndTable();
   }
 };
 
-struct ClientObjectFadeBuilder {
-  typedef ClientObjectFade Table;
+struct ClientHeroAdvBonuseBuilder {
+  typedef ClientHeroAdvBonuse Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_type(uint8_t type) {
-    fbb_.AddElement<uint8_t>(ClientObjectFade::VT_TYPE, type, 0);
+  void add_por(uint8_t por) {
+    fbb_.AddElement<uint8_t>(ClientHeroAdvBonuse::VT_POR, por, 0);
   }
-  void add_level(uint8_t level) {
-    fbb_.AddElement<uint8_t>(ClientObjectFade::VT_LEVEL, level, 0);
+  void add_src(uint8_t src) {
+    fbb_.AddElement<uint8_t>(ClientHeroAdvBonuse::VT_SRC, src, 0);
+  }
+  void add_type(uint8_t type) {
+    fbb_.AddElement<uint8_t>(ClientHeroAdvBonuse::VT_TYPE, type, 0);
+  }
+  void add_sub_type(uint8_t sub_type) {
+    fbb_.AddElement<uint8_t>(ClientHeroAdvBonuse::VT_SUB_TYPE, sub_type, 0);
+  }
+  void add_val(uint8_t val) {
+    fbb_.AddElement<uint8_t>(ClientHeroAdvBonuse::VT_VAL, val, 0);
   }
   void add_x(uint8_t x) {
-    fbb_.AddElement<uint8_t>(ClientObjectFade::VT_X, x, 0);
+    fbb_.AddElement<uint8_t>(ClientHeroAdvBonuse::VT_X, x, 0);
   }
   void add_y(uint8_t y) {
-    fbb_.AddElement<uint8_t>(ClientObjectFade::VT_Y, y, 0);
+    fbb_.AddElement<uint8_t>(ClientHeroAdvBonuse::VT_Y, y, 0);
   }
-  explicit ClientObjectFadeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ClientHeroAdvBonuseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ClientObjectFade> Finish() {
+  ::flatbuffers::Offset<ClientHeroAdvBonuse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ClientObjectFade>(end);
+    auto o = ::flatbuffers::Offset<ClientHeroAdvBonuse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ClientObjectFade> CreateClientObjectFade(
+inline ::flatbuffers::Offset<ClientHeroAdvBonuse> CreateClientHeroAdvBonuse(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    uint8_t src = 0,
     uint8_t type = 0,
-    uint8_t level = 0,
+    uint8_t sub_type = 0,
+    uint8_t val = 0,
     uint8_t x = 0,
     uint8_t y = 0) {
-  ClientObjectFadeBuilder builder_(_fbb);
+  ClientHeroAdvBonuseBuilder builder_(_fbb);
+  builder_.add_y(y);
+  builder_.add_x(x);
+  builder_.add_val(val);
+  builder_.add_sub_type(sub_type);
+  builder_.add_type(type);
+  builder_.add_src(src);
+  builder_.add_por(por);
+  return builder_.Finish();
+}
+
+struct ClientBattleResult FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ClientBattleResultBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_POR = 4,
+    VT_LEVEL = 6,
+    VT_X = 8,
+    VT_Y = 10,
+    VT_WIN = 12
+  };
+  uint8_t por() const {
+    return GetField<uint8_t>(VT_POR, 0);
+  }
+  uint8_t level() const {
+    return GetField<uint8_t>(VT_LEVEL, 0);
+  }
+  uint8_t x() const {
+    return GetField<uint8_t>(VT_X, 0);
+  }
+  uint8_t y() const {
+    return GetField<uint8_t>(VT_Y, 0);
+  }
+  bool win() const {
+    return GetField<uint8_t>(VT_WIN, 0) != 0;
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyField<uint8_t>(verifier, VT_LEVEL, 1) &&
+           VerifyField<uint8_t>(verifier, VT_X, 1) &&
+           VerifyField<uint8_t>(verifier, VT_Y, 1) &&
+           VerifyField<uint8_t>(verifier, VT_WIN, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ClientBattleResultBuilder {
+  typedef ClientBattleResult Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_por(uint8_t por) {
+    fbb_.AddElement<uint8_t>(ClientBattleResult::VT_POR, por, 0);
+  }
+  void add_level(uint8_t level) {
+    fbb_.AddElement<uint8_t>(ClientBattleResult::VT_LEVEL, level, 0);
+  }
+  void add_x(uint8_t x) {
+    fbb_.AddElement<uint8_t>(ClientBattleResult::VT_X, x, 0);
+  }
+  void add_y(uint8_t y) {
+    fbb_.AddElement<uint8_t>(ClientBattleResult::VT_Y, y, 0);
+  }
+  void add_win(bool win) {
+    fbb_.AddElement<uint8_t>(ClientBattleResult::VT_WIN, static_cast<uint8_t>(win), 0);
+  }
+  explicit ClientBattleResultBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ClientBattleResult> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ClientBattleResult>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ClientBattleResult> CreateClientBattleResult(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    uint8_t level = 0,
+    uint8_t x = 0,
+    uint8_t y = 0,
+    bool win = false) {
+  ClientBattleResultBuilder builder_(_fbb);
+  builder_.add_win(win);
   builder_.add_y(y);
   builder_.add_x(x);
   builder_.add_level(level);
-  builder_.add_type(type);
+  builder_.add_por(por);
   return builder_.Finish();
 }
 

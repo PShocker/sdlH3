@@ -68,6 +68,17 @@ void NetEvent::HeroGoal(uint8_t por, uint8_t type, uint8_t level, uint8_t x,
   return;
 }
 
+void NetEvent::HeroRecruit(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
+  auto [i, heroEnt] = FindHeroEnt(por);
+  auto &registry = World::registrys[i];
+}
+
+void NetEvent::HeroDismiss(uint8_t por) {
+  auto [i, heroEnt] = FindHeroEnt(por);
+  auto &registry = World::registrys[i];
+}
+
+
 void NetEvent::HeroTeleport(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
   auto [i, heroEnt] = FindHeroEnt(por);
   auto registry = &World::registrys[i];

@@ -67,6 +67,14 @@ void NetClient::sendHeroRecruit(uint8_t por, uint8_t level, uint8_t x,
   return;
 }
 
+void NetClient::sendHeroDismiss(uint8_t por) {
+  if (NetWork::sceneHost[0] != NetWork::cId) {
+    return;
+  }
+  sendClientPacket(NetPayload_ClientHeroDismiss, CreateClientHeroDismiss, por);
+  return;
+}
+
 void NetClient::sendHeroTeleport(uint8_t por, uint8_t level, uint8_t x,
                                  uint8_t y) {
   if (NetWork::sceneHost[0] != NetWork::cId) {

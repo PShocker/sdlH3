@@ -48,9 +48,6 @@ table ServerHeroRecruit {
 
 table ServerHeroDismiss {
     por:uint8;
-    level:uint8;
-    x:uint8;
-    y:uint8;
 }
 
 table ServerObjectFade {

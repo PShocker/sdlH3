@@ -6,6 +6,7 @@
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "Lang/Lang.h"
+#include "NetWork/NetClient.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "Set/ArtifactSet.h"
@@ -22,7 +23,7 @@
 #include <utility>
 #include <vector>
 
-static void close() {
+static void closeScrn() {
   auto [index, artId] = Global::artPair;
   if (artId != 0xffff) {
     auto [level, ent] = Global::heroScnPair;
@@ -59,6 +60,8 @@ static void dismiss() {
         }
       }
       auto heroComp = &World::registrys[level].get<HeroComp>(heroEnt);
+      // 网络事件
+      NetClient::sendHeroDismiss(heroComp->portrait);
       if (heroComp->curEnt.has_value()) {
         auto curEnt = heroComp->curEnt.value();
         if (auto townComp =
@@ -109,7 +112,7 @@ static std::vector<Button> buttonInfo() {
 
   b.textures = Global::defCache["hsbtns.DEF/0"];
   b.r = {609, 516, 52, 36};
-  b.func = close;
+  b.func = closeScrn;
   b.disable = false;
   b.title = u"";
   b.info = strPool[2880];
@@ -117,7 +120,7 @@ static std::vector<Button> buttonInfo() {
 
   b.textures = Global::defCache["hsbtns4.DEF/0"];
   b.r = {314, 429, 52, 36};
-  b.func = close;
+  b.func = closeScrn;
   b.disable = false;
   b.title = u"";
   b.info = strPool[2859];
@@ -132,21 +135,21 @@ static std::vector<Button> buttonInfo() {
 
   b.textures = Global::defCache["hsbtns6.DEF/0"];
   b.r = {481, 483, 52, 36};
-  b.func = close;
+  b.func = closeScrn;
   b.disable = false;
   b.info = strPool[2870];
   v.push_back(b);
 
   b.textures = Global::defCache["hsbtns7.DEF/0"];
   b.r = {481, 519, 52, 36};
-  b.func = close;
+  b.func = closeScrn;
   b.disable = false;
   b.info = strPool[2871];
   v.push_back(b);
 
   b.textures = Global::defCache["hsbtns8.DEF/0"];
   b.r = {539, 483, 52, 36};
-  b.func = close;
+  b.func = closeScrn;
   b.disable = false;
   b.info = strPool[2876];
   v.push_back(b);
@@ -943,7 +946,7 @@ bool HeroScrSys::rightMouseUp(float x, float y) {
 bool HeroScrSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:
