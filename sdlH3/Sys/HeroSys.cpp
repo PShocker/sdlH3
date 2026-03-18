@@ -97,7 +97,6 @@ static void clearPathEntities(entt::registry &registry, HeroComp &heroComp) {
     registry.destroy(pathEntBack);
   }
   heroComp.pathEntsBack.clear();
-  heroComp.goalEnt.clear();
   World::needSort = true;
 }
 
@@ -130,12 +129,16 @@ static void handleLand(entt::entity heroEnt, entt::entity goalEnt,
 
   World::iterateSystemsBak.push_back(World::iterateSystems);
   World::iterateSystems.pop_back();
-  World::iterateSystems.push_back([heroEnt, goalX, goalY]() {
+  World::iterateSystems.push_back([heroEnt, goalX, goalY, objectComp]() {
     auto &registry = World::registrys[World::level];
     auto &heroPos = registry.get<PositionComp>(heroEnt);
     auto &heroObj = registry.get<ObjectComp>(heroEnt);
     auto &heroComp = registry.get<HeroComp>(heroEnt);
     auto &texture = registry.get<TextureComp>(heroEnt);
+
+    // 网络事件
+    NetClient::sendHeroGoal(heroComp.portrait, objectComp.type, World::level,
+                            objectComp.x, objectComp.y);
 
     const auto oldPoint = heroPos.point;
     const char direct = texture.path.back();
@@ -1128,6 +1131,9 @@ bool HeroSys::run() {
   bool r = true;
   Global::heroMove = false;
   auto playerId = Global::playerId;
+  if (!World::iterateSystemsBak.empty()) {
+    return r;
+  }
   if (Global::herosIndex[playerId] < 8) {
     auto [level, heroEnt] =
         Global::heros[playerId][Global::herosIndex[playerId]];

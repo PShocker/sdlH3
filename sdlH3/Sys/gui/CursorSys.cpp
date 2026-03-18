@@ -573,7 +573,9 @@ uint8_t CursorSys::astar(bool click) {
           if (pathPoint->point.x == goalX * 32 &&
               pathPoint->point.y == goalY * 32) {
             heroComp->move = true;
-            heroComp->goalEnt = {goalEnt.value()};
+            if (goalEnt.has_value()) {
+              heroComp->goalEnt = {goalEnt.value()};
+            }
             Global::heroMove = true;
             Global::cursorIndex = index;
             return index;
@@ -588,7 +590,9 @@ uint8_t CursorSys::astar(bool click) {
       heroComp->pathEnts.clear();
       // 加载新路径
       Ent::loadPath(path, heroPair.second, indexCost, World::level);
-      heroComp->goalEnt = {goalEnt.value()};
+      if (goalEnt.has_value()) {
+        heroComp->goalEnt = {goalEnt.value()};
+      }
     }
   }
   return index;

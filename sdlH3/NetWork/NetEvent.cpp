@@ -6,6 +6,7 @@
 #include "Comp/TextureComp.h"
 #include "Ent/Ent.h"
 #include "Global/Global.h"
+#include "H3mLoader/H3mObject.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/CameraSys.h"
 #include "World/World.h"
@@ -57,10 +58,23 @@ void NetEvent::HeroGoal(uint8_t por, uint8_t type, uint8_t level, uint8_t x,
   auto [i, heroEnt] = FindHeroEnt(por);
   auto registry = &World::registrys[i];
   auto hComp = &registry->get<HeroComp>(heroEnt);
+  if (type == ObjectType::NOTHING) {
+    HeroMove(por, level, x, y);
+    auto goalEnt = Global::terrains[World::level][x][y].back();
+    hComp->goalEnt.push_back(goalEnt);
+    return;
+  }
   auto r = &World::registrys[level];
   for (auto oEnt : r->view<ObjectComp>()) {
-    auto oComp = &r->get<ObjectComp>(heroEnt);
+    auto oComp = &r->get<ObjectComp>(oEnt);
     if (oComp->type == type && oComp->x == x && oComp->y == y) {
+      auto ox = oComp->x;
+      auto oy = oComp->y;
+      if (oComp->type != ObjectType::MONSTER) {
+        ox = ox + oComp->accessTiles[0].first;
+        oy = oy + oComp->accessTiles[0].second;
+        HeroMove(por, level, ox, oy);
+      }
       hComp->goalEnt.push_back(oEnt);
       return;
     }
@@ -77,7 +91,6 @@ void NetEvent::HeroDismiss(uint8_t por) {
   auto [i, heroEnt] = FindHeroEnt(por);
   auto &registry = World::registrys[i];
 }
-
 
 void NetEvent::HeroTeleport(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
   auto [i, heroEnt] = FindHeroEnt(por);
