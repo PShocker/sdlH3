@@ -12,7 +12,7 @@
 struct HeroComp {
   std::u16string name;
   entt::entity flagEnt;
-  std::optional<entt::entity> goalEnt;
+  std::vector<entt::entity> goalEnt;
   std::optional<entt::entity> curEnt;
   std::vector<entt::entity> pathEnts;
   std::vector<entt::entity> pathEntsBack;

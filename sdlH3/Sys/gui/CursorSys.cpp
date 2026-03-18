@@ -573,7 +573,7 @@ uint8_t CursorSys::astar(bool click) {
           if (pathPoint->point.x == goalX * 32 &&
               pathPoint->point.y == goalY * 32) {
             heroComp->move = true;
-            heroComp->goalEnt = goalEnt;
+            heroComp->goalEnt = {goalEnt.value()};
             Global::heroMove = true;
             Global::cursorIndex = index;
             return index;
@@ -588,7 +588,7 @@ uint8_t CursorSys::astar(bool click) {
       heroComp->pathEnts.clear();
       // 加载新路径
       Ent::loadPath(path, heroPair.second, indexCost, World::level);
-      heroComp->goalEnt = goalEnt;
+      heroComp->goalEnt = {goalEnt.value()};
     }
   }
   return index;
@@ -884,7 +884,7 @@ void CursorSys::clearHeroPath() {
           heroComp->pathEnts.erase(heroComp->pathEnts.begin(),
                                    heroComp->pathEnts.begin() + i + 1);
           std::swap(heroComp->pathEntsBack, heroComp->pathEnts);
-          heroComp->goalEnt = std::nullopt;
+          heroComp->goalEnt.clear();
           break;
         }
       }

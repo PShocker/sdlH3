@@ -97,7 +97,7 @@ static void clearPathEntities(entt::registry &registry, HeroComp &heroComp) {
     registry.destroy(pathEntBack);
   }
   heroComp.pathEntsBack.clear();
-  heroComp.goalEnt = std::nullopt;
+  heroComp.goalEnt.clear();
   World::needSort = true;
 }
 
@@ -660,7 +660,6 @@ static void handleRedOb(entt::entity heroEnt, entt::entity goalEnt) {
 static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
                              ObjectComp &objectComp) {
   auto &registry = World::registrys[World::level];
-  registry.get<HeroComp>(heroEnt).goalEnt = std::nullopt;
   switch (static_cast<ObjectType>(objectComp.type)) {
   case ObjectType::NOTHING:
     handleLand(heroEnt, goalEnt, objectComp);
@@ -897,10 +896,10 @@ static bool heroGoal(entt::entity heroEnt) {
   auto &registry = World::registrys[World::level];
   auto &heroComp = registry.get<HeroComp>(heroEnt);
   // 1. 提前检查条件
-  if (!heroComp.goalEnt.has_value() || heroComp.pathEnts.size() > 1) {
+  if (heroComp.goalEnt.empty() || heroComp.pathEnts.size() > 1) {
     return true;
   }
-  auto goalEnt = heroComp.goalEnt.value();
+  auto goalEnt = heroComp.goalEnt[0];
   // 2. 验证目标实体
   if (!registry.valid(goalEnt)) {
     return true;
@@ -940,6 +939,7 @@ static bool heroGoal(entt::entity heroEnt) {
   // 6. 清理路径实体
   clearPathEntities(registry, heroComp);
   // 7. 根据不同类型处理目标
+  heroComp.goalEnt.erase(heroComp.goalEnt.begin());
   handleGoalByType(heroEnt, goalEnt, objectComp);
   CursorSys::run();
   return false;

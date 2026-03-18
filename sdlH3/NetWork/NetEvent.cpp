@@ -61,12 +61,7 @@ void NetEvent::HeroGoal(uint8_t por, uint8_t type, uint8_t level, uint8_t x,
   for (auto oEnt : r->view<ObjectComp>()) {
     auto oComp = &r->get<ObjectComp>(heroEnt);
     if (oComp->type == type && oComp->x == x && oComp->y == y) {
-      // 需要判断是否有残留的goalEnt
-      if (!hComp->goalEnt.has_value()) {
-        hComp->goalEnt = oEnt;
-      } else {
-        std::abort();
-      }
+      hComp->goalEnt.push_back(oEnt);
       return;
     }
   }

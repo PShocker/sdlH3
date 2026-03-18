@@ -1087,7 +1087,7 @@ bool AdvMapSys::keyUp(uint16_t key) {
         Global::heroMove = true;
         return true;
       } else if (heroComp->curEnt.has_value()) {
-        heroComp->goalEnt = heroComp->curEnt;
+        heroComp->goalEnt = {heroComp->curEnt.value()};
         heroComp->move = true;
         Global::heroMove = true;
         Global::cursorIndex = CursorSys::astar(false);
