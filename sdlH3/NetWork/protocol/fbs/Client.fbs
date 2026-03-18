@@ -25,6 +25,14 @@ table ClientHeroMove {
     y:uint8;
 }
 
+table ClientHeroGoal {
+    por:uint8;
+    type:uint8;
+    level:uint8;
+    x:uint8;
+    y:uint8;
+}
+
 table ClientHeroTeleport {
     por:uint8;
     level:uint8;
@@ -46,9 +54,26 @@ table ClientHeroDismiss {
     y:uint8;
 }
 
-table ClientObjectFade {
+table ClientHeroEquip{
+    por:uint8;
+    equip_slot:uint8;
+    back_index:uint8;
+}
+
+table ClientHeroAdvBonuse{
+    por:uint8;
+    src:uint8;
     type:uint8;
+    sub_type:uint8;
+    val:uint8;
+    x:uint8;
+    y:uint8;
+}
+
+table ClientBattleResult {
+    por:uint8;
     level:uint8;
     x:uint8;
     y:uint8;
+    win:bool;
 }

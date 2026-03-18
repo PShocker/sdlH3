@@ -181,6 +181,7 @@ static void handleLand(entt::entity heroEnt, entt::entity goalEnt,
 static void handleGate(entt::entity heroEnt, entt::entity goalEnt) {
   auto &registry = World::registrys[World::level];
   auto &gateComp = registry.get<GateComp>(goalEnt);
+  auto oComp = registry.get<ObjectComp>(goalEnt);
 
   if (gateComp.level != 0xff) {
     // 检查地道另一边是否有英雄堵门
@@ -199,11 +200,16 @@ static void handleGate(entt::entity heroEnt, entt::entity goalEnt) {
     const auto gateLevel = gateComp.level;
     const auto gateEnt = gateComp.goalEnt;
 
-    World::iterateSystems.push_back([heroEnt, gateX, gateY, gateLevel,
-                                     gateEnt]() {
+    World::iterateSystems.push_back([heroEnt, gateX, gateY, gateLevel, gateEnt,
+                                     oComp]() {
       auto registry = &World::registrys[World::level];
       auto &textureComp = registry->get<TextureComp>(heroEnt);
       auto &heroComp = registry->get<HeroComp>(heroEnt);
+
+      // 网络事件
+      NetClient::sendHeroGoal(heroComp.portrait, oComp.type, World::level,
+                              oComp.x, oComp.y);
+
       auto &positionComp = registry->get<PositionComp>(heroEnt);
 
       auto &heros = Global::heros[Global::playerId];
@@ -226,8 +232,6 @@ static void handleGate(entt::entity heroEnt, entt::entity goalEnt) {
       registry = &World::registrys[World::level];
       registry->get<HeroComp>(newHeroEnt).curEnt = gateEnt;
 
-      // 网络事件
-      NetClient::sendHeroTeleport(heroComp.portrait, gateLevel, gateX, gateY);
       return true;
     });
     Global::fadeRect = {0, 0, Global::viewPort.w - 199,
@@ -265,6 +269,11 @@ static void handleMono(entt::entity heroEnt, entt::entity goalEnt) {
     CameraSys::focus(goalX * 32 + 16, goalY * 32 + 16);
     Global::cursorType = (uint8_t)Enum::CURSOR::ADVENTURE;
     CursorSys::clearHeroPath();
+
+    // 网络事件
+    auto &registry = World::registrys[World::level];
+    auto &hComp = registry.get<HeroComp>(heroEnt);
+    NetClient::sendHeroTeleport(hComp.portrait, World::level, goalX, goalY);
 
     return true;
   });
@@ -490,6 +499,12 @@ static void handleBoat(entt::entity heroEnt, entt::entity goalEnt) {
     auto &textureComp = registry.get<TextureComp>(heroEnt);
     auto &boatComp = registry.get<BoatComp>(goalEnt);
     auto &heroComp = registry.get<HeroComp>(heroEnt);
+
+    // 网络事件
+    auto oComp = registry.get<ObjectComp>(goalEnt);
+    NetClient::sendHeroGoal(heroComp.portrait, oComp.type, World::level,
+                            oComp.x, oComp.y);
+
     auto &playerIdComp = registry.get<PlayerIdComp>(heroEnt);
     auto &heroPos = registry.get<PositionComp>(heroEnt);
 
@@ -645,6 +660,7 @@ static void handleRedOb(entt::entity heroEnt, entt::entity goalEnt) {
 static void handleGoalByType(entt::entity heroEnt, entt::entity goalEnt,
                              ObjectComp &objectComp) {
   auto &registry = World::registrys[World::level];
+  registry.get<HeroComp>(heroEnt).goalEnt = std::nullopt;
   switch (static_cast<ObjectType>(objectComp.type)) {
   case ObjectType::NOTHING:
     handleLand(heroEnt, goalEnt, objectComp);

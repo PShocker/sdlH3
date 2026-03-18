@@ -55,6 +55,13 @@ void NetServer::sendHeroMove(uint64_t cId, uint8_t por, uint8_t level,
   return;
 }
 
+void NetServer::sendHeroGoal(uint64_t cId, uint8_t por, uint8_t type,
+                             uint8_t level, uint8_t x, uint8_t y) {
+  sendServerScenePacket(cId, NetPayload_ServerHeroGoal, CreateServerHeroGoal,
+                        por, type, level, x, y);
+  return;
+}
+
 void NetServer::sendHeroTeleport(uint64_t cId, uint8_t por, uint8_t level,
                                  uint8_t x, uint8_t y) {
   sendServerScenePacket(cId, NetPayload_ServerHeroTeleport,
@@ -139,6 +146,18 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
     NetServer::sendHeroMove(cId, por, level, x, y);
     break;
   }
+  case NetPayload_ClientHeroGoal: {
+    // 从union中获取NetHeartbeat
+    auto payload = packet->payload_as_ClientHeroGoal();
+    auto por = payload->por();
+    auto type = payload->type();
+    auto level = payload->level();
+    auto x = payload->x();
+    auto y = payload->y();
+    //
+    NetServer::sendHeroGoal(cId, por, type, level, x, y);
+    break;
+  }
   case NetPayload_ClientHeroTeleport: {
     // 从union中获取NetHeartbeat
     auto payload = packet->payload_as_ClientHeroTeleport();
@@ -166,6 +185,17 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
     auto x = payload->x();
     auto y = payload->y();
     NetEvent::HeroMove(por, level, x, y);
+    break;
+  }
+  case NetPayload_ServerHeroGoal: {
+    // 从union中获取NetHeartbeat
+    auto payload = packet->payload_as_ServerHeroGoal();
+    auto por = payload->por();
+    auto type = payload->type();
+    auto level = payload->level();
+    auto x = payload->x();
+    auto y = payload->y();
+    NetEvent::HeroGoal(por, type, level, x, y);
     break;
   }
   case NetPayload_ServerHeroTeleport: {

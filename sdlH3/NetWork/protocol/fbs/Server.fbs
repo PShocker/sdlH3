@@ -24,6 +24,14 @@ table ServerHeroMove {
     y:uint8;
 }
 
+table ServerHeroGoal {
+    por:uint8;
+    type:uint8;
+    level:uint8;
+    x:uint8;
+    y:uint8;
+}
+
 table ServerHeroTeleport {
     por:uint8;
     level:uint8;

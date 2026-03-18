@@ -47,19 +47,32 @@ void NetClient::sendHeroMove(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
   return;
 }
 
+void NetClient::sendHeroGoal(uint8_t por, uint8_t type, uint8_t level,
+                             uint8_t x, uint8_t y) {
+  if (NetWork::sceneHost[0] != NetWork::cId) {
+    return;
+  }
+  sendClientPacket(NetPayload_ClientHeroGoal, CreateClientHeroGoal, por, type,
+                   level, x, y);
+  return;
+}
+
+void NetClient::sendHeroRecruit(uint8_t por, uint8_t level, uint8_t x,
+                                uint8_t y) {
+  if (NetWork::sceneHost[0] != NetWork::cId) {
+    return;
+  }
+  sendClientPacket(NetPayload_ClientHeroRecruit, CreateClientHeroRecruit, por,
+                   level, x, y);
+  return;
+}
+
 void NetClient::sendHeroTeleport(uint8_t por, uint8_t level, uint8_t x,
                                  uint8_t y) {
   if (NetWork::sceneHost[0] != NetWork::cId) {
     return;
   }
   sendClientPacket(NetPayload_ClientHeroTeleport, CreateClientHeroTeleport, por,
-                   level, x, y);
-  return;
-}
-
-void NetClient::sendObjectFade(uint8_t type, uint8_t level, uint8_t x,
-                               uint8_t y) {
-  sendClientPacket(NetPayload_ClientObjectFade, CreateClientObjectFade, type,
                    level, x, y);
   return;
 }

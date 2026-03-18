@@ -28,6 +28,9 @@ struct ServerOutSceneBuilder;
 struct ServerHeroMove;
 struct ServerHeroMoveBuilder;
 
+struct ServerHeroGoal;
+struct ServerHeroGoalBuilder;
+
 struct ServerHeroTeleport;
 struct ServerHeroTeleportBuilder;
 
@@ -296,6 +299,88 @@ inline ::flatbuffers::Offset<ServerHeroMove> CreateServerHeroMove(
   builder_.add_y(y);
   builder_.add_x(x);
   builder_.add_level(level);
+  builder_.add_por(por);
+  return builder_.Finish();
+}
+
+struct ServerHeroGoal FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ServerHeroGoalBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_POR = 4,
+    VT_TYPE = 6,
+    VT_LEVEL = 8,
+    VT_X = 10,
+    VT_Y = 12
+  };
+  uint8_t por() const {
+    return GetField<uint8_t>(VT_POR, 0);
+  }
+  uint8_t type() const {
+    return GetField<uint8_t>(VT_TYPE, 0);
+  }
+  uint8_t level() const {
+    return GetField<uint8_t>(VT_LEVEL, 0);
+  }
+  uint8_t x() const {
+    return GetField<uint8_t>(VT_X, 0);
+  }
+  uint8_t y() const {
+    return GetField<uint8_t>(VT_Y, 0);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyField<uint8_t>(verifier, VT_TYPE, 1) &&
+           VerifyField<uint8_t>(verifier, VT_LEVEL, 1) &&
+           VerifyField<uint8_t>(verifier, VT_X, 1) &&
+           VerifyField<uint8_t>(verifier, VT_Y, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ServerHeroGoalBuilder {
+  typedef ServerHeroGoal Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_por(uint8_t por) {
+    fbb_.AddElement<uint8_t>(ServerHeroGoal::VT_POR, por, 0);
+  }
+  void add_type(uint8_t type) {
+    fbb_.AddElement<uint8_t>(ServerHeroGoal::VT_TYPE, type, 0);
+  }
+  void add_level(uint8_t level) {
+    fbb_.AddElement<uint8_t>(ServerHeroGoal::VT_LEVEL, level, 0);
+  }
+  void add_x(uint8_t x) {
+    fbb_.AddElement<uint8_t>(ServerHeroGoal::VT_X, x, 0);
+  }
+  void add_y(uint8_t y) {
+    fbb_.AddElement<uint8_t>(ServerHeroGoal::VT_Y, y, 0);
+  }
+  explicit ServerHeroGoalBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ServerHeroGoal> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ServerHeroGoal>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ServerHeroGoal> CreateServerHeroGoal(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    uint8_t type = 0,
+    uint8_t level = 0,
+    uint8_t x = 0,
+    uint8_t y = 0) {
+  ServerHeroGoalBuilder builder_(_fbb);
+  builder_.add_y(y);
+  builder_.add_x(x);
+  builder_.add_level(level);
+  builder_.add_type(type);
   builder_.add_por(por);
   return builder_.Finish();
 }
