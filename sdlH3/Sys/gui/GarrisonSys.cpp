@@ -8,26 +8,49 @@
 #include "World/World.h"
 #include <vector>
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
+void GarrisonSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["IDV6432.DEF/0"];
+    button.r = {88, 314, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 
-  b.textures = Global::defCache["IDV6432.DEF/0"];
-  b.r = {88, 314, 64, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["IOK6432.def/0"];
-  b.r = {399, 314, 64, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+  {
+    Button button;
+    button.textures = Global::defCache["IOK6432.DEF/0"];
+    button.r = {399, 314, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["IDV6432.DEF/0"];
+//   b.r = {88, 314, 64, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["IOK6432.def/0"];
+//   b.r = {399, 314, 64, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -42,10 +65,9 @@ static void drawButton() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 549) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 396) / 2)};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == GarrisonSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, GarrisonSys::buttons);
 }
 
 bool GarrisonSys::run() {
@@ -61,10 +83,10 @@ bool GarrisonSys::rightMouseUp(float x, float y) { return true; }
 bool GarrisonSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 549) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 396) / 2)};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, GarrisonSys::buttons,
+                              clickType)) {
     return false;
   }
   return true;

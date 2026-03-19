@@ -13,69 +13,150 @@
 #include <cstdint>
 #include <vector>
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
+void KingdomSys::init() {
+  buttons.clear();
+  {
+    auto t = Global::defCache["OVBUTN1.def/0"];
+    std::vector<SDL_Texture *> vec = {t[0], t[1], t[2]};
+    Button button;
+    button.textures = vec;
+    button.r = {748, 493, 48, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 
-  auto t = Global::defCache["OVBUTN1.def/0"];
+  {
+    auto t = Global::defCache["OVBUTN1.def/0"];
+    std::vector<SDL_Texture *> vec = {t[3], t[4]};
+    Button button;
+    button.textures = vec;
+    button.r = {748, 565, 48, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["OVBUTN6.def/0"];
+    button.r = {748, 529, 48, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+  {
+    auto t = Global::defCache["OVBUTN4.def/0"];
+    std::vector<SDL_Texture *> vec = {t[0], t[1]};
+    Button button;
+    button.textures = vec;
+    button.r = {733, 4, 61, 18};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+  {
+    auto t = Global::defCache["OVBUTN4.def/0"];
+    std::vector<SDL_Texture *> vec = {t[4], t[5]};
+    Button button;
+    button.textures = vec;
+    button.r = {733, 24, 61, 18};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 
-  std::vector<SDL_Texture *> vec = {t[0], t[1], t[2]};
-  b.textures = vec;
-  b.r = {748, 493, 48, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  vec = {t[3], t[4]};
-  b.textures = vec;
-  b.r = {748, 565, 48, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["OVBUTN6.def/0"];
-  b.r = {748, 529, 48, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  t = Global::defCache["OVBUTN4.def/0"];
-  vec = {t[0], t[1]};
-  b.textures = vec;
-  b.r = {733, 4, 61, 18};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  t = Global::defCache["OVBUTN4.def/0"];
-  vec = {t[4], t[5]};
-  b.textures = vec;
-  b.r = {733, 24, 61, 18};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  t = Global::defCache["OVBUTN4.def/0"];
-  vec = {t[6], t[7]};
-
-  b.textures = vec;
-  b.r = {733, 446, 61, 18};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  t = Global::defCache["OVBUTN4.def/0"];
-  vec = {t[2], t[3]};
-  b.textures = vec;
-  b.r = {733, 466, 61, 18};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+  {
+    auto t = Global::defCache["OVBUTN4.def/0"];
+    std::vector<SDL_Texture *> vec = {t[6], t[7]};
+    Button button;
+    button.textures = vec;
+    button.r = {733, 446, 61, 18};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+  {
+    auto t = Global::defCache["OVBUTN4.def/0"];
+    std::vector<SDL_Texture *> vec = {t[2], t[3]};
+    Button button;
+    button.textures = vec;
+    button.r = {733, 466, 61, 18};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   auto t = Global::defCache["OVBUTN1.def/0"];
+
+//   std::vector<SDL_Texture *> vec = {t[0], t[1], t[2]};
+//   b.textures = vec;
+//   b.r = {748, 493, 48, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   vec = {t[3], t[4]};
+//   b.textures = vec;
+//   b.r = {748, 565, 48, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["OVBUTN6.def/0"];
+//   b.r = {748, 529, 48, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   t = Global::defCache["OVBUTN4.def/0"];
+//   vec = {t[0], t[1]};
+//   b.textures = vec;
+//   b.r = {733, 4, 61, 18};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   t = Global::defCache["OVBUTN4.def/0"];
+//   vec = {t[4], t[5]};
+//   b.textures = vec;
+//   b.r = {733, 24, 61, 18};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   t = Global::defCache["OVBUTN4.def/0"];
+//   vec = {t[6], t[7]};
+
+//   b.textures = vec;
+//   b.r = {733, 446, 61, 18};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   t = Global::defCache["OVBUTN4.def/0"];
+//   vec = {t[2], t[3]};
+//   b.textures = vec;
+//   b.r = {733, 466, 61, 18};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -90,10 +171,9 @@ static void drawBackGround() {
 static void drawButton() {
   const SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                           (Global::viewPort.h - 600) / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == KingdomSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, KingdomSys::buttons);
 }
 
 static void drawMines() {
@@ -151,8 +231,7 @@ static void drawTown() {
 
     if (townComp->buildings.contains(Enum::BUILD_FORT)) {
       texture = Global::defCache["ITMCLS.def/0"][0];
-    } else if (townComp->buildings.contains(
-                   Enum::BUILD_CITADEL)) {
+    } else if (townComp->buildings.contains(Enum::BUILD_CITADEL)) {
       texture = Global::defCache["ITMCLS.def/0"][1];
     } else if (townComp->buildings.contains(Enum::BUILD_CASTLE)) {
       texture = Global::defCache["ITMCLS.def/0"][2];
@@ -209,7 +288,7 @@ static void drawHero() {
     auto [level, heroEnt] = Global::heros[Global::playerId][i];
     auto &heroComp = World::registrys[level].get<HeroComp>(heroEnt);
     posRect = {x + 5, y + 6, 58, 64};
-    auto largePor=HeroSet::fullHeros[heroComp.portrait]->largePor;
+    auto largePor = HeroSet::fullHeros[heroComp.portrait]->largePor;
     texture = Global::pcxCache[largePor][0];
     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
 
@@ -411,10 +490,9 @@ static bool clickdmArt() {
 bool KingdomSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, KingdomSys::buttons, clickType)) {
     return false;
   }
   if (clickdmArt()) {
@@ -426,7 +504,7 @@ bool KingdomSys::leftMouseUp(float x, float y) {
 bool KingdomSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:

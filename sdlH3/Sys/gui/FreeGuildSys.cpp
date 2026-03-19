@@ -17,18 +17,31 @@ static void upgrade() {}
 
 static void close() {}
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["iOKAY.def/0"];
-  b.r = {208, 320, 64, 30};
-  b.func = upgrade;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void FreeGuildSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {208, 320, 64, 30};
+    button.clickFunc = upgrade;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["iOKAY.def/0"];
+//   b.r = {208, 320, 64, 30};
+//   b.func = upgrade;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -66,10 +79,9 @@ static void drawButton() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
                     (Global::viewPort.h - 348) / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == FreeGuildSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, FreeGuildSys::buttons);
 }
 
 bool FreeGuildSys::run() {
@@ -82,10 +94,9 @@ bool FreeGuildSys::run() {
 bool FreeGuildSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
                     (Global::viewPort.h - 348) / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
-
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, FreeGuildSys::buttons,
+                              clickType)) {
     return false;
   }
   return true;
