@@ -968,8 +968,6 @@ void Global::startGame() {
   loadWhirlpool();
   loadHeroLevel();
   loadTavernHero();
-
-  NetClient::sendLogin();
 }
 
 void Global::endGame() {

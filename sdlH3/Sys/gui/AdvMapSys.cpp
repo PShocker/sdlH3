@@ -46,12 +46,21 @@
 #include <utility>
 #include <vector>
 
+static std::pair<uint8_t, entt::entity> findFocusHero() {
+  auto heroIndex = Global::herosIndex[Global::playerId];
+  if (heroIndex < 8) {
+    auto heroPair = Global::heros[Global::playerId][heroIndex];
+    return {heroPair.first, heroPair.second};
+  }
+  return {0, entt::null};
+}
+
 // 查看王国
 static void viewKingdom() { World::enterKingdom(); }
 
 static void viewAdvLog() {}
 
-static void heroSleep() {
+static void switchSleep() {
   auto heroIndex = Global::herosIndex[Global::playerId];
   if (heroIndex >= 8) {
     return;
@@ -76,7 +85,7 @@ static void heroMove() {
     heroComp->move = true;
   }
 }
-static void heroSpell() {
+static void openSpell() {
   auto heroIndex = Global::herosIndex[Global::playerId];
   if (heroIndex >= 8) {
     return;
@@ -100,131 +109,299 @@ void AdvMapSys::heroFocus() {
 // 切换地层
 static void switchWorld() { World::level = World::level == 1 ? 0 : 1; }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
+void AdvMapSys::init() {
+  {
+    Button button;
+    button.textures =
+        Global::defCache["IAM002.DEF/" + std::to_string(Global::playerId)];
+    button.r = {121, 196, 32, 32};
+    button.clickFunc = viewKingdom;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 
-  Button b;
-  b.textures =
-      Global::defCache["IAM002.DEF/" + std::to_string(Global::playerId)];
-  b.r = {121, 196, 32, 32};
-  b.func = viewKingdom;
-  b.disable = false;
-  v.push_back(b);
-
-  if (World::level == 0) {
-    b.textures =
+  {
+    Button button;
+    button.textures =
         Global::defCache["IAM010.DEF/" + std::to_string(Global::playerId)];
-  } else {
-    b.textures =
+    button.r = {89, 196, 32, 32};
+    button.clickFunc = switchWorld;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return World::level == 0; };
+    buttons.push_back(button);
+  }
+
+  {
+    Button button;
+    button.textures =
         Global::defCache["IAM003.DEF/" + std::to_string(Global::playerId)];
+    button.r = {89, 196, 32, 32};
+    button.clickFunc = switchWorld;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return World::level == 1; };
+    buttons.push_back(button);
   }
-  b.r = {89, 196, 32, 32};
-  b.func = switchWorld;
-  b.disable = false;
-  v.push_back(b);
 
-  b.textures =
-      Global::defCache["IAM004.DEF/" + std::to_string(Global::playerId)];
-  b.r = {121, 228, 32, 32};
-  b.func = viewAdvLog;
-  b.disable = false;
-  v.push_back(b);
-
-  auto heroIndex = Global::herosIndex[Global::playerId];
-  if (heroIndex < 8) {
-    auto heroPair = Global::heros[Global::playerId][heroIndex];
-    auto heroEnt = heroPair.second;
-    auto &registry = World::registrys[heroPair.first];
-    auto heroComp = &registry.get<HeroComp>(heroEnt);
-    if (heroComp->sleep) {
-      b.textures =
-          Global::defCache["IAM011.DEF/" + std::to_string(Global::playerId)];
-    } else {
-      b.textures =
-          Global::defCache["IAM005.DEF/" + std::to_string(Global::playerId)];
-    }
-    b.func = heroSleep;
-    b.disable = false;
-    b.r = {89, 228, 32, 32};
-    v.push_back(b);
-
-    b.textures =
-        Global::defCache["IAM006.DEF/" + std::to_string(Global::playerId)];
-    b.func = heroMove;
-    b.r = {121, 260, 32, 32};
-    if (heroComp->pathEnts.empty() && heroComp->pathEntsBack.empty()) {
-      b.disable = true;
-    } else {
-      b.disable = false;
-    }
-    v.push_back(b);
-
-    b.textures =
-        Global::defCache["IAM007.DEF/" + std::to_string(Global::playerId)];
-    b.disable = false;
-    b.r = {89, 260, 32, 32};
-    b.func = heroSpell;
-    v.push_back(b);
-
-    b.textures =
-        Global::defCache["IAM000.DEF/" + std::to_string(Global::playerId)];
-    b.disable = false;
-    b.r = {121, 324, 64, 32};
-    b.func = []() { AdvMapSys::heroFocus(); };
-    v.push_back(b);
-  } else {
-    b.textures =
+  {
+    Button button;
+    button.textures =
         Global::defCache["IAM004.DEF/" + std::to_string(Global::playerId)];
-    b.disable = true;
-    b.r = {89, 228, 32, 32};
-    b.func = heroSleep;
-    v.push_back(b);
-
-    b.textures =
-        Global::defCache["IAM006.DEF/" + std::to_string(Global::playerId)];
-    b.disable = true;
-    b.r = {121, 260, 32, 32};
-    b.func = heroMove;
-    v.push_back(b);
-
-    b.textures =
-        Global::defCache["IAM007.DEF/" + std::to_string(Global::playerId)];
-    b.disable = true;
-    b.r = {89, 260, 32, 32};
-    b.func = heroSpell;
-    v.push_back(b);
-
-    b.textures =
-        Global::defCache["IAM000.DEF/" + std::to_string(Global::playerId)];
-    b.disable = true;
-    b.r = {121, 324, 64, 32};
-    b.func = []() { AdvMapSys::heroFocus(); };
-    v.push_back(b);
+    button.r = {121, 228, 32, 32};
+    button.clickFunc = viewAdvLog;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
   }
 
-  b.textures =
-      Global::defCache["IAM008.DEF/" + std::to_string(Global::playerId)];
-  b.disable = false;
-  b.r = {121, 292, 32, 32};
-  b.func = viewAdvOpt;
-  v.push_back(b);
+  {
+    Button button;
+    button.textures =
+        Global::defCache["IAM011.DEF/" + std::to_string(Global::playerId)];
+    button.r = {89, 228, 32, 32};
+    button.clickFunc = switchSleep;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      auto [i, heroEnt] = findFocusHero();
+      auto &registry = World::registrys[i];
+      auto hComp = registry.get<HeroComp>(heroEnt);
+      return hComp.sleep;
+    };
+    buttons.push_back(button);
+  }
 
-  b.textures =
-      Global::defCache["IAM009.DEF/" + std::to_string(Global::playerId)];
-  b.disable = false;
-  b.r = {89, 292, 32, 32};
-  b.func = viewAdvSet;
-  v.push_back(b);
+  {
+    Button button;
+    button.textures =
+        Global::defCache["IAM005.DEF/" + std::to_string(Global::playerId)];
+    button.r = {89, 228, 32, 32};
+    button.clickFunc = switchSleep;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      auto [i, heroEnt] = findFocusHero();
+      auto &registry = World::registrys[i];
+      auto hComp = registry.get<HeroComp>(heroEnt);
+      return !hComp.sleep;
+    };
+    buttons.push_back(button);
+  }
 
-  b.textures =
-      Global::defCache["IAM001.DEF/" + std::to_string(Global::playerId)];
-  b.disable = false;
-  b.r = {121, 356, 64, 32};
-  b.func = viewAdvSet;
-  v.push_back(b);
+  {
+    Button button;
+    button.textures =
+        Global::defCache["IAM006.DEF/" + std::to_string(Global::playerId)];
+    button.r = {121, 260, 32, 32};
+    button.clickFunc = heroMove;
+    button.disableFunc = []() {
+      auto [i, heroEnt] = findFocusHero();
+      if (heroEnt == entt::null) {
+        return true;
+      }
+      auto &registry = World::registrys[i];
+      auto hComp = registry.get<HeroComp>(heroEnt);
+      if (hComp.pathEnts.empty() && hComp.pathEntsBack.empty()) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 
-  return v;
+  {
+    Button button;
+    button.textures =
+        Global::defCache["IAM007.DEF/" + std::to_string(Global::playerId)];
+    button.r = {89, 260, 32, 32};
+    button.clickFunc = openSpell;
+    button.disableFunc = []() {
+      auto [i, heroEnt] = findFocusHero();
+      if (heroEnt == entt::null) {
+        return true;
+      }
+      return false;
+    };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+
+  {
+    Button button;
+    button.textures =
+        Global::defCache["IAM000.DEF/" + std::to_string(Global::playerId)];
+    button.r = {121, 324, 64, 32};
+    button.clickFunc = []() { AdvMapSys::heroFocus(); };
+    button.disableFunc = []() {
+      auto [i, heroEnt] = findFocusHero();
+      if (heroEnt == entt::null) {
+        return true;
+      }
+      return false;
+    };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+
+  {
+    Button button;
+    button.textures =
+        Global::defCache["IAM008.DEF/" + std::to_string(Global::playerId)];
+    button.r = {121, 292, 32, 32};
+    button.clickFunc = viewAdvOpt;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+
+  {
+    Button button;
+    button.textures =
+        Global::defCache["IAM009.DEF/" + std::to_string(Global::playerId)];
+    button.r = {89, 292, 32, 32};
+    button.clickFunc = viewAdvSet;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+
+  {
+    Button button;
+    button.textures =
+        Global::defCache["IAM001.DEF/" + std::to_string(Global::playerId)];
+    button.r = {121, 356, 64, 32};
+    button.clickFunc = viewAdvSet;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+
+//   Button b;
+//   b.textures =
+//       Global::defCache["IAM002.DEF/" + std::to_string(Global::playerId)];
+//   b.r = {121, 196, 32, 32};
+//   b.func = viewKingdom;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   if (World::level == 0) {
+//     b.textures =
+//         Global::defCache["IAM010.DEF/" + std::to_string(Global::playerId)];
+//   } else {
+//     b.textures =
+//         Global::defCache["IAM003.DEF/" + std::to_string(Global::playerId)];
+//   }
+//   b.r = {89, 196, 32, 32};
+//   b.func = switchWorld;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures =
+//       Global::defCache["IAM004.DEF/" + std::to_string(Global::playerId)];
+//   b.r = {121, 228, 32, 32};
+//   b.func = viewAdvLog;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   auto heroIndex = Global::herosIndex[Global::playerId];
+//   if (heroIndex < 8) {
+//     auto heroPair = Global::heros[Global::playerId][heroIndex];
+//     auto heroEnt = heroPair.second;
+//     auto &registry = World::registrys[heroPair.first];
+//     auto heroComp = &registry.get<HeroComp>(heroEnt);
+//     if (heroComp->sleep) {
+//       b.textures =
+//           Global::defCache["IAM011.DEF/" + std::to_string(Global::playerId)];
+//     } else {
+//       b.textures =
+//           Global::defCache["IAM005.DEF/" + std::to_string(Global::playerId)];
+//     }
+//     b.func = heroSleep;
+//     b.disable = false;
+//     b.r = {89, 228, 32, 32};
+//     v.push_back(b);
+
+//     b.textures =
+//         Global::defCache["IAM006.DEF/" + std::to_string(Global::playerId)];
+//     b.func = heroMove;
+//     b.r = {121, 260, 32, 32};
+//     if (heroComp->pathEnts.empty() && heroComp->pathEntsBack.empty()) {
+//       b.disable = true;
+//     } else {
+//       b.disable = false;
+//     }
+//     v.push_back(b);
+
+//     b.textures =
+//         Global::defCache["IAM007.DEF/" + std::to_string(Global::playerId)];
+//     b.disable = false;
+//     b.r = {89, 260, 32, 32};
+//     b.func = heroSpell;
+//     v.push_back(b);
+
+//     b.textures =
+//         Global::defCache["IAM000.DEF/" + std::to_string(Global::playerId)];
+//     b.disable = false;
+//     b.r = {121, 324, 64, 32};
+//     b.func = []() { AdvMapSys::heroFocus(); };
+//     v.push_back(b);
+//   } else {
+//     b.textures =
+//         Global::defCache["IAM004.DEF/" + std::to_string(Global::playerId)];
+//     b.disable = true;
+//     b.r = {89, 228, 32, 32};
+//     b.func = heroSleep;
+//     v.push_back(b);
+
+//     b.textures =
+//         Global::defCache["IAM006.DEF/" + std::to_string(Global::playerId)];
+//     b.disable = true;
+//     b.r = {121, 260, 32, 32};
+//     b.func = heroMove;
+//     v.push_back(b);
+
+//     b.textures =
+//         Global::defCache["IAM007.DEF/" + std::to_string(Global::playerId)];
+//     b.disable = true;
+//     b.r = {89, 260, 32, 32};
+//     b.func = heroSpell;
+//     v.push_back(b);
+
+//     b.textures =
+//         Global::defCache["IAM000.DEF/" + std::to_string(Global::playerId)];
+//     b.disable = true;
+//     b.r = {121, 324, 64, 32};
+//     b.func = []() { AdvMapSys::heroFocus(); };
+//     v.push_back(b);
+//   }
+
+//   b.textures =
+//       Global::defCache["IAM008.DEF/" + std::to_string(Global::playerId)];
+//   b.disable = false;
+//   b.r = {121, 292, 32, 32};
+//   b.func = viewAdvOpt;
+//   v.push_back(b);
+
+//   b.textures =
+//       Global::defCache["IAM009.DEF/" + std::to_string(Global::playerId)];
+//   b.disable = false;
+//   b.r = {89, 292, 32, 32};
+//   b.func = viewAdvSet;
+//   v.push_back(b);
+
+//   b.textures =
+//       Global::defCache["IAM001.DEF/" + std::to_string(Global::playerId)];
+//   b.disable = false;
+//   b.r = {121, 356, 64, 32};
+//   b.func = viewAdvSet;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawSpellMask() {
   auto cursorType = Global::cursorType;
@@ -326,7 +503,7 @@ void AdvMapSys::drawResBar(float x, float y) {
 }
 
 static void drawButton() {
-  auto v = buttonInfo();
+  auto v = AdvMapSys::buttons;
   for (auto &b : v) {
     b.r.x = Global::viewPort.w - b.r.x;
   }
@@ -612,7 +789,6 @@ static void drawBottomInfo() {
   }
   if (Window::mouseX > Global::viewPort.w - 199 ||
       Window::mouseY > Global::viewPort.h - 47) {
-    auto v = buttonInfo();
     return;
   }
   if (Window::mouseX + Global::viewPort.x < 0 ||
@@ -1018,7 +1194,7 @@ bool AdvMapSys::leftMouseUp(float x, float y) {
   if (Global::heroMove) {
     return true;
   }
-  auto button = buttonInfo();
+  auto button = buttons;
   for (auto &b : button) {
     b.r.x = Global::viewPort.w - b.r.x;
   }
@@ -1043,7 +1219,7 @@ bool AdvMapSys::leftMouseDown(float x, float y) {
   if (Global::heroMove) {
     return true;
   }
-  auto button = buttonInfo();
+  auto button = buttons;
   for (auto &b : button) {
     b.r.x = Global::viewPort.w - b.r.x;
   }
@@ -1164,12 +1340,17 @@ void AdvMapSys::drawButtons(float x, float y, bool press,
   SDL_FRect posRect;
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   for (uint8_t i = 0; i < v.size(); i++) {
+    auto show = v[i].showFunc();
+    if (!show) {
+      continue;
+    }
     auto textures = v[i].textures;
     auto texture = textures[0];
     posRect = {static_cast<float>((int)(x + v[i].r.x)),
                static_cast<float>((int)(y + v[i].r.y)),
                static_cast<float>(texture->w), static_cast<float>(texture->h)};
-    if (v[i].disable) {
+    auto disable = v[i].disableFunc();
+    if (disable) {
       if (textures.size() >= 3) {
         texture = textures[2];
       } else {
@@ -1193,8 +1374,9 @@ bool AdvMapSys::clickButtons(float x, float y, std::vector<Button> &v,
     if (SDL_PointInRectFloat(&point, &posRect)) {
       switch (clickType) {
       case (uint8_t)Enum::CLICKTYPE::L_UP: {
-        if (!v[i].disable) {
-          v[i].func();
+        auto disable = v[i].disableFunc();
+        if (!disable) {
+          v[i].clickFunc();
           AudioSys::push("button.wav", 1, 0, false);
         }
         break;

@@ -10,18 +10,18 @@
 #include <cstdint>
 
 
-static std::tuple<std::vector<std::vector<SDL_Texture *>>,
-                  std::vector<SDL_FRect>, std::vector<bool>,
-                  std::vector<std::function<void()>>>
-buttonInfo() {
-  std::vector<std::vector<SDL_Texture *>> textures;
-  std::vector<SDL_FRect> r;
-  std::vector<bool> dis;
-  std::vector<std::function<void()>> func;
-  textures.push_back(Global::defCache["iOKAY.def/0"]);
+// static std::tuple<std::vector<std::vector<SDL_Texture *>>,
+//                   std::vector<SDL_FRect>, std::vector<bool>,
+//                   std::vector<std::function<void()>>>
+// buttonInfo() {
+//   std::vector<std::vector<SDL_Texture *>> textures;
+//   std::vector<SDL_FRect> r;
+//   std::vector<bool> dis;
+//   std::vector<std::function<void()>> func;
+//   textures.push_back(Global::defCache["iOKAY.def/0"]);
 
-  return {textures, r, dis, func};
-}
+//   return {textures, r, dis, func};
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;

@@ -35,15 +35,9 @@ static void sendServerScenePacket(uint64_t cId, NetPayload type,
   NetWork::builder.Clear();
 }
 
-void NetServer::sendLogin(uint64_t cId) {
-  uint64_t now = static_cast<uint64_t>(time(nullptr));
-  sendServerPacket(cId, NetPayload_ServerLogin, CreateServerLogin, cId, now);
-  return;
-}
-
-void NetServer::sendInScene(uint64_t cId, uint32_t scene_id,
+void NetServer::sendInScene(uint64_t cId, uint32_t seed, uint32_t scene_id,
                             uint64_t scene_host) {
-  sendServerPacket(cId, NetPayload_ServerInScene, CreateServerInScene,
+  sendServerPacket(cId, NetPayload_ServerInScene, CreateServerInScene, seed,
                    scene_host, scene_id);
   return;
 }
@@ -111,17 +105,6 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
   }
   // 4. 通过union的type判断具体类型
   switch (packet->payload_type()) {
-  case NetPayload_ClientLogin: {
-    NetWork::clients[cId].heartbeat = static_cast<uint64_t>(time(nullptr));
-    NetServer::sendLogin(cId);
-    break;
-  }
-  case NetPayload_ServerLogin: {
-    auto payload = packet->payload_as_ServerLogin();
-    NetWork::cId = payload->client_id();
-    NetClient::sendInScene(0);
-    break;
-  }
   case NetPayload_ClientHeartbeat: {
     // 从union中获取NetHeartbeat
     auto payload = packet->payload_as_ClientHeartbeat();
@@ -139,7 +122,7 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
     } else {
       NetWork::sceneHost[scene] = cId;
     }
-    NetServer::sendInScene(cId, scene, scene_host);
+    NetServer::sendInScene(cId, NetWork::seed, scene, scene_host);
     break;
   }
   case NetPayload_ClientHeroMove: {
@@ -192,7 +175,8 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
     auto payload = packet->payload_as_ServerInScene();
     //
     auto sId = payload->scene_id();
-    NetEvent::InScene(sId);
+    auto seed = payload->seed();
+    NetEvent::InScene(sId, seed);
     break;
   }
   case NetPayload_ServerHeroMove: {

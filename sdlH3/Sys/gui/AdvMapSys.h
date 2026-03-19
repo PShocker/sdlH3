@@ -8,18 +8,25 @@
 #include <cstdint>
 #include <functional>
 #include <string>
+#include <sys/stat.h>
 #include <vector>
 
 struct Button {
   std::vector<SDL_Texture *> textures;
   SDL_FRect r;
-  bool disable;
-  std::function<void()> func;
+  std::function<void()> clickFunc;
+  std::function<bool()> showFunc;
+  std::function<bool()> disableFunc;
   std::u16string title = u"";
   std::u16string info = u"";
 };
 
 struct AdvMapSys {
+
+  static inline std::vector<Button> buttons;
+
+  static void init();
+
   static void drawResBar(float x, float y);
 
   static void heroFocus();

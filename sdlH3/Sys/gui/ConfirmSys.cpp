@@ -20,47 +20,81 @@ static void drawBackGround() {
   }
 }
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
 static void ok() {
   if (Global::confirmCallBack.has_value()) {
     Global::confirmCallBack.value()();
   } else {
-    close();
+    closeScrn();
   }
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-
+void ConfirmSys::init() {
   auto bakW = Global::confirmBakW;
   auto bakH = Global::confirmBakH;
-
-  Button b;
-
-  if (Global::confirmOnlyOK) {
-    b.textures = Global::defCache["iOKAY.def/0"];
-    b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-    b.func = ok;
-    b.disable = false;
-    v.push_back(b);
-
-  } else {
-    b.textures = Global::defCache["iOKAY.def/0"];
-    b.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
-    b.func = ok;
-    b.disable = false;
-    v.push_back(b);
-
-    b.textures = Global::defCache["ICANCEL.DEF/0"];
-    b.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
-    b.func = close;
-    b.disable = false;
-    v.push_back(b);
+  buttons.clear();
+  const auto showFunc = []() { return Global::confirmOnlyOK; };
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+    button.clickFunc = ok;
+    button.disableFunc = []() { return false; };
+    button.showFunc = showFunc;
+    buttons.push_back(button);
   }
-
-  return v;
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
+    button.clickFunc = ok;
+    button.disableFunc = []() { return false; };
+    button.showFunc = showFunc;
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["ICANCEL.DEF/0"];
+    button.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = showFunc;
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+
+//   auto bakW = Global::confirmBakW;
+//   auto bakH = Global::confirmBakH;
+
+//   Button b;
+
+//   if (Global::confirmOnlyOK) {
+//     b.textures = Global::defCache["iOKAY.def/0"];
+//     b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+//     b.func = ok;
+//     b.disable = false;
+//     v.push_back(b);
+
+//   } else {
+//     b.textures = Global::defCache["iOKAY.def/0"];
+//     b.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
+//     b.func = ok;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["ICANCEL.DEF/0"];
+//     b.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
+//     b.func = close;
+//     b.disable = false;
+//     v.push_back(b);
+//   }
+
+//   return v;
+// }
 
 static void drawButton() {
   if (Global::confirmType == (uint8_t)Enum::SCNTYPE::MOD) {
@@ -71,8 +105,7 @@ static void drawButton() {
     SDL_FRect posRect;
     SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                       Global::viewPort.h / 2 - bakH / 2};
-    auto v = buttonInfo();
-    AdvMapSys::drawButtons(leftUp.x, leftUp.y, true, v);
+    AdvMapSys::drawButtons(leftUp.x, leftUp.y, true, ConfirmSys::buttons);
   }
 }
 
@@ -92,10 +125,10 @@ bool ConfirmSys::leftMouseUp(float x, float y) {
     SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                       Global::viewPort.h / 2 - bakH / 2};
     SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
-    auto v = buttonInfo();
     auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, ConfirmSys::buttons,
+                                clickType)) {
       return false;
     }
   }
@@ -105,7 +138,7 @@ bool ConfirmSys::keyUp(uint16_t key) {
   if (Global::confirmType == (uint8_t)Enum::SCNTYPE::MOD) {
     switch (key) {
     case SDL_SCANCODE_ESCAPE: {
-      close();
+      closeScrn();
       break;
     }
     default:

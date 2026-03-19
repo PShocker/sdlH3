@@ -4,7 +4,6 @@ include "Server.fbs";
 // 联合体：包含所有消息类型
 union NetPayload {
     ClientHeartbeat,
-    ClientLogin,
     ClientInScene,
     ClientOutScene,
     ClientHeroMove,
@@ -13,7 +12,6 @@ union NetPayload {
     ClientHeroRecruit,
     ClientHeroDismiss,
     ServerHeartbeat,
-    ServerLogin,
     ServerInScene,
     ServerOutScene,
     ServerHeroMove,

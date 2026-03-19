@@ -31,7 +31,7 @@ static bool need() {
   return need;
 }
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
 static void buy() {
   auto &gold = Global::resources[Global::playerId][6];
@@ -44,35 +44,85 @@ static void buy() {
     }
     gold -= 1000;
   }
-  close();
+  closeScrn();
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-  auto &gold = Global::resources[Global::playerId][6];
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+//   auto &gold = Global::resources[Global::playerId][6];
 
-  if (gold < 1000 || !need()) {
-    b.textures = Global::defCache["iOKAY.def/0"];
-    b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-    b.func = close;
-    b.disable = false;
-    v.push_back(b);
-  } else {
-    b.textures = Global::defCache["iOKAY.def/0"];
-    b.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
-    b.func = buy;
-    b.disable = false;
-    v.push_back(b);
+//   if (gold < 1000 || !need()) {
+//     b.textures = Global::defCache["iOKAY.def/0"];
+//     b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+//     b.func = close;
+//     b.disable = false;
+//     v.push_back(b);
+//   } else {
+//     b.textures = Global::defCache["iOKAY.def/0"];
+//     b.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
+//     b.func = buy;
+//     b.disable = false;
+//     v.push_back(b);
 
-    b.textures = Global::defCache["ICANCEL.DEF/0"];
-    b.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
-    b.func = close;
-    b.disable = false;
-    v.push_back(b);
+//     b.textures = Global::defCache["ICANCEL.DEF/0"];
+//     b.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
+//     b.func = close;
+//     b.disable = false;
+//     v.push_back(b);
+//   }
+
+//   return v;
+// }
+
+void CartographerSys::init() {
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      auto &gold = Global::resources[Global::playerId][6];
+      if (gold < 1000 || !need()) {
+        return true;
+      }
+      return false;
+    };
+    buttons.push_back(button);
   }
 
-  return v;
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
+    button.clickFunc = buy;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      auto &gold = Global::resources[Global::playerId][6];
+      if (gold < 1000 || !need()) {
+        return false;
+      }
+      return true;
+    };
+    buttons.push_back(button);
+  }
+
+  {
+    Button button;
+    button.textures = Global::defCache["ICANCEL.DEF/0"];
+    button.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      auto &gold = Global::resources[Global::playerId][6];
+      if (gold < 1000 || !need()) {
+        return false;
+      }
+      return true;
+    };
+    buttons.push_back(button);
+  }
 }
 
 static void drawBackGround() {
@@ -104,10 +154,9 @@ static void drawButton() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == CartographerSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, CartographerSys::buttons);
 }
 
 bool CartographerSys::run() {
@@ -120,10 +169,10 @@ bool CartographerSys::run() {
 bool CartographerSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, CartographerSys::buttons,
+                              clickType)) {
     return false;
   }
   return true;
@@ -132,7 +181,7 @@ bool CartographerSys::leftMouseUp(float x, float y) {
 bool CartographerSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:

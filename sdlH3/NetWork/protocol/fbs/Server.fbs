@@ -2,13 +2,8 @@ table ServerHeartbeat {
     server_time:uint64;
 }
 
-table ServerLogin{
-    client_id:uint64;
-    server_time:uint64;
-}
-
-
 table ServerInScene {
+    seed:uint32;
     scene_host:uint64;
     scene_id:uint32;
 }

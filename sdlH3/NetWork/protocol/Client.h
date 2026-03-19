@@ -16,9 +16,6 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 25 &&
 struct ClientHeartbeat;
 struct ClientHeartbeatBuilder;
 
-struct ClientLogin;
-struct ClientLoginBuilder;
-
 struct ClientInScene;
 struct ClientInSceneBuilder;
 
@@ -90,48 +87,6 @@ inline ::flatbuffers::Offset<ClientHeartbeat> CreateClientHeartbeat(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     uint64_t client_time = 0) {
   ClientHeartbeatBuilder builder_(_fbb);
-  builder_.add_client_time(client_time);
-  return builder_.Finish();
-}
-
-struct ClientLogin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef ClientLoginBuilder Builder;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_CLIENT_TIME = 4
-  };
-  uint64_t client_time() const {
-    return GetField<uint64_t>(VT_CLIENT_TIME, 0);
-  }
-  template <bool B = false>
-  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint64_t>(verifier, VT_CLIENT_TIME, 8) &&
-           verifier.EndTable();
-  }
-};
-
-struct ClientLoginBuilder {
-  typedef ClientLogin Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_client_time(uint64_t client_time) {
-    fbb_.AddElement<uint64_t>(ClientLogin::VT_CLIENT_TIME, client_time, 0);
-  }
-  explicit ClientLoginBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<ClientLogin> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ClientLogin>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<ClientLogin> CreateClientLogin(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t client_time = 0) {
-  ClientLoginBuilder builder_(_fbb);
   builder_.add_client_time(client_time);
   return builder_.Finish();
 }

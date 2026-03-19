@@ -2,6 +2,7 @@
 #include "Ent/Ent.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mData.h"
+#include "NetWork/NetClient.h"
 #include "NetWork/NetWork.h"
 #include "Pal/PlayerPal.h"
 #include "SDL3/SDL_events.h"
@@ -44,7 +45,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   } else {
     NetWork::init();
   }
-  std::srand(std::time(0));
+  NetClient::sendInScene(0);
 
   // init Set
   HeroSet::init();
@@ -63,8 +64,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   PlayerPal::init();
   Global::init();
   BMPFont::init();
-  Ent::load(Global::mapData);
-  Global::startGame();
   FreeTypeSys::init(1);
   AudioSys::init();
 

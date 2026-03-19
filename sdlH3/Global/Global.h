@@ -20,8 +20,7 @@
 #include <vector>
 
 struct Global {
-  static inline std::random_device rd = std::random_device();
-  static inline std::mt19937 gen = std::mt19937(rd());
+  static inline std::mt19937 gen;
 
   static inline uint8_t langIndex = 1;
 

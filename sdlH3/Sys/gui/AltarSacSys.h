@@ -1,9 +1,13 @@
 #pragma once
 
+#include "Sys/gui/AdvMapSys.h"
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
 #include <vector>
 struct AltarSacSys {
+  static inline std::vector<Button> buttons;
+
+  static void init();
   static bool run();
   static bool keyUp(uint16_t key);
 

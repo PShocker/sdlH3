@@ -40,7 +40,7 @@ int32_t CreatureSys::heroCreMor(uint8_t level, entt::entity heroEnt,
   return r;
 }
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
 static bool canDissmiss() {
   if (Global::creType == (uint8_t)Enum::CRETYPE::MOD_HERO) {
@@ -71,35 +71,73 @@ static void dismiss() {
   World::enterConfirm(100, 100, ((uint8_t)Enum::SCNTYPE::MOD));
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
-      Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
-      Global::creType == (uint8_t)Enum::CRETYPE::POP_DWE) {
-    return v;
+void CreatureSys::init() {
+  const auto showFunc = []() {
+    if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
+        Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
+        Global::creType == (uint8_t)Enum::CRETYPE::POP_DWE) {
+      return false;
+    }
+    return true;
+  };
+  {
+    Button button;
+    button.textures = Global::defCache["hsbtns.DEF/0"];
+    button.r = {230, 236, 52, 36};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = showFunc;
+    buttons.push_back(button);
   }
-  Button b;
-
-  b.textures = Global::defCache["hsbtns.DEF/0"];
-  b.r = {230, 236, 52, 36};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["IVIEWCR2.DEF/0"];
-  b.r = {232, 188, 46, 32};
-  b.func = dismiss;
-  b.disable = !canDissmiss();
-  v.push_back(b);
-
-  b.textures = Global::defCache["IViewCr.DEF/0"];
-  b.r = {180, 188, 46, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+  {
+    Button button;
+    button.textures = Global::defCache["IVIEWCR2.DEF/0"];
+    button.r = {232, 188, 46, 32};
+    button.clickFunc = dismiss;
+    button.disableFunc = []() { return !canDissmiss(); };
+    button.showFunc = showFunc;
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["IViewCr.DEF/0"];
+    button.r = {180, 188, 46, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return !canDissmiss(); };
+    button.showFunc = showFunc;
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
+//       Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
+//       Global::creType == (uint8_t)Enum::CRETYPE::POP_DWE) {
+//     return v;
+//   }
+//   Button b;
+
+//   b.textures = Global::defCache["hsbtns.DEF/0"];
+//   b.r = {230, 236, 52, 36};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["IVIEWCR2.DEF/0"];
+//   b.r = {232, 188, 46, 32};
+//   b.func = dismiss;
+//   b.disable = !canDissmiss();
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["IViewCr.DEF/0"];
+//   b.r = {180, 188, 46, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -137,10 +175,9 @@ static void drawButton() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == CreatureSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, CreatureSys::buttons);
 }
 
 void CreatureSys::creAnimate(uint64_t &creFrameTime, uint64_t &creFrameIndex,
@@ -328,7 +365,7 @@ bool CreatureSys::run() {
 bool CreatureSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:
@@ -340,10 +377,8 @@ bool CreatureSys::keyUp(uint16_t key) {
 bool CreatureSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
-
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttons, clickType)) {
     return false;
   }
   return true;

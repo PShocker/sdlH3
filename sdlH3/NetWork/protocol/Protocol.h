@@ -22,32 +22,29 @@ struct NetPacketBuilder;
 enum NetPayload : uint8_t {
   NetPayload_NONE = 0,
   NetPayload_ClientHeartbeat = 1,
-  NetPayload_ClientLogin = 2,
-  NetPayload_ClientInScene = 3,
-  NetPayload_ClientOutScene = 4,
-  NetPayload_ClientHeroMove = 5,
-  NetPayload_ClientHeroGoal = 6,
-  NetPayload_ClientHeroTeleport = 7,
-  NetPayload_ClientHeroRecruit = 8,
-  NetPayload_ClientHeroDismiss = 9,
-  NetPayload_ServerHeartbeat = 10,
-  NetPayload_ServerLogin = 11,
-  NetPayload_ServerInScene = 12,
-  NetPayload_ServerOutScene = 13,
-  NetPayload_ServerHeroMove = 14,
-  NetPayload_ServerHeroGoal = 15,
-  NetPayload_ServerHeroTeleport = 16,
-  NetPayload_ServerHeroRecruit = 17,
-  NetPayload_ServerHeroDismiss = 18,
+  NetPayload_ClientInScene = 2,
+  NetPayload_ClientOutScene = 3,
+  NetPayload_ClientHeroMove = 4,
+  NetPayload_ClientHeroGoal = 5,
+  NetPayload_ClientHeroTeleport = 6,
+  NetPayload_ClientHeroRecruit = 7,
+  NetPayload_ClientHeroDismiss = 8,
+  NetPayload_ServerHeartbeat = 9,
+  NetPayload_ServerInScene = 10,
+  NetPayload_ServerOutScene = 11,
+  NetPayload_ServerHeroMove = 12,
+  NetPayload_ServerHeroGoal = 13,
+  NetPayload_ServerHeroTeleport = 14,
+  NetPayload_ServerHeroRecruit = 15,
+  NetPayload_ServerHeroDismiss = 16,
   NetPayload_MIN = NetPayload_NONE,
   NetPayload_MAX = NetPayload_ServerHeroDismiss
 };
 
-inline const NetPayload (&EnumValuesNetPayload())[19] {
+inline const NetPayload (&EnumValuesNetPayload())[17] {
   static const NetPayload values[] = {
     NetPayload_NONE,
     NetPayload_ClientHeartbeat,
-    NetPayload_ClientLogin,
     NetPayload_ClientInScene,
     NetPayload_ClientOutScene,
     NetPayload_ClientHeroMove,
@@ -56,7 +53,6 @@ inline const NetPayload (&EnumValuesNetPayload())[19] {
     NetPayload_ClientHeroRecruit,
     NetPayload_ClientHeroDismiss,
     NetPayload_ServerHeartbeat,
-    NetPayload_ServerLogin,
     NetPayload_ServerInScene,
     NetPayload_ServerOutScene,
     NetPayload_ServerHeroMove,
@@ -69,10 +65,9 @@ inline const NetPayload (&EnumValuesNetPayload())[19] {
 }
 
 inline const char * const *EnumNamesNetPayload() {
-  static const char * const names[20] = {
+  static const char * const names[18] = {
     "NONE",
     "ClientHeartbeat",
-    "ClientLogin",
     "ClientInScene",
     "ClientOutScene",
     "ClientHeroMove",
@@ -81,7 +76,6 @@ inline const char * const *EnumNamesNetPayload() {
     "ClientHeroRecruit",
     "ClientHeroDismiss",
     "ServerHeartbeat",
-    "ServerLogin",
     "ServerInScene",
     "ServerOutScene",
     "ServerHeroMove",
@@ -106,10 +100,6 @@ template<typename T> struct NetPayloadTraits {
 
 template<> struct NetPayloadTraits<ClientHeartbeat> {
   static const NetPayload enum_value = NetPayload_ClientHeartbeat;
-};
-
-template<> struct NetPayloadTraits<ClientLogin> {
-  static const NetPayload enum_value = NetPayload_ClientLogin;
 };
 
 template<> struct NetPayloadTraits<ClientInScene> {
@@ -142,10 +132,6 @@ template<> struct NetPayloadTraits<ClientHeroDismiss> {
 
 template<> struct NetPayloadTraits<ServerHeartbeat> {
   static const NetPayload enum_value = NetPayload_ServerHeartbeat;
-};
-
-template<> struct NetPayloadTraits<ServerLogin> {
-  static const NetPayload enum_value = NetPayload_ServerLogin;
 };
 
 template<> struct NetPayloadTraits<ServerInScene> {
@@ -197,9 +183,6 @@ struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const ClientHeartbeat *payload_as_ClientHeartbeat() const {
     return payload_type() == NetPayload_ClientHeartbeat ? static_cast<const ClientHeartbeat *>(payload()) : nullptr;
   }
-  const ClientLogin *payload_as_ClientLogin() const {
-    return payload_type() == NetPayload_ClientLogin ? static_cast<const ClientLogin *>(payload()) : nullptr;
-  }
   const ClientInScene *payload_as_ClientInScene() const {
     return payload_type() == NetPayload_ClientInScene ? static_cast<const ClientInScene *>(payload()) : nullptr;
   }
@@ -223,9 +206,6 @@ struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   const ServerHeartbeat *payload_as_ServerHeartbeat() const {
     return payload_type() == NetPayload_ServerHeartbeat ? static_cast<const ServerHeartbeat *>(payload()) : nullptr;
-  }
-  const ServerLogin *payload_as_ServerLogin() const {
-    return payload_type() == NetPayload_ServerLogin ? static_cast<const ServerLogin *>(payload()) : nullptr;
   }
   const ServerInScene *payload_as_ServerInScene() const {
     return payload_type() == NetPayload_ServerInScene ? static_cast<const ServerInScene *>(payload()) : nullptr;
@@ -262,10 +242,6 @@ template<> inline const ClientHeartbeat *NetPacket::payload_as<ClientHeartbeat>(
   return payload_as_ClientHeartbeat();
 }
 
-template<> inline const ClientLogin *NetPacket::payload_as<ClientLogin>() const {
-  return payload_as_ClientLogin();
-}
-
 template<> inline const ClientInScene *NetPacket::payload_as<ClientInScene>() const {
   return payload_as_ClientInScene();
 }
@@ -296,10 +272,6 @@ template<> inline const ClientHeroDismiss *NetPacket::payload_as<ClientHeroDismi
 
 template<> inline const ServerHeartbeat *NetPacket::payload_as<ServerHeartbeat>() const {
   return payload_as_ServerHeartbeat();
-}
-
-template<> inline const ServerLogin *NetPacket::payload_as<ServerLogin>() const {
-  return payload_as_ServerLogin();
 }
 
 template<> inline const ServerInScene *NetPacket::payload_as<ServerInScene>() const {
@@ -371,10 +343,6 @@ inline bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const
       auto ptr = reinterpret_cast<const ClientHeartbeat *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case NetPayload_ClientLogin: {
-      auto ptr = reinterpret_cast<const ClientLogin *>(obj);
-      return verifier.VerifyTable(ptr);
-    }
     case NetPayload_ClientInScene: {
       auto ptr = reinterpret_cast<const ClientInScene *>(obj);
       return verifier.VerifyTable(ptr);
@@ -405,10 +373,6 @@ inline bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const
     }
     case NetPayload_ServerHeartbeat: {
       auto ptr = reinterpret_cast<const ServerHeartbeat *>(obj);
-      return verifier.VerifyTable(ptr);
-    }
-    case NetPayload_ServerLogin: {
-      auto ptr = reinterpret_cast<const ServerLogin *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case NetPayload_ServerInScene: {

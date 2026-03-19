@@ -7,56 +7,69 @@
 #include "World/World.h"
 #include <vector>
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["ADVVIEW.DEF/0"];
-  b.r = {24, 23, 49, 51};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["ADVVIEW.DEF/0"];
-  b.r = {24, 23, 49, 51};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["ADVPUZ.DEF/0"];
-  b.r = {24, 81, 49, 51};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["ADVDIG.DEF/0"];
-  b.r = {24, 139, 49, 51};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["ADVINFO.DEF/0"];
-  b.r = {24, 198, 49, 51};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["ADVTURN.DEF/0"];
-  b.r = {24, 257, 49, 51};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["IOK6432.DEF/0"];
-  b.r = {203, 313, 64, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void AdvOptionSys::init() {
+  buttons.clear();
+  {
+    // Button button;
+    // button.textures = Global::defCache["iOKAY.def/0"];
+    // button.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+    // button.clickFunc = receive;
+    // button.disableFunc = []() { return false; };
+    // button.showFunc = []() { return true; };
+    // buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["ADVVIEW.DEF/0"];
+//   b.r = {24, 23, 49, 51};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["ADVVIEW.DEF/0"];
+//   b.r = {24, 23, 49, 51};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["ADVPUZ.DEF/0"];
+//   b.r = {24, 81, 49, 51};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["ADVDIG.DEF/0"];
+//   b.r = {24, 139, 49, 51};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["ADVINFO.DEF/0"];
+//   b.r = {24, 198, 49, 51};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["ADVTURN.DEF/0"];
+//   b.r = {24, 257, 49, 51};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["IOK6432.DEF/0"];
+//   b.r = {203, 313, 64, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 void drawBackGround() {
   SDL_FRect posRect;
@@ -72,10 +85,9 @@ void drawBackGround() {
 static void drawButton() {
   SDL_FPoint leftUp{(Global::viewPort.w - 289) / 2,
                     (Global::viewPort.h - 387) / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == AdvOptionSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, AdvOptionSys::buttons);
 }
 
 bool AdvOptionSys::run() {
@@ -87,9 +99,9 @@ bool AdvOptionSys::run() {
 bool AdvOptionSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 289) / 2,
                     (Global::viewPort.h - 387) / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, AdvOptionSys::buttons,
+                              clickType)) {
     return false;
   }
   return true;
@@ -98,7 +110,7 @@ bool AdvOptionSys::leftMouseUp(float x, float y) {
 bool AdvOptionSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:

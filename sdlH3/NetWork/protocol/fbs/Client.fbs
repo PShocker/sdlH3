@@ -3,10 +3,6 @@ table ClientHeartbeat {
     client_time:uint64;
 }
 
-table ClientLogin {
-    client_time:uint64;
-}
-
 table ClientInScene {
     scene_id:uint32;
 }

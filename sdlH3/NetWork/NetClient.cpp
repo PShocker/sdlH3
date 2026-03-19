@@ -27,12 +27,6 @@ void NetClient::sendHeartBeat() {
   return;
 }
 
-void NetClient::sendLogin() {
-  uint64_t now = static_cast<uint64_t>(time(nullptr));
-  sendClientPacket(NetPayload_ClientLogin, CreateClientLogin, now);
-  return;
-}
-
 void NetClient::sendInScene(uint32_t scene) {
   sendClientPacket(NetPayload_ClientInScene, CreateClientInScene, scene);
   return;

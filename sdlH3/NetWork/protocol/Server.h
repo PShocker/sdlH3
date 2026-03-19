@@ -16,9 +16,6 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 25 &&
 struct ServerHeartbeat;
 struct ServerHeartbeatBuilder;
 
-struct ServerLogin;
-struct ServerLoginBuilder;
-
 struct ServerInScene;
 struct ServerInSceneBuilder;
 
@@ -85,64 +82,16 @@ inline ::flatbuffers::Offset<ServerHeartbeat> CreateServerHeartbeat(
   return builder_.Finish();
 }
 
-struct ServerLogin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef ServerLoginBuilder Builder;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_CLIENT_ID = 4,
-    VT_SERVER_TIME = 6
-  };
-  uint64_t client_id() const {
-    return GetField<uint64_t>(VT_CLIENT_ID, 0);
-  }
-  uint64_t server_time() const {
-    return GetField<uint64_t>(VT_SERVER_TIME, 0);
-  }
-  template <bool B = false>
-  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint64_t>(verifier, VT_CLIENT_ID, 8) &&
-           VerifyField<uint64_t>(verifier, VT_SERVER_TIME, 8) &&
-           verifier.EndTable();
-  }
-};
-
-struct ServerLoginBuilder {
-  typedef ServerLogin Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_client_id(uint64_t client_id) {
-    fbb_.AddElement<uint64_t>(ServerLogin::VT_CLIENT_ID, client_id, 0);
-  }
-  void add_server_time(uint64_t server_time) {
-    fbb_.AddElement<uint64_t>(ServerLogin::VT_SERVER_TIME, server_time, 0);
-  }
-  explicit ServerLoginBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<ServerLogin> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ServerLogin>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<ServerLogin> CreateServerLogin(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t client_id = 0,
-    uint64_t server_time = 0) {
-  ServerLoginBuilder builder_(_fbb);
-  builder_.add_server_time(server_time);
-  builder_.add_client_id(client_id);
-  return builder_.Finish();
-}
-
 struct ServerInScene FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ServerInSceneBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_SCENE_HOST = 4,
-    VT_SCENE_ID = 6
+    VT_SEED = 4,
+    VT_SCENE_HOST = 6,
+    VT_SCENE_ID = 8
   };
+  uint32_t seed() const {
+    return GetField<uint32_t>(VT_SEED, 0);
+  }
   uint64_t scene_host() const {
     return GetField<uint64_t>(VT_SCENE_HOST, 0);
   }
@@ -152,6 +101,7 @@ struct ServerInScene FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_SEED, 4) &&
            VerifyField<uint64_t>(verifier, VT_SCENE_HOST, 8) &&
            VerifyField<uint32_t>(verifier, VT_SCENE_ID, 4) &&
            verifier.EndTable();
@@ -162,6 +112,9 @@ struct ServerInSceneBuilder {
   typedef ServerInScene Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_seed(uint32_t seed) {
+    fbb_.AddElement<uint32_t>(ServerInScene::VT_SEED, seed, 0);
+  }
   void add_scene_host(uint64_t scene_host) {
     fbb_.AddElement<uint64_t>(ServerInScene::VT_SCENE_HOST, scene_host, 0);
   }
@@ -181,11 +134,13 @@ struct ServerInSceneBuilder {
 
 inline ::flatbuffers::Offset<ServerInScene> CreateServerInScene(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t seed = 0,
     uint64_t scene_host = 0,
     uint32_t scene_id = 0) {
   ServerInSceneBuilder builder_(_fbb);
   builder_.add_scene_host(scene_host);
   builder_.add_scene_id(scene_id);
+  builder_.add_seed(seed);
   return builder_.Finish();
 }
 

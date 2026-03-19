@@ -31,8 +31,14 @@ static std::pair<uint8_t, entt::entity> FindHeroEnt(uint8_t por) {
 }
 
 // networkEvent
-void NetEvent::InScene(uint32_t scene) {
+void NetEvent::InScene(uint32_t scene, uint32_t seed) {
+  std::srand(seed);
+  Global::gen.seed(seed);
+
+  Ent::load(Global::mapData);
+  Global::startGame();
   World::enterAdvScrn();
+  
   return;
 }
 
