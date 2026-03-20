@@ -16,7 +16,7 @@
 auto goldValue = 0;
 auto woodValue = 0;
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
 static void buy() {
   auto &registry = World::registrys[World::level];
@@ -74,24 +74,46 @@ static bool canBuy() {
   return false;
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["IBY6432.DEF/0"];
-  b.r = {42, 312, 64, 30};
-  b.func = buy;
-  b.disable = !canBuy();
-  v.push_back(b);
-
-  b.textures = Global::defCache["ICANCEL.DEF/0"];
-  b.r = {224, 312, 64, 30};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void ShipyardSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["IBY6432.DEF/0"];
+    button.r = {42, 312, 64, 30};
+    button.clickFunc = buy;
+    button.disableFunc = []() { return !canBuy(); };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["ICANCEL.DEF/0"];
+    button.r = {224, 312, 64, 30};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["IBY6432.DEF/0"];
+//   b.r = {42, 312, 64, 30};
+//   b.func = buy;
+//   b.disable = !canBuy();
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["ICANCEL.DEF/0"];
+//   b.r = {224, 312, 64, 30};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -134,10 +156,9 @@ static void drawBackGround() {
 static void drawButton() {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 329) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 388) / 2)};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == ShipyardSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, ShipyardSys::buttons);
 }
 bool ShipyardSys::run() {
   drawBackGround();
@@ -152,10 +173,10 @@ bool ShipyardSys::rightMouseUp(float x, float y) { return true; }
 bool ShipyardSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 329) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 388) / 2)};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, ShipyardSys::buttons,
+                              clickType)) {
     return false;
   }
   return true;

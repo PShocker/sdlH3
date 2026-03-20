@@ -1,10 +1,15 @@
 #pragma once
 
 #include "Comp/HeroComp.h"
+#include "Sys/gui/AdvMapSys.h"
 #include <cstdint>
 #include <optional>
 #include <string>
 struct HeroScrSys {
+  static inline std::vector<Button> buttons;
+
+  static void init();
+
   static bool run();
   static bool leftMouseUp(float x, float y);
   static bool leftMouseDown(float x, float y);
@@ -18,7 +23,7 @@ struct HeroScrSys {
   static int32_t heroLuk(HeroComp &hComp);
   static int32_t heroSight(HeroComp &hComp);
   static void heroArtifactUpdate(HeroComp &hComp);
-  static void heroArtifactEquip(HeroComp &hComp,uint8_t packIndex);
+  static void heroArtifactEquip(HeroComp &hComp, uint8_t packIndex);
 
   static int8_t heroSecLevel(HeroComp &hComp, uint8_t i);
 

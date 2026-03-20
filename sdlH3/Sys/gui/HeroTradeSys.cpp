@@ -16,7 +16,7 @@
 #include <cstdint>
 #include <vector>
 
-static void close() {
+static void closeScrn() {
   auto [index, artId] = Global::artPair;
   entt::registry *registry[2] = {&World::registrys[World::level],
                                  &World::registrys[Global::goalLevel]};
@@ -36,24 +36,46 @@ static void close() {
   World::exitScrn();
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["iOKAY.def/0"];
-  b.r = {732, 567, 64, 30};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["hsbtns4.DEF/0"];
-  b.r = {10, 44, 52, 36};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void HeroTradeSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {732, 567, 64, 30};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["hsbtns4.DEF/0"];
+    button.r = {10, 44, 52, 36};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["iOKAY.def/0"];
+//   b.r = {732, 567, 64, 30};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["hsbtns4.DEF/0"];
+//   b.r = {10, 44, 52, 36};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawCreature() {
   SDL_FRect posRect;
@@ -521,10 +543,10 @@ static bool clickSecSki(uint8_t clickType) {
 bool HeroTradeSys::rightMouseDown(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, HeroTradeSys::buttons,
+                              clickType)) {
     return false;
   }
   if (clickSecSki(clickType)) {
@@ -563,10 +585,10 @@ bool HeroTradeSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
   SDL_FRect posRect;
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, HeroTradeSys::buttons,
+                              clickType)) {
     return false;
   }
   if (clickPrim(clickType)) {
@@ -585,7 +607,7 @@ bool HeroTradeSys::leftMouseUp(float x, float y) {
 bool HeroTradeSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:

@@ -110,7 +110,7 @@ static bool checkTrade() {
   return r;
 }
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
 static void changeType() {
   switch ((Enum::MARKET)Global::makType) {
@@ -140,133 +140,305 @@ static void maxResource() { World::exitScrn(); }
 
 static void trade() { World::exitScrn(); }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  switch ((Enum::MARKET)Global::makType) {
-  case Enum::MARKET::RES_BUY: {
-    b.textures = Global::defCache["TPMRKBU1.DEF/0"];
-    b.r = {18, 520, 64, 32};
-    b.func = changeType;
-    b.disable = false;
-    v.push_back(b);
-
-    b.textures = Global::defCache["IRCBTNS.DEF/0"];
-    b.r = {227, 520, 64, 32};
-    b.func = maxResource;
-    b.disable = false;
-    v.push_back(b);
-
-    b.textures = Global::defCache["TPMRKB.DEF/0"];
-    b.r = {307, 520, 64, 32};
-    b.func = trade;
-    b.disable = !checkTrade();
-    v.push_back(b);
-
-    b.textures = Global::defCache["IOK6432.def/0"];
-    b.r = {516, 520, 64, 32};
-    b.func = close;
-    b.disable = false;
-    v.push_back(b);
-
-    break;
+void MarketSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["TPMRKBU1.DEF/0"];
+    button.r = {18, 520, 64, 32};
+    button.clickFunc = changeType;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::RES_BUY;
+    };
+    buttons.push_back(button);
   }
-  case Enum::MARKET::RES_SEND: {
-    b.textures = Global::defCache["TPMRKBU5.DEF/0"];
-    b.r = {18, 520, 64, 32};
-    b.func = changeType;
-    b.disable = false;
-    v.push_back(b);
-
-    b.textures = Global::defCache["IRCBTNS.DEF/0"];
-    b.r = {227, 520, 64, 32};
-    b.func = maxResource;
-    b.disable = false;
-    v.push_back(b);
-
-    b.textures = Global::defCache["TPMRKB.DEF/0"];
-    b.r = {307, 520, 64, 32};
-    b.func = trade;
-    b.disable = !checkTrade();
-    v.push_back(b);
-
-    b.textures = Global::defCache["IOK6432.def/0"];
-    b.r = {516, 520, 64, 32};
-    b.func = close;
-    b.disable = false;
-    v.push_back(b);
-
-    break;
+  {
+    Button button;
+    button.textures = Global::defCache["IRCBTNS.DEF/0"];
+    button.r = {227, 520, 64, 32};
+    button.clickFunc = maxResource;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::RES_BUY;
+    };
+    buttons.push_back(button);
   }
-  case Enum::MARKET::ART_BUY: {
-    b.textures = Global::defCache["TPMRKBU3.DEF/0"];
-    b.r = {18, 520, 64, 32};
-    b.func = changeType;
-    b.disable = false;
-    v.push_back(b);
-
-    b.textures = Global::defCache["TPMRKB.DEF/0"];
-    b.r = {268, 520, 64, 32};
-    b.func = trade;
-    b.disable = !checkTrade();
-    v.push_back(b);
-
-    b.textures = Global::defCache["IOK6432.def/0"];
-    b.r = {516, 520, 64, 32};
-    b.func = close;
-    b.disable = false;
-    v.push_back(b);
-
-    break;
+  {
+    Button button;
+    button.textures = Global::defCache["TPMRKB.DEF/0"];
+    button.r = {307, 520, 64, 32};
+    button.clickFunc = trade;
+    button.disableFunc = []() { return !checkTrade(); };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::RES_BUY;
+    };
+    buttons.push_back(button);
   }
-  case Enum::MARKET::ART_SELL: {
-    b.textures = Global::defCache["IOK6432.def/0"];
-    b.r = {516, 520, 64, 32};
-    b.func = close;
-    b.disable = false;
-    v.push_back(b);
-
-    b.textures = Global::defCache["TPMRKBU2.DEF/0"];
-    b.r = {18, 520, 64, 32};
-    b.func = changeType;
-    b.disable = false;
-    v.push_back(b);
-
-    b.textures = Global::defCache["TPMRKB.DEF/0"];
-    b.r = {268, 520, 64, 32};
-    b.func = trade;
-    b.disable = !checkTrade();
-    v.push_back(b);
-
-    b.textures = Global::defCache["IOK6432.def/0"];
-    b.r = {516, 520, 64, 32};
-    b.func = close;
-    b.disable = false;
-    v.push_back(b);
-
-    break;
+  {
+    Button button;
+    button.textures = Global::defCache["IOK6432.def/0"];
+    button.r = {516, 520, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::RES_BUY;
+    };
+    buttons.push_back(button);
   }
-  case Enum::MARKET::CRE_SELL: {
-    b.textures = Global::defCache["TPMRKB.DEF/0"];
-    b.r = {268, 520, 64, 32};
-    b.func = trade;
-    b.disable = !checkTrade();
-    v.push_back(b);
-
-    b.textures = Global::defCache["IOK6432.def/0"];
-    b.r = {516, 520, 64, 32};
-    b.func = close;
-    b.disable = false;
-    v.push_back(b);
-
-    break;
+  // res send
+  {
+    Button button;
+    button.textures = Global::defCache["TPMRKBU5.DEF/0"];
+    button.r = {18, 520, 64, 32};
+    button.clickFunc = changeType;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::RES_SEND;
+    };
+    buttons.push_back(button);
   }
-  default:
-    break;
+  {
+    Button button;
+    button.textures = Global::defCache["IRCBTNS.DEF/0"];
+    button.r = {227, 520, 64, 32};
+    button.clickFunc = maxResource;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::RES_SEND;
+    };
+    buttons.push_back(button);
   }
-  return v;
+  {
+    Button button;
+    button.textures = Global::defCache["TPMRKB.DEF/0"];
+    button.r = {307, 520, 64, 32};
+    button.clickFunc = trade;
+    button.disableFunc = []() { return !checkTrade(); };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::RES_SEND;
+    };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["IOK6432.def/0"];
+    button.r = {516, 520, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::RES_SEND;
+    };
+    buttons.push_back(button);
+  }
+  // art buy
+  {
+    Button button;
+    button.textures = Global::defCache["TPMRKBU3.DEF/0"];
+    button.r = {18, 520, 64, 32};
+    button.clickFunc = changeType;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::ART_BUY;
+    };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["TPMRKB.DEF/0"];
+    button.r = {268, 520, 64, 32};
+    button.clickFunc = trade;
+    button.disableFunc = []() { return !checkTrade(); };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::ART_BUY;
+    };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["IOK6432.def/0"];
+    button.r = {516, 520, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::ART_BUY;
+    };
+    buttons.push_back(button);
+  }
+  // art sell
+  {
+    Button button;
+    button.textures = Global::defCache["IOK6432.def/0"];
+    button.r = {516, 520, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::ART_SELL;
+    };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["TPMRKBU2.DEF/0"];
+    button.r = {18, 520, 64, 32};
+    button.clickFunc = changeType;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::ART_SELL;
+    };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["TPMRKB.DEF/0"];
+    button.r = {268, 520, 64, 32};
+    button.clickFunc = trade;
+    button.disableFunc = []() { return !checkTrade(); };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::ART_SELL;
+    };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["IOK6432.def/0"];
+    button.r = {516, 520, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() {
+      return Global::makType == (uint8_t)Enum::MARKET::ART_SELL;
+    };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   switch ((Enum::MARKET)Global::makType) {
+//   case Enum::MARKET::RES_BUY: {
+//     b.textures = Global::defCache["TPMRKBU1.DEF/0"];
+//     b.r = {18, 520, 64, 32};
+//     b.func = changeType;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["IRCBTNS.DEF/0"];
+//     b.r = {227, 520, 64, 32};
+//     b.func = maxResource;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["TPMRKB.DEF/0"];
+//     b.r = {307, 520, 64, 32};
+//     b.func = trade;
+//     b.disable = !checkTrade();
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["IOK6432.def/0"];
+//     b.r = {516, 520, 64, 32};
+//     b.func = close;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     break;
+//   }
+//   case Enum::MARKET::RES_SEND: {
+//     b.textures = Global::defCache["TPMRKBU5.DEF/0"];
+//     b.r = {18, 520, 64, 32};
+//     b.func = changeType;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["IRCBTNS.DEF/0"];
+//     b.r = {227, 520, 64, 32};
+//     b.func = maxResource;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["TPMRKB.DEF/0"];
+//     b.r = {307, 520, 64, 32};
+//     b.func = trade;
+//     b.disable = !checkTrade();
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["IOK6432.def/0"];
+//     b.r = {516, 520, 64, 32};
+//     b.func = close;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     break;
+//   }
+//   case Enum::MARKET::ART_BUY: {
+//     b.textures = Global::defCache["TPMRKBU3.DEF/0"];
+//     b.r = {18, 520, 64, 32};
+//     b.func = changeType;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["TPMRKB.DEF/0"];
+//     b.r = {268, 520, 64, 32};
+//     b.func = trade;
+//     b.disable = !checkTrade();
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["IOK6432.def/0"];
+//     b.r = {516, 520, 64, 32};
+//     b.func = close;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     break;
+//   }
+//   case Enum::MARKET::ART_SELL: {
+//     b.textures = Global::defCache["IOK6432.def/0"];
+//     b.r = {516, 520, 64, 32};
+//     b.func = close;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["TPMRKBU2.DEF/0"];
+//     b.r = {18, 520, 64, 32};
+//     b.func = changeType;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["TPMRKB.DEF/0"];
+//     b.r = {268, 520, 64, 32};
+//     b.func = trade;
+//     b.disable = !checkTrade();
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["IOK6432.def/0"];
+//     b.r = {516, 520, 64, 32};
+//     b.func = close;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     break;
+//   }
+//   case Enum::MARKET::CRE_SELL: {
+//     b.textures = Global::defCache["TPMRKB.DEF/0"];
+//     b.r = {268, 520, 64, 32};
+//     b.func = trade;
+//     b.disable = !checkTrade();
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["IOK6432.def/0"];
+//     b.r = {516, 520, 64, 32};
+//     b.func = close;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     break;
+//   }
+//   default:
+//     break;
+//   }
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -291,10 +463,10 @@ static void drawBackGround() {
     texture = Global::pcxCache["TPMrkAsS.pcx"][Global::playerId];
     break;
   }
-  case Enum::MARKET::CRE_SELL: {
-    texture = Global::pcxCache["TPMrkCrS.pcx"][Global::playerId];
-    break;
-  }
+  // case Enum::MARKET::CRE_SELL: {
+  //   texture = Global::pcxCache["TPMrkCrS.pcx"][Global::playerId];
+  //   break;
+  // }
   default:
     break;
   }
@@ -311,10 +483,9 @@ static void drawBackGround() {
 static void drawButton() {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 601) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 593) / 2)};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == MarketSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, MarketSys::buttons);
 }
 
 static void drawArts() {
@@ -354,8 +525,7 @@ static void drawArts() {
 
 static void drawSlider() {
   if ((Enum::MARKET)Global::makType == Enum::MARKET::RES_BUY ||
-      (Enum::MARKET)Global::makType == Enum::MARKET::RES_SEND ||
-      (Enum::MARKET)Global::makType == Enum::MARKET::CRE_SELL) {
+      (Enum::MARKET)Global::makType == Enum::MARKET::RES_SEND) {
     SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 601) / 2),
                       static_cast<float>(((int)Global::viewPort.h - 593) / 2)};
     auto count = Global::resources[Global::playerId][Global::makIndex[0]];
@@ -392,11 +562,11 @@ static void drawResource() {
                             Global::makIndex[1]);
     break;
   }
-  case Enum::MARKET::CRE_SELL: {
-    ResourcesPanelSys::draw(leftUp.x + 325, leftUp.y + 182,
-                            Global::makIndex[1]);
-    break;
-  }
+  // case Enum::MARKET::CRE_SELL: {
+  //   ResourcesPanelSys::draw(leftUp.x + 325, leftUp.y + 182,
+  //                           Global::makIndex[1]);
+  //   break;
+  // }
   default:
     break;
   }
@@ -424,22 +594,23 @@ static void drawPlayer() {
   }
 }
 
-static void drawCreature() {
-  SDL_FRect posRect;
-  SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 601) / 2),
-                    static_cast<float>(((int)Global::viewPort.h - 593) / 2)};
-  if ((Enum::MARKET)Global::makType == Enum::MARKET::CRE_SELL) {
-    auto &heroComp =
-        World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-    CreaturesPanelSys::draw(leftUp.x + 45, leftUp.y + 123, heroComp.creatures);
-    if (Global::makIndex[0] != 0xff) {
-      if (heroComp.creatures[Global::makIndex[0]].second != 0) {
-        CreaturesPanelSys::drawBorder(leftUp.x + 45, leftUp.y + 123,
-                                      Global::makIndex[0]);
-      }
-    }
-  }
-}
+// static void drawCreature() {
+//   SDL_FRect posRect;
+//   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 601) / 2),
+//                     static_cast<float>(((int)Global::viewPort.h - 593) / 2)};
+//   // if ((Enum::MARKET)Global::makType == Enum::MARKET::CRE_SELL) {
+//   //   auto &heroComp =
+//   //       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
+//   //   CreaturesPanelSys::draw(leftUp.x + 45, leftUp.y + 123,
+//   heroComp.creatures);
+//   //   if (Global::makIndex[0] != 0xff) {
+//   //     if (heroComp.creatures[Global::makIndex[0]].second != 0) {
+//   //       CreaturesPanelSys::drawBorder(leftUp.x + 45, leftUp.y + 123,
+//   //                                     Global::makIndex[0]);
+//   //     }
+//   //   }
+//   // }
+// }
 
 static void drawSelect() {
   SDL_FRect posRect;
@@ -541,31 +712,31 @@ static void drawSelect() {
     }
     break;
   }
-  case Enum::MARKET::CRE_SELL: {
-    if (Global::makIndex[0] != 0xff) {
-      auto &heroComp =
-          World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-      auto cre = heroComp.creatures[Global::makIndex[0]];
-      if (cre.second != 0 && cre.first != 0xffff) {
-        auto texture = Global::defCache["TWCRPORT.def/0"][cre.first + 2];
-        posRect = {leftUp.x + 128, leftUp.y + 450,
-                   static_cast<float>(texture->w),
-                   static_cast<float>(texture->h)};
-        SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-      }
-    }
-    if (Global::makIndex[1] != 0xff) {
-      const std::vector<SDL_Point> slotsPos = {
-          {428, 460},
-      };
-      auto textures = Global::defCache["RESOURCE.def/0"];
-      auto texture = textures[Global::makIndex[1]];
-      posRect = {leftUp.x + slotsPos[0].x, leftUp.y + slotsPos[0].y,
-                 static_cast<float>(texture->w),
-                 static_cast<float>(texture->h)};
-      SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-    }
-  }
+  // case Enum::MARKET::CRE_SELL: {
+  //   if (Global::makIndex[0] != 0xff) {
+  //     auto &heroComp =
+  //         World::registrys[World::level].get<HeroComp>(Global::heroEnt);
+  //     auto cre = heroComp.creatures[Global::makIndex[0]];
+  //     if (cre.second != 0 && cre.first != 0xffff) {
+  //       auto texture = Global::defCache["TWCRPORT.def/0"][cre.first + 2];
+  //       posRect = {leftUp.x + 128, leftUp.y + 450,
+  //                  static_cast<float>(texture->w),
+  //                  static_cast<float>(texture->h)};
+  //       SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  //     }
+  //   }
+  //   if (Global::makIndex[1] != 0xff) {
+  //     const std::vector<SDL_Point> slotsPos = {
+  //         {428, 460},
+  //     };
+  //     auto textures = Global::defCache["RESOURCE.def/0"];
+  //     auto texture = textures[Global::makIndex[1]];
+  //     posRect = {leftUp.x + slotsPos[0].x, leftUp.y + slotsPos[0].y,
+  //                static_cast<float>(texture->w),
+  //                static_cast<float>(texture->h)};
+  //     SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+  //   }
+  // }
   default:
     break;
   }
@@ -578,7 +749,7 @@ bool MarketSys::run() {
   drawResource();
   drawPlayer();
   drawArts();
-  drawCreature();
+  // drawCreature();
   drawSelect();
   return true;
 }
@@ -586,7 +757,7 @@ bool MarketSys::run() {
 bool MarketSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:
@@ -700,18 +871,18 @@ static bool clickFunc(uint8_t clickType) {
     }
     break;
   }
-  case Enum::MARKET::CRE_SELL: {
-    if (auto c = CreaturesPanelSys::click(leftUp.x + 45, leftUp.y + 123);
-        c != 0xff) {
-      Global::makIndex[0] = c;
-      return true;
-    }
-    if (auto c = ResourcesPanelSys::click(leftUp.x + 325, leftUp.y + 182);
-        c != 0xff) {
-      Global::makIndex[1] = c;
-      return true;
-    }
-  }
+  // case Enum::MARKET::CRE_SELL: {
+  //   if (auto c = CreaturesPanelSys::click(leftUp.x + 45, leftUp.y + 123);
+  //       c != 0xff) {
+  //     Global::makIndex[0] = c;
+  //     return true;
+  //   }
+  //   if (auto c = ResourcesPanelSys::click(leftUp.x + 325, leftUp.y + 182);
+  //       c != 0xff) {
+  //     Global::makIndex[1] = c;
+  //     return true;
+  //   }
+  // }
   default:
     break;
   }
@@ -723,8 +894,8 @@ bool MarketSys::leftMouseUp(float x, float y) {
                     static_cast<float>(((int)Global::viewPort.h - 593) / 2)};
 
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
-  auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, MarketSys::buttons,
+                              clickType)) {
     return false;
   }
   if (clickFunc(clickType)) {

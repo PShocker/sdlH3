@@ -47,18 +47,31 @@ static void receive() {
   mComp.visitHeros.insert(heroComp.portrait);
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["iOKAY.def/0"];
-  b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-  b.func = receive;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void MerCampSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+    button.clickFunc = receive;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["iOKAY.def/0"];
+//   b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+//   b.func = receive;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   auto x = Global::viewPort.w / 2;
@@ -102,10 +115,9 @@ static void draw() {
 static void drawButton() {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == MerCampSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, MerCampSys::buttons);
 }
 
 bool MerCampSys::run() {
@@ -133,10 +145,10 @@ static bool clickAtk(uint8_t clickType) {
 bool MerCampSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, MerCampSys::buttons,
+                              clickType)) {
     return false;
   }
   return true;

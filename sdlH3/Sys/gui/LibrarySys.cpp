@@ -44,18 +44,32 @@ static void receive() {
   lComp.visitHeros.insert(heroComp.portrait);
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["iOKAY.def/0"];
-  b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-  b.func = receive;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void LibrarySys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+    button.clickFunc = receive;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["iOKAY.def/0"];
+//   b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+//   b.func = receive;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   auto x = Global::viewPort.w / 2;
@@ -117,10 +131,9 @@ static void draw() {
 static void drawButton() {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == LibrarySys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, LibrarySys::buttons);
 }
 
 bool LibrarySys::run() {
@@ -152,8 +165,7 @@ bool LibrarySys::leftMouseUp(float x, float y) {
                     Global::viewPort.h / 2 - bakH / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, LibrarySys::buttons, clickType)) {
     return false;
   }
   return true;

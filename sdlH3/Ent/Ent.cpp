@@ -1147,8 +1147,6 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
     break;
   }
   case ObjectType::FREELANCERS_GUILD: {
-    auto marketComp = &registry.emplace<MarketComp>(ent);
-    marketComp->type = (uint8_t)Enum::MARKET::CRE_SELL;
     registry.emplace<FreeGuildComp>(ent);
     break;
   }

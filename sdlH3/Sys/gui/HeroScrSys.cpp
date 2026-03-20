@@ -104,76 +104,173 @@ static void split() {
   Global::splitCre[0] = &heroComp->creatures.at(Global::heroScnIndex);
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
+void HeroScrSys::init() {
+  buttons.clear();
   auto strPool = *Lang::strPool[Global::langIndex];
-
-  b.textures = Global::defCache["hsbtns.DEF/0"];
-  b.r = {609, 516, 52, 36};
-  b.func = closeScrn;
-  b.disable = false;
-  b.title = u"";
-  b.info = strPool[2880];
-  v.push_back(b);
-
-  b.textures = Global::defCache["hsbtns4.DEF/0"];
-  b.r = {314, 429, 52, 36};
-  b.func = closeScrn;
-  b.disable = false;
-  b.title = u"";
-  b.info = strPool[2859];
-  v.push_back(b);
-
-  b.textures = Global::defCache["hsbtns2.DEF/0"];
-  b.r = {534, 429, 52, 36};
-  b.func = dismiss;
-  b.disable = false;
-  b.info = strPool[2866];
-  v.push_back(b);
-
-  b.textures = Global::defCache["hsbtns6.DEF/0"];
-  b.r = {481, 483, 52, 36};
-  b.func = closeScrn;
-  b.disable = false;
-  b.info = strPool[2870];
-  v.push_back(b);
-
-  b.textures = Global::defCache["hsbtns7.DEF/0"];
-  b.r = {481, 519, 52, 36};
-  b.func = closeScrn;
-  b.disable = false;
-  b.info = strPool[2871];
-  v.push_back(b);
-
-  b.textures = Global::defCache["hsbtns8.DEF/0"];
-  b.r = {539, 483, 52, 36};
-  b.func = closeScrn;
-  b.disable = false;
-  b.info = strPool[2876];
-  v.push_back(b);
-
-  // split
-  b.textures = Global::defCache["hsbtns9.DEF/0"];
-  b.r = {539, 519, 52, 36};
-  b.func = split;
-  if (Global::heroScnIndex != 0xff) {
-    b.disable = false;
-  } else {
-    b.disable = true;
+  {
+    Button button;
+    button.textures = Global::defCache["hsbtns.DEF/0"];
+    button.r = {609, 516, 52, 36};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() {
+      return Global::heroScnType == (uint8_t)Enum::SCNTYPE::POP;
+    };
+    button.showFunc = []() { return true; };
+    button.title = u"";
+    button.info = strPool[2880];
+    buttons.push_back(button);
   }
-  b.info = strPool[2879];
-  v.push_back(b);
-
-  if (Global::heroScnType == (uint8_t)Enum::SCNTYPE::POP) {
-    for (auto &b : v) {
-      b.disable = true;
-    }
+  {
+    Button button;
+    button.textures = Global::defCache["hsbtns4.DEF/0"];
+    button.r = {314, 429, 52, 36};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() {
+      return Global::heroScnType == (uint8_t)Enum::SCNTYPE::POP;
+    };
+    button.showFunc = []() { return true; };
+    button.title = u"";
+    button.info = strPool[2859];
+    buttons.push_back(button);
   }
-
-  return v;
+  {
+    Button button;
+    button.textures = Global::defCache["hsbtns2.DEF/0"];
+    button.r = {534, 429, 52, 36};
+    button.clickFunc = dismiss;
+    button.disableFunc = []() {
+      return Global::heroScnType == (uint8_t)Enum::SCNTYPE::POP;
+    };
+    button.showFunc = []() { return true; };
+    button.title = u"";
+    button.info = strPool[2859];
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["hsbtns6.DEF/0"];
+    button.r = {481, 483, 52, 36};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() {
+      return Global::heroScnType == (uint8_t)Enum::SCNTYPE::POP;
+    };
+    button.showFunc = []() { return true; };
+    button.title = u"";
+    button.info = strPool[2859];
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["hsbtns7.DEF/0"];
+    button.r = {481, 519, 52, 36};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() {
+      return Global::heroScnType == (uint8_t)Enum::SCNTYPE::POP;
+    };
+    button.showFunc = []() { return true; };
+    button.title = u"";
+    button.info = strPool[2859];
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["hsbtns8.DEF/0"];
+    button.r = {539, 483, 52, 36};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() {
+      return Global::heroScnType == (uint8_t)Enum::SCNTYPE::POP;
+    };
+    button.showFunc = []() { return true; };
+    button.title = u"";
+    button.info = strPool[2859];
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["hsbtns9.DEF/0"];
+    button.r = {539, 519, 52, 36};
+    button.clickFunc = split;
+    button.disableFunc = []() {
+      return Global::heroScnType == (uint8_t)Enum::SCNTYPE::POP ||
+             Global::heroScnIndex != 0xff;
+    };
+    button.showFunc = []() { return true; };
+    button.title = u"";
+    button.info = strPool[2859];
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   auto strPool = *Lang::strPool[Global::langIndex];
+
+//   b.textures = Global::defCache["hsbtns.DEF/0"];
+//   b.r = {609, 516, 52, 36};
+//   b.func = closeScrn;
+//   b.disable = false;
+//   b.title = u"";
+//   b.info = strPool[2880];
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["hsbtns4.DEF/0"];
+//   b.r = {314, 429, 52, 36};
+//   b.func = closeScrn;
+//   b.disable = false;
+//   b.title = u"";
+//   b.info = strPool[2859];
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["hsbtns2.DEF/0"];
+//   b.r = {534, 429, 52, 36};
+//   b.func = dismiss;
+//   b.disable = false;
+//   b.info = strPool[2866];
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["hsbtns6.DEF/0"];
+//   b.r = {481, 483, 52, 36};
+//   b.func = closeScrn;
+//   b.disable = false;
+//   b.info = strPool[2870];
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["hsbtns7.DEF/0"];
+//   b.r = {481, 519, 52, 36};
+//   b.func = closeScrn;
+//   b.disable = false;
+//   b.info = strPool[2871];
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["hsbtns8.DEF/0"];
+//   b.r = {539, 483, 52, 36};
+//   b.func = closeScrn;
+//   b.disable = false;
+//   b.info = strPool[2876];
+//   v.push_back(b);
+
+//   // split
+//   b.textures = Global::defCache["hsbtns9.DEF/0"];
+//   b.r = {539, 519, 52, 36};
+//   b.func = split;
+//   if (Global::heroScnIndex != 0xff) {
+//     b.disable = false;
+//   } else {
+//     b.disable = true;
+//   }
+//   b.info = strPool[2879];
+//   v.push_back(b);
+
+//   if (Global::heroScnType == (uint8_t)Enum::SCNTYPE::POP) {
+//     for (auto &b : v) {
+//       b.disable = true;
+//     }
+//   }
+
+//   return v;
+// }
 
 static bool clickEquip(uint8_t clickType) {
   const SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
@@ -494,10 +591,9 @@ static void drawButton() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                     (Global::viewPort.h - 586) / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == HeroScrSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, HeroScrSys::buttons);
 }
 
 const static std::vector<SDL_FRect> secSkiPositions = {
@@ -792,9 +888,8 @@ static void drawBottomInfo() {
                             strPool[2860] + strPool[162 + targetArtId]);
     return;
   }
-  auto v = buttonInfo();
   if (AdvMapSys::drawButtonsText(leftUp.x, leftUp.y, leftUp.x + 336,
-                                 leftUp.y + 558, v)) {
+                                 leftUp.y + 558, HeroScrSys::buttons)) {
     return;
   }
 }
@@ -897,10 +992,9 @@ bool HeroScrSys::leftMouseUp(float x, float y) {
   if (Global::heroScnType == (uint8_t)Enum::SCNTYPE::MOD) {
     const SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                             (Global::viewPort.h - 586) / 2};
-    auto v = buttonInfo();
     auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, HeroScrSys::buttons, clickType)) {
       return false;
     }
 
@@ -959,10 +1053,9 @@ bool HeroScrSys::rightMouseDown(float x, float y) {
   if (Global::heroScnType == (uint8_t)Enum::SCNTYPE::MOD) {
     const SDL_FPoint leftUp{(Global::viewPort.w - 672) / 2,
                             (Global::viewPort.h - 586) / 2};
-    auto v = buttonInfo();
     auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
 
-    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, HeroScrSys::buttons, clickType)) {
       return false;
     }
 

@@ -16,20 +16,33 @@
 
 static void upgrade() {}
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["iOKAY.def/0"];
-  b.r = {294, 278, 64, 30};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void HillFtSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {294, 278, 64, 30};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["iOKAY.def/0"];
+//   b.r = {294, 278, 64, 30};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -87,10 +100,9 @@ static void drawButton() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
                     (Global::viewPort.h - 348) / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == HillFtSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, HillFtSys::buttons);
 }
 
 bool HillFtSys::run() {
@@ -131,10 +143,9 @@ static bool clickCre(uint8_t clickType) {
 bool HillFtSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
                     (Global::viewPort.h - 348) / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, HillFtSys::buttons, clickType)) {
     return false;
   }
   return true;
@@ -152,7 +163,7 @@ bool HillFtSys::rightMouseDown(float x, float y) {
 bool HillFtSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:

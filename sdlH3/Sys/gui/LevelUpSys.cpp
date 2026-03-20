@@ -47,18 +47,31 @@ static void receive() {
   Global::goalIndex = 0;
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["iOKAY.def/0"];
-  b.r = {297, 413, 82, 93};
-  b.func = receive;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void LevelUpSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {297, 413, 82, 93};
+    button.clickFunc = receive;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["iOKAY.def/0"];
+//   b.r = {297, 413, 82, 93};
+//   b.func = receive;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -72,10 +85,9 @@ static void drawBackGround() {
 static void drawButton() {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 385) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 470) / 2)};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == LevelUpSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, LevelUpSys::buttons);
 }
 
 const static SDL_FRect porPosition = {170, 66, 58, 64};
@@ -300,8 +312,7 @@ bool LevelUpSys::leftMouseUp(float x, float y) {
                     static_cast<float>(((int)Global::viewPort.h - 470) / 2)};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  auto v = buttonInfo();
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, LevelUpSys::buttons, clickType)) {
     return false;
   }
   if (clickSecSki(clickType)) {

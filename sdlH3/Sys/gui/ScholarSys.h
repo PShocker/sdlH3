@@ -1,8 +1,13 @@
 #pragma once
 
+#include "Sys/gui/AdvMapSys.h"
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
 struct ScholarSys {
+  static inline std::vector<Button> buttons;
+
+  static void init();
+
   static bool run();
 
   static bool leftMouseUp(float x, float y);

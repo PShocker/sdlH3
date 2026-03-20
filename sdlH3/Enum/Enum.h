@@ -28,7 +28,6 @@ struct Enum {
     RES_SEND,
     ART_BUY,
     ART_SELL,
-    CRE_SELL,
   };
 
   enum class ALTAR : uint8_t {

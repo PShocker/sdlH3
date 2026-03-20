@@ -20,7 +20,7 @@ static uint32_t creNum() {
   return Global::splitCre[0]->second + Global::splitCre[1]->second;
 }
 
-static void close() {
+static void closeScrn() {
   World::exitScrn();
   for (auto &i : Global::splitCre) {
     i = nullptr;
@@ -33,27 +33,49 @@ static void ok() {
 
   Global::splitCre[1]->first = Global::splitCre[0]->first;
   Global::splitCre[1]->second = count;
-  close();
+  closeScrn();
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["IOK6432.def/0"];
-  b.r = {20, 263, 64, 32};
-  b.func = ok;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["ICN6432.def/0"];
-  b.r = {214, 263, 64, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void SpliteCreSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["IOK6432.def/0"];
+    button.r = {20, 263, 64, 32};
+    button.clickFunc = ok;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["ICN6432.def/0"];
+    button.r ={214, 263, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["IOK6432.def/0"];
+//   b.r = {20, 263, 64, 32};
+//   b.func = ok;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["ICN6432.def/0"];
+//   b.r = {214, 263, 64, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -89,10 +111,9 @@ static void drawCreatures() {
 static void drawButton() {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == SpliteCreSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, SpliteCreSys::buttons);
 }
 
 static void drawNum() {
@@ -185,10 +206,9 @@ static bool clickSlider() {
 bool SpliteCreSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, SpliteCreSys::buttons, clickType)) {
     return false;
   }
   if (clickSlider()) {
@@ -200,10 +220,9 @@ bool SpliteCreSys::leftMouseUp(float x, float y) {
 bool SpliteCreSys::rightMouseDown(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, SpliteCreSys::buttons, clickType)) {
     return false;
   }
   return true;
@@ -212,7 +231,7 @@ bool SpliteCreSys::rightMouseDown(float x, float y) {
 bool SpliteCreSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:
