@@ -4,6 +4,7 @@
 #include "H3mLoader/H3mObject.h"
 #include "SDL3/SDL_rect.h"
 #include "Set/StructSet.h"
+#include "World/World.h"
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -640,6 +641,7 @@ struct CastleFactionSet {
                                    .val = 1,
                                },
                            },
+                       .clickFunc = World::enterTavern,
                    },
                    {
                        .id = Enum::BUILD_SPECIAL_20,

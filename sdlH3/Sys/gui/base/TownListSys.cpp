@@ -11,21 +11,28 @@ static std::vector<Button> buttonInfo(int32_t x, int32_t y, int32_t length,
                                       uint8_t &page, uint8_t i,
                                       uint8_t playerId) {
   std::vector<Button> v;
-  Button b;
-  b.textures = Global::defCache["IAM014.DEF/0"];
-  b.r = {static_cast<float>(x), static_cast<float>(y), 48, 16};
-  b.disable = page > 0 ? false : true;
-  b.func = [&]() { page -= 1; };
-  v.push_back(b);
+  {
+    Button button;
+    button.textures = Global::defCache["IAM014.DEF/0"];
+    button.r = {static_cast<float>(x), static_cast<float>(y), 48, 16};
+    button.clickFunc = [&]() { page -= 1; };
+    button.disableFunc = [page]() { return page > 0 ? false : true; };
+    button.showFunc = []() { return true; };
+    v.push_back(button);
+  }
 
-  b.textures = Global::defCache["IAM015.DEF/0"];
-  b.r = {static_cast<float>(x), static_cast<float>(y + 16 + 32 * length), 48,
-         16};
-  b.disable =
-      (page + length) >= Global::towns[Global::playerId].size() ? true : false;
-  b.func = [&]() { page += 1; };
-  v.push_back(b);
-
+  {
+    Button button;
+    button.textures = Global::defCache["IAM015.DEF/0"];
+    button.r = {static_cast<float>(x), static_cast<float>(y + 16 + 32 * length),
+                48, 16};
+    button.clickFunc = [&]() { page += 1; };
+    button.disableFunc = [page, length]() {
+      return (page + length) >= Global::towns[Global::playerId].size();
+    };
+    button.showFunc = []() { return true; };
+    v.push_back(button);
+  }
   return v;
 }
 

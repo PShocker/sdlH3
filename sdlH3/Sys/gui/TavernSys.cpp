@@ -77,7 +77,7 @@ static bool canBuy() {
   return r;
 }
 
-static void close() {
+static void closeScrn() {
   VideoSys::close();
   World::exitScrn();
 }
@@ -124,30 +124,61 @@ static void buy() {
   return;
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["TPTAV01.DEF/0"];
-  b.r = {272, 355, 96, 54};
-  b.func = buy;
-  b.disable = !canBuy();
-  v.push_back(b);
-
-  b.textures = Global::defCache["ICANCEL.DEF/0"];
-  b.r = {310, 428, 64, 30};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["TPTAV02.DEF/0"];
-  b.r = {22, 428, 64, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void TavernSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["TPTAV01.DEF/0"];
+    button.r = {272, 355, 96, 54};
+    button.clickFunc = buy;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["ICANCEL.DEF/0"];
+    button.r = {310, 428, 64, 30};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["TPTAV02.DEF/0"];
+    button.r = {22, 428, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["TPTAV01.DEF/0"];
+//   b.r = {272, 355, 96, 54};
+//   b.func = buy;
+//   b.disable = !canBuy();
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["ICANCEL.DEF/0"];
+//   b.r = {310, 428, 64, 30};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["TPTAV02.DEF/0"];
+//   b.r = {22, 428, 64, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -231,10 +262,9 @@ static void drawButton() {
 
   SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
                     (Global::viewPort.h - 504) / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 3];
   auto top = (*topFunc.target<bool (*)()>() == TavernSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, TavernSys::buttons);
 }
 
 bool TavernSys::run() {
@@ -247,7 +277,7 @@ bool TavernSys::run() {
 bool TavernSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:
@@ -281,10 +311,9 @@ static bool clickHero(uint8_t clickType) {
 bool TavernSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
                     (Global::viewPort.h - 504) / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, TavernSys::buttons, clickType)) {
     return false;
   }
   if (clickHero(clickType)) {

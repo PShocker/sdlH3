@@ -17,7 +17,7 @@
 #include <cstdint>
 #include <string>
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
 static void dismiss() {
   auto index = Global::goalIndex;
@@ -33,35 +33,74 @@ static void dismiss() {
   World::enterConfirm(100, 100, ((uint8_t)Enum::SCNTYPE::MOD));
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
-      Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
-      Global::creType == (uint8_t)Enum::CRETYPE::POP_DWE) {
-    return v;
+void WarMachineSys::init() {
+  auto showFunc = []() {
+    if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
+        Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
+        Global::creType == (uint8_t)Enum::CRETYPE::POP_DWE) {
+      return false;
+    }
+    return true;
+  };
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["hsbtns.DEF/0"];
+    button.r = {230, 236, 52, 36};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = showFunc;
+    buttons.push_back(button);
   }
-  Button b;
-
-  b.textures = Global::defCache["hsbtns.DEF/0"];
-  b.r = {230, 236, 52, 36};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["IVIEWCR2.DEF/0"];
-  b.r = {232, 188, 46, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["IViewCr.DEF/0"];
-  b.r = {180, 188, 46, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+  {
+    Button button;
+    button.textures = Global::defCache["IVIEWCR2.DEF/0"];
+    button.r = {232, 188, 46, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = showFunc;
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["IViewCr.DEF/0"];
+    button.r = {180, 188, 46, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = showFunc;
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
+//       Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
+//       Global::creType == (uint8_t)Enum::CRETYPE::POP_DWE) {
+//     return v;
+//   }
+//   Button b;
+
+//   b.textures = Global::defCache["hsbtns.DEF/0"];
+//   b.r = {230, 236, 52, 36};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["IVIEWCR2.DEF/0"];
+//   b.r = {232, 188, 46, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["IViewCr.DEF/0"];
+//   b.r = {180, 188, 46, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -100,10 +139,9 @@ static void drawButton() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == WarMachineSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, WarMachineSys::buttons);
 }
 
 bool WarMachineSys::run() {
@@ -118,7 +156,7 @@ bool WarMachineSys::run() {
 bool WarMachineSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:
@@ -130,10 +168,9 @@ bool WarMachineSys::keyUp(uint16_t key) {
 bool WarMachineSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, WarMachineSys::buttons, clickType)) {
     return false;
   }
   return true;

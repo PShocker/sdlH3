@@ -5,6 +5,10 @@
 #include <vector>
 
 struct TavernSys {
+  static inline std::vector<Button> buttons;
+
+  static void init();
+
   static bool refreshHero(uint8_t playerId, uint8_t index);
   static bool refreshHero(uint8_t playerId, uint8_t index, uint8_t heroClasz);
 

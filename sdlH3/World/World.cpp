@@ -93,11 +93,6 @@
 #include "Sys/gui/WhirlPoolSys.h"
 #include "Sys/gui/WindMillSys.h"
 #include "Sys/gui/WitchHutSys.h"
-#include "Sys/gui/building/Special10Sys.h"
-#include "Sys/gui/building/Special18Sys.h"
-#include "Sys/gui/building/Special19Sys.h"
-#include "Sys/gui/building/Special20Sys.h"
-#include "Sys/gui/building/Special21Sys.h"
 #include "Window/Window.h"
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
@@ -220,85 +215,6 @@ void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
   }
 
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
-}
-
-void World::enterSpec10Build(uint8_t townId, entt::entity bEnt) {
-  switch (townId) {
-  case Enum::FACTION_CASTLE: {
-    enterTavern(entt::null, bEnt);
-    break;
-  }
-  default: {
-    enterScrn();
-    iterateSystems.pop_back();
-    iterateSystems.push_back(Special10Sys::run);
-    iterateSystems.push_back(CursorSys::run);
-    break;
-  }
-  }
-}
-void World::enterSpec18Build(uint8_t townId, entt::entity bEnt) {
-  switch (townId) {
-  case Enum::FACTION_CASTLE: {
-    break;
-  }
-  default: {
-    enterScrn();
-    iterateSystems.pop_back();
-    iterateSystems.push_back(Special18Sys::run);
-    iterateSystems.push_back(CursorSys::run);
-    break;
-  }
-  }
-}
-void World::enterSpec19Build(uint8_t townId, entt::entity bEnt) {
-  switch (townId) {
-  case Enum::FACTION_CASTLE: {
-    enterTavern(entt::null, bEnt);
-    break;
-  }
-  default: {
-    enterScrn();
-    iterateSystems.pop_back();
-    iterateSystems.push_back(Special19Sys::run);
-    iterateSystems.push_back(CursorSys::run);
-    break;
-  }
-  }
-}
-void World::enterSpec20Build(uint8_t townId, entt::entity bEnt) {
-  switch (townId) {
-  case Enum::FACTION_CASTLE: {
-    auto heroEnt = Global::heroEnt;
-    auto hComp = World::registrys[World::level].get<HeroComp>(heroEnt);
-    if (!hComp.visited.contains(ObjectType::STABLES)) {
-      enterStables(heroEnt, entt::null);
-    }
-    break;
-  }
-  default: {
-    enterScrn();
-    iterateSystems.pop_back();
-    iterateSystems.push_back(Special20Sys::run);
-    iterateSystems.push_back(CursorSys::run);
-    break;
-  }
-  }
-}
-void World::enterSpec21Build(uint8_t townId, entt::entity bEnt) {
-  switch (townId) {
-  case Enum::FACTION_CASTLE: {
-    enterTavern(entt::null, bEnt);
-    break;
-  }
-  default: {
-    enterScrn();
-    iterateSystems.pop_back();
-    iterateSystems.push_back(Special21Sys::run);
-    iterateSystems.push_back(CursorSys::run);
-    break;
-  }
-  }
 }
 
 void World::enterTownHall() {

@@ -9,32 +9,46 @@
 #include "SDL3/SDL_rect.h"
 #include "Set/FactionSet.h"
 #include "Sys/FreeTypeSys.h"
+#include "Sys/gui/AdvMapSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include <cstdint>
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["TPMAGE1.DEF/0"];
-  b.r = {748, 556, 48, 40};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void TownHallSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["TPMAGE1.DEF/0"];
+    button.r ={748, 556, 48, 40};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["TPMAGE1.DEF/0"];
+//   b.r = {748, 556, 48, 40};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawButton() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == TownHallSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, TownHallSys::buttons);
 }
 
 static void drawBackGround() {
@@ -174,10 +188,9 @@ static bool clickBuildIcon(uint8_t clickType) {
 bool TownHallSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, TownHallSys::buttons, clickType)) {
     return false;
   }
   if (clickBuildIcon(clickType)) {

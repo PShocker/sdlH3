@@ -24,7 +24,7 @@
 
 static void toMax() { Global::dweSliderNum = WarMachineFacSys::maxCount(); }
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
 static void buy() {
   auto &registry = World::registrys[World::level];
@@ -48,38 +48,69 @@ static void buy() {
   }
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["IRCBTNS.DEF/0"];
-  b.r = {134, 313, 64, 32};
-  b.func = toMax;
-  if (WarMachineFacSys::maxCount() == 0) {
-    b.disable = true;
-  } else {
-    b.disable = false;
+void WarMachineFacSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["IRCBTNS.DEF/0"];
+    button.r = {134, 313, 64, 32};
+    button.clickFunc = toMax;
+    button.disableFunc = []() { return WarMachineFacSys::maxCount() == 0; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
   }
-  v.push_back(b);
-
-  b.textures = Global::defCache["IBY6432.DEF/0"];
-  b.r = {212, 313, 64, 32};
-  b.func = buy;
-  if (Global::dweSliderNum == 0) {
-    b.disable = true;
-  } else {
-    b.disable = false;
+  {
+    Button button;
+    button.textures = Global::defCache["IBY6432.DEF/0"];
+    button.r = {212, 313, 64, 32};
+    button.clickFunc = buy;
+    button.disableFunc = []() { return Global::dweSliderNum == 0; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
   }
-  v.push_back(b);
-
-  b.textures = Global::defCache["ICANCEL.DEF/0"];
-  b.r = {290, 313, 64, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+  {
+    Button button;
+    button.textures = Global::defCache["ICANCEL.DEF/0"];
+    button.r = {290, 313, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["IRCBTNS.DEF/0"];
+//   b.r = {134, 313, 64, 32};
+//   b.func = toMax;
+//   if (WarMachineFacSys::maxCount() == 0) {
+//     b.disable = true;
+//   } else {
+//     b.disable = false;
+//   }
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["IBY6432.DEF/0"];
+//   b.r = {212, 313, 64, 32};
+//   b.func = buy;
+//   if (Global::dweSliderNum == 0) {
+//     b.disable = true;
+//   } else {
+//     b.disable = false;
+//   }
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["ICANCEL.DEF/0"];
+//   b.r = {290, 313, 64, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -184,10 +215,9 @@ static void drawWarMachines() {
 static void drawButton() {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == WarMachineFacSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, WarMachineFacSys::buttons);
 }
 
 static void drawCost() {
@@ -348,10 +378,10 @@ static bool clickMachine(uint8_t clickType) {
 bool WarMachineFacSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 485) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, WarMachineFacSys::buttons,
+                              clickType)) {
     return false;
   }
   // click slider

@@ -22,7 +22,7 @@
 #include <cstdint>
 #include <string>
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
 static void buy() {
   auto [level, townEnt] = Global::townScnPair;
@@ -66,24 +66,46 @@ static void buy() {
   };
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["IBUY30.DEF/0"];
-  b.r = {45, 446, 64, 30};
-  b.func = buy;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["ICANCEL.DEF/0"];
-  b.r = {290, 445, 64, 30};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void TownBuildSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["IBUY30.DEF/0"];
+    button.r ={45, 446, 64, 30};
+    button.clickFunc = buy;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+   {
+    Button button;
+    button.textures = Global::defCache["ICANCEL.DEF/0"];
+    button.r ={290, 445, 64, 30};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["IBUY30.DEF/0"];
+//   b.r = {45, 446, 64, 30};
+//   b.func = buy;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["ICANCEL.DEF/0"];
+//   b.r = {290, 445, 64, 30};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -156,10 +178,9 @@ static void drawBuild() {
 static void drawButton() {
   SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
                     (Global::viewPort.h - 521) / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == TownBuildSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, TownBuildSys::buttons);
 }
 
 bool TownBuildSys::run() {
@@ -172,10 +193,9 @@ bool TownBuildSys::run() {
 bool TownBuildSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 395) / 2,
                     (Global::viewPort.h - 521) / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, TownBuildSys::buttons, clickType)) {
     return false;
   }
   return true;
@@ -184,7 +204,7 @@ bool TownBuildSys::leftMouseUp(float x, float y) {
 bool TownBuildSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:

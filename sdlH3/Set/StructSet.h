@@ -1,10 +1,12 @@
 #pragma once
 
 #include "SDL3/SDL_rect.h"
+#include "entt/entity/fwd.hpp"
 #include <any>
 #include <array>
 #include <cstdint>
 #include <flat_map>
+#include <functional>
 #include <map>
 #include <optional>
 #include <set>
@@ -157,6 +159,7 @@ struct FactionBuild {
   std::optional<int32_t> upgrades;
   bool autoMode;
   std::vector<FactionBuildBonus> bonus;
+  std::optional<std::function<void(entt::entity, entt::entity)>> clickFunc;
 };
 
 struct FactionSiegeGate {

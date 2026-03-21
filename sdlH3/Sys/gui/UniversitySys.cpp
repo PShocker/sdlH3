@@ -18,7 +18,7 @@
 
 static void clear() { Global::goalIndex = 0xff; }
 
-static void close() {
+static void closeScrn() {
   World::exitScrn();
   clear();
 }
@@ -32,38 +32,72 @@ static void study() {
   clear();
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  auto gold = Global::resources[Global::playerId][6];
-  if (Global::goalIndex == 0xff) {
-    b.textures = Global::defCache["iOKAY.def/0"];
-    b.r = {200, 313, 64, 32};
-    b.func = close;
-    b.disable = false;
-    v.push_back(b);
-
-  } else {
-    b.textures = Global::defCache["IBY6432.DEF/0"];
-    b.r = {148, 299, 64, 32};
-    b.func = study;
-    if (gold < 1000) {
-      b.disable = true;
-    } else {
-      b.disable = false;
-    }
-    v.push_back(b);
-
-    b.textures = Global::defCache["ICANCEL.DEF/0"];
-    b.r = {252, 299, 64, 32};
-    b.func = clear;
-    b.disable = false;
-    v.push_back(b);
+void UniversitySys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {200, 313, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return Global::goalIndex == 0xff; };
+    buttons.push_back(button);
   }
-
-  return v;
+  {
+    Button button;
+    button.textures = Global::defCache["IBY6432.DEF/0"];
+    button.r = {148, 299, 64, 32};
+    button.clickFunc = study;
+    button.disableFunc = []() {
+      auto gold = Global::resources[Global::playerId][6];
+      return gold < 1000;
+    };
+    button.showFunc = []() { return Global::goalIndex != 0xff; };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["ICANCEL.DEF/0"];
+    button.r = {252, 299, 64, 32};
+    button.clickFunc = clear;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return Global::goalIndex != 0xff; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   auto gold = Global::resources[Global::playerId][6];
+//   if (Global::goalIndex == 0xff) {
+//     b.textures = Global::defCache["iOKAY.def/0"];
+//     b.r = {200, 313, 64, 32};
+//     b.func = close;
+//     b.disable = false;
+//     v.push_back(b);
+
+//   } else {
+//     b.textures = Global::defCache["IBY6432.DEF/0"];
+//     b.r = {148, 299, 64, 32};
+//     b.func = study;
+//     if (gold < 1000) {
+//       b.disable = true;
+//     } else {
+//       b.disable = false;
+//     }
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["ICANCEL.DEF/0"];
+//     b.r = {252, 299, 64, 32};
+//     b.func = clear;
+//     b.disable = false;
+//     v.push_back(b);
+//   }
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -74,7 +108,7 @@ static void drawBackGround() {
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(240, 224, 104, 255);
   auto oName = strPool[927 + ObjectType::UNIVERSITY];
-  
+
   FreeTypeSys::drawCenter(Global::viewPort.w / 2, leftUp.y + 15, oName);
   if (Global::goalIndex == 0xff) {
     auto texture = Global::pcxCache["UNIVERS1.PCX"][Global::playerId];
@@ -100,10 +134,9 @@ const static std::vector<SDL_FRect> secPosition = {
 static void drawButton() {
   SDL_FPoint leftUp{(Global::viewPort.w - 465) / 2,
                     (Global::viewPort.h - 388) / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == UniversitySys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, UniversitySys::buttons);
 }
 
 static void drawSecSkill() {
@@ -233,10 +266,9 @@ bool UniversitySys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 465) / 2,
                     (Global::viewPort.h - 388) / 2};
   SDL_FPoint point = {(float)(int)x, (float)(int)y};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, UniversitySys::buttons, clickType)) {
     return false;
   }
   if (clickSec(clickType)) {
@@ -258,11 +290,7 @@ bool UniversitySys::rightMouseDown(float x, float y) {
 bool UniversitySys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    if (Global::goalIndex != 0xff) {
-      Global::goalIndex = 0xff;
-    } else {
-      close();
-    }
+    closeScrn();
     break;
   }
   default:

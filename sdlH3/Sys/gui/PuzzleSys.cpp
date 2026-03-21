@@ -11,25 +11,38 @@
 #include "entt/entity/entity.hpp"
 #include <cstdint>
 
-static void close() {
+static void closeScrn() {
   World::exitScrn();
   if (Global::goalEnt != entt::null) {
     Global::advVisted[Global::playerId][World::level].insert(Global::goalEnt);
   }
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["iOKAY.def/0"];
-  b.r = {670, 538, 64, 32};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void PuzzleSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {670, 538, 64, 32};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["iOKAY.def/0"];
+//   b.r = {670, 538, 64, 32};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FRect posRect;
@@ -88,10 +101,9 @@ static void draw() {
 static void drawButton() {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - 800 / 2,
                     Global::viewPort.h / 2 - 600 / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == PuzzleSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, PuzzleSys::buttons);
 }
 
 bool PuzzleSys::run() {
@@ -104,10 +116,10 @@ bool PuzzleSys::run() {
 bool PuzzleSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - 800 / 2,
                     Global::viewPort.h / 2 - 600 / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, PuzzleSys::buttons,
+                              clickType)) {
     return false;
   }
   return true;
@@ -116,7 +128,7 @@ bool PuzzleSys::leftMouseUp(float x, float y) {
 bool PuzzleSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:

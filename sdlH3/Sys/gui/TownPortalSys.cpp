@@ -7,35 +7,56 @@
 #include "Window/Window.h"
 #include "World/World.h"
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 static void portal() { World::exitScrn(); }
 
-std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  b.textures = Global::defCache["iOKAY.def/0"];
-  b.r = {228, 402, 64, 30};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  b.textures = Global::defCache["iOKAY.def/0"];
-  b.r = {15, 402, 64, 30};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  return v;
+void TownPortalSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {228, 402, 64, 30};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {15, 402, 64, 30};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   b.textures = Global::defCache["iOKAY.def/0"];
+//   b.r = {228, 402, 64, 30};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   b.textures = Global::defCache["iOKAY.def/0"];
+//   b.r = {15, 402, 64, 30};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   return v;
+// }
 
 static void drawButton() {
   SDL_FPoint leftUp{(Global::viewPort.w - 306) / 2,
                     (Global::viewPort.h - 469) / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == TownPortalSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, TownPortalSys::buttons);
 }
 
 static void drawBackGround() {
@@ -79,7 +100,7 @@ bool TownPortalSys::run() {
 bool TownPortalSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:
@@ -91,10 +112,10 @@ bool TownPortalSys::keyUp(uint16_t key) {
 bool TownPortalSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, TownPortalSys::buttons,
+                              clickType)) {
     return false;
   }
   return true;

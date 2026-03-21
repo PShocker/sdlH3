@@ -405,7 +405,7 @@ void TownSys::heroTownBonus() {
   MageGuildSys::study();
 }
 
-static void close() {
+static void closeScrn() {
   Global::splitOn = false;
   World::enterAdvScrn();
   auto [level, townEnt] = Global::townScnPair;
@@ -449,35 +449,66 @@ static void split() {
   Global::splitOn = true;
 }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  auto t = Global::defCache["tsbtns.def/0"];
-
-  std::vector<SDL_Texture *> vec;
-  vec = {t[0], t[1], t[2]};
-  b.textures = vec;
-  b.r = {744, 382, 48, 28};
-  b.func = split;
-  b.disable = cre() == nullptr ? true : false;
-  v.push_back(b);
-
-  vec = {t[4], t[5]};
-  b.textures = vec;
-  b.r = {744, 544, 48, 28};
-  b.func = close;
-  b.disable = false;
-  v.push_back(b);
-
-  if (Global::townScnType == (uint8_t)Enum::SCNTYPE::POP) {
-    for (auto &b : v) {
-      b.disable = true;
-    }
+void TownSys::init() {
+  buttons.clear();
+  {
+    auto t = Global::defCache["tsbtns.def/0"];
+    std::vector<SDL_Texture *> vec = {t[0], t[1], t[2]};
+    Button button;
+    button.textures = vec;
+    button.r = {744, 382, 48, 28};
+    button.clickFunc = split;
+    button.disableFunc = []() {
+      return Global::townScnType == (uint8_t)Enum::SCNTYPE::POP ||
+             cre() == nullptr;
+    };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
   }
-
-  return v;
+  {
+    auto t = Global::defCache["tsbtns.def/0"];
+    std::vector<SDL_Texture *> vec = {t[4], t[5]};
+    Button button;
+    button.textures = vec;
+    button.r = {744, 544, 48, 28};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() {
+      return Global::townScnType == (uint8_t)Enum::SCNTYPE::POP;
+    };
+    button.showFunc = []() { return true; };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   auto t = Global::defCache["tsbtns.def/0"];
+
+//   std::vector<SDL_Texture *> vec;
+//   vec = {t[0], t[1], t[2]};
+//   b.textures = vec;
+//   b.r = {744, 382, 48, 28};
+//   b.func = split;
+//   b.disable = cre() == nullptr ? true : false;
+//   v.push_back(b);
+
+//   vec = {t[4], t[5]};
+//   b.textures = vec;
+//   b.r = {744, 544, 48, 28};
+//   b.func = close;
+//   b.disable = false;
+//   v.push_back(b);
+
+//   if (Global::townScnType == (uint8_t)Enum::SCNTYPE::POP) {
+//     for (auto &b : v) {
+//       b.disable = true;
+//     }
+//   }
+
+//   return v;
+// }
 
 static void drawTownInfo() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
@@ -618,11 +649,10 @@ static void drawBorder() {
 static void drawButton() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto funcPtr = topFunc.target<bool (*)()>();
   auto top = (funcPtr && *topFunc.target<bool (*)()>() == TownSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, TownSys::buttons);
 }
 
 void drawCreature(uint8_t i,
@@ -1145,31 +1175,9 @@ static void clickSpecial(uint8_t clickType) {
     auto &registry = World::registrys[level];
     auto townComp = &registry.get<TownComp>(townEnt);
     auto bEnt = townComp->buildings[buildId];
-    switch (buildId) {
-    case Enum::BUILD_SPECIAL_10: {
-      World::enterSpec10Build(townComp->id, bEnt);
-      break;
-    }
-    case Enum::BUILD_SPECIAL_18: {
-      World::enterSpec18Build(townComp->id, bEnt);
-      break;
-    }
-    case Enum::BUILD_SPECIAL_19: {
-      World::enterSpec19Build(townComp->id, bEnt);
-      break;
-    }
-    case Enum::BUILD_SPECIAL_20: {
-      World::enterSpec20Build(townComp->id, bEnt);
-      break;
-    }
-    case Enum::BUILD_SPECIAL_21: {
-      World::enterSpec21Build(townComp->id, bEnt);
-      break;
-    }
-    default: {
-      break;
-    }
-    }
+    auto buildI =
+        FactionSet::fullFactions[townComp->id]->builds.at(buildId + 1);
+    buildI.clickFunc.value()(townComp->heroEnt[1].value_or(entt::null), bEnt);
   } else {
     auto [level, townEnt] = Global::townScnPair;
     TownSys::showBuildComfirm(buildId, (uint8_t)Enum::SCNTYPE::POP);
@@ -1518,10 +1526,10 @@ bool TownSys::leftMouseUp(float x, float y) {
   }
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, TownSys::buttons,
+                              clickType)) {
     return false;
   }
   if (clickBuild(clickType)) {
@@ -1574,7 +1582,7 @@ bool TownSys::rightMouseDown(float x, float y) {
 bool TownSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:

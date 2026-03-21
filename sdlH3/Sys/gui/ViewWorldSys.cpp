@@ -13,18 +13,31 @@
 
 static void receive() {}
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  // b.textures = Global::defCache["iOKAY.def/0"];
-  // b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-  // b.func = receive;
-  // b.disable = false;
-  // v.push_back(b);
-
-  return v;
+void ViewWorldSys::init() {
+  buttons.clear();
+  {
+    // Button button;
+    // button.textures = Global::defCache["iOKAY.def/0"];
+    // button.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+    // button.clickFunc = receive;
+    // button.disableFunc = []() { return false; };
+    // button.showFunc = []() { return true; };
+    // buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   // b.textures = Global::defCache["iOKAY.def/0"];
+//   // b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+//   // b.func = receive;
+//   // b.disable = false;
+//   // v.push_back(b);
+
+//   return v;
+// }
 
 static void drawBackGround() {
   SDL_FPoint leftUp{Global::viewPort.w - 190, Global::viewPort.h - 381};
@@ -58,10 +71,9 @@ static void draw() {
 
 static void drawButton() {
   SDL_FPoint leftUp{Global::viewPort.w - 190, Global::viewPort.h - 381};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == ViewWorldSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, ViewWorldSys::buttons);
 }
 
 bool ViewWorldSys::run() {
@@ -73,10 +85,10 @@ bool ViewWorldSys::run() {
 
 bool ViewWorldSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w - 190, Global::viewPort.h - 381};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, ViewWorldSys::buttons,
+                              clickType)) {
     return false;
   }
   return true;

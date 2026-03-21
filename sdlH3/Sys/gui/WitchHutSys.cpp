@@ -48,35 +48,66 @@ static void receive() {
   World::exitScrn();
 }
 
-static void close() { World::exitScrn(); }
+static void closeScrn() { World::exitScrn(); }
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  if (visited()) {
-    b.textures = Global::defCache["iOKAY.def/0"];
-    b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-    b.func = receive;
-    b.disable = false;
-    v.push_back(b);
-
-  } else {
-    b.textures = Global::defCache["iOKAY.def/0"];
-    b.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
-    b.func = receive;
-    b.disable = false;
-    v.push_back(b);
-
-    b.textures = Global::defCache["ICANCEL.DEF/0"];
-    b.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
-    b.func = close;
-    b.disable = false;
-    v.push_back(b);
+void WitchHutSys::init() {
+  buttons.clear();
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+    button.clickFunc = receive;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return visited(); };
+    buttons.push_back(button);
   }
-
-  return v;
+  {
+    Button button;
+    button.textures = Global::defCache["iOKAY.def/0"];
+    button.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
+    button.clickFunc = receive;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return !visited(); };
+    buttons.push_back(button);
+  }
+  {
+    Button button;
+    button.textures = Global::defCache["ICANCEL.DEF/0"];
+    button.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
+    button.clickFunc = closeScrn;
+    button.disableFunc = []() { return false; };
+    button.showFunc = []() { return !visited(); };
+    buttons.push_back(button);
+  }
 }
+
+// static std::vector<Button> buttonInfo() {
+//   std::vector<Button> v;
+//   Button b;
+
+//   if (visited()) {
+//     b.textures = Global::defCache["iOKAY.def/0"];
+//     b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+//     b.func = receive;
+//     b.disable = false;
+//     v.push_back(b);
+
+//   } else {
+//     b.textures = Global::defCache["iOKAY.def/0"];
+//     b.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
+//     b.func = receive;
+//     b.disable = false;
+//     v.push_back(b);
+
+//     b.textures = Global::defCache["ICANCEL.DEF/0"];
+//     b.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
+//     b.func = close;
+//     b.disable = false;
+//     v.push_back(b);
+//   }
+
+//   return v;
+// }
 
 static void drawBackGround() {
   auto x = Global::viewPort.w / 2;
@@ -112,10 +143,9 @@ static void draw() {
 static void drawButton() {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == WitchHutSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, WitchHutSys::buttons);
 }
 
 bool WitchHutSys::run() {
@@ -144,10 +174,10 @@ static bool clickSecSki(uint8_t clickType) {
 bool WitchHutSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, WitchHutSys::buttons,
+                              clickType)) {
     return false;
   }
   return true;
@@ -165,7 +195,7 @@ bool WitchHutSys::rightMouseDown(float x, float y) {
 bool WitchHutSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:
