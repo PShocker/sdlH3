@@ -72,6 +72,7 @@ static void dismiss() {
 }
 
 void CreatureSys::init() {
+  buttons.clear();
   const auto showFunc = []() {
     if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
         Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
@@ -108,36 +109,6 @@ void CreatureSys::init() {
     buttons.push_back(button);
   }
 }
-
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
-//       Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
-//       Global::creType == (uint8_t)Enum::CRETYPE::POP_DWE) {
-//     return v;
-//   }
-//   Button b;
-
-//   b.textures = Global::defCache["hsbtns.DEF/0"];
-//   b.r = {230, 236, 52, 36};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   b.textures = Global::defCache["IVIEWCR2.DEF/0"];
-//   b.r = {232, 188, 46, 32};
-//   b.func = dismiss;
-//   b.disable = !canDissmiss();
-//   v.push_back(b);
-
-//   b.textures = Global::defCache["IViewCr.DEF/0"];
-//   b.r = {180, 188, 46, 32};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
 
 static void drawBackGround() {
   SDL_FRect posRect;

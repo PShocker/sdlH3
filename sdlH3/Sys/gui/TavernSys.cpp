@@ -131,7 +131,7 @@ void TavernSys::init() {
     button.textures = Global::defCache["TPTAV01.DEF/0"];
     button.r = {272, 355, 96, 54};
     button.clickFunc = buy;
-    button.disableFunc = []() { return false; };
+    button.disableFunc = []() { return !canBuy(); };
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
@@ -154,31 +154,6 @@ void TavernSys::init() {
     buttons.push_back(button);
   }
 }
-
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["TPTAV01.DEF/0"];
-//   b.r = {272, 355, 96, 54};
-//   b.func = buy;
-//   b.disable = !canBuy();
-//   v.push_back(b);
-
-//   b.textures = Global::defCache["ICANCEL.DEF/0"];
-//   b.r = {310, 428, 64, 30};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   b.textures = Global::defCache["TPTAV02.DEF/0"];
-//   b.r = {22, 428, 64, 32};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
 
 static void drawBackGround() {
   SDL_FRect posRect;

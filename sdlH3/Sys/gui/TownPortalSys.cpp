@@ -32,25 +32,6 @@ void TownPortalSys::init() {
   }
 }
 
-// std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["iOKAY.def/0"];
-//   b.r = {228, 402, 64, 30};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   b.textures = Global::defCache["iOKAY.def/0"];
-//   b.r = {15, 402, 64, 30};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
-
 static void drawButton() {
   SDL_FPoint leftUp{(Global::viewPort.w - 306) / 2,
                     (Global::viewPort.h - 469) / 2};

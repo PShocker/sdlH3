@@ -67,19 +67,6 @@ void MageGuildSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["TPMAGE1.DEF/0"];
-//   b.r = {748, 556, 48, 40};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
-
 static void drawBackGround() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 800) / 2),

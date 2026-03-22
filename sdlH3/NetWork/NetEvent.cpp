@@ -38,7 +38,7 @@ void NetEvent::InScene(uint32_t scene, uint32_t seed) {
   Ent::load(Global::mapData);
   Global::startGame();
   World::enterAdvScrn();
-  
+
   return;
 }
 
@@ -82,6 +82,7 @@ void NetEvent::HeroGoal(uint8_t por, uint8_t type, uint8_t level, uint8_t x,
         HeroMove(por, level, ox, oy);
       }
       hComp->goalEnt.push_back(oEnt);
+      hComp->visitedEnt[level].insert(oEnt);
       return;
     }
   }
@@ -95,7 +96,47 @@ void NetEvent::HeroRecruit(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
 
 void NetEvent::HeroDismiss(uint8_t por) {
   auto [i, heroEnt] = FindHeroEnt(por);
+  World::level = i;
+  AdvMapSys::heroFocus(heroEnt, i);
   auto &registry = World::registrys[i];
+
+  World::iterateSystemsBak.push_back(World::iterateSystems);
+  World::iterateSystems.push_back([]() {
+    auto [level, heroEnt] = Global::heroScnPair;
+    for (uint8_t i = 0; i < Global::heros[Global::playerId].size(); i++) {
+      if (Global::heros[Global::playerId][i].second == heroEnt &&
+          Global::heros[Global::playerId][i].first == level) {
+        Global::heros[Global::playerId].erase(
+            Global::heros[Global::playerId].begin() + i);
+        if (Global::herosIndex[Global::playerId] == i) {
+          Global::herosIndex[Global::playerId] = 0xff;
+        }
+        break;
+      }
+    }
+    auto heroComp = &World::registrys[level].get<HeroComp>(heroEnt);
+    if (heroComp->curEnt.has_value()) {
+      auto curEnt = heroComp->curEnt.value();
+      if (auto townComp =
+              World::registrys[World::level].try_get<TownComp>(curEnt)) {
+        for (auto &ent : townComp->heroEnt) {
+          if (ent == heroEnt) { // std::optional 支持直接比较
+            ent = std::nullopt;
+            break;
+          }
+        }
+      }
+    }
+    for (auto pathEnt : heroComp->pathEnts) {
+      World::registrys[World::level].destroy(pathEnt);
+    }
+    World::registrys[World::level].destroy(heroComp->flagEnt);
+    World::registrys[World::level].destroy(heroEnt);
+    World::needSort = true;
+    return true;
+  });
+  Global::fadeRect = {0, 0, Global::viewPort.w - 199, Global::viewPort.h - 47};
+  World::iterateSystems.push_back(World::enterFadeScrn);
 }
 
 void NetEvent::HeroTeleport(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {

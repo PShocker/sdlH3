@@ -39,7 +39,7 @@ static void receive() {
     heroComp.primSkills[1] += 5;
     heroComp.primSkills[2] += 5;
     heroComp.primSkills[3] += 5;
-    heroComp.visitedEnt.insert(Global::goalEnt);
+    heroComp.visitedEnt[World::level].insert(Global::goalEnt);
   }
   lComp.visitHeros.insert(heroComp.portrait);
 }
@@ -56,20 +56,6 @@ void LibrarySys::init() {
     buttons.push_back(button);
   }
 }
-
-
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["iOKAY.def/0"];
-//   b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-//   b.func = receive;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
 
 static void drawBackGround() {
   auto x = Global::viewPort.w / 2;

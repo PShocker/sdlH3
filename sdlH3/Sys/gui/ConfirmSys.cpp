@@ -64,38 +64,6 @@ void ConfirmSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-
-//   auto bakW = Global::confirmBakW;
-//   auto bakH = Global::confirmBakH;
-
-//   Button b;
-
-//   if (Global::confirmOnlyOK) {
-//     b.textures = Global::defCache["iOKAY.def/0"];
-//     b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-//     b.func = ok;
-//     b.disable = false;
-//     v.push_back(b);
-
-//   } else {
-//     b.textures = Global::defCache["iOKAY.def/0"];
-//     b.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
-//     b.func = ok;
-//     b.disable = false;
-//     v.push_back(b);
-
-//     b.textures = Global::defCache["ICANCEL.DEF/0"];
-//     b.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
-//     b.func = close;
-//     b.disable = false;
-//     v.push_back(b);
-//   }
-
-//   return v;
-// }
-
 static void drawButton() {
   if (Global::confirmType == (uint8_t)Enum::SCNTYPE::MOD) {
 

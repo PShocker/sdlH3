@@ -91,34 +91,6 @@ void KnoTreeSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   if (maxCount() == 0 || visited()) {
-//     b.textures = Global::defCache["iOKAY.def/0"];
-//     b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-//     b.func = close;
-//     b.disable = false;
-//     v.push_back(b);
-
-//   } else {
-//     b.textures = Global::defCache["iOKAY.def/0"];
-//     b.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
-//     b.func = receive;
-//     b.disable = false;
-//     v.push_back(b);
-
-//     b.textures = Global::defCache["ICANCEL.DEF/0"];
-//     b.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
-//     b.func = close;
-//     b.disable = false;
-//     v.push_back(b);
-//   }
-
-//   return v;
-// }
-
 static void drawBackGround() {
   auto x = Global::viewPort.w / 2;
   auto y = Global::viewPort.h / 2;

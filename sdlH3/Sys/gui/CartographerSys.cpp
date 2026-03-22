@@ -47,35 +47,8 @@ static void buy() {
   closeScrn();
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-//   auto &gold = Global::resources[Global::playerId][6];
-
-//   if (gold < 1000 || !need()) {
-//     b.textures = Global::defCache["iOKAY.def/0"];
-//     b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-//     b.func = close;
-//     b.disable = false;
-//     v.push_back(b);
-//   } else {
-//     b.textures = Global::defCache["iOKAY.def/0"];
-//     b.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
-//     b.func = buy;
-//     b.disable = false;
-//     v.push_back(b);
-
-//     b.textures = Global::defCache["ICANCEL.DEF/0"];
-//     b.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
-//     b.func = close;
-//     b.disable = false;
-//     v.push_back(b);
-//   }
-
-//   return v;
-// }
-
 void CartographerSys::init() {
+  buttons.clear();
   {
     Button button;
     button.textures = Global::defCache["iOKAY.def/0"];

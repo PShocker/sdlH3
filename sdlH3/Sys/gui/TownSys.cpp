@@ -480,36 +480,6 @@ void TownSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   auto t = Global::defCache["tsbtns.def/0"];
-
-//   std::vector<SDL_Texture *> vec;
-//   vec = {t[0], t[1], t[2]};
-//   b.textures = vec;
-//   b.r = {744, 382, 48, 28};
-//   b.func = split;
-//   b.disable = cre() == nullptr ? true : false;
-//   v.push_back(b);
-
-//   vec = {t[4], t[5]};
-//   b.textures = vec;
-//   b.r = {744, 544, 48, 28};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   if (Global::townScnType == (uint8_t)Enum::SCNTYPE::POP) {
-//     for (auto &b : v) {
-//       b.disable = true;
-//     }
-//   }
-
-//   return v;
-// }
-
 static void drawTownInfo() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};

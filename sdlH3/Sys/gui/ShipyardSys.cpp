@@ -96,25 +96,6 @@ void ShipyardSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["IBY6432.DEF/0"];
-//   b.r = {42, 312, 64, 30};
-//   b.func = buy;
-//   b.disable = !canBuy();
-//   v.push_back(b);
-
-//   b.textures = Global::defCache["ICANCEL.DEF/0"];
-//   b.r = {224, 312, 64, 30};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
-
 static void drawBackGround() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 329) / 2),

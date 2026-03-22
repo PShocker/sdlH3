@@ -30,19 +30,6 @@ void FreeGuildSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["iOKAY.def/0"];
-//   b.r = {208, 320, 64, 30};
-//   b.func = upgrade;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
-
 static void drawBackGround() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,

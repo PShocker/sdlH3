@@ -42,7 +42,7 @@ static void receive() {
     } else {
       heroComp.primSkills[1] += 2;
     }
-    heroComp.visitedEnt.insert(Global::goalEnt);
+    heroComp.visitedEnt[World::level].insert(Global::goalEnt);
     schMComp.visitHeros.insert(heroComp.portrait);
   }
   heroComp.visited.insert((uint8_t)ObjectType::ARENA);
@@ -61,19 +61,6 @@ void ArenaSys::init() {
     buttons.push_back(button);
   }
 }
-
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-
-//   Button b;
-//   b.textures = Global::defCache["iOKAY.def/0"];
-//   b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-//   b.func = receive;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
 
 static void drawBackGround() {
   auto x = Global::viewPort.w / 2;
@@ -170,7 +157,8 @@ bool ArenaSys::leftMouseUp(float x, float y) {
                     Global::viewPort.h / 2 - bakH / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, ArenaSys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, ArenaSys::buttons,
+                              clickType)) {
     return false;
   }
   if (clickPrim(clickType)) {

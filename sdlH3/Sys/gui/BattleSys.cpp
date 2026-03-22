@@ -21,18 +21,6 @@ static const int BFIELD_WIDTH = 17;
 static const int BFIELD_HEIGHT = 11;
 static const int BFIELD_SIZE = BFIELD_WIDTH * BFIELD_HEIGHT;
 
-static std::vector<Button> buttonInfo() {
-  std::vector<Button> v;
-  Button b;
-
-  // b.textures = Global::defCache["iOKAY.def/0"];
-  // b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-  // // b.func = receive;
-  // b.disable = false;
-  // v.push_back(b);
-
-  return v;
-}
 // icm007.def
 static void drawBackGround() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
@@ -58,15 +46,19 @@ static void drawBackGround() {
 
   return;
 }
-
+void BattleSys::init() {
+  buttons.clear();
+  {
+   
+  }
+}
 static void drawButton() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto v = buttonInfo();
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == BattleSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, v);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, BattleSys::buttons);
 }
 
 static SDL_FRect hexPositionLocal(uint32_t hex) {
@@ -102,9 +94,8 @@ bool BattleSys::run() {
 bool BattleSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto v = buttonInfo();
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, v, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, BattleSys::buttons, clickType)) {
     return false;
   }
   return true;

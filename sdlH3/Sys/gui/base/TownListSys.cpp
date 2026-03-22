@@ -7,10 +7,9 @@
 #include "World/World.h"
 #include <vector>
 
-static std::vector<Button> buttonInfo(int32_t x, int32_t y, int32_t length,
-                                      uint8_t &page, uint8_t i,
-                                      uint8_t playerId) {
-  std::vector<Button> v;
+void TownListSys::init(int32_t x, int32_t y, int32_t length, uint8_t &page,
+                       uint8_t i, uint8_t playerId) {
+  buttons.clear();
   {
     Button button;
     button.textures = Global::defCache["IAM014.DEF/0"];
@@ -18,7 +17,7 @@ static std::vector<Button> buttonInfo(int32_t x, int32_t y, int32_t length,
     button.clickFunc = [&]() { page -= 1; };
     button.disableFunc = [page]() { return page > 0 ? false : true; };
     button.showFunc = []() { return true; };
-    v.push_back(button);
+    buttons.push_back(button);
   }
 
   {
@@ -31,9 +30,8 @@ static std::vector<Button> buttonInfo(int32_t x, int32_t y, int32_t length,
       return (page + length) >= Global::towns[Global::playerId].size();
     };
     button.showFunc = []() { return true; };
-    v.push_back(button);
+    buttons.push_back(button);
   }
-  return v;
 }
 
 void TownListSys::draw(int32_t x, int32_t y, int32_t length, uint8_t page,
@@ -58,8 +56,8 @@ void TownListSys::draw(int32_t x, int32_t y, int32_t length, uint8_t page,
     posRect.y += 32;
   }
 
-  auto v = buttonInfo(x, y, length, page, i, playerId);
-  AdvMapSys::drawButtons(0, 0, top, v);
+  TownListSys::init(x, y, length, page, i, playerId);
+  AdvMapSys::drawButtons(0, 0, top, buttons);
   return;
 }
 
@@ -67,8 +65,8 @@ bool TownListSys::click(int32_t x, int32_t y, int32_t length, uint8_t &page,
                         uint8_t &i, uint8_t playerId, uint8_t clickType) {
   bool r = false;
   auto pageBak = page;
-  auto v = buttonInfo(x, y, length, page, i, playerId);
-  if (AdvMapSys::clickButtons(0, 0, v, clickType)) {
+  TownListSys::init(x, y, length, page, i, playerId);
+  if (AdvMapSys::clickButtons(0, 0, buttons, clickType)) {
     r = true;
   }
   if (page != pageBak) {

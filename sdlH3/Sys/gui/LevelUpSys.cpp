@@ -60,19 +60,6 @@ void LevelUpSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["iOKAY.def/0"];
-//   b.r = {297, 413, 82, 93};
-//   b.func = receive;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
-
 static void drawBackGround() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 385) / 2),

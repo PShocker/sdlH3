@@ -66,39 +66,6 @@ void UniversitySys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   auto gold = Global::resources[Global::playerId][6];
-//   if (Global::goalIndex == 0xff) {
-//     b.textures = Global::defCache["iOKAY.def/0"];
-//     b.r = {200, 313, 64, 32};
-//     b.func = close;
-//     b.disable = false;
-//     v.push_back(b);
-
-//   } else {
-//     b.textures = Global::defCache["IBY6432.DEF/0"];
-//     b.r = {148, 299, 64, 32};
-//     b.func = study;
-//     if (gold < 1000) {
-//       b.disable = true;
-//     } else {
-//       b.disable = false;
-//     }
-//     v.push_back(b);
-
-//     b.textures = Global::defCache["ICANCEL.DEF/0"];
-//     b.r = {252, 299, 64, 32};
-//     b.func = clear;
-//     b.disable = false;
-//     v.push_back(b);
-//   }
-
-//   return v;
-// }
-
 static void drawBackGround() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 465) / 2),

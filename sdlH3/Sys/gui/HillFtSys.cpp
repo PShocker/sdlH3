@@ -31,18 +31,6 @@ void HillFtSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["iOKAY.def/0"];
-//   b.r = {294, 278, 64, 30};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
 
 static void drawBackGround() {
   SDL_FRect posRect;

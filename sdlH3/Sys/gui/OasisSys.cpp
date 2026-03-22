@@ -50,19 +50,6 @@ void OasisSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["iOKAY.def/0"];
-//   b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-//   b.func = receive;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
-
 static void drawBackGround() {
   auto x = Global::viewPort.w / 2;
   auto y = Global::viewPort.h / 2;

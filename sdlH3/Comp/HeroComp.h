@@ -43,7 +43,7 @@ struct HeroComp {
   uint8_t level;
 
   std::multiset<uint8_t> visited;
-  std::set<entt::entity> visitedEnt;
+  std::array<std::set<entt::entity>, 2> visitedEnt;
   std::multimap<uint8_t, ArtifactBonus> artifactBonus;
   std::multimap<uint8_t, AdventureBonus> adventureBonus;
 };

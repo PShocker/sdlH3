@@ -58,25 +58,6 @@ void SpliteCreSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["IOK6432.def/0"];
-//   b.r = {20, 263, 64, 32};
-//   b.func = ok;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   b.textures = Global::defCache["ICN6432.def/0"];
-//   b.r = {214, 263, 64, 32};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
-
 static void drawBackGround() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),

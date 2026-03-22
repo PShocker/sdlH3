@@ -29,20 +29,6 @@ void TownHallSys::init() {
   }
 }
 
-
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["TPMAGE1.DEF/0"];
-//   b.r = {748, 556, 48, 40};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
-
 static void drawButton() {
   SDL_FPoint leftUp{(Global::viewPort.w - 800) / 2,
                     (Global::viewPort.h - 600) / 2};

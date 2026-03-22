@@ -26,19 +26,6 @@ void ViewWorldSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   // b.textures = Global::defCache["iOKAY.def/0"];
-//   // b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-//   // b.func = receive;
-//   // b.disable = false;
-//   // v.push_back(b);
-
-//   return v;
-// }
-
 static void drawBackGround() {
   SDL_FPoint leftUp{Global::viewPort.w - 190, Global::viewPort.h - 381};
   auto texture = Global::pcxCache["VWorld.pcx"][0];

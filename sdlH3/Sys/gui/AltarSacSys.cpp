@@ -122,6 +122,7 @@ static void toMax() {
 static void close() { World::exitScrn(); }
 
 void AltarSacSys::init() {
+  buttons.clear();
   {
     Button button;
     button.textures = Global::defCache["ALTSACC.DEF/0"];
@@ -212,79 +213,6 @@ void AltarSacSys::init() {
     buttons.push_back(button);
   }
 }
-
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   switch ((Enum::ALTAR)Global::altType) {
-//   case Enum::ALTAR::ART: {
-//     b.textures = Global::defCache["ALTSACC.DEF/0"];
-//     b.r = {516, 421, 64, 32};
-//     b.func = changeType;
-//     b.disable = false;
-//     v.push_back(b);
-
-//     b.textures = Global::defCache["ALTSACR.DEF/0"];
-//     b.r = {268, 520, 64, 32};
-//     b.func = changeType;
-//     if (maxExp() != 0) {
-//       b.disable = false;
-//     } else {
-//       b.disable = true;
-//     }
-//     v.push_back(b);
-
-//     b.textures = Global::defCache["IOK6432.def/0"];
-//     b.r = {516, 520, 64, 32};
-//     b.func = changeType;
-//     b.disable = false;
-//     v.push_back(b);
-//     break;
-//   }
-//   case Enum::ALTAR::CRE: {
-
-//     b.textures = Global::defCache["ALTART.DEF/0"];
-//     b.r = {516, 421, 64, 32};
-//     b.func = changeType;
-//     b.disable = false;
-//     v.push_back(b);
-
-//     b.textures = Global::defCache["IRCBTNS.DEF/0"];
-//     b.r = {145, 520, 64, 32};
-//     b.func = toMax;
-//     b.disable = false;
-//     v.push_back(b);
-
-//     b.textures = Global::defCache["ALTSACR.DEF/0"];
-//     b.r = {268, 520, 64, 32};
-//     b.func = changeType;
-//     if (maxExp() != 0) {
-//       b.disable = false;
-//     } else {
-//       b.disable = true;
-//     }
-//     v.push_back(b);
-
-//     b.textures = Global::defCache["ALTARMY.DEF/0"];
-//     b.r = {393, 520, 64, 32};
-//     b.func = changeType;
-//     b.disable = false;
-//     v.push_back(b);
-
-//     b.textures = Global::defCache["IOK6432.def/0"];
-//     b.r = {516, 520, 64, 32};
-//     b.func = changeType;
-//     b.disable = false;
-//     v.push_back(b);
-
-//     break;
-//   }
-//   case Enum::ALTAR::SKE:
-//     break;
-//   }
-//   return v;
-// }
 
 static void drawBackGround() {
   SDL_FRect posRect;

@@ -37,6 +37,7 @@
 #include "Sys/gui/CursorSys.h"
 #include "Sys/gui/DwellingSys.h"
 #include "Sys/gui/FaerieRingSys.h"
+#include "Sys/gui/FouFortuneSys.h"
 #include "Sys/gui/FouYouthSys.h"
 #include "Sys/gui/FreeGuildSys.h"
 #include "Sys/gui/GarRevSys.h"
@@ -126,6 +127,7 @@ static bool renderMask() {
 }
 
 void World::enterAdvScrn() {
+  AdvMapSys::init();
   LMouseUpSys.clear();
   LMouseDownSys.clear();
   RMouseUpSys.clear();
@@ -172,6 +174,7 @@ void World::enterAdvScrn() {
 }
 
 void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
+  TownSys::init();
   enterScrn();
 
   iterateSystems.push_back([type] {
@@ -218,6 +221,8 @@ void World::enterTownScrn(uint8_t level, entt::entity ent, uint8_t type) {
 }
 
 void World::enterTownHall() {
+  TownHallSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -237,6 +242,8 @@ void World::enterTownHall() {
 }
 
 void World::enterTownFort() {
+  TownFortSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -309,6 +316,8 @@ void World::exitScrn() {
 }
 
 bool World::enterHeroScrn(uint8_t level, entt::entity ent, uint8_t type) {
+  HeroScrSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -339,6 +348,8 @@ bool World::enterHeroScrn(uint8_t level, entt::entity ent, uint8_t type) {
 }
 
 void World::enterTownPortal() {
+  TownPortalSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -357,6 +368,8 @@ void World::enterTownPortal() {
 }
 
 void World::enterSplitCre() {
+  SpliteCreSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -383,6 +396,8 @@ void World::enterSplitCre() {
 
 void World::enterHeroTrade(entt::entity heroEnt, entt::entity goalEnt,
                            uint8_t goalLevel) {
+  HeroTradeSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -414,6 +429,8 @@ void World::enterHeroTrade(entt::entity heroEnt, entt::entity goalEnt,
 
 void World::enterLearn(entt::entity heroEnt, entt::entity goalEnt,
                        uint8_t goalLevel) {
+  LearnSys::init();
+
   enterScrn();
 
   iterateSystems.pop_back();
@@ -432,6 +449,8 @@ void World::enterLearn(entt::entity heroEnt, entt::entity goalEnt,
 }
 
 void World::enterKingdom() {
+  KingdomSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -526,6 +545,8 @@ void World::enterAdvOpt() {
 }
 
 void World::enterViewWorld() {
+  ViewWorldSys::init();
+
   enterScrn();
   iterateSystems.push_back([] {
     iterateSystems.clear();
@@ -548,6 +569,8 @@ void World::enterViewWorld() {
 }
 
 void World::enterAdvSet() {
+  // AdvSetSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(AdvSetSys::run);
@@ -560,6 +583,8 @@ void World::enterAdvSet() {
 }
 
 void World::enterPuzzle(entt::entity goalEnt) {
+  PuzzleSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(PuzzleSys::run);
@@ -575,6 +600,8 @@ void World::enterPuzzle(entt::entity goalEnt) {
 }
 
 void World::enterTreasure(entt::entity heroEnt, entt::entity goalEnt) {
+  TreasureSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(TreasureSys::run);
@@ -591,6 +618,8 @@ void World::enterTreasure(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterWaterWheel(entt::entity goalEnt) {
+  WaterWheelSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(WaterWheelSys::run);
@@ -606,6 +635,8 @@ void World::enterWaterWheel(entt::entity goalEnt) {
 }
 
 void World::enterWindMill(entt::entity goalEnt) {
+  WindMillSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(WindMillSys::run);
@@ -621,6 +652,8 @@ void World::enterWindMill(entt::entity goalEnt) {
 }
 
 void World::enterMine(entt::entity goalEnt) {
+  MineSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(MineSys::run);
@@ -636,6 +669,8 @@ void World::enterMine(entt::entity goalEnt) {
 }
 
 void World::enterWarTomb(entt::entity heroEnt, entt::entity goalEnt) {
+  WarTombSys::init();
+
   Global::confirmCallBack = [heroEnt, goalEnt]() {
     exitScrn();
     enterScrn();
@@ -658,6 +693,8 @@ void World::enterWarTomb(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterPrison(entt::entity heroEnt, entt::entity goalEnt) {
+  PrisonSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -681,6 +718,8 @@ void World::enterPrison(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterWitchHut(entt::entity heroEnt, entt::entity goalEnt) {
+  WitchHutSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(WitchHutSys::run);
@@ -696,6 +735,8 @@ void World::enterWitchHut(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterScholar(entt::entity heroEnt, entt::entity goalEnt) {
+  ScholarSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -719,6 +760,8 @@ void World::enterScholar(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterUnivers(entt::entity heroEnt, entt::entity goalEnt) {
+  UniversitySys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(UniversitySys::run);
@@ -735,6 +778,8 @@ void World::enterUnivers(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterShipyard(entt::entity heroEnt, entt::entity goalEnt) {
+  ShipyardSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(ShipyardSys::run);
@@ -749,6 +794,8 @@ void World::enterShipyard(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterLvlup(entt::entity heroEnt) {
+  LevelUpSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(LevelUpSys::run);
@@ -764,6 +811,8 @@ void World::enterLvlup(entt::entity heroEnt) {
 }
 
 void World::enterTavern(entt::entity heroEnt, entt::entity goalEnt) {
+  TavernSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -804,6 +853,8 @@ void World::enterTavern(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterGarrison(entt::entity heroEnt, entt::entity goalEnt) {
+  GarrisonSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(GarrisonSys::run);
@@ -819,6 +870,8 @@ void World::enterGarrison(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterDwe(entt::entity heroEnt, entt::entity goalEnt) {
+  DwellingSys::init();
+
   enterScrn();
   iterateSystems.push_back([] {
     iterateSystems.clear();
@@ -849,6 +902,8 @@ void World::enterDwe(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterMageGuild(uint8_t level, entt::entity ent) {
+  MageGuildSys::init();
+
   enterScrn();
 
   iterateSystems.pop_back();
@@ -867,6 +922,8 @@ void World::enterMageGuild(uint8_t level, entt::entity ent) {
 }
 
 void World::enterTownBuild(uint8_t bId) {
+  TownBuildSys::init();
+
   enterScrn();
   iterateSystems.push_back([] {
     iterateSystems.clear();
@@ -887,6 +944,8 @@ void World::enterTownBuild(uint8_t bId) {
 }
 
 void World::enterWarMachineFac(entt::entity heroEnt, entt::entity goalEnt) {
+  WarMachineFacSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -916,6 +975,8 @@ void World::enterWarMachineFac(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterMarket(entt::entity heroEnt, entt::entity goalEnt) {
+  MarketSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(MarketSys::run);
@@ -935,6 +996,8 @@ void World::enterMarket(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterLearnStone(entt::entity heroEnt, entt::entity goalEnt) {
+  LearnStoneSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(LearnStoneSys::run);
@@ -951,6 +1014,8 @@ void World::enterLearnStone(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterShrMag(entt::entity heroEnt, entt::entity goalEnt) {
+  ShrineMagicSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(ShrineMagicSys::run);
@@ -967,6 +1032,8 @@ void World::enterShrMag(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterMagWell(entt::entity heroEnt, entt::entity goalEnt) {
+  MagWellSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(MagWellSys::run);
@@ -983,6 +1050,8 @@ void World::enterMagWell(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterMagSpring(entt::entity heroEnt, entt::entity goalEnt) {
+  MagSpringSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(MagSpringSys::run);
@@ -999,6 +1068,8 @@ void World::enterMagSpring(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterKnoTree(entt::entity heroEnt, entt::entity goalEnt) {
+  KnoTreeSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(KnoTreeSys::run);
@@ -1015,6 +1086,8 @@ void World::enterKnoTree(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterRalFlag(entt::entity heroEnt, entt::entity goalEnt) {
+  RalFlagSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(RalFlagSys::run);
@@ -1031,6 +1104,8 @@ void World::enterRalFlag(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterSchoolWar(entt::entity heroEnt, entt::entity goalEnt) {
+  SchoolWarSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(SchoolWarSys::run);
@@ -1046,6 +1121,8 @@ void World::enterSchoolWar(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterTemple(entt::entity heroEnt, entt::entity goalEnt) {
+  TempleSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(TempleSys::run);
@@ -1061,6 +1138,8 @@ void World::enterTemple(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterSchoolMag(entt::entity heroEnt, entt::entity goalEnt) {
+  SchoolMagSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(SchoolMagSys::run);
@@ -1076,6 +1155,8 @@ void World::enterSchoolMag(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterPandora(entt::entity heroEnt, entt::entity goalEnt) {
+  PandoraSys::init();
+
   Global::confirmCallBack = [heroEnt, goalEnt]() {
     exitScrn();
     enterScrn();
@@ -1095,6 +1176,8 @@ void World::enterPandora(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterIFortune(entt::entity heroEnt, entt::entity goalEnt) {
+  IdolFortuneSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(IdolFortuneSys::run);
@@ -1110,13 +1193,14 @@ void World::enterIFortune(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterFFortune(entt::entity heroEnt, entt::entity goalEnt) {
+  FouFortuneSys::init();
   enterScrn();
   iterateSystems.pop_back();
-  iterateSystems.push_back(IdolFortuneSys::run);
+  iterateSystems.push_back(FouFortuneSys::run);
   iterateSystems.push_back(CursorSys::run);
 
-  LMouseUpSys.push_back(IdolFortuneSys::leftMouseUp);
-  keyUpSys.push_back(IdolFortuneSys::keyUp);
+  LMouseUpSys.push_back(FouFortuneSys::leftMouseUp);
+  keyUpSys.push_back(FouFortuneSys::keyUp);
 
   Global::heroEnt = heroEnt;
   Global::goalEnt = goalEnt;
@@ -1125,6 +1209,7 @@ void World::enterFFortune(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterCorpse(entt::entity heroEnt, entt::entity goalEnt) {
+  CorpseSys::init();
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(CorpseSys::run);
@@ -1141,6 +1226,8 @@ void World::enterCorpse(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterArtifact(entt::entity heroEnt, entt::entity goalEnt) {
+  ArtifactSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -1164,6 +1251,8 @@ void World::enterArtifact(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterMarletto(entt::entity heroEnt, entt::entity goalEnt) {
+  MarlettoSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(MarlettoSys::run);
@@ -1180,6 +1269,8 @@ void World::enterMarletto(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterArena(entt::entity heroEnt, entt::entity goalEnt) {
+  ArenaSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(ArenaSys::run);
@@ -1196,6 +1287,8 @@ void World::enterArena(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterCartographer(entt::entity heroEnt, entt::entity goalEnt) {
+  CartographerSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(CartographerSys::run);
@@ -1211,6 +1304,8 @@ void World::enterCartographer(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterMermaid(entt::entity heroEnt, entt::entity goalEnt) {
+  MermaidSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(MermaidSys::run);
@@ -1226,6 +1321,8 @@ void World::enterMermaid(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterBuoy(entt::entity heroEnt, entt::entity goalEnt) {
+  BuoySys::init();
+  
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(BuoySys::run);
@@ -1242,6 +1339,8 @@ void World::enterBuoy(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterSeaChest(entt::entity heroEnt, entt::entity goalEnt) {
+  SeaChestSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(SeaChestSys::run);
@@ -1257,6 +1356,8 @@ void World::enterSeaChest(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterMerCamp(entt::entity heroEnt, entt::entity goalEnt) {
+  MerCampSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(MerCampSys::run);
@@ -1272,6 +1373,8 @@ void World::enterMerCamp(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterLibrary(entt::entity heroEnt, entt::entity goalEnt) {
+  LibrarySys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(LibrarySys::run);
@@ -1288,6 +1391,8 @@ void World::enterLibrary(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterHutMag(entt::entity heroEnt, entt::entity goalEnt) {
+  HutMagSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -1313,6 +1418,8 @@ void World::enterHutMag(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterWhirlPool(entt::entity heroEnt, entt::entity goalEnt) {
+  WhirlPoolSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
 
@@ -1329,6 +1436,8 @@ void World::enterWhirlPool(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterSirens(entt::entity heroEnt, entt::entity goalEnt) {
+  SirensSys::init();
+
   Global::confirmCallBack = [heroEnt, goalEnt]() {
     exitScrn();
     enterScrn();
@@ -1348,6 +1457,8 @@ void World::enterSirens(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterHillFt(entt::entity heroEnt, entt::entity goalEnt) {
+  HillFtSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(HillFtSys::run);
@@ -1364,6 +1475,8 @@ void World::enterHillFt(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterFouYouth(entt::entity heroEnt, entt::entity goalEnt) {
+  FouYouthSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(FouYouthSys::run);
@@ -1379,6 +1492,8 @@ void World::enterFouYouth(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterWaterHole(entt::entity heroEnt, entt::entity goalEnt) {
+  WaterHoleSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(WaterHoleSys::run);
@@ -1394,6 +1509,8 @@ void World::enterWaterHole(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterGarRev(entt::entity heroEnt, entt::entity goalEnt) {
+  GarRevSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(GarRevSys::run);
@@ -1409,6 +1526,8 @@ void World::enterGarRev(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterFreeGuild(entt::entity heroEnt, entt::entity goalEnt) {
+  FreeGuildSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(FreeGuildSys::run);
@@ -1424,6 +1543,8 @@ void World::enterFreeGuild(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterFaerieRing(entt::entity heroEnt, entt::entity goalEnt) {
+  FaerieRingSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(FaerieRingSys::run);
@@ -1440,6 +1561,8 @@ void World::enterFaerieRing(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterStarAxis(entt::entity heroEnt, entt::entity goalEnt) {
+  StarAxisSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
 
@@ -1457,6 +1580,8 @@ void World::enterStarAxis(entt::entity heroEnt, entt::entity goalEnt) {
 }
 
 void World::enterAltarSac(entt::entity heroEnt, entt::entity goalEnt) {
+  AltarSacSys::init();
+
   enterScrn();
   iterateSystems.pop_back();
   iterateSystems.push_back(AltarSacSys::run);
@@ -1478,6 +1603,8 @@ void World::enterAltarSac(entt::entity heroEnt, entt::entity goalEnt) {
 
 void World::enterCreature(std::pair<uint8_t, uint16_t> crePair,
                           uint8_t creType) {
+  CreatureSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -1516,6 +1643,8 @@ void World::enterCreature(std::pair<uint8_t, entt::entity> creHeroPair,
 }
 
 void World::enterWarMachine(uint16_t warMId, uint8_t warMType) {
+  WarMachineSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {
@@ -1540,6 +1669,8 @@ void World::enterWarMachine(uint16_t warMId, uint8_t warMType) {
 }
 
 void World::enterStables(entt::entity heroEnt, entt::entity goalEnt) {
+  StablesSys::init();
+
   enterScrn();
   iterateSystems.push_back([] {
     iterateSystems.clear();
@@ -1562,6 +1693,8 @@ void World::enterStables(entt::entity heroEnt, entt::entity goalEnt) {
 
 void World::enterBattle(entt::entity heroEnt, entt::entity goalEnt,
                         uint8_t goalLevel) {
+  BattleSys::init();
+
   enterScrn();
   iterateSystems.push_back([] {
     iterateSystems.clear();
@@ -1606,6 +1739,8 @@ void World::enterBattle(entt::entity heroEnt, entt::entity goalEnt,
 }
 
 void World::enterConfirm(float bakW, float bakH, uint8_t confirmType) {
+  ConfirmSys::init();
+
   enterScrn();
 
   iterateSystems.push_back([] {

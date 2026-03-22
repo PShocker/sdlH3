@@ -33,11 +33,12 @@ static void receive() {
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   World::exitScrn();
 
-  heroComp.visitedEnt.insert(Global::goalEnt);
+  heroComp.visitedEnt[World::level].insert(Global::goalEnt);
   heroComp.visited.insert((uint8_t)ObjectType::FAERIE_RING);
 }
 
 void FaerieRingSys::init() {
+  buttons.clear();
   {
     Button button;
     button.textures = Global::defCache["iOKAY.def/0"];
@@ -48,20 +49,6 @@ void FaerieRingSys::init() {
     buttons.push_back(button);
   }
 }
-
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["iOKAY.def/0"];
-//   b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-//   b.func = receive;
-//   b.disable = false;
-
-//   v.push_back(b);
-
-//   return v;
-// }
 
 static void drawBackGround() {
   auto x = Global::viewPort.w / 2;

@@ -33,25 +33,6 @@ void GarrisonSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["IDV6432.DEF/0"];
-//   b.r = {88, 314, 64, 32};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   b.textures = Global::defCache["IOK6432.def/0"];
-//   b.r = {399, 314, 64, 32};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
-
 static void drawBackGround() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 549) / 2),

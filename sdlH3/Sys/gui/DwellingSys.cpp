@@ -101,6 +101,7 @@ static void buy() {
 }
 
 void DwellingSys::init() {
+  buttons.clear();
   {
     Button button;
     button.textures = Global::defCache["IRCBTNS.DEF/0"];
@@ -129,39 +130,6 @@ void DwellingSys::init() {
     buttons.push_back(button);
   }
 }
-
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["IRCBTNS.DEF/0"];
-//   b.r = {134, 313, 64, 32};
-//   b.func = toMax;
-//   if (DwellingSys::maxCount() == 0) {
-//     b.disable = true;
-//   } else {
-//     b.disable = false;
-//   }
-//   v.push_back(b);
-
-//   b.textures = Global::defCache["IBY6432.DEF/0"];
-//   b.r = {212, 313, 64, 32};
-//   b.func = buy;
-//   if (Global::dweSliderNum == 0) {
-//     b.disable = true;
-//   } else {
-//     b.disable = false;
-//   }
-//   v.push_back(b);
-
-//   b.textures = Global::defCache["ICANCEL.DEF/0"];
-//   b.r = {290, 313, 64, 32};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
 
 static void drawBackGround() {
   SDL_FRect posRect;

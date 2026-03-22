@@ -29,7 +29,7 @@ static void receive() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   World::exitScrn();
-  heroComp.visitedEnt.insert(Global::goalEnt);
+  heroComp.visitedEnt[World::level].insert(Global::goalEnt);
   heroComp.visited.insert((uint8_t)ObjectType::FOUNTAIN_OF_YOUTH);
 }
 
@@ -45,19 +45,6 @@ void FouYouthSys::init() {
     buttons.push_back(button);
   }
 }
-
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   b.textures = Global::defCache["iOKAY.def/0"];
-//   b.r = {bakW / 2 - 32, bakH - 60, 64, 30};
-//   b.func = receive;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
 
 static void drawBackGround() {
   auto x = Global::viewPort.w / 2;

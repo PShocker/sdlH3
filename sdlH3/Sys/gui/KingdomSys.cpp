@@ -96,68 +96,6 @@ void KingdomSys::init() {
   }
 }
 
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-//   Button b;
-
-//   auto t = Global::defCache["OVBUTN1.def/0"];
-
-//   std::vector<SDL_Texture *> vec = {t[0], t[1], t[2]};
-//   b.textures = vec;
-//   b.r = {748, 493, 48, 32};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   vec = {t[3], t[4]};
-//   b.textures = vec;
-//   b.r = {748, 565, 48, 32};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   b.textures = Global::defCache["OVBUTN6.def/0"];
-//   b.r = {748, 529, 48, 32};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   t = Global::defCache["OVBUTN4.def/0"];
-//   vec = {t[0], t[1]};
-//   b.textures = vec;
-//   b.r = {733, 4, 61, 18};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   t = Global::defCache["OVBUTN4.def/0"];
-//   vec = {t[4], t[5]};
-//   b.textures = vec;
-//   b.r = {733, 24, 61, 18};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   t = Global::defCache["OVBUTN4.def/0"];
-//   vec = {t[6], t[7]};
-
-//   b.textures = vec;
-//   b.r = {733, 446, 61, 18};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   t = Global::defCache["OVBUTN4.def/0"];
-//   vec = {t[2], t[3]};
-//   b.textures = vec;
-//   b.r = {733, 466, 61, 18};
-//   b.func = close;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   return v;
-// }
-
 static void drawBackGround() {
   SDL_FRect posRect;
   auto playerId = Global::playerId;

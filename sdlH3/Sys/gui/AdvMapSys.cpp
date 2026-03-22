@@ -110,6 +110,7 @@ void AdvMapSys::heroFocus() {
 static void switchWorld() { World::level = World::level == 1 ? 0 : 1; }
 
 void AdvMapSys::init() {
+  buttons.clear();
   {
     Button button;
     button.textures =
@@ -163,6 +164,9 @@ void AdvMapSys::init() {
     button.disableFunc = []() { return false; };
     button.showFunc = []() {
       auto [i, heroEnt] = findFocusHero();
+      if (heroEnt == entt::null) {
+        return false;
+      }
       auto &registry = World::registrys[i];
       auto hComp = registry.get<HeroComp>(heroEnt);
       return hComp.sleep;
@@ -179,6 +183,9 @@ void AdvMapSys::init() {
     button.disableFunc = []() { return false; };
     button.showFunc = []() {
       auto [i, heroEnt] = findFocusHero();
+      if (heroEnt == entt::null) {
+        return false;
+      }
       auto &registry = World::registrys[i];
       auto hComp = registry.get<HeroComp>(heroEnt);
       return !hComp.sleep;
@@ -276,132 +283,6 @@ void AdvMapSys::init() {
     buttons.push_back(button);
   }
 }
-
-// static std::vector<Button> buttonInfo() {
-//   std::vector<Button> v;
-
-//   Button b;
-//   b.textures =
-//       Global::defCache["IAM002.DEF/" + std::to_string(Global::playerId)];
-//   b.r = {121, 196, 32, 32};
-//   b.func = viewKingdom;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   if (World::level == 0) {
-//     b.textures =
-//         Global::defCache["IAM010.DEF/" + std::to_string(Global::playerId)];
-//   } else {
-//     b.textures =
-//         Global::defCache["IAM003.DEF/" + std::to_string(Global::playerId)];
-//   }
-//   b.r = {89, 196, 32, 32};
-//   b.func = switchWorld;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   b.textures =
-//       Global::defCache["IAM004.DEF/" + std::to_string(Global::playerId)];
-//   b.r = {121, 228, 32, 32};
-//   b.func = viewAdvLog;
-//   b.disable = false;
-//   v.push_back(b);
-
-//   auto heroIndex = Global::herosIndex[Global::playerId];
-//   if (heroIndex < 8) {
-//     auto heroPair = Global::heros[Global::playerId][heroIndex];
-//     auto heroEnt = heroPair.second;
-//     auto &registry = World::registrys[heroPair.first];
-//     auto heroComp = &registry.get<HeroComp>(heroEnt);
-//     if (heroComp->sleep) {
-//       b.textures =
-//           Global::defCache["IAM011.DEF/" + std::to_string(Global::playerId)];
-//     } else {
-//       b.textures =
-//           Global::defCache["IAM005.DEF/" + std::to_string(Global::playerId)];
-//     }
-//     b.func = heroSleep;
-//     b.disable = false;
-//     b.r = {89, 228, 32, 32};
-//     v.push_back(b);
-
-//     b.textures =
-//         Global::defCache["IAM006.DEF/" + std::to_string(Global::playerId)];
-//     b.func = heroMove;
-//     b.r = {121, 260, 32, 32};
-//     if (heroComp->pathEnts.empty() && heroComp->pathEntsBack.empty()) {
-//       b.disable = true;
-//     } else {
-//       b.disable = false;
-//     }
-//     v.push_back(b);
-
-//     b.textures =
-//         Global::defCache["IAM007.DEF/" + std::to_string(Global::playerId)];
-//     b.disable = false;
-//     b.r = {89, 260, 32, 32};
-//     b.func = heroSpell;
-//     v.push_back(b);
-
-//     b.textures =
-//         Global::defCache["IAM000.DEF/" + std::to_string(Global::playerId)];
-//     b.disable = false;
-//     b.r = {121, 324, 64, 32};
-//     b.func = []() { AdvMapSys::heroFocus(); };
-//     v.push_back(b);
-//   } else {
-//     b.textures =
-//         Global::defCache["IAM004.DEF/" + std::to_string(Global::playerId)];
-//     b.disable = true;
-//     b.r = {89, 228, 32, 32};
-//     b.func = heroSleep;
-//     v.push_back(b);
-
-//     b.textures =
-//         Global::defCache["IAM006.DEF/" + std::to_string(Global::playerId)];
-//     b.disable = true;
-//     b.r = {121, 260, 32, 32};
-//     b.func = heroMove;
-//     v.push_back(b);
-
-//     b.textures =
-//         Global::defCache["IAM007.DEF/" + std::to_string(Global::playerId)];
-//     b.disable = true;
-//     b.r = {89, 260, 32, 32};
-//     b.func = heroSpell;
-//     v.push_back(b);
-
-//     b.textures =
-//         Global::defCache["IAM000.DEF/" + std::to_string(Global::playerId)];
-//     b.disable = true;
-//     b.r = {121, 324, 64, 32};
-//     b.func = []() { AdvMapSys::heroFocus(); };
-//     v.push_back(b);
-//   }
-
-//   b.textures =
-//       Global::defCache["IAM008.DEF/" + std::to_string(Global::playerId)];
-//   b.disable = false;
-//   b.r = {121, 292, 32, 32};
-//   b.func = viewAdvOpt;
-//   v.push_back(b);
-
-//   b.textures =
-//       Global::defCache["IAM009.DEF/" + std::to_string(Global::playerId)];
-//   b.disable = false;
-//   b.r = {89, 292, 32, 32};
-//   b.func = viewAdvSet;
-//   v.push_back(b);
-
-//   b.textures =
-//       Global::defCache["IAM001.DEF/" + std::to_string(Global::playerId)];
-//   b.disable = false;
-//   b.r = {121, 356, 64, 32};
-//   b.func = viewAdvSet;
-//   v.push_back(b);
-
-//   return v;
-// }
 
 static void drawSpellMask() {
   auto cursorType = Global::cursorType;
