@@ -36,8 +36,8 @@ static void closeScrn() {
   World::exitScrn();
 }
 
-void HeroTradeSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["iOKAY.def/0"];
@@ -56,6 +56,7 @@ void HeroTradeSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawCreature() {
@@ -199,7 +200,7 @@ static void drawButton() {
                     (Global::viewPort.h - 600) / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == HeroTradeSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, HeroTradeSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 static void drawArtifacts() {
@@ -525,8 +526,7 @@ bool HeroTradeSys::rightMouseDown(float x, float y) {
                     (Global::viewPort.h - 600) / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, HeroTradeSys::buttons,
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickSecSki(clickType)) {
@@ -567,8 +567,7 @@ bool HeroTradeSys::leftMouseUp(float x, float y) {
   SDL_FRect posRect;
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, HeroTradeSys::buttons,
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickPrim(clickType)) {

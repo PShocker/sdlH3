@@ -121,8 +121,8 @@ static void toMax() {
 
 static void close() { World::exitScrn(); }
 
-void AltarSacSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["ALTSACC.DEF/0"];
@@ -212,6 +212,7 @@ void AltarSacSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -338,7 +339,7 @@ static void drawButton() {
                     (Global::viewPort.h - 595) / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == AltarSacSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, AltarSacSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 static void drawSelect() {
@@ -428,7 +429,7 @@ bool AltarSacSys::leftMouseUp(float x, float y) {
                     (Global::viewPort.h - 595) / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
 

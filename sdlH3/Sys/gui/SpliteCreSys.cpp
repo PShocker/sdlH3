@@ -36,8 +36,8 @@ static void ok() {
   closeScrn();
 }
 
-void SpliteCreSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["IOK6432.def/0"];
@@ -56,6 +56,7 @@ void SpliteCreSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -94,7 +95,7 @@ static void drawButton() {
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == SpliteCreSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, SpliteCreSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 static void drawNum() {
@@ -189,7 +190,7 @@ bool SpliteCreSys::leftMouseUp(float x, float y) {
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, SpliteCreSys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickSlider()) {
@@ -203,7 +204,7 @@ bool SpliteCreSys::rightMouseDown(float x, float y) {
                     static_cast<float>(((int)Global::viewPort.h - 337) / 2)};
   auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, SpliteCreSys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   return true;

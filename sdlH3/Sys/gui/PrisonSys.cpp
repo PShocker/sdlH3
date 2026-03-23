@@ -46,8 +46,8 @@ static void receive() {
 }
 static void closeScrn() { World::exitScrn(); }
 
-void PrisonSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["iOKAY.def/0"];
@@ -57,7 +57,7 @@ void PrisonSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
-    {
+  {
     Button button;
     button.textures = Global::defCache["ICANCEL.DEF/0"];
     button.r = {bakW / 2 - 32 + 48, bakH - 60, 64, 30};
@@ -66,6 +66,7 @@ void PrisonSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -109,7 +110,7 @@ static void drawButton() {
                     Global::viewPort.h / 2 - bakH / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == PrisonSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, PrisonSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 bool PrisonSys::run() {
@@ -145,7 +146,7 @@ bool PrisonSys::leftMouseUp(float x, float y) {
                     Global::viewPort.h / 2 - bakH / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, PrisonSys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickPor(clickType)) {

@@ -30,10 +30,10 @@ static void ok() {
   }
 }
 
-void ConfirmSys::init() {
+static std::vector<Button> buttonInfo() {
   auto bakW = Global::confirmBakW;
   auto bakH = Global::confirmBakH;
-  buttons.clear();
+  std::vector<Button> buttons;
   const auto showFunc = []() { return Global::confirmOnlyOK; };
   {
     Button button;
@@ -62,6 +62,7 @@ void ConfirmSys::init() {
     button.showFunc = showFunc;
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawButton() {
@@ -73,7 +74,7 @@ static void drawButton() {
     SDL_FRect posRect;
     SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                       Global::viewPort.h / 2 - bakH / 2};
-    AdvMapSys::drawButtons(leftUp.x, leftUp.y, true, ConfirmSys::buttons);
+    AdvMapSys::drawButtons(leftUp.x, leftUp.y, true, buttonInfo());
   }
 }
 
@@ -95,7 +96,7 @@ bool ConfirmSys::leftMouseUp(float x, float y) {
     SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
     auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, ConfirmSys::buttons,
+    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(),
                                 clickType)) {
       return false;
     }

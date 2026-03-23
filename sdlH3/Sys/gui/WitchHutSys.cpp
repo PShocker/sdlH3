@@ -50,8 +50,8 @@ static void receive() {
 
 static void closeScrn() { World::exitScrn(); }
 
-void WitchHutSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["iOKAY.def/0"];
@@ -79,6 +79,7 @@ void WitchHutSys::init() {
     button.showFunc = []() { return !visited(); };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -117,7 +118,7 @@ static void drawButton() {
                     Global::viewPort.h / 2 - bakH / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == WitchHutSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, WitchHutSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 bool WitchHutSys::run() {
@@ -148,8 +149,7 @@ bool WitchHutSys::leftMouseUp(float x, float y) {
                     Global::viewPort.h / 2 - bakH / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, WitchHutSys::buttons,
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   return true;

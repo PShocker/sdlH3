@@ -10,8 +10,8 @@
 
 static void closeScrn() { World::exitScrn(); }
 
-void GarrisonSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["IDV6432.DEF/0"];
@@ -31,6 +31,7 @@ void GarrisonSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -48,7 +49,7 @@ static void drawButton() {
                     static_cast<float>(((int)Global::viewPort.h - 396) / 2)};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == GarrisonSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, GarrisonSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 bool GarrisonSys::run() {
@@ -66,8 +67,7 @@ bool GarrisonSys::leftMouseUp(float x, float y) {
                     static_cast<float>(((int)Global::viewPort.h - 396) / 2)};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, GarrisonSys::buttons,
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   return true;

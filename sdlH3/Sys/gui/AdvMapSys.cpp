@@ -109,8 +109,8 @@ void AdvMapSys::heroFocus() {
 // 切换地层
 static void switchWorld() { World::level = World::level == 1 ? 0 : 1; }
 
-void AdvMapSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures =
@@ -282,6 +282,7 @@ void AdvMapSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawSpellMask() {
@@ -384,7 +385,7 @@ void AdvMapSys::drawResBar(float x, float y) {
 }
 
 static void drawButton() {
-  auto v = AdvMapSys::buttons;
+  auto v = buttonInfo();
   for (auto &b : v) {
     b.r.x = Global::viewPort.w - b.r.x;
   }
@@ -1075,7 +1076,7 @@ bool AdvMapSys::leftMouseUp(float x, float y) {
   if (Global::heroMove) {
     return true;
   }
-  auto button = buttons;
+  auto button = buttonInfo();
   for (auto &b : button) {
     b.r.x = Global::viewPort.w - b.r.x;
   }
@@ -1100,7 +1101,7 @@ bool AdvMapSys::leftMouseDown(float x, float y) {
   if (Global::heroMove) {
     return true;
   }
-  auto button = buttons;
+  auto button = buttonInfo();
   for (auto &b : button) {
     b.r.x = Global::viewPort.w - b.r.x;
   }
@@ -1217,7 +1218,7 @@ bool AdvMapSys::keyDown(uint16_t key) {
 }
 
 void AdvMapSys::drawButtons(float x, float y, bool press,
-                            std::vector<Button> &v) {
+                            std::vector<Button> v) {
   SDL_FRect posRect;
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
   for (uint8_t i = 0; i < v.size(); i++) {
@@ -1246,7 +1247,7 @@ void AdvMapSys::drawButtons(float x, float y, bool press,
   }
 }
 
-bool AdvMapSys::clickButtons(float x, float y, std::vector<Button> &v,
+bool AdvMapSys::clickButtons(float x, float y, std::vector<Button> v,
                              uint8_t clickType) {
   SDL_FRect posRect;
   SDL_FPoint point = {(float)(int)Window::mouseX, (float)(int)Window::mouseY};
@@ -1295,7 +1296,7 @@ bool AdvMapSys::clickButtons(float x, float y, std::vector<Button> &v,
 }
 
 bool AdvMapSys::drawButtonsText(float x, float y, float pX, float pY,
-                                std::vector<Button> &v) {
+                                std::vector<Button> v) {
   // button
   FreeTypeSys::setSize(13);
   FreeTypeSys::setColor(255, 255, 255, 255);

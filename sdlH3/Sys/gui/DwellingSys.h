@@ -5,9 +5,6 @@
 #include <cstdint>
 #include <vector>
 struct DwellingSys {
-  static inline std::vector<Button> buttons;
-
-  static void init();
   static bool run();
   static void drawCreature(float x, float y, uint16_t id, uint16_t group,
                            uint16_t index, uint8_t colorType);

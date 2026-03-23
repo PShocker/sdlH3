@@ -4,10 +4,6 @@
 #include <cstdint>
 #include <vector>
 struct WarMachineFacSys {
-  static inline std::vector<Button> buttons;
-
-  static void init();
-
   static bool run();
   static bool leftMouseUp(float x, float y);
   static bool rightMouseDown(float x, float y);

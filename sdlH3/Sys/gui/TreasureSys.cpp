@@ -58,8 +58,8 @@ static void receive() {
 
 static void close() { World::exitScrn(); }
 
-void TreasureSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["iOKAY.def/0"];
@@ -69,6 +69,7 @@ void TreasureSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -116,7 +117,7 @@ static void drawButton() {
                     Global::viewPort.h / 2 - bakH / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == TreasureSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, TreasureSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 bool TreasureSys::run() {
@@ -158,8 +159,7 @@ bool TreasureSys::leftMouseUp(float x, float y) {
                     Global::viewPort.h / 2 - bakH / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, TreasureSys::buttons,
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickTre(clickType)) {

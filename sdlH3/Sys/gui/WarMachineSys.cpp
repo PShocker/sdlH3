@@ -33,7 +33,8 @@ static void dismiss() {
   World::enterConfirm(100, 100, ((uint8_t)Enum::SCNTYPE::MOD));
 }
 
-void WarMachineSys::init() {
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   auto showFunc = []() {
     if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
         Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
@@ -42,7 +43,6 @@ void WarMachineSys::init() {
     }
     return true;
   };
-  buttons.clear();
   {
     Button button;
     button.textures = Global::defCache["hsbtns.DEF/0"];
@@ -70,6 +70,7 @@ void WarMachineSys::init() {
     button.showFunc = showFunc;
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -111,7 +112,7 @@ static void drawButton() {
                     static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == WarMachineSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, WarMachineSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 bool WarMachineSys::run() {
@@ -140,7 +141,7 @@ bool WarMachineSys::leftMouseUp(float x, float y) {
                     static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, WarMachineSys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   return true;

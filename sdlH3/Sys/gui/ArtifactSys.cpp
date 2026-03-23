@@ -42,8 +42,8 @@ static void receive() {
   World::iterateSystems.push_back(World::enterFadeScrn);
 }
 
-void ArtifactSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["iOKAY.def/0"];
@@ -53,6 +53,7 @@ void ArtifactSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -107,7 +108,7 @@ static void drawButton() {
                     Global::viewPort.h / 2 - bakH / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == ArtifactSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, ArtifactSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 bool ArtifactSys::run() {
@@ -138,7 +139,7 @@ bool ArtifactSys::leftMouseUp(float x, float y) {
                     Global::viewPort.h / 2 - bakH / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, ArtifactSys::buttons,
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(),
                               clickType)) {
     return false;
   }

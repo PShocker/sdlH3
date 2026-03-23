@@ -52,17 +52,18 @@ static void receive() {
   heroComp.visited.insert((uint8_t)ObjectType::STABLES);
 }
 
-void StablesSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["iOKAY.def/0"];
-    button.r ={bakW / 2 - 32, bakH - 60, 64, 30};
+    button.r = {bakW / 2 - 32, bakH - 60, 64, 30};
     button.clickFunc = receive;
     button.disableFunc = []() { return false; };
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -115,7 +116,7 @@ static void drawButton() {
                     Global::viewPort.h / 2 - bakH / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == StablesSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, StablesSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 bool StablesSys::run() {
@@ -130,7 +131,7 @@ bool StablesSys::leftMouseUp(float x, float y) {
                     Global::viewPort.h / 2 - bakH / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, StablesSys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   return true;

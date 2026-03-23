@@ -71,8 +71,8 @@ static void dismiss() {
   World::enterConfirm(100, 100, ((uint8_t)Enum::SCNTYPE::MOD));
 }
 
-void CreatureSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   const auto showFunc = []() {
     if (Global::creType == (uint8_t)Enum::CRETYPE::POP_BAT ||
         Global::creType == (uint8_t)Enum::CRETYPE::POP_HERO ||
@@ -108,6 +108,7 @@ void CreatureSys::init() {
     button.showFunc = showFunc;
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -148,7 +149,7 @@ static void drawButton() {
                     static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == CreatureSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, CreatureSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 void CreatureSys::creAnimate(uint64_t &creFrameTime, uint64_t &creFrameIndex,
@@ -349,7 +350,7 @@ bool CreatureSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{static_cast<float>(((int)Global::viewPort.w - 298) / 2),
                     static_cast<float>(((int)Global::viewPort.h - 311) / 2)};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   return true;

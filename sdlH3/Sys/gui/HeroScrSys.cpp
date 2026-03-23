@@ -104,8 +104,8 @@ static void split() {
   Global::splitCre[0] = &heroComp->creatures.at(Global::heroScnIndex);
 }
 
-void HeroScrSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   auto strPool = *Lang::strPool[Global::langIndex];
   {
     Button button;
@@ -199,6 +199,7 @@ void HeroScrSys::init() {
     button.info = strPool[2859];
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static bool clickEquip(uint8_t clickType) {
@@ -522,7 +523,7 @@ static void drawButton() {
                     (Global::viewPort.h - 586) / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == HeroScrSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, HeroScrSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 const static std::vector<SDL_FRect> secSkiPositions = {
@@ -818,7 +819,7 @@ static void drawBottomInfo() {
     return;
   }
   if (AdvMapSys::drawButtonsText(leftUp.x, leftUp.y, leftUp.x + 336,
-                                 leftUp.y + 558, HeroScrSys::buttons)) {
+                                 leftUp.y + 558, buttonInfo())) {
     return;
   }
 }
@@ -923,7 +924,7 @@ bool HeroScrSys::leftMouseUp(float x, float y) {
                             (Global::viewPort.h - 586) / 2};
     auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, HeroScrSys::buttons, clickType)) {
+    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
       return false;
     }
 
@@ -984,7 +985,7 @@ bool HeroScrSys::rightMouseDown(float x, float y) {
                             (Global::viewPort.h - 586) / 2};
     auto clickType = (uint8_t)Enum::CLICKTYPE::R_DOWN;
 
-    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, HeroScrSys::buttons, clickType)) {
+    if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
       return false;
     }
 

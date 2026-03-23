@@ -9,10 +9,6 @@
 #include <vector>
 
 struct TownSys {
-  static inline std::vector<Button> buttons;
-
-  static void init();
-
   static void
   drawCreature(uint8_t i, std::vector<std::pair<uint16_t, uint32_t>> *creature);
   static bool run();

@@ -124,8 +124,8 @@ static void buy() {
   return;
 }
 
-void TavernSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["TPTAV01.DEF/0"];
@@ -153,6 +153,7 @@ void TavernSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -239,7 +240,7 @@ static void drawButton() {
                     (Global::viewPort.h - 504) / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 3];
   auto top = (*topFunc.target<bool (*)()>() == TavernSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, TavernSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 bool TavernSys::run() {
@@ -288,7 +289,7 @@ bool TavernSys::leftMouseUp(float x, float y) {
                     (Global::viewPort.h - 504) / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, TavernSys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickHero(clickType)) {

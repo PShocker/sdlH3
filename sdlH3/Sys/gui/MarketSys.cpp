@@ -140,8 +140,8 @@ static void maxResource() { World::exitScrn(); }
 
 static void trade() { World::exitScrn(); }
 
-void MarketSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["TPMRKBU1.DEF/0"];
@@ -310,6 +310,7 @@ void MarketSys::init() {
     };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -357,7 +358,7 @@ static void drawButton() {
                     static_cast<float>(((int)Global::viewPort.h - 593) / 2)};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == MarketSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, MarketSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 static void drawArts() {
@@ -766,8 +767,7 @@ bool MarketSys::leftMouseUp(float x, float y) {
                     static_cast<float>(((int)Global::viewPort.h - 593) / 2)};
 
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, MarketSys::buttons,
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickFunc(clickType)) {

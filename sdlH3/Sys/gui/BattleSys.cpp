@@ -46,11 +46,11 @@ static void drawBackGround() {
 
   return;
 }
-void BattleSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
-   
   }
+  return buttons;
 }
 static void drawButton() {
   SDL_FRect posRect;
@@ -58,7 +58,7 @@ static void drawButton() {
                     Global::viewPort.h / 2 - bakH / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == BattleSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, BattleSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 static SDL_FRect hexPositionLocal(uint32_t hex) {
@@ -95,7 +95,8 @@ bool BattleSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, BattleSys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(),
+                              clickType)) {
     return false;
   }
   return true;

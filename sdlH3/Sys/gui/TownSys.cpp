@@ -449,8 +449,8 @@ static void split() {
   Global::splitOn = true;
 }
 
-void TownSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     auto t = Global::defCache["tsbtns.def/0"];
     std::vector<SDL_Texture *> vec = {t[0], t[1], t[2]};
@@ -478,6 +478,7 @@ void TownSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawTownInfo() {
@@ -622,7 +623,7 @@ static void drawButton() {
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto funcPtr = topFunc.target<bool (*)()>();
   auto top = (funcPtr && *topFunc.target<bool (*)()>() == TownSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, TownSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 void drawCreature(uint8_t i,
@@ -1498,8 +1499,7 @@ bool TownSys::leftMouseUp(float x, float y) {
                     (Global::viewPort.h - 600) / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, TownSys::buttons,
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickBuild(clickType)) {

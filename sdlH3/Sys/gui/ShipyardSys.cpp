@@ -74,8 +74,8 @@ static bool canBuy() {
   return false;
 }
 
-void ShipyardSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["IBY6432.DEF/0"];
@@ -94,6 +94,7 @@ void ShipyardSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -139,7 +140,7 @@ static void drawButton() {
                     static_cast<float>(((int)Global::viewPort.h - 388) / 2)};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == ShipyardSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, ShipyardSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 bool ShipyardSys::run() {
   drawBackGround();
@@ -156,8 +157,7 @@ bool ShipyardSys::leftMouseUp(float x, float y) {
                     static_cast<float>(((int)Global::viewPort.h - 388) / 2)};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, ShipyardSys::buttons,
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   return true;

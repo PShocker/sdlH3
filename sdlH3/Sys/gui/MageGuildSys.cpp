@@ -52,10 +52,8 @@ void MageGuildSys::study() {
 
 static void closeScrn() { World::exitScrn(); }
 
-
-
-void MageGuildSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["TPMAGE1.DEF/0"];
@@ -65,6 +63,7 @@ void MageGuildSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -113,7 +112,7 @@ static void drawButton() {
                     static_cast<float>(((int)Global::viewPort.h - 600) / 2)};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == MageGuildSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, MageGuildSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 static void drawWindow() {
@@ -142,7 +141,7 @@ bool MageGuildSys::leftMouseUp(float x, float y) {
                     static_cast<float>(((int)Global::viewPort.h - 600) / 2)};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, MageGuildSys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   return true;

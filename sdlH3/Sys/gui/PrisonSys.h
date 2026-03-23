@@ -3,12 +3,7 @@
 #include "Sys/gui/AdvMapSys.h"
 #include <cstdint>
 struct PrisonSys {
-  static inline std::vector<Button> buttons;
-
-  static void init();
-
   static bool run();
-
   static void draw();
 
   static bool leftMouseUp(float x, float y);

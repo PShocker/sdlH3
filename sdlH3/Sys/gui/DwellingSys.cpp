@@ -100,8 +100,8 @@ static void buy() {
   }
 }
 
-void DwellingSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["IRCBTNS.DEF/0"];
@@ -129,6 +129,7 @@ void DwellingSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -255,7 +256,7 @@ static void drawButton() {
                     static_cast<float>(((int)Global::viewPort.h - 395) / 2)};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == DwellingSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, DwellingSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 static void drawCost() {
@@ -430,8 +431,7 @@ bool DwellingSys::leftMouseUp(float x, float y) {
   SDL_FRect posRect;
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, DwellingSys::buttons,
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickSlider()) {

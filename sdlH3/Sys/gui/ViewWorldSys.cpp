@@ -13,8 +13,8 @@
 
 static void receive() {}
 
-void ViewWorldSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     // Button button;
     // button.textures = Global::defCache["iOKAY.def/0"];
@@ -24,6 +24,7 @@ void ViewWorldSys::init() {
     // button.showFunc = []() { return true; };
     // buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -60,7 +61,7 @@ static void drawButton() {
   SDL_FPoint leftUp{Global::viewPort.w - 190, Global::viewPort.h - 381};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == ViewWorldSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, ViewWorldSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 bool ViewWorldSys::run() {
@@ -74,8 +75,7 @@ bool ViewWorldSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w - 190, Global::viewPort.h - 381};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, ViewWorldSys::buttons,
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   return true;

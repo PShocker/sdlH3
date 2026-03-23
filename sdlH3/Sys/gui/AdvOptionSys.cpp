@@ -9,8 +9,8 @@
 
 static void closeScrn() { World::exitScrn(); }
 
-void AdvOptionSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     // Button button;
     // button.textures = Global::defCache["iOKAY.def/0"];
@@ -20,6 +20,7 @@ void AdvOptionSys::init() {
     // button.showFunc = []() { return true; };
     // buttons.push_back(button);
   }
+  return buttons;
 }
 
 // static std::vector<Button> buttonInfo() {
@@ -87,7 +88,7 @@ static void drawButton() {
                     (Global::viewPort.h - 387) / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == AdvOptionSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, AdvOptionSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 bool AdvOptionSys::run() {
@@ -100,7 +101,7 @@ bool AdvOptionSys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{(Global::viewPort.w - 289) / 2,
                     (Global::viewPort.h - 387) / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, AdvOptionSys::buttons,
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(),
                               clickType)) {
     return false;
   }

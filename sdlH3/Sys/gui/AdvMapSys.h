@@ -22,11 +22,6 @@ struct Button {
 };
 
 struct AdvMapSys {
-
-  static inline std::vector<Button> buttons;
-
-  static void init();
-
   static void drawResBar(float x, float y);
 
   static void heroFocus();
@@ -38,11 +33,11 @@ struct AdvMapSys {
   static bool rightMouseDown(float x, float y);
   static bool keyUp(uint16_t key);
   static bool keyDown(uint16_t key);
-  static void drawButtons(float x, float y, bool press, std::vector<Button> &v);
-  static bool clickButtons(float x, float y, std::vector<Button> &v,
+  static void drawButtons(float x, float y, bool press, std::vector<Button> v);
+  static bool clickButtons(float x, float y, std::vector<Button> v,
                            uint8_t clickType);
   static bool drawButtonsText(float x, float y, float pX, float pY,
-                              std::vector<Button> &v);
+                              std::vector<Button> v);
 
   static std::u16string heroName(HeroComp &hComp);
   static std::u16string townName(TownComp &tComp);

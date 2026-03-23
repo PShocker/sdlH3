@@ -32,8 +32,8 @@ static void study() {
   clear();
 }
 
-void UniversitySys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["iOKAY.def/0"];
@@ -64,6 +64,7 @@ void UniversitySys::init() {
     button.showFunc = []() { return Global::goalIndex != 0xff; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -103,7 +104,7 @@ static void drawButton() {
                     (Global::viewPort.h - 388) / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == UniversitySys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, UniversitySys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 static void drawSecSkill() {
@@ -235,7 +236,7 @@ bool UniversitySys::leftMouseUp(float x, float y) {
   SDL_FPoint point = {(float)(int)x, (float)(int)y};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, UniversitySys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickSec(clickType)) {

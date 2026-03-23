@@ -3,7 +3,6 @@
 #include "Comp/HeroComp.h"
 #include <cstdint>
 struct SpellSys {
-
   static bool run();
   static bool leftMouseUp(float x, float y);
   static bool rightMouseDown(float x, float y);

@@ -16,17 +16,18 @@
 
 static void closeScrn() { World::exitScrn(); }
 
-void TownHallSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     Button button;
     button.textures = Global::defCache["TPMAGE1.DEF/0"];
-    button.r ={748, 556, 48, 40};
+    button.r = {748, 556, 48, 40};
     button.clickFunc = closeScrn;
     button.disableFunc = []() { return false; };
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawButton() {
@@ -34,7 +35,7 @@ static void drawButton() {
                     (Global::viewPort.h - 600) / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == TownHallSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, TownHallSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 static void drawBackGround() {
@@ -176,7 +177,7 @@ bool TownHallSys::leftMouseUp(float x, float y) {
                     (Global::viewPort.h - 600) / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, TownHallSys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickBuildIcon(clickType)) {

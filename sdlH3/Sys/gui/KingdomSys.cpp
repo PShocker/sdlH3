@@ -15,8 +15,8 @@
 
 static void closeScrn() { World::exitScrn(); }
 
-void KingdomSys::init() {
-  buttons.clear();
+static std::vector<Button> buttonInfo() {
+  std::vector<Button> buttons;
   {
     auto t = Global::defCache["OVBUTN1.def/0"];
     std::vector<SDL_Texture *> vec = {t[0], t[1], t[2]};
@@ -94,6 +94,7 @@ void KingdomSys::init() {
     button.showFunc = []() { return true; };
     buttons.push_back(button);
   }
+  return buttons;
 }
 
 static void drawBackGround() {
@@ -111,7 +112,7 @@ static void drawButton() {
                           (Global::viewPort.h - 600) / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == KingdomSys::run);
-  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, KingdomSys::buttons);
+  AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
 }
 
 static void drawMines() {
@@ -430,7 +431,7 @@ bool KingdomSys::leftMouseUp(float x, float y) {
                     (Global::viewPort.h - 600) / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, KingdomSys::buttons, clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickdmArt()) {
