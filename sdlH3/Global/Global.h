@@ -195,6 +195,9 @@ struct Global {
   static inline std::array<BattleHero, 2> battleHero;
   static inline std::array<std::vector<BattleCreature>, 2> battleCre;
 
+  static inline std::vector<std::vector<uint8_t>> replayNetPack;
+  static inline std::array<std::array<std::vector<bool>, 2>, 8> replayFogs;
+
   static inline std::flat_map<std::string, std::vector<SDL_Texture *>> pcxCache;
   static inline std::flat_map<std::string, std::vector<SDL_Texture *>> defCache;
   static inline std::flat_map<std::string, std::vector<uint8_t>> pcmCache;

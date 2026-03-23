@@ -8,6 +8,7 @@
 #include "protocol/Protocol.h"
 #include "protocol/Server.h"
 #include <cstdint>
+#include <vector>
 
 template <typename CreateFunc, typename... Args>
 static void sendServerPacket(uint64_t cId, NetPayload type, CreateFunc func,
@@ -96,13 +97,7 @@ void NetServer::checkHeartBeat() {
     NetWork::clients.erase(client.id);
   }
 }
-
-void NetServer::handlePacket(uint64_t cId, void *buf) {
-  auto packet = GetNetPacket(buf);
-  if (!packet) {
-    printf("无效的数据包\n");
-    return;
-  }
+void NetServer::dispatchPacket(uint64_t cId, const NetPacket *packet) {
   // 4. 通过union的type判断具体类型
   switch (packet->payload_type()) {
   case NetPayload_ClientHeartbeat: {
@@ -228,4 +223,28 @@ void NetServer::handlePacket(uint64_t cId, void *buf) {
   default:
     break;
   }
+}
+
+void NetServer::recordPacket(void *buf, ssize_t nread) {
+  auto packet = GetNetPacket(buf);
+  auto type = packet->payload_type();
+  if (type == NetPayload_ServerHeroMove || type == NetPayload_ServerHeroGoal ||
+      type == NetPayload_ServerHeroTeleport ||
+      type == NetPayload_ServerHeroRecruit ||
+      type == NetPayload_ServerHeroDismiss) {
+    std::vector<uint8_t> data(static_cast<uint8_t *>(buf),
+                              static_cast<uint8_t *>(buf) +
+                                  static_cast<size_t>(nread));
+    Global::replayNetPack.emplace_back(data);
+  }
+}
+
+void NetServer::handlePacket(uint64_t cId, void *buf, ssize_t nread) {
+  auto packet = GetNetPacket(buf);
+  if (!packet) {
+    printf("无效的数据包\n");
+    return;
+  }
+  recordPacket(buf, nread);
+  dispatchPacket(cId, packet);
 }

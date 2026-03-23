@@ -13,7 +13,7 @@ struct World {
   static inline bool needSort;
   static inline uint8_t level = 0;
 
-  static inline std::array<entt::registry, 2> registrys;
+  static inline std::array<entt::registry, 4> registrys;
   static inline std::vector<std::function<bool()>> iterateSystems;
   static inline std::vector<std::function<bool(float, float)>> LMouseDownSys;
   static inline std::vector<std::function<bool(float, float)>> LMouseUpSys;

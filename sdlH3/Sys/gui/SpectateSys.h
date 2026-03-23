@@ -1,5 +1,5 @@
 #pragma once
 
-struct RenderSys {
+struct SpectateSys {
   static bool run();
 };

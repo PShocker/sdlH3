@@ -54,7 +54,7 @@ static void on_recv(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf,
   auto port = ntohs(addr_in->sin_port);
   auto cId = CombineIPAndPort(ip, port);
 
-  NetServer::handlePacket(cId, buf->base);
+  NetServer::handlePacket(cId, buf->base, nread);
 
   char sender_ip[17] = {0};
   int sender_port = 0;

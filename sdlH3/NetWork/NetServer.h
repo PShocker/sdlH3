@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NetWork/protocol/Protocol.h"
 #include "uv.h"
 #include <cstdint>
 struct NetServer {
@@ -16,6 +17,9 @@ struct NetServer {
                                uint8_t x, uint8_t y);
   static void sendOutScene(uint64_t cId);
 
-  static void handlePacket(uint64_t cId, void *buf);
+  static void dispatchPacket(uint64_t cId, const NetPacket *packet);
+  static void recordPacket(void *buf, ssize_t nread);
+  static void handlePacket(uint64_t cId, void *buf, ssize_t nread);
+  
   static void checkHeartBeat();
 };
