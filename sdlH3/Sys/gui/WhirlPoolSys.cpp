@@ -53,7 +53,7 @@ static std::vector<Button> buttonInfo() {
   {
     Button button;
     button.textures = Global::defCache["iOKAY.def/0"];
-    button.r = {bakW / 2 - 32, bakH - 60, 64, 30};
+    button.r = {bakW / 2 - 32 - 48, bakH - 60, 64, 30};
     button.clickFunc = enter;
     button.disableFunc = []() { return false; };
     button.showFunc = []() { return true; };
