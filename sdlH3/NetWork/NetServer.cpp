@@ -39,7 +39,7 @@ static void sendServerScenePacket(uint64_t cId, NetPayload type,
 void NetServer::sendInScene(uint64_t cId, uint32_t seed, uint32_t scene_id,
                             uint64_t scene_host) {
   sendServerPacket(cId, NetPayload_ServerInScene, CreateServerInScene, seed,
-                   scene_host, scene_id);
+                   scene_host, scene_id, cId);
   return;
 }
 
@@ -72,6 +72,12 @@ void NetServer::sendHeroTeleport(uint64_t cId, uint8_t por, uint8_t level,
 }
 
 void NetServer::sendOutScene(uint64_t cId) {
+  sendServerScenePacket(cId, NetPayload_ServerOutScene, CreateServerOutScene,
+                        cId);
+  return;
+}
+
+void NetServer::sendEndTurn(uint64_t cId) {
   sendServerScenePacket(cId, NetPayload_ServerOutScene, CreateServerOutScene,
                         cId);
   return;
@@ -165,13 +171,26 @@ void NetServer::dispatchPacket(uint64_t cId, const NetPacket *packet) {
     NetServer::sendHeroTeleport(cId, por, level, x, y);
     break;
   }
+    case NetPayload_ClientEndTurn: {
+    // 从union中获取NetHeartbeat
+    auto payload = packet->payload_as_ClientHeroTeleport();
+    auto por = payload->por();
+    auto level = payload->level();
+    auto x = payload->x();
+    auto y = payload->y();
+    //
+    NetServer::sendHeroTeleport(cId, por, level, x, y);
+    break;
+  }
   case NetPayload_ServerInScene: {
     // 从union中获取NetHeartbeat
     auto payload = packet->payload_as_ServerInScene();
     //
     auto sId = payload->scene_id();
     auto seed = payload->seed();
-    NetEvent::InScene(sId, seed);
+    auto host = payload->scene_host();
+    auto clientId = payload->client_id();
+    NetEvent::inScene(sId, seed, host, clientId);
     break;
   }
   case NetPayload_ServerHeroMove: {
@@ -181,7 +200,7 @@ void NetServer::dispatchPacket(uint64_t cId, const NetPacket *packet) {
     auto level = payload->level();
     auto x = payload->x();
     auto y = payload->y();
-    NetEvent::HeroMove(por, level, x, y);
+    NetEvent::heroMove(por, level, x, y);
     break;
   }
   case NetPayload_ServerHeroGoal: {
@@ -192,7 +211,7 @@ void NetServer::dispatchPacket(uint64_t cId, const NetPacket *packet) {
     auto level = payload->level();
     auto x = payload->x();
     auto y = payload->y();
-    NetEvent::HeroGoal(por, type, level, x, y);
+    NetEvent::heroGoal(por, type, level, x, y);
     break;
   }
   case NetPayload_ServerHeroRecruit: {
@@ -201,13 +220,13 @@ void NetServer::dispatchPacket(uint64_t cId, const NetPacket *packet) {
     auto level = payload->level();
     auto x = payload->x();
     auto y = payload->y();
-    NetEvent::HeroRecruit(por, level, x, y);
+    NetEvent::heroRecruit(por, level, x, y);
     break;
   }
   case NetPayload_ServerHeroDismiss: {
     auto payload = packet->payload_as_ServerHeroDismiss();
     auto por = payload->por();
-    NetEvent::HeroDismiss(por);
+    NetEvent::heroDismiss(por);
     break;
   }
   case NetPayload_ServerHeroTeleport: {
@@ -216,7 +235,7 @@ void NetServer::dispatchPacket(uint64_t cId, const NetPacket *packet) {
     auto level = payload->level();
     auto x = payload->x();
     auto y = payload->y();
-    NetEvent::HeroTeleport(por, level, x, y);
+    NetEvent::heroTeleport(por, level, x, y);
     break;
   }
 

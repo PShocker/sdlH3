@@ -23,6 +23,10 @@ struct Button {
 
 struct AdvMapSys {
   static void drawResBar(float x, float y);
+  static void drawAgem();
+  static void drawAdvMap();
+  static void drawHeroList();
+  static void drawTownList();
 
   static void heroFocus();
   static void heroFocus(entt::entity heroEnt, uint8_t level);

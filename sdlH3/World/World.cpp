@@ -65,6 +65,7 @@
 #include "Sys/gui/PrisonSys.h"
 #include "Sys/gui/PuzzleSys.h"
 #include "Sys/gui/RalFlagSys.h"
+#include "Sys/gui/ReplaySys.h"
 #include "Sys/gui/ScholarSys.h"
 #include "Sys/gui/SchoolMagSys.h"
 #include "Sys/gui/SchoolWarSys.h"
@@ -72,6 +73,7 @@
 #include "Sys/gui/ShipyardSys.h"
 #include "Sys/gui/ShrineMagicSys.h"
 #include "Sys/gui/SirensSys.h"
+#include "Sys/gui/SpectateSys.h"
 #include "Sys/gui/SpellSys.h"
 #include "Sys/gui/SpliteCreSys.h"
 #include "Sys/gui/StablesSys.h"
@@ -140,6 +142,8 @@ void World::enterAdvScrn() {
   RMouseDownSysBak.clear();
   keyUpSysBak.clear();
   keyDownSysBak.clear();
+
+  Global::cursorBack.clear();
 
   iterateSystems.clear();
   iterateSystems.push_back(AnimateSys::run);
@@ -1627,6 +1631,77 @@ void World::enterConfirm(float bakW, float bakH, uint8_t confirmType) {
   Global::confirmBakW = bakW;
   Global::confirmBakH = bakH;
   Global::confirmType = confirmType;
+  Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+}
+
+void World::enterSpectate() {
+  LMouseUpSys.clear();
+  LMouseDownSys.clear();
+  RMouseUpSys.clear();
+  RMouseDownSys.clear();
+  keyUpSys.clear();
+  keyDownSys.clear();
+
+  LMouseUpSysBak.clear();
+  LMouseDownSysBak.clear();
+  RMouseUpSysBak.clear();
+  RMouseDownSysBak.clear();
+  keyUpSysBak.clear();
+  keyDownSysBak.clear();
+
+  Global::cursorBack.clear();
+  iterateSystemsBak.clear();
+
+  iterateSystems.clear();
+
+  iterateSystems.push_back(AnimateSys::run);
+  iterateSystems.push_back(CameraSys::run);
+  iterateSystems.push_back(World::run);
+  iterateSystems.push_back(RenderSys::run);
+  iterateSystems.push_back(FogSys::run);
+  iterateSystems.push_back(BorderSys::run);
+  iterateSystems.push_back(SpectateSys::run);
+  iterateSystems.push_back(HeroSys::run);
+  iterateSystems.push_back(AudioSys::run);
+  iterateSystems.push_back(CursorSys::run);
+
+  Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
+
+  Global::replayFogs = Global::fogs;
+  ReplaySys::saveRegistry();
+}
+
+void World::enterReplay() {
+  LMouseUpSys.clear();
+  LMouseDownSys.clear();
+  RMouseUpSys.clear();
+  RMouseDownSys.clear();
+  keyUpSys.clear();
+  keyDownSys.clear();
+
+  LMouseUpSysBak.clear();
+  LMouseDownSysBak.clear();
+  RMouseUpSysBak.clear();
+  RMouseDownSysBak.clear();
+  keyUpSysBak.clear();
+  keyDownSysBak.clear();
+
+  Global::cursorBack.clear();
+  iterateSystemsBak.clear();
+
+  iterateSystems.clear();
+
+  iterateSystems.push_back(AnimateSys::run);
+  iterateSystems.push_back(CameraSys::run);
+  iterateSystems.push_back(World::run);
+  iterateSystems.push_back(RenderSys::run);
+  iterateSystems.push_back(FogSys::run);
+  iterateSystems.push_back(BorderSys::run);
+  iterateSystems.push_back(ReplaySys::run);
+  iterateSystems.push_back(HeroSys::run);
+  iterateSystems.push_back(AudioSys::run);
+  iterateSystems.push_back(CursorSys::run);
+
   Global::cursorType = (uint8_t)Enum::CURSOR::DEFAULT;
 }
 

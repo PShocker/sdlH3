@@ -42,6 +42,7 @@ int32_t height = 600;
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   if (argc == 3) {
     NetWork::init(argv[1], SDL_atoi(argv[2]));
+    Global::playerId = 1;
   } else {
     NetWork::init();
   }

@@ -70,3 +70,6 @@ table ClientBattleResult {
     y:uint8;
     win:bool;
 }
+
+table ClientEndTurn {
+}

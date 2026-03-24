@@ -27,6 +27,7 @@ struct Global {
   static inline H3mData mapData;
 
   static inline uint8_t playerId = 0;
+  static inline uint8_t playerIdSelf = 0;
   static inline std::vector<std::flat_set<uint8_t>> playerAlliance = {{0, 1}};
 
   static inline std::array<std::array<uint32_t, 7>, 8> resources;
@@ -201,6 +202,7 @@ struct Global {
   static inline std::flat_map<std::string, std::vector<SDL_Texture *>> pcxCache;
   static inline std::flat_map<std::string, std::vector<SDL_Texture *>> defCache;
   static inline std::flat_map<std::string, std::vector<uint8_t>> pcmCache;
+  
   static void init();
   static void startGame();
   static void endGame();

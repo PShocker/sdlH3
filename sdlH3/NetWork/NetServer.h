@@ -15,7 +15,10 @@ struct NetServer {
   static void sendHeroDismiss(uint64_t cId, uint8_t por);
   static void sendHeroTeleport(uint64_t cId, uint8_t por, uint8_t level,
                                uint8_t x, uint8_t y);
+
   static void sendOutScene(uint64_t cId);
+
+  static void sendEndTurn(uint64_t cId);
 
   static void dispatchPacket(uint64_t cId, const NetPacket *packet);
   static void recordPacket(void *buf, ssize_t nread);

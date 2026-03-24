@@ -4,6 +4,9 @@
 #include "Comp/PlayerIdComp.h"
 #include "Comp/PositionComp.h"
 #include "Comp/TextureComp.h"
+#include "Global/Global.h"
+#include "Sys/gui/AdvMapSys.h"
+#include "Sys/gui/SpectateSys.h"
 #include "World/World.h"
 #include "entt/entity/fwd.hpp"
 
@@ -36,4 +39,15 @@ void ReplaySys::saveRegistry() {
   }
 }
 
-bool ReplaySys::run() { return true; }
+bool ReplaySys::run() {
+  auto playerId = Global::playerId;
+  Global::playerId = Global::playerIdSelf;
+  AdvMapSys::drawHeroList();
+  AdvMapSys::drawTownList();
+  SpectateSys::drawRightTop();
+  SpectateSys::drawRightButton();
+  AdvMapSys::drawAgem();
+  AdvMapSys::drawResBar(3, Global::viewPort.h - 25);
+  Global::playerId = playerId;
+  return true;
+}

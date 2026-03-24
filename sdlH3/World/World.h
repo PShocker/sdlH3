@@ -123,6 +123,8 @@ struct World {
   static void enterStables(entt::entity heroEnt, entt::entity goalEnt);
   static void enterBattle(entt::entity heroEnt, entt::entity goalEnt,
                           uint8_t goalLevel);
+  static void enterSpectate();
+  static void enterReplay();
   static void enterScrn();
 
   static void exitScrn();

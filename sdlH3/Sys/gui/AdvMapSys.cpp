@@ -109,6 +109,9 @@ void AdvMapSys::heroFocus() {
 // 切换地层
 static void switchWorld() { World::level = World::level == 1 ? 0 : 1; }
 
+// 结束回合
+static void endTurn() { World::enterSpectate(); }
+
 static std::vector<Button> buttonInfo() {
   std::vector<Button> buttons;
   {
@@ -277,7 +280,7 @@ static std::vector<Button> buttonInfo() {
     button.textures =
         Global::defCache["IAM001.DEF/" + std::to_string(Global::playerId)];
     button.r = {121, 356, 64, 32};
-    button.clickFunc = viewAdvSet;
+    button.clickFunc = endTurn;
     button.disableFunc = []() { return false; };
     button.showFunc = []() { return true; };
     buttons.push_back(button);
@@ -285,7 +288,7 @@ static std::vector<Button> buttonInfo() {
   return buttons;
 }
 
-static void drawSpellMask() {
+static void drawMask() {
   auto cursorType = Global::cursorType;
   if (cursorType != (uint8_t)Enum::CURSOR::SPELL) {
     return;
@@ -303,7 +306,7 @@ static void drawSpellMask() {
       (Global::cursorSpellRange * 2 + 1) * 32, 128);
 }
 
-static void drawAdvMap() {
+void AdvMapSys::drawAdvMap() {
   SDL_FRect srcRect;
   SDL_FRect posRect;
   SDL_Texture *texture;
@@ -394,7 +397,7 @@ static void drawButton() {
   AdvMapSys::drawButtons(0, 0, top, v);
 }
 
-static void drawAgem() {
+void AdvMapSys::drawAgem() {
   SDL_FRect posRect = {6, 6, 46, 46};
   auto texture = Global::defCache["agemUL.def/0"][Global::playerId];
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
@@ -841,7 +844,8 @@ static void drawBottomInfo() {
   FreeTypeSys::drawCenter((Global::viewPort.w - 199) / 2,
                           (Global::viewPort.h - 46), s);
 }
-static void drawHeroList() {
+
+void AdvMapSys::drawHeroList() {
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 4];
   auto top = (*topFunc.target<bool (*)()>() == AdvMapSys::run);
   auto i = Global::herosIndex[Global::playerId];
@@ -850,7 +854,7 @@ static void drawHeroList() {
                     top);
 }
 
-static void drawTownList() {
+void AdvMapSys::drawTownList() {
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 4];
   auto top = (*topFunc.target<bool (*)()>() == AdvMapSys::run);
   auto i = Global::townsIndex[Global::playerId];
@@ -870,7 +874,7 @@ static void drawIME() {
 }
 
 bool AdvMapSys::run() {
-  drawSpellMask();
+  drawMask();
   drawAdvMap();
   drawButton();
   drawHeroList();

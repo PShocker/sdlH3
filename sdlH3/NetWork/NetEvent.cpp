@@ -7,6 +7,7 @@
 #include "Ent/Ent.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
+#include "NetWork.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/CameraSys.h"
 #include "World/World.h"
@@ -17,7 +18,7 @@
 #include <optional>
 #include <utility>
 
-static std::pair<uint8_t, entt::entity> FindHeroEnt(uint8_t por) {
+static std::pair<uint8_t, entt::entity> findHeroEnt(uint8_t por) {
   for (uint8_t i : {0, 1}) {
     auto &registry = World::registrys[i];
     for (auto ent : registry.view<HeroComp>()) {
@@ -31,19 +32,27 @@ static std::pair<uint8_t, entt::entity> FindHeroEnt(uint8_t por) {
 }
 
 // networkEvent
-void NetEvent::InScene(uint32_t scene, uint32_t seed) {
+void NetEvent::inScene(uint32_t scene, uint32_t seed, uint64_t hId,
+                       uint64_t cId) {
   std::srand(seed);
   Global::gen.seed(seed);
 
   Ent::load(Global::mapData);
   Global::startGame();
-  World::enterAdvScrn();
+  if (cId == hId) {
+    World::enterAdvScrn();
+  } else {
+    World::enterSpectate();
+  }
+
+  NetWork::cId = cId;
+  NetWork::sceneHost[scene] = hId;
 
   return;
 }
 
-void NetEvent::HeroMove(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
-  auto [i, heroEnt] = FindHeroEnt(por);
+void NetEvent::heroMove(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
+  auto [i, heroEnt] = findHeroEnt(por);
   auto &registry = World::registrys[i];
   auto hComp = &registry.get<HeroComp>(heroEnt);
   std::vector<SDL_Point> path;
@@ -59,13 +68,13 @@ void NetEvent::HeroMove(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
   return;
 }
 
-void NetEvent::HeroGoal(uint8_t por, uint8_t type, uint8_t level, uint8_t x,
+void NetEvent::heroGoal(uint8_t por, uint8_t type, uint8_t level, uint8_t x,
                         uint8_t y) {
-  auto [i, heroEnt] = FindHeroEnt(por);
+  auto [i, heroEnt] = findHeroEnt(por);
   auto registry = &World::registrys[i];
   auto hComp = &registry->get<HeroComp>(heroEnt);
   if (type == ObjectType::NOTHING) {
-    HeroMove(por, level, x, y);
+    heroMove(por, level, x, y);
     auto goalEnt = Global::terrains[World::level][x][y].back();
     hComp->goalEnt.push_back(goalEnt);
     return;
@@ -79,7 +88,7 @@ void NetEvent::HeroGoal(uint8_t por, uint8_t type, uint8_t level, uint8_t x,
       if (oComp->type != ObjectType::MONSTER) {
         ox = ox + oComp->accessTiles[0].first;
         oy = oy + oComp->accessTiles[0].second;
-        HeroMove(por, level, ox, oy);
+        heroMove(por, level, ox, oy);
       }
       hComp->goalEnt.push_back(oEnt);
       hComp->visitedEnt[level].insert(oEnt);
@@ -89,13 +98,13 @@ void NetEvent::HeroGoal(uint8_t por, uint8_t type, uint8_t level, uint8_t x,
   return;
 }
 
-void NetEvent::HeroRecruit(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
-  auto [i, heroEnt] = FindHeroEnt(por);
+void NetEvent::heroRecruit(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
+  auto [i, heroEnt] = findHeroEnt(por);
   auto &registry = World::registrys[i];
 }
 
-void NetEvent::HeroDismiss(uint8_t por) {
-  auto [i, heroEnt] = FindHeroEnt(por);
+void NetEvent::heroDismiss(uint8_t por) {
+  auto [i, heroEnt] = findHeroEnt(por);
   World::level = i;
   AdvMapSys::heroFocus(heroEnt, i);
   auto &registry = World::registrys[i];
@@ -139,8 +148,8 @@ void NetEvent::HeroDismiss(uint8_t por) {
   World::iterateSystems.push_back(World::enterFadeScrn);
 }
 
-void NetEvent::HeroTeleport(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
-  auto [i, heroEnt] = FindHeroEnt(por);
+void NetEvent::heroTeleport(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
+  auto [i, heroEnt] = findHeroEnt(por);
   auto registry = &World::registrys[i];
   AdvMapSys::heroFocus(heroEnt, i);
   World::iterateSystemsBak.push_back(World::iterateSystems);
@@ -174,3 +183,5 @@ void NetEvent::HeroTeleport(uint8_t por, uint8_t level, uint8_t x, uint8_t y) {
   World::iterateSystems.push_back(World::enterFadeScrn);
   return;
 }
+
+void NetEvent::endTurn(uint64_t cId) {}

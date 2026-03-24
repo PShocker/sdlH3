@@ -49,6 +49,9 @@ struct ClientHeroAdvBonuseBuilder;
 struct ClientBattleResult;
 struct ClientBattleResultBuilder;
 
+struct ClientEndTurn;
+struct ClientEndTurnBuilder;
+
 struct ClientHeartbeat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ClientHeartbeatBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -788,6 +791,36 @@ inline ::flatbuffers::Offset<ClientBattleResult> CreateClientBattleResult(
   builder_.add_x(x);
   builder_.add_level(level);
   builder_.add_por(por);
+  return builder_.Finish();
+}
+
+struct ClientEndTurn FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ClientEndTurnBuilder Builder;
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           verifier.EndTable();
+  }
+};
+
+struct ClientEndTurnBuilder {
+  typedef ClientEndTurn Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  explicit ClientEndTurnBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ClientEndTurn> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ClientEndTurn>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ClientEndTurn> CreateClientEndTurn(
+    ::flatbuffers::FlatBufferBuilder &_fbb) {
+  ClientEndTurnBuilder builder_(_fbb);
   return builder_.Finish();
 }
 

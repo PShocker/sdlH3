@@ -11,6 +11,7 @@ union NetPayload {
     ClientHeroTeleport,
     ClientHeroRecruit,
     ClientHeroDismiss,
+    ClientEndTurn,
     ServerHeartbeat,
     ServerInScene,
     ServerOutScene,
@@ -19,6 +20,7 @@ union NetPayload {
     ServerHeroTeleport,
     ServerHeroRecruit,
     ServerHeroDismiss,
+    ServerEndTurn,
 }
 // 统一的网络包（最外层包装）
 table NetPacket {

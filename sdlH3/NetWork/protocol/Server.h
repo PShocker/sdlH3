@@ -37,8 +37,8 @@ struct ServerHeroRecruitBuilder;
 struct ServerHeroDismiss;
 struct ServerHeroDismissBuilder;
 
-struct ServerObjectFade;
-struct ServerObjectFadeBuilder;
+struct ServerEndTurn;
+struct ServerEndTurnBuilder;
 
 struct ServerHeartbeat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ServerHeartbeatBuilder Builder;
@@ -87,7 +87,8 @@ struct ServerInScene FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SEED = 4,
     VT_SCENE_HOST = 6,
-    VT_SCENE_ID = 8
+    VT_SCENE_ID = 8,
+    VT_CLIENT_ID = 10
   };
   uint32_t seed() const {
     return GetField<uint32_t>(VT_SEED, 0);
@@ -98,12 +99,16 @@ struct ServerInScene FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   uint32_t scene_id() const {
     return GetField<uint32_t>(VT_SCENE_ID, 0);
   }
+  uint64_t client_id() const {
+    return GetField<uint64_t>(VT_CLIENT_ID, 0);
+  }
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_SEED, 4) &&
            VerifyField<uint64_t>(verifier, VT_SCENE_HOST, 8) &&
            VerifyField<uint32_t>(verifier, VT_SCENE_ID, 4) &&
+           VerifyField<uint64_t>(verifier, VT_CLIENT_ID, 8) &&
            verifier.EndTable();
   }
 };
@@ -121,6 +126,9 @@ struct ServerInSceneBuilder {
   void add_scene_id(uint32_t scene_id) {
     fbb_.AddElement<uint32_t>(ServerInScene::VT_SCENE_ID, scene_id, 0);
   }
+  void add_client_id(uint64_t client_id) {
+    fbb_.AddElement<uint64_t>(ServerInScene::VT_CLIENT_ID, client_id, 0);
+  }
   explicit ServerInSceneBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -136,8 +144,10 @@ inline ::flatbuffers::Offset<ServerInScene> CreateServerInScene(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     uint32_t seed = 0,
     uint64_t scene_host = 0,
-    uint32_t scene_id = 0) {
+    uint32_t scene_id = 0,
+    uint64_t client_id = 0) {
   ServerInSceneBuilder builder_(_fbb);
+  builder_.add_client_id(client_id);
   builder_.add_scene_host(scene_host);
   builder_.add_scene_id(scene_id);
   builder_.add_seed(seed);
@@ -526,75 +536,45 @@ inline ::flatbuffers::Offset<ServerHeroDismiss> CreateServerHeroDismiss(
   return builder_.Finish();
 }
 
-struct ServerObjectFade FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef ServerObjectFadeBuilder Builder;
+struct ServerEndTurn FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ServerEndTurnBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_TYPE = 4,
-    VT_LEVEL = 6,
-    VT_X = 8,
-    VT_Y = 10
+    VT_SCENE_HOST = 4
   };
-  uint8_t type() const {
-    return GetField<uint8_t>(VT_TYPE, 0);
-  }
-  uint8_t level() const {
-    return GetField<uint8_t>(VT_LEVEL, 0);
-  }
-  uint8_t x() const {
-    return GetField<uint8_t>(VT_X, 0);
-  }
-  uint8_t y() const {
-    return GetField<uint8_t>(VT_Y, 0);
+  uint64_t scene_host() const {
+    return GetField<uint64_t>(VT_SCENE_HOST, 0);
   }
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint8_t>(verifier, VT_TYPE, 1) &&
-           VerifyField<uint8_t>(verifier, VT_LEVEL, 1) &&
-           VerifyField<uint8_t>(verifier, VT_X, 1) &&
-           VerifyField<uint8_t>(verifier, VT_Y, 1) &&
+           VerifyField<uint64_t>(verifier, VT_SCENE_HOST, 8) &&
            verifier.EndTable();
   }
 };
 
-struct ServerObjectFadeBuilder {
-  typedef ServerObjectFade Table;
+struct ServerEndTurnBuilder {
+  typedef ServerEndTurn Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_type(uint8_t type) {
-    fbb_.AddElement<uint8_t>(ServerObjectFade::VT_TYPE, type, 0);
+  void add_scene_host(uint64_t scene_host) {
+    fbb_.AddElement<uint64_t>(ServerEndTurn::VT_SCENE_HOST, scene_host, 0);
   }
-  void add_level(uint8_t level) {
-    fbb_.AddElement<uint8_t>(ServerObjectFade::VT_LEVEL, level, 0);
-  }
-  void add_x(uint8_t x) {
-    fbb_.AddElement<uint8_t>(ServerObjectFade::VT_X, x, 0);
-  }
-  void add_y(uint8_t y) {
-    fbb_.AddElement<uint8_t>(ServerObjectFade::VT_Y, y, 0);
-  }
-  explicit ServerObjectFadeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ServerEndTurnBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ServerObjectFade> Finish() {
+  ::flatbuffers::Offset<ServerEndTurn> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ServerObjectFade>(end);
+    auto o = ::flatbuffers::Offset<ServerEndTurn>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ServerObjectFade> CreateServerObjectFade(
+inline ::flatbuffers::Offset<ServerEndTurn> CreateServerEndTurn(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint8_t type = 0,
-    uint8_t level = 0,
-    uint8_t x = 0,
-    uint8_t y = 0) {
-  ServerObjectFadeBuilder builder_(_fbb);
-  builder_.add_y(y);
-  builder_.add_x(x);
-  builder_.add_level(level);
-  builder_.add_type(type);
+    uint64_t scene_host = 0) {
+  ServerEndTurnBuilder builder_(_fbb);
+  builder_.add_scene_host(scene_host);
   return builder_.Finish();
 }
 
