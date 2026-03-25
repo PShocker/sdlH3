@@ -608,8 +608,8 @@ void H3mData::readObjects() {
         if (features.levelAB) {
           object.identifier = reader.readU32();
         }
-        auto count = reader.readU16();
-        auto character = reader.readU8();
+        object.data["count"] = reader.readU16();
+        object.data["character"] = reader.readU8();
         bool hasMessage = reader.readU8();
         if (hasMessage) {
           object.data["message"] = reader.readString();

@@ -2,6 +2,7 @@
 
 #include <any>
 #include <cstdint>
+#include <flat_map>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -321,5 +322,5 @@ struct H3mObject {
   std::vector<std::vector<uint8_t>> usedTiles;
   std::set<int32_t> allowedTerrains;
   uint32_t identifier;
-  std::unordered_map<std::string, std::any> data;
+  std::flat_map<std::string, std::any> data;
 };

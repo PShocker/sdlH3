@@ -17,7 +17,7 @@ struct Writer {
 
   void flush();
 
-  void writeString(std::string &str);
+  void writeString(const std::string &str);
 
   Writer(std::string filePath);
   Writer() = default;

@@ -14,7 +14,7 @@ void Writer::fill(uint32_t num, uint8_t i) {
   }
 }
 
-void Writer::writeString(std::string &str) {
+void Writer::writeString(const std::string &str) {
   auto length = str.size();
   writeU32(length);
   for (int i = 0; i < length; ++i) {
