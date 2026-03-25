@@ -13,9 +13,8 @@
 #include <cstdint>
 #include <vector>
 
-static void upgrade() {}
 
-static void close() {}
+static void closeScrn() {}
 
 static std::vector<Button> buttonInfo() {
   std::vector<Button> buttons;
@@ -33,11 +32,11 @@ static std::vector<Button> buttonInfo() {
 
 static void drawBackGround() {
   SDL_FRect posRect;
-  SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
-                    (Global::viewPort.h - 348) / 2};
+  SDL_FPoint leftUp{(Global::viewPort.w - 601) / 2,
+                    (Global::viewPort.h - 593) / 2};
   auto playerId =
       World::registrys[World::level].get<PlayerIdComp>(Global::heroEnt).id;
-  auto texture = Global::pcxCache["APHLFTBK.PCX"][playerId];
+  auto texture = Global::pcxCache["TPMrkCrS.pcx"][playerId];
   posRect = {leftUp.x, leftUp.y, static_cast<float>(texture->w),
              static_cast<float>(texture->h)};
   SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
@@ -51,22 +50,22 @@ static void drawBackGround() {
 
 static void draw() {
   SDL_FRect posRect;
-  SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
-                    (Global::viewPort.h - 348) / 2};
+  SDL_FPoint leftUp{(Global::viewPort.w - 601) / 2,
+                    (Global::viewPort.h - 593) / 2};
 }
 
 static void drawCreature() {
   SDL_FRect posRect;
-  SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
-                    (Global::viewPort.h - 348) / 2};
+  SDL_FPoint leftUp{(Global::viewPort.w - 601) / 2,
+                    (Global::viewPort.h - 593) / 2};
   auto heroComp =
       &World::registrys[World::level].get<HeroComp>(Global::heroEnt);
 }
 
 static void drawButton() {
   SDL_FRect posRect;
-  SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
-                    (Global::viewPort.h - 348) / 2};
+  SDL_FPoint leftUp{(Global::viewPort.w - 601) / 2,
+                    (Global::viewPort.h - 593) / 2};
   auto &topFunc = World::iterateSystems[World::iterateSystems.size() - 2];
   auto top = (*topFunc.target<bool (*)()>() == FreeGuildSys::run);
   AdvMapSys::drawButtons(leftUp.x, leftUp.y, top, buttonInfo());
@@ -80,8 +79,8 @@ bool FreeGuildSys::run() {
 }
 
 bool FreeGuildSys::leftMouseUp(float x, float y) {
-  SDL_FPoint leftUp{(Global::viewPort.w - 652) / 2,
-                    (Global::viewPort.h - 348) / 2};
+  SDL_FPoint leftUp{(Global::viewPort.w - 601) / 2,
+                    (Global::viewPort.h - 593) / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
   if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(),
                               clickType)) {
