@@ -18,15 +18,15 @@ static void closeScrn() {}
 
 static std::vector<Button> buttonInfo() {
   std::vector<Button> buttons;
-  {
-    Button button;
-    button.textures = Global::defCache["iOKAY.def/0"];
-    button.r = {208, 320, 64, 30};
-    button.clickFunc = upgrade;
-    button.disableFunc = []() { return false; };
-    button.showFunc = []() { return true; };
-    buttons.push_back(button);
-  }
+  // {
+  //   Button button;
+  //   button.textures = Global::defCache["iOKAY.def/0"];
+  //   button.r = {208, 320, 64, 30};
+  //   button.clickFunc = upgrade;
+  //   button.disableFunc = []() { return false; };
+  //   button.showFunc = []() { return true; };
+  //   buttons.push_back(button);
+  // }
   return buttons;
 }
 
@@ -92,7 +92,7 @@ bool FreeGuildSys::leftMouseUp(float x, float y) {
 bool FreeGuildSys::keyUp(uint16_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE: {
-    close();
+    closeScrn();
     break;
   }
   default:

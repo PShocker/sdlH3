@@ -609,7 +609,7 @@ void H3mData::readObjects() {
           object.identifier = reader.readU32();
         }
         object.data["count"] = reader.readU16();
-        object.data["character"] = reader.readU8();
+        object.data["initialCharacter"] = reader.readU8();
         bool hasMessage = reader.readU8();
         if (hasMessage) {
           object.data["message"] = reader.readString();
@@ -617,7 +617,7 @@ void H3mData::readObjects() {
           for (int x = 0; x < features.resourcesCount; ++x)
             resources[x] = reader.readU32();
           object.data["resources"] = resources;
-          uint8_t gainedArtifact = 0;
+          uint16_t gainedArtifact = 0;
           if (features.levelAB)
             gainedArtifact = reader.readU16();
           else

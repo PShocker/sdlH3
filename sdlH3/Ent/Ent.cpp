@@ -388,6 +388,7 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
   uint8_t flip = SDL_FLIP_NONE;
 
   auto objectComp = &registry.emplace<ObjectComp>(ent);
+  objectComp->index = i;
   objectComp->type = object.id;
   objectComp->x = object.position[0];
   objectComp->y = object.position[1];
@@ -701,6 +702,20 @@ static entt::entity loadObj(H3mObject &object, uint32_t i) {
   case ObjectType::MONSTER: {
     auto monsterComp = &registry.emplace<MonsterComp>(ent);
     monsterComp->id = object.subId;
+    monsterComp->count = std::any_cast<uint16_t>(object.data["count"]);
+    monsterComp->initialCharacter =
+        std::any_cast<uint8_t>(object.data["initialCharacter"]);
+    monsterComp->hasMessage = std::any_cast<uint8_t>(object.data["hasMessage"]);
+    if (monsterComp->hasMessage) {
+      monsterComp->message = std::any_cast<std::string>(object.data["message"]);
+      monsterComp->resources = std::any_cast<decltype(monsterComp->resources)>(
+          object.data["resources"]);
+      monsterComp->gainedArtifact =
+          std::any_cast<uint16_t>(object.data["gainedArtifact"]);
+    }
+    monsterComp->neverFlees = std::any_cast<uint8_t>(object.data["neverFlees"]);
+    monsterComp->notGrowingTeam =
+        std::any_cast<uint8_t>(object.data["notGrowingTeam"]);
     break;
   }
   case ObjectType::BOAT: {

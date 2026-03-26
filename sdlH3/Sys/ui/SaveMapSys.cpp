@@ -10,7 +10,7 @@
 bool SaveMapSys::save() {
   auto &data = Global::mapData;
   Writer writer("./1.h3s");
-  H3mSaver::saveMap(writer, data);
+  H3mSaver::saveMap(writer);
 
   return true;
 }

@@ -39,7 +39,7 @@ struct HeroComp {
   std::set<uint8_t> spells;
   bool sleep;
 
-  uint64_t exp;
+  uint32_t exp;
   uint8_t level;
 
   std::multiset<uint8_t> visited;
