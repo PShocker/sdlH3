@@ -53,14 +53,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   CreatureSet::init();
   SpellSet::init();
 
-  Global::mapData = H3mData("./Maps/Untitled.h3m");
-  Global::mapData.init();
-  Global::mapW = Global::mapData.header.width * 32;
-  Global::mapH = Global::mapData.header.height * 32;
+  Global::mapPath = "./Maps/Untitled.h3m";
   Global::viewPort = {0, 0, (float)width, (float)height};
-
-  Global::mapSize = Global::mapData.header.width;
-
+  
   Window::createWindow("H3Test", width, height);
   PlayerPal::init();
   Global::init();

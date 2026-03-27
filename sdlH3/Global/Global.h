@@ -20,10 +20,12 @@
 #include <vector>
 
 struct Global {
+  static inline uint32_t seed = std::time(0);
   static inline std::mt19937 gen;
 
   static inline uint8_t langIndex = 1;
 
+  static inline std::string mapPath;
   static inline H3mData mapData;
 
   static inline uint8_t playerId = 0;
@@ -202,7 +204,7 @@ struct Global {
   static inline std::flat_map<std::string, std::vector<SDL_Texture *>> pcxCache;
   static inline std::flat_map<std::string, std::vector<SDL_Texture *>> defCache;
   static inline std::flat_map<std::string, std::vector<uint8_t>> pcmCache;
-  
+
   static void init();
   static void startGame();
   static void endGame();

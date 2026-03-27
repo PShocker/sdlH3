@@ -1,8 +1,10 @@
 #include "H3mSaver.h"
+#include "Comp/DwellingComp.h"
 #include "Comp/HeroComp.h"
 #include "Comp/MonsterComp.h"
 #include "Comp/ObjectComp.h"
 #include "Comp/PlayerIdComp.h"
+#include "Comp/RefugeeComp.h"
 #include "Comp/TownComp.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mHero.h"
@@ -160,8 +162,41 @@ static void saveMonster(Writer &writer) {
 }
 
 static void saveTown(Writer &writer) {
-  auto mCount = compCount<TownComp, ObjectComp>();
-
+  auto tCount = compCount<TownComp, ObjectComp>();
+  writer.writeU32(tCount);
+  for (auto i : {0, 1}) {
+    auto &registry = World::registrys[i];
+    for (auto ent : registry.view<TownComp, ObjectComp>()) {
+      auto &tComp = registry.get<TownComp>(ent);
+      auto &oComp = registry.get<ObjectComp>(ent);
+      // index
+      writer.writeU32(oComp.index);
+      // build
+      auto buildsSize = tComp.buildings.size();
+      writer.writeU8(buildsSize);
+      for (auto [key, val] : tComp.buildings) {
+        writer.writeU8(key);
+      }
+      // gar
+      auto garNum = tComp.garCreatures.size();
+      writer.writeU8(garNum);
+      for (auto [garId, garCount] : tComp.garCreatures) {
+        writer.writeU8(garId);
+        writer.writeU8(garCount);
+      }
+      // hasbuild
+      writer.writeU8(tComp.hasBuild);
+      // visitHeros
+      auto vNum = tComp.visitHeros.size();
+      writer.writeU8(vNum);
+      for (auto [key, val] : tComp.visitHeros) {
+        writer.writeU8(val.size() + 1);
+        for (auto v : val) {
+          writer.writeU8(v);
+        }
+      }
+    }
+  }
 }
 
 static void saveFog(Writer &writer) {
@@ -169,6 +204,68 @@ static void saveFog(Writer &writer) {
   for (auto f : fog) {
     for (auto ff : f) {
       writer.writeU8(ff);
+    }
+  }
+}
+static void saveSeed(Writer &writer) { writer.writeU32(Global::seed); }
+
+static void saveDwe(Writer &writer) {
+  auto dCount = compCount<DwellingComp, ObjectComp>();
+  writer.writeU32(dCount);
+  for (auto i : {0, 1}) {
+    auto &registry = World::registrys[i];
+    for (auto ent : registry.view<DwellingComp, ObjectComp>()) {
+      auto &dComp = registry.get<DwellingComp>(ent);
+      auto &oComp = registry.get<ObjectComp>(ent);
+      // index
+      writer.writeU32(oComp.index);
+      // gar
+      auto garNum = dComp.garCreatures.size();
+      writer.writeU8(garNum);
+      for (auto [garId, garCount] : dComp.garCreatures) {
+        writer.writeU8(garId);
+        writer.writeU8(garCount);
+      }
+      // creNum
+      auto creNum = dComp.creatures.size();
+      writer.writeU8(creNum);
+      for (auto [creId, creCount] : dComp.creatures) {
+        writer.writeU8(creCount);
+      }
+    }
+  }
+}
+
+static void saveRefugee(Writer &writer) {
+  auto rCount = compCount<RefugeeComp, ObjectComp>();
+  writer.writeU32(rCount);
+  for (auto i : {0, 1}) {
+    auto &registry = World::registrys[i];
+    for (auto ent : registry.view<RefugeeComp, ObjectComp>()) {
+      auto &rComp = registry.get<RefugeeComp>(ent);
+      auto &oComp = registry.get<ObjectComp>(ent);
+      // index
+      writer.writeU32(oComp.index);
+
+      // creNum
+      auto creNum = rComp.creatures.size();
+      writer.writeU8(creNum);
+      for (auto [creId, creCount] : rComp.creatures) {
+        writer.writeU8(creId);
+        writer.writeU8(creCount);
+      }
+    }
+  }
+}
+
+static void saveObject(Writer &writer) {
+  auto oCount = compCount<ObjectComp>();
+  writer.writeU32(oCount);
+  for (auto i : {0, 1}) {
+    auto &registry = World::registrys[i];
+    for (auto ent : registry.view<ObjectComp>()) {
+      auto &oComp = registry.get<ObjectComp>(ent);
+      writer.writeU32(oComp.index);
     }
   }
 }
@@ -181,10 +278,14 @@ void H3mSaver::saveMap(Writer &writer) {
   SDL_ReadIO(reader.stream, originData, reader.size());
   SDL_WriteIO(writer.stream, originData, reader.size());
   SDL_free(originData);
-  // Hero,Town,Monster
+  auto cursor = reader.cursor();
+  // seed,Hero,Town,Monster,Object
+  saveSeed(writer);
   saveHero(writer);
   saveMonster(writer);
+  saveObject(writer);
   saveFog(writer);
-
+  // save cursor
+  writer.writeU32(cursor);
   SDL_FlushIO(writer.stream);
 }

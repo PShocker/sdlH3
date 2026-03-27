@@ -26,7 +26,6 @@ struct NetWork {
   static inline uint32_t host_port;
   const static uint8_t heartbeat_interval = 5;
   static inline flatbuffers::FlatBufferBuilder builder;
-  static inline uint32_t seed = std::time(0);
 
   static inline std::flat_map<uint64_t, ClientInfo> clients;
   static inline std::flat_map<uint32_t, std::flat_set<uint64_t>> sceneClients;

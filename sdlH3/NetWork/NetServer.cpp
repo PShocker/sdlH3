@@ -123,7 +123,7 @@ void NetServer::dispatchPacket(uint64_t cId, const NetPacket *packet) {
     } else {
       NetWork::sceneHost[scene] = cId;
     }
-    NetServer::sendInScene(cId, NetWork::seed, scene, scene_host);
+    NetServer::sendInScene(cId, Global::seed, scene, scene_host);
     break;
   }
   case NetPayload_ClientHeroMove: {
@@ -171,7 +171,7 @@ void NetServer::dispatchPacket(uint64_t cId, const NetPacket *packet) {
     NetServer::sendHeroTeleport(cId, por, level, x, y);
     break;
   }
-    case NetPayload_ClientEndTurn: {
+  case NetPayload_ClientEndTurn: {
     // 从union中获取NetHeartbeat
     auto payload = packet->payload_as_ClientHeroTeleport();
     auto por = payload->por();

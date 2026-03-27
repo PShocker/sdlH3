@@ -7,6 +7,7 @@
 #include "Ent/Ent.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
+#include "H3mSaver/H3mDeSaver.h"
 #include "NetWork.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/CameraSys.h"
@@ -37,7 +38,16 @@ void NetEvent::inScene(uint32_t scene, uint32_t seed, uint64_t hId,
   std::srand(seed);
   Global::gen.seed(seed);
 
+  Global::mapData = H3mData(Global::mapPath);
+  Global::mapData.init();
+  Global::mapW = Global::mapData.header.width * 32;
+  Global::mapH = Global::mapData.header.height * 32;
+  Global::mapSize = Global::mapData.header.width;
+
   Ent::load(Global::mapData);
+  if (Global::mapPath.ends_with(".h3s")) {
+    H3mDeSaver::afterEntLoad(Global::mapData.reader);
+  }
   Global::startGame();
   if (cId == hId) {
     World::enterAdvScrn();
