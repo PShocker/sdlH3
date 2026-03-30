@@ -14,6 +14,7 @@ struct Writer {
   void writeU8(uint8_t i);
   void writeU16(uint16_t i);
   void writeU32(uint32_t i);
+  void writeU64(uint64_t i);
 
   void flush();
 

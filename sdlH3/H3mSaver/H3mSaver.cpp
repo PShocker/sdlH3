@@ -4,7 +4,9 @@
 #include "Comp/MonsterComp.h"
 #include "Comp/ObjectComp.h"
 #include "Comp/PlayerIdComp.h"
+#include "Comp/PositionComp.h"
 #include "Comp/RefugeeComp.h"
+#include "Comp/TextureComp.h"
 #include "Comp/TownComp.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mHero.h"
@@ -88,14 +90,10 @@ static void saveHero(Writer &writer) {
       writer.writeU8(hComp.primSkills[3]);
 
       // visitEnts
-      auto vNum = hComp.visitedEnt[0].size() + hComp.visitedEnt[1].size();
-      writer.writeU8(vNum);
-      for (uint8_t j = 0; j <= 1; j++) {
-        for (auto e : hComp.visitedEnt[j]) {
-          auto r = &World::registrys[j];
-          auto &oComp = r->get<ObjectComp>(e);
-          writer.writeU32(oComp.index);
-        }
+      auto vNum = hComp.visitedIndex.size();
+      writer.writeU32(vNum);
+      for (auto index : hComp.visitedIndex) {
+        writer.writeU32(index);
       }
       // visit
       auto viNum = hComp.visited.size();
@@ -129,6 +127,14 @@ static void saveHero(Writer &writer) {
         writer.writeU8(val.subType);
         writer.writeU32(val.val);
       }
+      // texturePath
+      auto &tComp = registry.get<TextureComp>(ent);
+      writer.writeString(tComp.path);
+      // flip
+      auto &pComp = registry.get<PositionComp>(ent);
+      writer.writeU8(pComp.flip);
+      // z
+      writer.writeU64(pComp.z);
     }
   }
   return;

@@ -2,6 +2,7 @@
 #include "AdvMapSys.h"
 #include "AdvPopSys.h"
 #include "Comp/ArenaComp.h"
+#include "Comp/ObjectComp.h"
 #include "Enum/Enum.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
@@ -22,9 +23,8 @@ static float bakH = 300;
 static bool visited() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  auto &schMComp =
-      World::registrys[World::level].get<ArenaComp>(Global::goalEnt);
-  if (schMComp.visitHeros.contains(heroComp.portrait)) {
+  auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
+  if (heroComp.visitedIndex.contains(oComp.index)) {
     return true;
   } else {
     return false;
@@ -36,13 +36,14 @@ static void receive() {
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   auto &schMComp =
       World::registrys[World::level].get<ArenaComp>(Global::goalEnt);
+  auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
   if (!visited()) {
     if (Global::goalIndex == 0) {
       heroComp.primSkills[0] += 2;
     } else {
       heroComp.primSkills[1] += 2;
     }
-    heroComp.visitedEnt[World::level].insert(Global::goalEnt);
+    heroComp.visitedIndex.insert(oComp.index);
     schMComp.visitHeros.insert(heroComp.portrait);
   }
   heroComp.visited.insert((uint8_t)ObjectType::ARENA);
@@ -158,8 +159,7 @@ bool ArenaSys::leftMouseUp(float x, float y) {
                     Global::viewPort.h / 2 - bakH / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(),
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   if (clickPrim(clickType)) {

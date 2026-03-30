@@ -101,7 +101,7 @@ void NetEvent::heroGoal(uint8_t por, uint8_t type, uint8_t level, uint8_t x,
         heroMove(por, level, ox, oy);
       }
       hComp->goalEnt.push_back(oEnt);
-      hComp->visitedEnt[level].insert(oEnt);
+      hComp->visitedIndex.insert(oComp->index);
       return;
     }
   }

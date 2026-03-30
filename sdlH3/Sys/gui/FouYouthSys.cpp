@@ -29,7 +29,9 @@ static void receive() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   World::exitScrn();
-  heroComp.visitedEnt[World::level].insert(Global::goalEnt);
+  auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
+
+  heroComp.visitedIndex.insert(oComp.index);
   heroComp.visited.insert((uint8_t)ObjectType::FOUNTAIN_OF_YOUTH);
 }
 

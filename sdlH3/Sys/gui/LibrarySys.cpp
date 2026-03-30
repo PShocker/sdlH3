@@ -39,7 +39,9 @@ static void receive() {
     heroComp.primSkills[1] += 5;
     heroComp.primSkills[2] += 5;
     heroComp.primSkills[3] += 5;
-    heroComp.visitedEnt[World::level].insert(Global::goalEnt);
+    auto &oComp =
+        World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
+    heroComp.visitedIndex.insert(oComp.index);
   }
   lComp.visitHeros.insert(heroComp.portrait);
 }

@@ -6,6 +6,8 @@ void Writer::writeU16(uint16_t i) { SDL_WriteU16LE(stream, i); }
 
 void Writer::writeU32(uint32_t i) { SDL_WriteU32LE(stream, i); }
 
+void Writer::writeU64(uint64_t i) { SDL_WriteU64LE(stream, i); }
+
 void Writer::flush() { SDL_FlushIO(stream); }
 
 void Writer::fill(uint32_t num, uint8_t i) {

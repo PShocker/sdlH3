@@ -32,7 +32,8 @@ static void receive() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   heroComp.visited.insert(ObjectType::IDOL_OF_FORTUNE);
-  heroComp.visitedEnt[World::level].insert(Global::goalEnt);
+  auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
+  heroComp.visitedIndex.insert(oComp.index);
 }
 
 static std::vector<Button> buttonInfo() {
@@ -114,8 +115,7 @@ bool IdolFortuneSys::leftMouseUp(float x, float y) {
                     Global::viewPort.h / 2 - bakH / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
 
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(),
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   return true;

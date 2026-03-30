@@ -20,7 +20,8 @@ static bool visited() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   auto &gComp = World::registrys[World::level].get<GarRevComp>(Global::goalEnt);
-  if (gComp.visitHeros.contains(heroComp.portrait)) {
+  auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
+  if (heroComp.visitedIndex.contains(oComp.index)) {
     return true;
   } else {
     return false;
@@ -35,7 +36,8 @@ static void receive() {
   if (!gComp.visitHeros.contains(heroComp.portrait)) {
     heroComp.primSkills[Enum::PRIMARY_SKILL_KNOWLEDGE] += 1;
   }
-  heroComp.visitedEnt[World::level].insert(Global::goalEnt);
+  auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
+  heroComp.visitedIndex.insert(oComp.index);
   gComp.visitHeros.insert(heroComp.portrait);
 }
 

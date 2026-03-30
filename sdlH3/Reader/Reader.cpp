@@ -31,6 +31,12 @@ uint32_t Reader::readU32() {
   return r;
 }
 
+uint64_t Reader::readU64() {
+  uint64_t r;
+  SDL_ReadU64LE(stream, &r);
+  return r;
+}
+
 std::string Reader::readString(uint32_t num) {
   auto r = cursor() + num;
   std::string result{};

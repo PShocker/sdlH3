@@ -14,6 +14,7 @@ struct Reader {
   uint8_t readU8();
   uint16_t readU16();
   uint32_t readU32();
+  uint64_t readU64();
 
   std::string readString(uint32_t num);
   std::string readString();

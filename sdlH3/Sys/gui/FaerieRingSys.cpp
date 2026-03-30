@@ -32,8 +32,9 @@ static void receive() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   World::exitScrn();
+  auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
 
-  heroComp.visitedEnt[World::level].insert(Global::goalEnt);
+  heroComp.visitedIndex.insert(oComp.index);
   heroComp.visited.insert((uint8_t)ObjectType::FAERIE_RING);
 }
 
