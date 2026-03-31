@@ -28,6 +28,14 @@ static void receive() {
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   heroComp.visited.insert((uint8_t)ObjectType::BUOY);
+  AdventureBonus bonus = {
+      .src = ObjectType::BUOY,
+      .type = Enum::ADVENTURE_MORALE,
+      .subType = 0,
+      .val = 1,
+  };
+  heroComp.adventureBonus.insert({Enum::ADVENTURE_MORALE, bonus});
+
   World::exitScrn();
 }
 
@@ -110,8 +118,7 @@ bool BuoySys::leftMouseUp(float x, float y) {
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
   auto clickType = (uint8_t)Enum::CLICKTYPE::L_UP;
-  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(),
-                              clickType)) {
+  if (AdvMapSys::clickButtons(leftUp.x, leftUp.y, buttonInfo(), clickType)) {
     return false;
   }
   return true;

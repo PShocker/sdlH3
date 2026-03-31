@@ -163,6 +163,13 @@ static void saveMonster(Writer &writer) {
       }
       writer.writeU8(mComp.neverFlees);
       writer.writeU8(mComp.notGrowingTeam);
+
+      writer.writeU8(oComp.x);
+      writer.writeU8(oComp.y);
+      writer.writeU8(i);
+
+      auto &posComp = registry.get<PositionComp>(ent);
+      writer.writeU64(posComp.z);
     }
   }
 }
@@ -187,8 +194,8 @@ static void saveTown(Writer &writer) {
       auto garNum = tComp.garCreatures.size();
       writer.writeU8(garNum);
       for (auto [garId, garCount] : tComp.garCreatures) {
-        writer.writeU8(garId);
-        writer.writeU8(garCount);
+        writer.writeU16(garId);
+        writer.writeU32(garCount);
       }
       // hasbuild
       writer.writeU8(tComp.hasBuild);
@@ -197,6 +204,7 @@ static void saveTown(Writer &writer) {
       writer.writeU8(vNum);
       for (auto [key, val] : tComp.visitHeros) {
         writer.writeU8(val.size() + 1);
+        writer.writeU8(key);
         for (auto v : val) {
           writer.writeU8(v);
         }
@@ -288,6 +296,7 @@ void H3mSaver::saveMap(Writer &writer) {
   // seed,Hero,Town,Monster,Object
   saveSeed(writer);
   saveHero(writer);
+  saveTown(writer);
   saveMonster(writer);
   saveObject(writer);
   saveFog(writer);

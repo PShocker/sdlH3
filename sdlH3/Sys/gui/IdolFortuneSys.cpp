@@ -34,6 +34,17 @@ static void receive() {
   heroComp.visited.insert(ObjectType::IDOL_OF_FORTUNE);
   auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
   heroComp.visitedIndex.insert(oComp.index);
+  if (!visited()) {
+    {
+      AdventureBonus bonus = {
+          .src = ObjectType::FOUNTAIN_OF_YOUTH,
+          .type = Enum::ADVENTURE_MORALE,
+          .subType = 0,
+          .val = 1,
+      };
+      heroComp.adventureBonus.insert({Enum::ADVENTURE_MORALE, bonus});
+    }
+  }
 }
 
 static std::vector<Button> buttonInfo() {

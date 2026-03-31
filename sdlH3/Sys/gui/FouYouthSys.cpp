@@ -31,6 +31,26 @@ static void receive() {
   World::exitScrn();
   auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
 
+  {
+    AdventureBonus bonus = {
+        .src = ObjectType::FOUNTAIN_OF_YOUTH,
+        .type = Enum::ADVENTURE_LUCK,
+        .subType = 0,
+        .val = 1,
+    };
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_LUCK, bonus});
+  }
+
+  {
+    AdventureBonus bonus = {
+        .src = ObjectType::FOUNTAIN_OF_YOUTH,
+        .type = Enum::ADVENTURE_MORALE,
+        .subType = 0,
+        .val = 1,
+    };
+    heroComp.adventureBonus.insert({Enum::ADVENTURE_MORALE, bonus});
+  }
+
   heroComp.visitedIndex.insert(oComp.index);
   heroComp.visited.insert((uint8_t)ObjectType::FOUNTAIN_OF_YOUTH);
 }

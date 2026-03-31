@@ -6,11 +6,16 @@
 #include "Comp/PositionComp.h"
 #include "Comp/ResourceComp.h"
 #include "Comp/TextureComp.h"
+#include "Comp/TownComp.h"
+#include "Ent/Ent.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
+#include "Set/CreatureSet.h"
 #include "World/World.h"
+#include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 static void clearDefaultEnt() {
@@ -158,17 +163,106 @@ static void loadHero(Reader &reader) {
     // flip
     PositionComp posComp;
     posComp.flip = reader.readU8();
-    posComp.point = {static_cast<float>((oComp.x - 3) * 32),
+    posComp.point = {static_cast<float>((oComp.x - 2) * 32),
                      static_cast<float>((oComp.y - 1) * 32)};
     posComp.z = reader.readU64();
     // level
+    auto &r = World::registrys[level];
+    auto ent = r.create();
+    r.emplace<HeroComp>(ent, hComp);
+    r.emplace<PlayerIdComp>(ent, pComp);
+    r.emplace<ObjectComp>(ent, oComp);
+    r.emplace<TextureComp>(ent, tComp);
+    r.emplace<PositionComp>(ent, posComp);
   }
 }
 
 static void loadMonster(Reader &reader) {
   auto count = reader.readU32();
   for (uint8_t i = 0; i < count; i++) {
-    
+    MonsterComp mComp;
+    ObjectComp oComp;
+    mComp.id = reader.readU32();
+    mComp.count = reader.readU16();
+    mComp.initialCharacter = reader.readU8();
+    mComp.hasMessage = reader.readU8();
+    if (mComp.hasMessage) {
+      mComp.message = reader.readString();
+      for (uint8_t j = 0; j < 7; j++) {
+        mComp.resources[j] = reader.readU32();
+      }
+      mComp.gainedArtifact = reader.readU16();
+    }
+    mComp.neverFlees = reader.readU8();
+    mComp.notGrowingTeam = reader.readU8();
+
+    oComp.x = reader.readU8();
+    oComp.y = reader.readU8();
+    auto level = reader.readU8();
+    PositionComp posComp;
+    posComp.flip = 0;
+    posComp.point = {static_cast<float>((oComp.x - 1) * 32),
+                     static_cast<float>((oComp.y - 1) * 32)};
+    posComp.z = (int64_t)reader.readU64();
+
+    // texturePath
+    TextureComp tComp;
+    tComp.index = 0;
+    tComp.time = 0;
+    tComp.path = CreatureSet::fullCreatures[mComp.id]->graphics.adventure;
+
+    // level
+    auto &r = World::registrys[level];
+    auto ent = r.create();
+    r.emplace<MonsterComp>(ent, mComp);
+    r.emplace<ObjectComp>(ent, oComp);
+    r.emplace<TextureComp>(ent, tComp);
+    r.emplace<PositionComp>(ent, posComp);
+  }
+}
+
+static std::pair<uint8_t, entt::entity> findEnt(uint32_t index) {
+  for (auto i : {0, 1}) {
+    auto &registry = World::registrys[i];
+    for (auto ent : registry.view<ObjectComp>()) {
+      auto oComp = registry.get<ObjectComp>(ent);
+      if (oComp.index == index) {
+        return {i, ent};
+      }
+    }
+  }
+  return {0, entt::null};
+}
+
+static void loadTown(Reader &reader) {
+  auto count = reader.readU32();
+  for (uint8_t i = 0; i < count; i++) {
+    auto index = reader.readU32();
+    auto [in, ent] = findEnt(index);
+    auto &r = World::registrys[in];
+    auto &tComp = r.get<TownComp>(ent);
+    auto buildSize = reader.readU8();
+    for (uint8_t j = 0; j < buildSize; j++) {
+      auto bId = reader.readU8();
+      tComp.buildings[bId] = Ent::loadBuild(in, ent, bId);
+    }
+    auto garNum = reader.readU8();
+    for (uint8_t j = 0; j < garNum; j++) {
+      auto garId = reader.readU16();
+      auto garCount = reader.readU32();
+      tComp.garCreatures.push_back({garId, garCount});
+    }
+    tComp.hasBuild = reader.readU8();
+    auto vNum = reader.readU8();
+    for (uint8_t j = 0; j < vNum; j++) {
+      auto vSize = reader.readU8();
+      auto bId = reader.readU8();
+      for (uint8_t k = 0; k < vSize - 1; k++) {
+        auto heroPor = reader.readU8();
+        tComp.visitHeros[bId].insert(heroPor);
+      }
+    }
+    r.emplace_or_replace<TownComp>(ent, tComp);
   }
 }
 
@@ -181,6 +275,7 @@ void H3mDeSaver::afterEntLoad(Reader &reader) {
   // seed
   loadSeed(reader);
   loadHero(reader);
+  loadTown(reader);
   loadMonster(reader);
 }
 

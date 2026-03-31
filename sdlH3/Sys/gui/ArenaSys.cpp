@@ -39,9 +39,21 @@ static void receive() {
   auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
   if (!visited()) {
     if (Global::goalIndex == 0) {
-      heroComp.primSkills[0] += 2;
+      AdventureBonus bonus = {
+          .src = ObjectType::ARENA,
+          .type = Enum::ADVENTURE_PRIMARY_SKILL,
+          .subType = Enum::PRIMARY_SKILL_ATTACK,
+          .val = 2,
+      };
+      heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
     } else {
-      heroComp.primSkills[1] += 2;
+      AdventureBonus bonus = {
+          .src = ObjectType::ARENA,
+          .type = Enum::ADVENTURE_PRIMARY_SKILL,
+          .subType = Enum::PRIMARY_SKILL_DEFENCE,
+          .val = 2,
+      };
+      heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
     }
     heroComp.visitedIndex.insert(oComp.index);
     schMComp.visitHeros.insert(heroComp.portrait);

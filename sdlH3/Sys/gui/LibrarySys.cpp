@@ -35,10 +35,43 @@ static void receive() {
   auto &lComp =
       World::registrys[World::level].get<LibraryComp>(Global::goalEnt);
   if (!lComp.visitHeros.contains(heroComp.portrait) && heroComp.level >= 10) {
-    heroComp.primSkills[0] += 5;
-    heroComp.primSkills[1] += 5;
-    heroComp.primSkills[2] += 5;
-    heroComp.primSkills[3] += 5;
+    {
+      AdventureBonus bonus = {
+          .src = ObjectType::LIBRARY_OF_ENLIGHTENMENT,
+          .type = Enum::ADVENTURE_PRIMARY_SKILL,
+          .subType = Enum::PRIMARY_SKILL_ATTACK,
+          .val = 5,
+      };
+      heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
+    }
+    {
+      AdventureBonus bonus = {
+          .src = ObjectType::LIBRARY_OF_ENLIGHTENMENT,
+          .type = Enum::ADVENTURE_PRIMARY_SKILL,
+          .subType = Enum::PRIMARY_SKILL_DEFENCE,
+          .val = 5,
+      };
+      heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
+    }
+    {
+      AdventureBonus bonus = {
+          .src = ObjectType::LIBRARY_OF_ENLIGHTENMENT,
+          .type = Enum::ADVENTURE_PRIMARY_SKILL,
+          .subType = Enum::PRIMARY_SKILL_SPELLPOWER,
+          .val = 5,
+      };
+      heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
+    }
+    {
+      AdventureBonus bonus = {
+          .src = ObjectType::LIBRARY_OF_ENLIGHTENMENT,
+          .type = Enum::ADVENTURE_PRIMARY_SKILL,
+          .subType = Enum::PRIMARY_SKILL_KNOWLEDGE,
+          .val = 5,
+      };
+      heroComp.adventureBonus.insert({Enum::ADVENTURE_PRIMARY_SKILL, bonus});
+    }
+
     auto &oComp =
         World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
     heroComp.visitedIndex.insert(oComp.index);

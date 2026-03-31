@@ -610,7 +610,8 @@ void H3mData::readObjects() {
         }
         object.data["count"] = reader.readU16();
         object.data["initialCharacter"] = reader.readU8();
-        bool hasMessage = reader.readU8();
+        uint8_t hasMessage = reader.readU8();
+        object.data["hasMessage"] = hasMessage;
         if (hasMessage) {
           object.data["message"] = reader.readString();
           uint32_t resources[7];
