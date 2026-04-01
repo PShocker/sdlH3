@@ -30,14 +30,22 @@ static bool visited() {
 
 static void receive() {
   World::exitScrn();
+  if (visited()) {
+    return;
+  }
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  auto &gComp = World::registrys[World::level].get<GarRevComp>(Global::goalEnt);
-  if (!gComp.visitHeros.contains(heroComp.portrait)) {
-    heroComp.primSkills[Enum::PRIMARY_SKILL_KNOWLEDGE] += 1;
-  }
+  AdventureBonus bonus = {
+      .src = ObjectType::GARDEN_OF_REVELATION,
+      .type = Enum::ADVENTURE_PRIMARY_SKILL,
+      .subType = Enum::PRIMARY_SKILL_KNOWLEDGE,
+      .val = 1,
+  };
+  heroComp.adventureBonus.insert({Enum::ADVENTURE_LUCK, bonus});
+
   auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
   heroComp.visitedIndex.insert(oComp.index);
+  auto &gComp = World::registrys[World::level].get<GarRevComp>(Global::goalEnt);
   gComp.visitHeros.insert(heroComp.portrait);
 }
 

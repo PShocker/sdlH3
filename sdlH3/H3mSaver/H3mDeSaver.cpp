@@ -1,9 +1,12 @@
 #include "H3mDeSaver.h"
+#include "Comp/BoatComp.h"
+#include "Comp/DwellingComp.h"
 #include "Comp/HeroComp.h"
 #include "Comp/MonsterComp.h"
 #include "Comp/ObjectComp.h"
 #include "Comp/PlayerIdComp.h"
 #include "Comp/PositionComp.h"
+#include "Comp/RefugeeComp.h"
 #include "Comp/ResourceComp.h"
 #include "Comp/TextureComp.h"
 #include "Comp/TownComp.h"
@@ -15,6 +18,7 @@
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include <cstdint>
+#include <flat_set>
 #include <utility>
 #include <vector>
 
@@ -28,6 +32,7 @@ static void clearDefaultEnt() {
       clear.push_back(ent);
     }
     clear.append_range(registry.view<MonsterComp>());
+    clear.append_range(registry.view<BoatComp>());
     for (auto ent : clear) {
       registry.destroy(ent);
     }
@@ -262,7 +267,122 @@ static void loadTown(Reader &reader) {
         tComp.visitHeros[bId].insert(heroPor);
       }
     }
-    r.emplace_or_replace<TownComp>(ent, tComp);
+  }
+}
+
+static void loadObject(Reader &reader) {
+  auto count = reader.readU32();
+  std::flat_set<uint32_t> oSet;
+  for (uint32_t i = 0; i < count; i++) {
+    oSet.insert(reader.readU32());
+  }
+  for (auto i : {0, 1}) {
+    auto &registry = World::registrys[i];
+    std::vector<entt::entity> vEnt;
+    for (auto ent : registry.view<ObjectComp>()) {
+      auto oComp = registry.get<ObjectComp>(ent);
+      if (!oSet.contains(oComp.index)) {
+        vEnt.push_back(ent);
+      }
+    }
+    for (auto ent : vEnt) {
+      registry.destroy(ent);
+    }
+  }
+}
+
+static void loadPlayerId(Reader &reader) {
+  auto count = reader.readU32();
+  for (uint32_t i = 0; i < count; i++) {
+    auto index = reader.readU32();
+    auto pId = reader.readU8();
+    auto [in, ent] = findEnt(index);
+    if (ent != entt::null) {
+      auto &r = World::registrys[in];
+      PlayerIdComp pComp;
+      pComp.id = pId;
+      r.emplace_or_replace<PlayerIdComp>(ent, pComp);
+    }
+  }
+}
+
+static void loadDwe(Reader &reader) {
+  auto count = reader.readU32();
+  for (uint32_t i = 0; i < count; i++) {
+    auto index = reader.readU32();
+    auto [in, ent] = findEnt(index);
+    auto &r = World::registrys[in];
+    auto &dComp = r.get<DwellingComp>(ent);
+    auto garNum = reader.readU8();
+    for (uint8_t j = 0; j < garNum; j++) {
+      auto garId = reader.readU8();
+      auto garCount = reader.readU8();
+      dComp.garCreatures.push_back({garId, garCount});
+    }
+    auto creNum = reader.readU8();
+    for (uint8_t j = 0; j < creNum; j++) {
+      dComp.creatures[j].second = reader.readU8();
+    }
+  }
+}
+
+static void loadRefugee(Reader &reader) {
+  auto count = reader.readU32();
+  for (uint32_t i = 0; i < count; i++) {
+    auto index = reader.readU32();
+    auto [in, ent] = findEnt(index);
+    auto &r = World::registrys[in];
+    auto &rComp = r.get<RefugeeComp>(ent);
+    auto creNum = reader.readU8();
+    for (uint8_t j = 0; j < creNum; j++) {
+      auto creId = reader.readU8();
+      auto creCount = reader.readU8();
+      rComp.creatures.push_back({creId, creCount});
+    }
+  }
+}
+
+static void loadFog(Reader &reader) {
+  auto count = Global::mapSize;
+  auto &fog = Global::fogs[Global::playerId];
+  uint8_t level = 1 + Global::mapData.header.twoLevel;
+  for (uint8_t i = 0; i < level; i++) {
+    fog[i].resize(count);
+    for (uint8_t j = 0; j < count; j++) {
+      fog[i][j] = reader.readU8();
+    }
+  }
+}
+
+static void loadBoat(Reader &reader) {
+  auto count = reader.readU32();
+  for (uint8_t i = 0; i < count; i++) {
+    BoatComp bComp;
+    ObjectComp oComp;
+    TextureComp tComp;
+    PositionComp posComp;
+    bComp.path = reader.readString();
+    tComp.path = reader.readString();
+
+    oComp.type = ObjectType::BOAT;
+    oComp.x = reader.readU8();
+    oComp.y = reader.readU8();
+
+    auto level = reader.readU8();
+    posComp.flip = reader.readU8();
+    posComp.z = reader.readU64();
+
+    posComp.point = {static_cast<float>((oComp.x - 1) * 32),
+                     static_cast<float>((oComp.y - 1) * 32)};
+
+    // level
+    auto &r = World::registrys[level];
+    auto ent = r.create();
+
+    r.emplace<BoatComp>(ent, bComp);
+    r.emplace<ObjectComp>(ent, oComp);
+    r.emplace<TextureComp>(ent, tComp);
+    r.emplace<PositionComp>(ent, posComp);
   }
 }
 
@@ -274,9 +394,14 @@ void H3mDeSaver::afterEntLoad(Reader &reader) {
   reader.seek(cursor);
   // seed
   loadSeed(reader);
+  loadObject(reader);
+  loadPlayerId(reader);
   loadHero(reader);
   loadTown(reader);
   loadMonster(reader);
+  loadDwe(reader);
+  loadRefugee(reader);
+  loadFog(reader);
 }
 
 void H3mDeSaver::loadMap(Reader &reader) {}

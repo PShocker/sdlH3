@@ -25,6 +25,10 @@ static bool visited() {
 }
 
 static void receive() {
+  World::exitScrn();
+  if (visited()) {
+    return;
+  }
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
   heroComp.visited.insert((uint8_t)ObjectType::BUOY);
@@ -35,8 +39,6 @@ static void receive() {
       .val = 1,
   };
   heroComp.adventureBonus.insert({Enum::ADVENTURE_MORALE, bonus});
-
-  World::exitScrn();
 }
 
 static std::vector<Button> buttonInfo() {

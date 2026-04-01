@@ -1,4 +1,5 @@
 #include "H3mSaver.h"
+#include "Comp/BoatComp.h"
 #include "Comp/DwellingComp.h"
 #include "Comp/HeroComp.h"
 #include "Comp/MonsterComp.h"
@@ -8,11 +9,14 @@
 #include "Comp/RefugeeComp.h"
 #include "Comp/TextureComp.h"
 #include "Comp/TownComp.h"
+#include "Comp/WaterWheelComp.h"
+#include "Comp/WindMillComp.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mHero.h"
 #include "SDL3/SDL_iostream.h"
 #include "SDL3/SDL_stdinc.h"
 #include "World/World.h"
+#include "entt/entity/entity.hpp"
 #include <bit>
 #include <bitset>
 #include <cstdint>
@@ -221,6 +225,7 @@ static void saveFog(Writer &writer) {
     }
   }
 }
+
 static void saveSeed(Writer &writer) { writer.writeU32(Global::seed); }
 
 static void saveDwe(Writer &writer) {
@@ -284,8 +289,101 @@ static void saveObject(Writer &writer) {
   }
 }
 
-void H3mSaver::saveMap(Writer &writer) {
+static void savePuzzle(Writer &writer) {
+  auto &puzzle = Global::puzzle[Global::playerId];
+  writer.writeU8(puzzle.size());
+  for (auto p : puzzle) {
+    writer.writeU8(p);
+  }
+}
 
+static void saveWaterWheel(Writer &writer) {
+  auto wCount = compCount<WaterWheelComp>();
+  writer.writeU32(wCount);
+  for (auto i : {0, 1}) {
+    auto &registry = World::registrys[i];
+    for (auto ent : registry.view<ObjectComp, WaterWheelComp>()) {
+      auto &oComp = registry.get<ObjectComp>(ent);
+      auto &wComp = registry.get<WaterWheelComp>(ent);
+      writer.writeU32(oComp.index);
+      writer.writeU8(wComp.resources.size());
+      for (auto [rId, rCount] : wComp.resources) {
+        writer.writeU8(rId);
+        writer.writeU64(rCount);
+      }
+    }
+  }
+}
+
+static void saveWindMill(Writer &writer) {
+  auto wCount = compCount<WindMillComp>();
+  writer.writeU32(wCount);
+  for (auto i : {0, 1}) {
+    auto &registry = World::registrys[i];
+    for (auto ent : registry.view<ObjectComp, WindMillComp>()) {
+      auto &oComp = registry.get<ObjectComp>(ent);
+      auto &wComp = registry.get<WindMillComp>(ent);
+      writer.writeU32(oComp.index);
+      writer.writeU8(wComp.resources.size());
+      for (auto [rId, rCount] : wComp.resources) {
+        writer.writeU8(rId);
+        writer.writeU64(rCount);
+      }
+    }
+  }
+}
+
+static void saveBoat(Writer &writer) {
+  auto bCount = compCount<BoatComp>();
+  writer.writeU32(bCount);
+  for (auto i : {0, 1}) {
+    auto &registry = World::registrys[i];
+    for (auto ent : registry.view<ObjectComp, BoatComp>()) {
+      auto &oComp = registry.get<ObjectComp>(ent);
+      auto &bComp = registry.get<BoatComp>(ent);
+      auto &tComp = registry.get<TextureComp>(ent);
+      auto &posComp = registry.get<PositionComp>(ent);
+      writer.writeString(bComp.path);
+      writer.writeString(tComp.path);
+      writer.writeU8(oComp.x);
+      writer.writeU8(oComp.y);
+      writer.writeU8(i);
+      writer.writeU8(posComp.flip);
+      writer.writeU64(posComp.z);
+    }
+  }
+}
+
+static void savePlayerId(Writer &writer) {
+  auto pCount = compCount<PlayerIdComp, ObjectComp>();
+  writer.writeU32(pCount);
+  for (auto i : {0, 1}) {
+    auto &registry = World::registrys[i];
+    for (auto ent : registry.view<ObjectComp, PlayerIdComp>()) {
+      auto &oComp = registry.get<ObjectComp>(ent);
+      auto &pComp = registry.get<PlayerIdComp>(ent);
+      writer.writeU32(oComp.index);
+      writer.writeU8(pComp.id);
+    }
+  }
+}
+
+static void saveTavernHero(Writer &writer) {
+  auto tHeros = Global::tavernHeros[Global::playerId];
+  uint8_t count = 0;
+  for (auto ent : tHeros) {
+    if (ent != entt::null) {
+      count++;
+    }
+  }
+  writer.writeU8(count);
+  for (auto ent : tHeros) {
+    if (ent != entt::null) {
+    }
+  }
+}
+
+void H3mSaver::saveMap(Writer &writer) {
   auto reader = Global::mapData.reader;
   reader.seek(0);
   char *originData = (char *)SDL_malloc(reader.size());
@@ -295,10 +393,17 @@ void H3mSaver::saveMap(Writer &writer) {
   auto cursor = reader.cursor();
   // seed,Hero,Town,Monster,Object
   saveSeed(writer);
+  saveObject(writer);
+  savePlayerId(writer);
   saveHero(writer);
   saveTown(writer);
+  saveBoat(writer);
   saveMonster(writer);
-  saveObject(writer);
+  saveDwe(writer);
+  saveRefugee(writer);
+  saveWaterWheel(writer);
+  saveWindMill(writer);
+  savePuzzle(writer);
   saveFog(writer);
   // save cursor
   writer.writeU32(cursor);

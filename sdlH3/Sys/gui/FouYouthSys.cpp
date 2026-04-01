@@ -26,9 +26,12 @@ static bool visited() {
 }
 
 static void receive() {
+  World::exitScrn();
+  if (visited()) {
+    return;
+  }
   auto &heroComp =
       World::registrys[World::level].get<HeroComp>(Global::heroEnt);
-  World::exitScrn();
   auto &oComp = World::registrys[World::level].get<ObjectComp>(Global::goalEnt);
 
   {
