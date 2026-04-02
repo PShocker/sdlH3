@@ -5,6 +5,8 @@
 #include "Comp/PositionComp.h"
 #include "Comp/TextureComp.h"
 #include "Global/Global.h"
+#include "NetWork/NetServer.h"
+#include "NetWork/protocol/Protocol.h"
 #include "Sys/gui/AdvMapSys.h"
 #include "Sys/gui/SpectateSys.h"
 #include "World/World.h"
@@ -39,6 +41,20 @@ void ReplaySys::saveRegistry() {
   }
 }
 
+static void cosumeEvent() {
+  if (Global::heroMove == false) {
+    auto &v = Global::replayNetPack;
+    if (!v.empty()) {
+      auto buf = v.front().data();
+      auto packet = GetNetPacket(buf);
+      NetServer::dispatchPacket(0, packet);
+      v.erase(v.begin());
+    } else {
+      return;
+    }
+  }
+}
+
 bool ReplaySys::run() {
   auto playerId = Global::playerId;
   Global::playerId = Global::playerIdSelf;
@@ -49,5 +65,6 @@ bool ReplaySys::run() {
   AdvMapSys::drawAgem();
   AdvMapSys::drawResBar(3, Global::viewPort.h - 25);
   Global::playerId = playerId;
+  cosumeEvent();
   return true;
 }

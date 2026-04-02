@@ -37,6 +37,21 @@ struct ServerHeroRecruitBuilder;
 struct ServerHeroDismiss;
 struct ServerHeroDismissBuilder;
 
+struct ServerHeroAdvBonuse;
+struct ServerHeroAdvBonuseBuilder;
+
+struct ServerHeroCreature;
+struct ServerHeroCreatureBuilder;
+
+struct ServerTownCreature;
+struct ServerTownCreatureBuilder;
+
+struct ServerTownBuild;
+struct ServerTownBuildBuilder;
+
+struct ServerDwe;
+struct ServerDweBuilder;
+
 struct ServerEndTurn;
 struct ServerEndTurnBuilder;
 
@@ -534,6 +549,384 @@ inline ::flatbuffers::Offset<ServerHeroDismiss> CreateServerHeroDismiss(
   ServerHeroDismissBuilder builder_(_fbb);
   builder_.add_por(por);
   return builder_.Finish();
+}
+
+struct ServerHeroAdvBonuse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ServerHeroAdvBonuseBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_INDEX = 4,
+    VT_POR = 6,
+    VT_SRC = 8,
+    VT_TYPE = 10,
+    VT_SUB_TYPE = 12,
+    VT_VAL = 14
+  };
+  uint32_t index() const {
+    return GetField<uint32_t>(VT_INDEX, 0);
+  }
+  uint8_t por() const {
+    return GetField<uint8_t>(VT_POR, 0);
+  }
+  uint8_t src() const {
+    return GetField<uint8_t>(VT_SRC, 0);
+  }
+  uint8_t type() const {
+    return GetField<uint8_t>(VT_TYPE, 0);
+  }
+  uint8_t sub_type() const {
+    return GetField<uint8_t>(VT_SUB_TYPE, 0);
+  }
+  uint8_t val() const {
+    return GetField<uint8_t>(VT_VAL, 0);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_INDEX, 4) &&
+           VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyField<uint8_t>(verifier, VT_SRC, 1) &&
+           VerifyField<uint8_t>(verifier, VT_TYPE, 1) &&
+           VerifyField<uint8_t>(verifier, VT_SUB_TYPE, 1) &&
+           VerifyField<uint8_t>(verifier, VT_VAL, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ServerHeroAdvBonuseBuilder {
+  typedef ServerHeroAdvBonuse Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_index(uint32_t index) {
+    fbb_.AddElement<uint32_t>(ServerHeroAdvBonuse::VT_INDEX, index, 0);
+  }
+  void add_por(uint8_t por) {
+    fbb_.AddElement<uint8_t>(ServerHeroAdvBonuse::VT_POR, por, 0);
+  }
+  void add_src(uint8_t src) {
+    fbb_.AddElement<uint8_t>(ServerHeroAdvBonuse::VT_SRC, src, 0);
+  }
+  void add_type(uint8_t type) {
+    fbb_.AddElement<uint8_t>(ServerHeroAdvBonuse::VT_TYPE, type, 0);
+  }
+  void add_sub_type(uint8_t sub_type) {
+    fbb_.AddElement<uint8_t>(ServerHeroAdvBonuse::VT_SUB_TYPE, sub_type, 0);
+  }
+  void add_val(uint8_t val) {
+    fbb_.AddElement<uint8_t>(ServerHeroAdvBonuse::VT_VAL, val, 0);
+  }
+  explicit ServerHeroAdvBonuseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ServerHeroAdvBonuse> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ServerHeroAdvBonuse>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ServerHeroAdvBonuse> CreateServerHeroAdvBonuse(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t index = 0,
+    uint8_t por = 0,
+    uint8_t src = 0,
+    uint8_t type = 0,
+    uint8_t sub_type = 0,
+    uint8_t val = 0) {
+  ServerHeroAdvBonuseBuilder builder_(_fbb);
+  builder_.add_index(index);
+  builder_.add_val(val);
+  builder_.add_sub_type(sub_type);
+  builder_.add_type(type);
+  builder_.add_src(src);
+  builder_.add_por(por);
+  return builder_.Finish();
+}
+
+struct ServerHeroCreature FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ServerHeroCreatureBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_POR = 4,
+    VT_CREATURE_ID = 6,
+    VT_CREATURE_NUM = 8
+  };
+  uint8_t por() const {
+    return GetField<uint8_t>(VT_POR, 0);
+  }
+  const ::flatbuffers::Vector<uint16_t> *creature_id() const {
+    return GetPointer<const ::flatbuffers::Vector<uint16_t> *>(VT_CREATURE_ID);
+  }
+  const ::flatbuffers::Vector<uint32_t> *creature_num() const {
+    return GetPointer<const ::flatbuffers::Vector<uint32_t> *>(VT_CREATURE_NUM);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyOffset(verifier, VT_CREATURE_ID) &&
+           verifier.VerifyVector(creature_id()) &&
+           VerifyOffset(verifier, VT_CREATURE_NUM) &&
+           verifier.VerifyVector(creature_num()) &&
+           verifier.EndTable();
+  }
+};
+
+struct ServerHeroCreatureBuilder {
+  typedef ServerHeroCreature Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_por(uint8_t por) {
+    fbb_.AddElement<uint8_t>(ServerHeroCreature::VT_POR, por, 0);
+  }
+  void add_creature_id(::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id) {
+    fbb_.AddOffset(ServerHeroCreature::VT_CREATURE_ID, creature_id);
+  }
+  void add_creature_num(::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num) {
+    fbb_.AddOffset(ServerHeroCreature::VT_CREATURE_NUM, creature_num);
+  }
+  explicit ServerHeroCreatureBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ServerHeroCreature> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ServerHeroCreature>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ServerHeroCreature> CreateServerHeroCreature(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num = 0) {
+  ServerHeroCreatureBuilder builder_(_fbb);
+  builder_.add_creature_num(creature_num);
+  builder_.add_creature_id(creature_id);
+  builder_.add_por(por);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<ServerHeroCreature> CreateServerHeroCreatureDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    const std::vector<uint16_t> *creature_id = nullptr,
+    const std::vector<uint32_t> *creature_num = nullptr) {
+  auto creature_id__ = creature_id ? _fbb.CreateVector<uint16_t>(*creature_id) : 0;
+  auto creature_num__ = creature_num ? _fbb.CreateVector<uint32_t>(*creature_num) : 0;
+  return CreateServerHeroCreature(
+      _fbb,
+      por,
+      creature_id__,
+      creature_num__);
+}
+
+struct ServerTownCreature FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ServerTownCreatureBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_POR = 4,
+    VT_CREATURE_ID = 6,
+    VT_CREATURE_NUM = 8
+  };
+  uint8_t por() const {
+    return GetField<uint8_t>(VT_POR, 0);
+  }
+  const ::flatbuffers::Vector<uint16_t> *creature_id() const {
+    return GetPointer<const ::flatbuffers::Vector<uint16_t> *>(VT_CREATURE_ID);
+  }
+  const ::flatbuffers::Vector<uint32_t> *creature_num() const {
+    return GetPointer<const ::flatbuffers::Vector<uint32_t> *>(VT_CREATURE_NUM);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyOffset(verifier, VT_CREATURE_ID) &&
+           verifier.VerifyVector(creature_id()) &&
+           VerifyOffset(verifier, VT_CREATURE_NUM) &&
+           verifier.VerifyVector(creature_num()) &&
+           verifier.EndTable();
+  }
+};
+
+struct ServerTownCreatureBuilder {
+  typedef ServerTownCreature Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_por(uint8_t por) {
+    fbb_.AddElement<uint8_t>(ServerTownCreature::VT_POR, por, 0);
+  }
+  void add_creature_id(::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id) {
+    fbb_.AddOffset(ServerTownCreature::VT_CREATURE_ID, creature_id);
+  }
+  void add_creature_num(::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num) {
+    fbb_.AddOffset(ServerTownCreature::VT_CREATURE_NUM, creature_num);
+  }
+  explicit ServerTownCreatureBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ServerTownCreature> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ServerTownCreature>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ServerTownCreature> CreateServerTownCreature(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num = 0) {
+  ServerTownCreatureBuilder builder_(_fbb);
+  builder_.add_creature_num(creature_num);
+  builder_.add_creature_id(creature_id);
+  builder_.add_por(por);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<ServerTownCreature> CreateServerTownCreatureDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    const std::vector<uint16_t> *creature_id = nullptr,
+    const std::vector<uint32_t> *creature_num = nullptr) {
+  auto creature_id__ = creature_id ? _fbb.CreateVector<uint16_t>(*creature_id) : 0;
+  auto creature_num__ = creature_num ? _fbb.CreateVector<uint32_t>(*creature_num) : 0;
+  return CreateServerTownCreature(
+      _fbb,
+      por,
+      creature_id__,
+      creature_num__);
+}
+
+struct ServerTownBuild FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ServerTownBuildBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_INDEX = 4,
+    VT_BUILD_ID = 6
+  };
+  uint32_t index() const {
+    return GetField<uint32_t>(VT_INDEX, 0);
+  }
+  uint8_t build_id() const {
+    return GetField<uint8_t>(VT_BUILD_ID, 0);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_INDEX, 4) &&
+           VerifyField<uint8_t>(verifier, VT_BUILD_ID, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ServerTownBuildBuilder {
+  typedef ServerTownBuild Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_index(uint32_t index) {
+    fbb_.AddElement<uint32_t>(ServerTownBuild::VT_INDEX, index, 0);
+  }
+  void add_build_id(uint8_t build_id) {
+    fbb_.AddElement<uint8_t>(ServerTownBuild::VT_BUILD_ID, build_id, 0);
+  }
+  explicit ServerTownBuildBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ServerTownBuild> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ServerTownBuild>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ServerTownBuild> CreateServerTownBuild(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t index = 0,
+    uint8_t build_id = 0) {
+  ServerTownBuildBuilder builder_(_fbb);
+  builder_.add_index(index);
+  builder_.add_build_id(build_id);
+  return builder_.Finish();
+}
+
+struct ServerDwe FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ServerDweBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_INDEX = 4,
+    VT_CREATURE_ID = 6,
+    VT_CREATURE_NUM = 8
+  };
+  uint32_t index() const {
+    return GetField<uint32_t>(VT_INDEX, 0);
+  }
+  const ::flatbuffers::Vector<uint16_t> *creature_id() const {
+    return GetPointer<const ::flatbuffers::Vector<uint16_t> *>(VT_CREATURE_ID);
+  }
+  const ::flatbuffers::Vector<uint32_t> *creature_num() const {
+    return GetPointer<const ::flatbuffers::Vector<uint32_t> *>(VT_CREATURE_NUM);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_INDEX, 4) &&
+           VerifyOffset(verifier, VT_CREATURE_ID) &&
+           verifier.VerifyVector(creature_id()) &&
+           VerifyOffset(verifier, VT_CREATURE_NUM) &&
+           verifier.VerifyVector(creature_num()) &&
+           verifier.EndTable();
+  }
+};
+
+struct ServerDweBuilder {
+  typedef ServerDwe Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_index(uint32_t index) {
+    fbb_.AddElement<uint32_t>(ServerDwe::VT_INDEX, index, 0);
+  }
+  void add_creature_id(::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id) {
+    fbb_.AddOffset(ServerDwe::VT_CREATURE_ID, creature_id);
+  }
+  void add_creature_num(::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num) {
+    fbb_.AddOffset(ServerDwe::VT_CREATURE_NUM, creature_num);
+  }
+  explicit ServerDweBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ServerDwe> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ServerDwe>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ServerDwe> CreateServerDwe(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t index = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num = 0) {
+  ServerDweBuilder builder_(_fbb);
+  builder_.add_creature_num(creature_num);
+  builder_.add_creature_id(creature_id);
+  builder_.add_index(index);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<ServerDwe> CreateServerDweDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t index = 0,
+    const std::vector<uint16_t> *creature_id = nullptr,
+    const std::vector<uint32_t> *creature_num = nullptr) {
+  auto creature_id__ = creature_id ? _fbb.CreateVector<uint16_t>(*creature_id) : 0;
+  auto creature_num__ = creature_num ? _fbb.CreateVector<uint32_t>(*creature_num) : 0;
+  return CreateServerDwe(
+      _fbb,
+      index,
+      creature_id__,
+      creature_num__);
 }
 
 struct ServerEndTurn FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {

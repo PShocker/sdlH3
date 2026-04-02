@@ -11,7 +11,13 @@ union NetPayload {
     ClientHeroTeleport,
     ClientHeroRecruit,
     ClientHeroDismiss,
+    ClientHeroAdvBonuse,
+    ClientHeroCreature,
+    ClientTownCreature,
+    ClientTownBuild,
+    ClientDwe,
     ClientEndTurn,
+
     ServerHeartbeat,
     ServerInScene,
     ServerOutScene,
@@ -20,6 +26,11 @@ union NetPayload {
     ServerHeroTeleport,
     ServerHeroRecruit,
     ServerHeroDismiss,
+    ServerHeroAdvBonuse,
+    ServerHeroCreature,
+    ServerTownCreature,
+    ServerTownBuild,
+    ServerDwe,
     ServerEndTurn,
 }
 // 统一的网络包（最外层包装）

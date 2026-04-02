@@ -46,8 +46,17 @@ struct ClientHeroEquipBuilder;
 struct ClientHeroAdvBonuse;
 struct ClientHeroAdvBonuseBuilder;
 
-struct ClientBattleResult;
-struct ClientBattleResultBuilder;
+struct ClientHeroCreature;
+struct ClientHeroCreatureBuilder;
+
+struct ClientTownCreature;
+struct ClientTownCreatureBuilder;
+
+struct ClientDwe;
+struct ClientDweBuilder;
+
+struct ClientTownBuild;
+struct ClientTownBuildBuilder;
 
 struct ClientEndTurn;
 struct ClientEndTurnBuilder;
@@ -613,14 +622,16 @@ inline ::flatbuffers::Offset<ClientHeroEquip> CreateClientHeroEquip(
 struct ClientHeroAdvBonuse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ClientHeroAdvBonuseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_POR = 4,
-    VT_SRC = 6,
-    VT_TYPE = 8,
-    VT_SUB_TYPE = 10,
-    VT_VAL = 12,
-    VT_X = 14,
-    VT_Y = 16
+    VT_INDEX = 4,
+    VT_POR = 6,
+    VT_SRC = 8,
+    VT_TYPE = 10,
+    VT_SUB_TYPE = 12,
+    VT_VAL = 14
   };
+  uint32_t index() const {
+    return GetField<uint32_t>(VT_INDEX, 0);
+  }
   uint8_t por() const {
     return GetField<uint8_t>(VT_POR, 0);
   }
@@ -636,22 +647,15 @@ struct ClientHeroAdvBonuse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
   uint8_t val() const {
     return GetField<uint8_t>(VT_VAL, 0);
   }
-  uint8_t x() const {
-    return GetField<uint8_t>(VT_X, 0);
-  }
-  uint8_t y() const {
-    return GetField<uint8_t>(VT_Y, 0);
-  }
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_INDEX, 4) &&
            VerifyField<uint8_t>(verifier, VT_POR, 1) &&
            VerifyField<uint8_t>(verifier, VT_SRC, 1) &&
            VerifyField<uint8_t>(verifier, VT_TYPE, 1) &&
            VerifyField<uint8_t>(verifier, VT_SUB_TYPE, 1) &&
            VerifyField<uint8_t>(verifier, VT_VAL, 1) &&
-           VerifyField<uint8_t>(verifier, VT_X, 1) &&
-           VerifyField<uint8_t>(verifier, VT_Y, 1) &&
            verifier.EndTable();
   }
 };
@@ -660,6 +664,9 @@ struct ClientHeroAdvBonuseBuilder {
   typedef ClientHeroAdvBonuse Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_index(uint32_t index) {
+    fbb_.AddElement<uint32_t>(ClientHeroAdvBonuse::VT_INDEX, index, 0);
+  }
   void add_por(uint8_t por) {
     fbb_.AddElement<uint8_t>(ClientHeroAdvBonuse::VT_POR, por, 0);
   }
@@ -675,12 +682,6 @@ struct ClientHeroAdvBonuseBuilder {
   void add_val(uint8_t val) {
     fbb_.AddElement<uint8_t>(ClientHeroAdvBonuse::VT_VAL, val, 0);
   }
-  void add_x(uint8_t x) {
-    fbb_.AddElement<uint8_t>(ClientHeroAdvBonuse::VT_X, x, 0);
-  }
-  void add_y(uint8_t y) {
-    fbb_.AddElement<uint8_t>(ClientHeroAdvBonuse::VT_Y, y, 0);
-  }
   explicit ClientHeroAdvBonuseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -694,16 +695,14 @@ struct ClientHeroAdvBonuseBuilder {
 
 inline ::flatbuffers::Offset<ClientHeroAdvBonuse> CreateClientHeroAdvBonuse(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t index = 0,
     uint8_t por = 0,
     uint8_t src = 0,
     uint8_t type = 0,
     uint8_t sub_type = 0,
-    uint8_t val = 0,
-    uint8_t x = 0,
-    uint8_t y = 0) {
+    uint8_t val = 0) {
   ClientHeroAdvBonuseBuilder builder_(_fbb);
-  builder_.add_y(y);
-  builder_.add_x(x);
+  builder_.add_index(index);
   builder_.add_val(val);
   builder_.add_sub_type(sub_type);
   builder_.add_type(type);
@@ -712,85 +711,301 @@ inline ::flatbuffers::Offset<ClientHeroAdvBonuse> CreateClientHeroAdvBonuse(
   return builder_.Finish();
 }
 
-struct ClientBattleResult FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef ClientBattleResultBuilder Builder;
+struct ClientHeroCreature FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ClientHeroCreatureBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_POR = 4,
-    VT_LEVEL = 6,
-    VT_X = 8,
-    VT_Y = 10,
-    VT_WIN = 12
+    VT_CREATURE_ID = 6,
+    VT_CREATURE_NUM = 8
   };
   uint8_t por() const {
     return GetField<uint8_t>(VT_POR, 0);
   }
-  uint8_t level() const {
-    return GetField<uint8_t>(VT_LEVEL, 0);
+  const ::flatbuffers::Vector<uint16_t> *creature_id() const {
+    return GetPointer<const ::flatbuffers::Vector<uint16_t> *>(VT_CREATURE_ID);
   }
-  uint8_t x() const {
-    return GetField<uint8_t>(VT_X, 0);
-  }
-  uint8_t y() const {
-    return GetField<uint8_t>(VT_Y, 0);
-  }
-  bool win() const {
-    return GetField<uint8_t>(VT_WIN, 0) != 0;
+  const ::flatbuffers::Vector<uint32_t> *creature_num() const {
+    return GetPointer<const ::flatbuffers::Vector<uint32_t> *>(VT_CREATURE_NUM);
   }
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_POR, 1) &&
-           VerifyField<uint8_t>(verifier, VT_LEVEL, 1) &&
-           VerifyField<uint8_t>(verifier, VT_X, 1) &&
-           VerifyField<uint8_t>(verifier, VT_Y, 1) &&
-           VerifyField<uint8_t>(verifier, VT_WIN, 1) &&
+           VerifyOffset(verifier, VT_CREATURE_ID) &&
+           verifier.VerifyVector(creature_id()) &&
+           VerifyOffset(verifier, VT_CREATURE_NUM) &&
+           verifier.VerifyVector(creature_num()) &&
            verifier.EndTable();
   }
 };
 
-struct ClientBattleResultBuilder {
-  typedef ClientBattleResult Table;
+struct ClientHeroCreatureBuilder {
+  typedef ClientHeroCreature Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
   void add_por(uint8_t por) {
-    fbb_.AddElement<uint8_t>(ClientBattleResult::VT_POR, por, 0);
+    fbb_.AddElement<uint8_t>(ClientHeroCreature::VT_POR, por, 0);
   }
-  void add_level(uint8_t level) {
-    fbb_.AddElement<uint8_t>(ClientBattleResult::VT_LEVEL, level, 0);
+  void add_creature_id(::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id) {
+    fbb_.AddOffset(ClientHeroCreature::VT_CREATURE_ID, creature_id);
   }
-  void add_x(uint8_t x) {
-    fbb_.AddElement<uint8_t>(ClientBattleResult::VT_X, x, 0);
+  void add_creature_num(::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num) {
+    fbb_.AddOffset(ClientHeroCreature::VT_CREATURE_NUM, creature_num);
   }
-  void add_y(uint8_t y) {
-    fbb_.AddElement<uint8_t>(ClientBattleResult::VT_Y, y, 0);
-  }
-  void add_win(bool win) {
-    fbb_.AddElement<uint8_t>(ClientBattleResult::VT_WIN, static_cast<uint8_t>(win), 0);
-  }
-  explicit ClientBattleResultBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ClientHeroCreatureBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ClientBattleResult> Finish() {
+  ::flatbuffers::Offset<ClientHeroCreature> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ClientBattleResult>(end);
+    auto o = ::flatbuffers::Offset<ClientHeroCreature>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ClientBattleResult> CreateClientBattleResult(
+inline ::flatbuffers::Offset<ClientHeroCreature> CreateClientHeroCreature(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     uint8_t por = 0,
-    uint8_t level = 0,
-    uint8_t x = 0,
-    uint8_t y = 0,
-    bool win = false) {
-  ClientBattleResultBuilder builder_(_fbb);
-  builder_.add_win(win);
-  builder_.add_y(y);
-  builder_.add_x(x);
-  builder_.add_level(level);
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num = 0) {
+  ClientHeroCreatureBuilder builder_(_fbb);
+  builder_.add_creature_num(creature_num);
+  builder_.add_creature_id(creature_id);
   builder_.add_por(por);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<ClientHeroCreature> CreateClientHeroCreatureDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    const std::vector<uint16_t> *creature_id = nullptr,
+    const std::vector<uint32_t> *creature_num = nullptr) {
+  auto creature_id__ = creature_id ? _fbb.CreateVector<uint16_t>(*creature_id) : 0;
+  auto creature_num__ = creature_num ? _fbb.CreateVector<uint32_t>(*creature_num) : 0;
+  return CreateClientHeroCreature(
+      _fbb,
+      por,
+      creature_id__,
+      creature_num__);
+}
+
+struct ClientTownCreature FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ClientTownCreatureBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_POR = 4,
+    VT_CREATURE_ID = 6,
+    VT_CREATURE_NUM = 8
+  };
+  uint8_t por() const {
+    return GetField<uint8_t>(VT_POR, 0);
+  }
+  const ::flatbuffers::Vector<uint16_t> *creature_id() const {
+    return GetPointer<const ::flatbuffers::Vector<uint16_t> *>(VT_CREATURE_ID);
+  }
+  const ::flatbuffers::Vector<uint32_t> *creature_num() const {
+    return GetPointer<const ::flatbuffers::Vector<uint32_t> *>(VT_CREATURE_NUM);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_POR, 1) &&
+           VerifyOffset(verifier, VT_CREATURE_ID) &&
+           verifier.VerifyVector(creature_id()) &&
+           VerifyOffset(verifier, VT_CREATURE_NUM) &&
+           verifier.VerifyVector(creature_num()) &&
+           verifier.EndTable();
+  }
+};
+
+struct ClientTownCreatureBuilder {
+  typedef ClientTownCreature Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_por(uint8_t por) {
+    fbb_.AddElement<uint8_t>(ClientTownCreature::VT_POR, por, 0);
+  }
+  void add_creature_id(::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id) {
+    fbb_.AddOffset(ClientTownCreature::VT_CREATURE_ID, creature_id);
+  }
+  void add_creature_num(::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num) {
+    fbb_.AddOffset(ClientTownCreature::VT_CREATURE_NUM, creature_num);
+  }
+  explicit ClientTownCreatureBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ClientTownCreature> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ClientTownCreature>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ClientTownCreature> CreateClientTownCreature(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num = 0) {
+  ClientTownCreatureBuilder builder_(_fbb);
+  builder_.add_creature_num(creature_num);
+  builder_.add_creature_id(creature_id);
+  builder_.add_por(por);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<ClientTownCreature> CreateClientTownCreatureDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t por = 0,
+    const std::vector<uint16_t> *creature_id = nullptr,
+    const std::vector<uint32_t> *creature_num = nullptr) {
+  auto creature_id__ = creature_id ? _fbb.CreateVector<uint16_t>(*creature_id) : 0;
+  auto creature_num__ = creature_num ? _fbb.CreateVector<uint32_t>(*creature_num) : 0;
+  return CreateClientTownCreature(
+      _fbb,
+      por,
+      creature_id__,
+      creature_num__);
+}
+
+struct ClientDwe FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ClientDweBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_INDEX = 4,
+    VT_BUILD_ID = 6,
+    VT_CREATURE_ID = 8,
+    VT_CREATURE_NUM = 10
+  };
+  uint32_t index() const {
+    return GetField<uint32_t>(VT_INDEX, 0);
+  }
+  uint8_t build_id() const {
+    return GetField<uint8_t>(VT_BUILD_ID, 0);
+  }
+  const ::flatbuffers::Vector<uint16_t> *creature_id() const {
+    return GetPointer<const ::flatbuffers::Vector<uint16_t> *>(VT_CREATURE_ID);
+  }
+  const ::flatbuffers::Vector<uint32_t> *creature_num() const {
+    return GetPointer<const ::flatbuffers::Vector<uint32_t> *>(VT_CREATURE_NUM);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_INDEX, 4) &&
+           VerifyField<uint8_t>(verifier, VT_BUILD_ID, 1) &&
+           VerifyOffset(verifier, VT_CREATURE_ID) &&
+           verifier.VerifyVector(creature_id()) &&
+           VerifyOffset(verifier, VT_CREATURE_NUM) &&
+           verifier.VerifyVector(creature_num()) &&
+           verifier.EndTable();
+  }
+};
+
+struct ClientDweBuilder {
+  typedef ClientDwe Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_index(uint32_t index) {
+    fbb_.AddElement<uint32_t>(ClientDwe::VT_INDEX, index, 0);
+  }
+  void add_build_id(uint8_t build_id) {
+    fbb_.AddElement<uint8_t>(ClientDwe::VT_BUILD_ID, build_id, 0);
+  }
+  void add_creature_id(::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id) {
+    fbb_.AddOffset(ClientDwe::VT_CREATURE_ID, creature_id);
+  }
+  void add_creature_num(::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num) {
+    fbb_.AddOffset(ClientDwe::VT_CREATURE_NUM, creature_num);
+  }
+  explicit ClientDweBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ClientDwe> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ClientDwe>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ClientDwe> CreateClientDwe(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t index = 0,
+    uint8_t build_id = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint16_t>> creature_id = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> creature_num = 0) {
+  ClientDweBuilder builder_(_fbb);
+  builder_.add_creature_num(creature_num);
+  builder_.add_creature_id(creature_id);
+  builder_.add_index(index);
+  builder_.add_build_id(build_id);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<ClientDwe> CreateClientDweDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t index = 0,
+    uint8_t build_id = 0,
+    const std::vector<uint16_t> *creature_id = nullptr,
+    const std::vector<uint32_t> *creature_num = nullptr) {
+  auto creature_id__ = creature_id ? _fbb.CreateVector<uint16_t>(*creature_id) : 0;
+  auto creature_num__ = creature_num ? _fbb.CreateVector<uint32_t>(*creature_num) : 0;
+  return CreateClientDwe(
+      _fbb,
+      index,
+      build_id,
+      creature_id__,
+      creature_num__);
+}
+
+struct ClientTownBuild FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ClientTownBuildBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_INDEX = 4,
+    VT_BUILD_ID = 6
+  };
+  uint32_t index() const {
+    return GetField<uint32_t>(VT_INDEX, 0);
+  }
+  uint8_t build_id() const {
+    return GetField<uint8_t>(VT_BUILD_ID, 0);
+  }
+  template <bool B = false>
+  bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_INDEX, 4) &&
+           VerifyField<uint8_t>(verifier, VT_BUILD_ID, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ClientTownBuildBuilder {
+  typedef ClientTownBuild Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_index(uint32_t index) {
+    fbb_.AddElement<uint32_t>(ClientTownBuild::VT_INDEX, index, 0);
+  }
+  void add_build_id(uint8_t build_id) {
+    fbb_.AddElement<uint8_t>(ClientTownBuild::VT_BUILD_ID, build_id, 0);
+  }
+  explicit ClientTownBuildBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ClientTownBuild> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ClientTownBuild>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ClientTownBuild> CreateClientTownBuild(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t index = 0,
+    uint8_t build_id = 0) {
+  ClientTownBuildBuilder builder_(_fbb);
+  builder_.add_index(index);
+  builder_.add_build_id(build_id);
   return builder_.Finish();
 }
 

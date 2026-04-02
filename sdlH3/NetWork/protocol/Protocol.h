@@ -29,21 +29,31 @@ enum NetPayload : uint8_t {
   NetPayload_ClientHeroTeleport = 6,
   NetPayload_ClientHeroRecruit = 7,
   NetPayload_ClientHeroDismiss = 8,
-  NetPayload_ClientEndTurn = 9,
-  NetPayload_ServerHeartbeat = 10,
-  NetPayload_ServerInScene = 11,
-  NetPayload_ServerOutScene = 12,
-  NetPayload_ServerHeroMove = 13,
-  NetPayload_ServerHeroGoal = 14,
-  NetPayload_ServerHeroTeleport = 15,
-  NetPayload_ServerHeroRecruit = 16,
-  NetPayload_ServerHeroDismiss = 17,
-  NetPayload_ServerEndTurn = 18,
+  NetPayload_ClientHeroAdvBonuse = 9,
+  NetPayload_ClientHeroCreature = 10,
+  NetPayload_ClientTownCreature = 11,
+  NetPayload_ClientTownBuild = 12,
+  NetPayload_ClientDwe = 13,
+  NetPayload_ClientEndTurn = 14,
+  NetPayload_ServerHeartbeat = 15,
+  NetPayload_ServerInScene = 16,
+  NetPayload_ServerOutScene = 17,
+  NetPayload_ServerHeroMove = 18,
+  NetPayload_ServerHeroGoal = 19,
+  NetPayload_ServerHeroTeleport = 20,
+  NetPayload_ServerHeroRecruit = 21,
+  NetPayload_ServerHeroDismiss = 22,
+  NetPayload_ServerHeroAdvBonuse = 23,
+  NetPayload_ServerHeroCreature = 24,
+  NetPayload_ServerTownCreature = 25,
+  NetPayload_ServerTownBuild = 26,
+  NetPayload_ServerDwe = 27,
+  NetPayload_ServerEndTurn = 28,
   NetPayload_MIN = NetPayload_NONE,
   NetPayload_MAX = NetPayload_ServerEndTurn
 };
 
-inline const NetPayload (&EnumValuesNetPayload())[19] {
+inline const NetPayload (&EnumValuesNetPayload())[29] {
   static const NetPayload values[] = {
     NetPayload_NONE,
     NetPayload_ClientHeartbeat,
@@ -54,6 +64,11 @@ inline const NetPayload (&EnumValuesNetPayload())[19] {
     NetPayload_ClientHeroTeleport,
     NetPayload_ClientHeroRecruit,
     NetPayload_ClientHeroDismiss,
+    NetPayload_ClientHeroAdvBonuse,
+    NetPayload_ClientHeroCreature,
+    NetPayload_ClientTownCreature,
+    NetPayload_ClientTownBuild,
+    NetPayload_ClientDwe,
     NetPayload_ClientEndTurn,
     NetPayload_ServerHeartbeat,
     NetPayload_ServerInScene,
@@ -63,13 +78,18 @@ inline const NetPayload (&EnumValuesNetPayload())[19] {
     NetPayload_ServerHeroTeleport,
     NetPayload_ServerHeroRecruit,
     NetPayload_ServerHeroDismiss,
+    NetPayload_ServerHeroAdvBonuse,
+    NetPayload_ServerHeroCreature,
+    NetPayload_ServerTownCreature,
+    NetPayload_ServerTownBuild,
+    NetPayload_ServerDwe,
     NetPayload_ServerEndTurn
   };
   return values;
 }
 
 inline const char * const *EnumNamesNetPayload() {
-  static const char * const names[20] = {
+  static const char * const names[30] = {
     "NONE",
     "ClientHeartbeat",
     "ClientInScene",
@@ -79,6 +99,11 @@ inline const char * const *EnumNamesNetPayload() {
     "ClientHeroTeleport",
     "ClientHeroRecruit",
     "ClientHeroDismiss",
+    "ClientHeroAdvBonuse",
+    "ClientHeroCreature",
+    "ClientTownCreature",
+    "ClientTownBuild",
+    "ClientDwe",
     "ClientEndTurn",
     "ServerHeartbeat",
     "ServerInScene",
@@ -88,6 +113,11 @@ inline const char * const *EnumNamesNetPayload() {
     "ServerHeroTeleport",
     "ServerHeroRecruit",
     "ServerHeroDismiss",
+    "ServerHeroAdvBonuse",
+    "ServerHeroCreature",
+    "ServerTownCreature",
+    "ServerTownBuild",
+    "ServerDwe",
     "ServerEndTurn",
     nullptr
   };
@@ -136,6 +166,26 @@ template<> struct NetPayloadTraits<ClientHeroDismiss> {
   static const NetPayload enum_value = NetPayload_ClientHeroDismiss;
 };
 
+template<> struct NetPayloadTraits<ClientHeroAdvBonuse> {
+  static const NetPayload enum_value = NetPayload_ClientHeroAdvBonuse;
+};
+
+template<> struct NetPayloadTraits<ClientHeroCreature> {
+  static const NetPayload enum_value = NetPayload_ClientHeroCreature;
+};
+
+template<> struct NetPayloadTraits<ClientTownCreature> {
+  static const NetPayload enum_value = NetPayload_ClientTownCreature;
+};
+
+template<> struct NetPayloadTraits<ClientTownBuild> {
+  static const NetPayload enum_value = NetPayload_ClientTownBuild;
+};
+
+template<> struct NetPayloadTraits<ClientDwe> {
+  static const NetPayload enum_value = NetPayload_ClientDwe;
+};
+
 template<> struct NetPayloadTraits<ClientEndTurn> {
   static const NetPayload enum_value = NetPayload_ClientEndTurn;
 };
@@ -170,6 +220,26 @@ template<> struct NetPayloadTraits<ServerHeroRecruit> {
 
 template<> struct NetPayloadTraits<ServerHeroDismiss> {
   static const NetPayload enum_value = NetPayload_ServerHeroDismiss;
+};
+
+template<> struct NetPayloadTraits<ServerHeroAdvBonuse> {
+  static const NetPayload enum_value = NetPayload_ServerHeroAdvBonuse;
+};
+
+template<> struct NetPayloadTraits<ServerHeroCreature> {
+  static const NetPayload enum_value = NetPayload_ServerHeroCreature;
+};
+
+template<> struct NetPayloadTraits<ServerTownCreature> {
+  static const NetPayload enum_value = NetPayload_ServerTownCreature;
+};
+
+template<> struct NetPayloadTraits<ServerTownBuild> {
+  static const NetPayload enum_value = NetPayload_ServerTownBuild;
+};
+
+template<> struct NetPayloadTraits<ServerDwe> {
+  static const NetPayload enum_value = NetPayload_ServerDwe;
 };
 
 template<> struct NetPayloadTraits<ServerEndTurn> {
@@ -218,6 +288,21 @@ struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const ClientHeroDismiss *payload_as_ClientHeroDismiss() const {
     return payload_type() == NetPayload_ClientHeroDismiss ? static_cast<const ClientHeroDismiss *>(payload()) : nullptr;
   }
+  const ClientHeroAdvBonuse *payload_as_ClientHeroAdvBonuse() const {
+    return payload_type() == NetPayload_ClientHeroAdvBonuse ? static_cast<const ClientHeroAdvBonuse *>(payload()) : nullptr;
+  }
+  const ClientHeroCreature *payload_as_ClientHeroCreature() const {
+    return payload_type() == NetPayload_ClientHeroCreature ? static_cast<const ClientHeroCreature *>(payload()) : nullptr;
+  }
+  const ClientTownCreature *payload_as_ClientTownCreature() const {
+    return payload_type() == NetPayload_ClientTownCreature ? static_cast<const ClientTownCreature *>(payload()) : nullptr;
+  }
+  const ClientTownBuild *payload_as_ClientTownBuild() const {
+    return payload_type() == NetPayload_ClientTownBuild ? static_cast<const ClientTownBuild *>(payload()) : nullptr;
+  }
+  const ClientDwe *payload_as_ClientDwe() const {
+    return payload_type() == NetPayload_ClientDwe ? static_cast<const ClientDwe *>(payload()) : nullptr;
+  }
   const ClientEndTurn *payload_as_ClientEndTurn() const {
     return payload_type() == NetPayload_ClientEndTurn ? static_cast<const ClientEndTurn *>(payload()) : nullptr;
   }
@@ -244,6 +329,21 @@ struct NetPacket FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   const ServerHeroDismiss *payload_as_ServerHeroDismiss() const {
     return payload_type() == NetPayload_ServerHeroDismiss ? static_cast<const ServerHeroDismiss *>(payload()) : nullptr;
+  }
+  const ServerHeroAdvBonuse *payload_as_ServerHeroAdvBonuse() const {
+    return payload_type() == NetPayload_ServerHeroAdvBonuse ? static_cast<const ServerHeroAdvBonuse *>(payload()) : nullptr;
+  }
+  const ServerHeroCreature *payload_as_ServerHeroCreature() const {
+    return payload_type() == NetPayload_ServerHeroCreature ? static_cast<const ServerHeroCreature *>(payload()) : nullptr;
+  }
+  const ServerTownCreature *payload_as_ServerTownCreature() const {
+    return payload_type() == NetPayload_ServerTownCreature ? static_cast<const ServerTownCreature *>(payload()) : nullptr;
+  }
+  const ServerTownBuild *payload_as_ServerTownBuild() const {
+    return payload_type() == NetPayload_ServerTownBuild ? static_cast<const ServerTownBuild *>(payload()) : nullptr;
+  }
+  const ServerDwe *payload_as_ServerDwe() const {
+    return payload_type() == NetPayload_ServerDwe ? static_cast<const ServerDwe *>(payload()) : nullptr;
   }
   const ServerEndTurn *payload_as_ServerEndTurn() const {
     return payload_type() == NetPayload_ServerEndTurn ? static_cast<const ServerEndTurn *>(payload()) : nullptr;
@@ -290,6 +390,26 @@ template<> inline const ClientHeroDismiss *NetPacket::payload_as<ClientHeroDismi
   return payload_as_ClientHeroDismiss();
 }
 
+template<> inline const ClientHeroAdvBonuse *NetPacket::payload_as<ClientHeroAdvBonuse>() const {
+  return payload_as_ClientHeroAdvBonuse();
+}
+
+template<> inline const ClientHeroCreature *NetPacket::payload_as<ClientHeroCreature>() const {
+  return payload_as_ClientHeroCreature();
+}
+
+template<> inline const ClientTownCreature *NetPacket::payload_as<ClientTownCreature>() const {
+  return payload_as_ClientTownCreature();
+}
+
+template<> inline const ClientTownBuild *NetPacket::payload_as<ClientTownBuild>() const {
+  return payload_as_ClientTownBuild();
+}
+
+template<> inline const ClientDwe *NetPacket::payload_as<ClientDwe>() const {
+  return payload_as_ClientDwe();
+}
+
 template<> inline const ClientEndTurn *NetPacket::payload_as<ClientEndTurn>() const {
   return payload_as_ClientEndTurn();
 }
@@ -324,6 +444,26 @@ template<> inline const ServerHeroRecruit *NetPacket::payload_as<ServerHeroRecru
 
 template<> inline const ServerHeroDismiss *NetPacket::payload_as<ServerHeroDismiss>() const {
   return payload_as_ServerHeroDismiss();
+}
+
+template<> inline const ServerHeroAdvBonuse *NetPacket::payload_as<ServerHeroAdvBonuse>() const {
+  return payload_as_ServerHeroAdvBonuse();
+}
+
+template<> inline const ServerHeroCreature *NetPacket::payload_as<ServerHeroCreature>() const {
+  return payload_as_ServerHeroCreature();
+}
+
+template<> inline const ServerTownCreature *NetPacket::payload_as<ServerTownCreature>() const {
+  return payload_as_ServerTownCreature();
+}
+
+template<> inline const ServerTownBuild *NetPacket::payload_as<ServerTownBuild>() const {
+  return payload_as_ServerTownBuild();
+}
+
+template<> inline const ServerDwe *NetPacket::payload_as<ServerDwe>() const {
+  return payload_as_ServerDwe();
 }
 
 template<> inline const ServerEndTurn *NetPacket::payload_as<ServerEndTurn>() const {
@@ -399,6 +539,26 @@ inline bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const
       auto ptr = reinterpret_cast<const ClientHeroDismiss *>(obj);
       return verifier.VerifyTable(ptr);
     }
+    case NetPayload_ClientHeroAdvBonuse: {
+      auto ptr = reinterpret_cast<const ClientHeroAdvBonuse *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ClientHeroCreature: {
+      auto ptr = reinterpret_cast<const ClientHeroCreature *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ClientTownCreature: {
+      auto ptr = reinterpret_cast<const ClientTownCreature *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ClientTownBuild: {
+      auto ptr = reinterpret_cast<const ClientTownBuild *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ClientDwe: {
+      auto ptr = reinterpret_cast<const ClientDwe *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
     case NetPayload_ClientEndTurn: {
       auto ptr = reinterpret_cast<const ClientEndTurn *>(obj);
       return verifier.VerifyTable(ptr);
@@ -433,6 +593,26 @@ inline bool VerifyNetPayload(::flatbuffers::VerifierTemplate<B> &verifier, const
     }
     case NetPayload_ServerHeroDismiss: {
       auto ptr = reinterpret_cast<const ServerHeroDismiss *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ServerHeroAdvBonuse: {
+      auto ptr = reinterpret_cast<const ServerHeroAdvBonuse *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ServerHeroCreature: {
+      auto ptr = reinterpret_cast<const ServerHeroCreature *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ServerTownCreature: {
+      auto ptr = reinterpret_cast<const ServerTownCreature *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ServerTownBuild: {
+      auto ptr = reinterpret_cast<const ServerTownBuild *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case NetPayload_ServerDwe: {
+      auto ptr = reinterpret_cast<const ServerDwe *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case NetPayload_ServerEndTurn: {
