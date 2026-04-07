@@ -218,10 +218,11 @@ static void saveTown(Writer &writer) {
 }
 
 static void saveFog(Writer &writer) {
-  auto &fog = Global::fogs[Global::playerId];
-  for (auto f : fog) {
-    for (auto ff : f) {
-      writer.writeU8(ff);
+  for (auto fogs : Global::fogs) {
+    for (auto f : fogs) {
+      for (auto ff : f) {
+        writer.writeU8(ff);
+      }
     }
   }
 }
@@ -290,10 +291,11 @@ static void saveObject(Writer &writer) {
 }
 
 static void savePuzzle(Writer &writer) {
-  auto &puzzle = Global::puzzle[Global::playerId];
-  writer.writeU8(puzzle.size());
-  for (auto p : puzzle) {
-    writer.writeU8(p);
+  for (auto puzzle : Global::puzzle) {
+    writer.writeU8(puzzle.size());
+    for (auto p : puzzle) {
+      writer.writeU8(p);
+    }
   }
 }
 
@@ -383,7 +385,8 @@ static void saveTavernHero(Writer &writer) {
   }
 }
 
-void H3mSaver::saveMap(Writer &writer) {
+void H3mSaver::saveMap(const std::string &filePath) {
+  Writer writer(filePath.c_str());
   auto reader = Global::mapData.reader;
   reader.seek(0);
   char *originData = (char *)SDL_malloc(reader.size());
@@ -407,5 +410,6 @@ void H3mSaver::saveMap(Writer &writer) {
   saveFog(writer);
   // save cursor
   writer.writeU32(cursor);
-  SDL_FlushIO(writer.stream);
+  writer.flush();
+  writer.close();
 }

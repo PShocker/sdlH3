@@ -73,6 +73,6 @@ struct H3mData {
 
   void init();
   Reader reader;
-  H3mData(std::string filePath);
+  H3mData(std::string filePath, bool inflateData = true);
   H3mData() = default;
 };

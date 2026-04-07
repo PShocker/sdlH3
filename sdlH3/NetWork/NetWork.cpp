@@ -16,8 +16,8 @@
 #include <string>
 #include <uv.h>
 
-static uv_udp_t server_socket = {};
-static uint32_t server_port = 0;
+static uv_udp_t local_socket = {};
+static uint32_t local_port = 0;
 static uv_loop_t *loop = nullptr;
 static uv_timer_t send_heartbeat_timer;
 static uv_timer_t fresh_heartbeat_timer;
@@ -97,7 +97,7 @@ bool NetWork::sendUDP(const uint8_t *data, size_t len, uint32_t ip,
 
   // 使用在 main 中初始化好的目标地址 send_addr
   auto r = uv_udp_send(
-      send_req, &server_socket, &buf, 1, (const sockaddr *)&send_addr,
+      send_req, &local_socket, &buf, 1, (const sockaddr *)&send_addr,
       [](uv_udp_send_t *req, int status) {
         if (status < 0) {
           fprintf(stderr, "Send error: %s\n", uv_strerror(status));
@@ -123,43 +123,48 @@ bool NetWork::sendUDP(const uint8_t *data, size_t len, std::string ip,
 void NetWork::init() {
   loop = uv_default_loop();
   // 1. 创建UDP句柄
-  uv_udp_init(loop, &server_socket);
+  uv_udp_init(loop, &local_socket);
 
   // 绑定到 IPv4 和 IPv6
-  struct sockaddr_in recv_addr;
-  uv_ip4_addr("0.0.0.0", 0, &recv_addr);
-  auto r = uv_udp_bind(&server_socket, (const struct sockaddr *)&recv_addr,
-                       UV_UDP_REUSEADDR);
+  struct sockaddr_in local_addr;
+  uv_ip4_addr("0.0.0.0", 0, &local_addr);
+  auto r = uv_udp_bind(&local_socket, (const struct sockaddr *)&local_addr, 0);
   if (r < 0) {
     std::abort();
   }
   // 4. 获取系统实际分配的端口号
   struct sockaddr_in assigned_addr;
   int namelen = sizeof(assigned_addr);
-  r = uv_udp_getsockname(&server_socket, (struct sockaddr *)&assigned_addr,
+  r = uv_udp_getsockname(&local_socket, (struct sockaddr *)&assigned_addr,
                          &namelen);
   if (r) {
     fprintf(stderr, "Getsockname error: %s\n", uv_strerror(r));
     std::abort();
   }
-  server_port = ntohs(assigned_addr.sin_port);
+  local_port = ntohs(assigned_addr.sin_port);
   if (host_port == 0) {
-    host_port = server_port;
+    host_port = local_port;
+  }
+  if (!NetWork::host) {
+    // 连接到指定的远程地址
+    struct sockaddr_in remote_addr;
+    uv_ip4_addr(NetWork::host_ip.c_str(), NetWork::host_port, &remote_addr);
+    uv_udp_connect(&local_socket, (const struct sockaddr *)&remote_addr);
   }
   // 4. 开始接收数据
-  r = uv_udp_recv_start(&server_socket, alloc_cb, on_recv);
+  r = uv_udp_recv_start(&local_socket, alloc_cb, on_recv);
   if (r < 0) {
     fprintf(stderr, "Recv start error: %s\n", uv_err_name(r));
     std::abort();
   }
-  uint32_t heartbeat_interval = 5000;
-
-  printf("Started receiving on port %d...\n", server_port);
+  printf("Started receiving on port %d...\n", local_port);
 }
 
 void NetWork::init(std::string host_ip, uint32_t host_port) {
   NetWork::host_ip = host_ip;
   NetWork::host_port = host_port;
+  // 如果给出host参数，则自己不是主机
+  NetWork::host = false;
   NetWork::init();
 }
 

@@ -1191,7 +1191,10 @@ void H3mData::readQuest(H3mQuest &quest) {
   quest.completedText = reader.readString();
 }
 
-H3mData::H3mData(std::string filePath) : reader(filePath) {
+H3mData::H3mData(std::string filePath, bool inflateData) : reader(filePath) {
+  if (!inflateData) {
+    return;
+  }
   char *compressData = (char *)SDL_malloc(reader.size());
   SDL_ReadIO(reader.stream, compressData, reader.size());
   z_stream zs{};
@@ -1235,5 +1238,5 @@ void H3mData::init() {
   readObjects();
   readEvents();
 
-  reader.close();
+  // reader.close();
 }

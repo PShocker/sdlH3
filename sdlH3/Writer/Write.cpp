@@ -1,3 +1,4 @@
+#include "SDL3/SDL_iostream.h"
 #include "Writer.h"
 
 void Writer::writeU8(uint8_t i) { SDL_WriteU8(stream, i); }
@@ -9,6 +10,8 @@ void Writer::writeU32(uint32_t i) { SDL_WriteU32LE(stream, i); }
 void Writer::writeU64(uint64_t i) { SDL_WriteU64LE(stream, i); }
 
 void Writer::flush() { SDL_FlushIO(stream); }
+
+void Writer::close() { SDL_CloseIO(stream); }
 
 void Writer::fill(uint32_t num, uint8_t i) {
   for (int i = 0; i < num; ++i) {

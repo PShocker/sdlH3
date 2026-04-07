@@ -22,6 +22,7 @@ struct ClientInfo {
 };
 
 struct NetWork {
+  static inline bool host = true;
   static inline std::string host_ip = "127.0.0.1";
   static inline uint32_t host_port;
   const static uint8_t heartbeat_interval = 5;

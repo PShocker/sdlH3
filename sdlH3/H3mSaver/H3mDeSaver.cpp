@@ -10,6 +10,8 @@
 #include "Comp/ResourceComp.h"
 #include "Comp/TextureComp.h"
 #include "Comp/TownComp.h"
+#include "Comp/WaterWheelComp.h"
+#include "Comp/WindMillComp.h"
 #include "Ent/Ent.h"
 #include "Global/Global.h"
 #include "H3mLoader/H3mObject.h"
@@ -148,6 +150,9 @@ static void loadHero(Reader &reader) {
     // x,y,z
     oComp.x = reader.readU8();
     oComp.y = reader.readU8();
+
+    oComp.accessTiles = {{-1, 0}};
+
     auto level = reader.readU8();
     // advBouns
     auto advBounsNum = reader.readU32();
@@ -214,7 +219,8 @@ static void loadMonster(Reader &reader) {
     TextureComp tComp;
     tComp.index = 0;
     tComp.time = 0;
-    tComp.path = CreatureSet::fullCreatures[mComp.id]->graphics.adventure;
+    tComp.path =
+        CreatureSet::fullCreatures[mComp.id]->graphics.adventure + "/0";
 
     // level
     auto &r = World::registrys[level];
@@ -344,12 +350,13 @@ static void loadRefugee(Reader &reader) {
 
 static void loadFog(Reader &reader) {
   auto count = Global::mapSize;
-  auto &fog = Global::fogs[Global::playerId];
-  uint8_t level = 1 + Global::mapData.header.twoLevel;
-  for (uint8_t i = 0; i < level; i++) {
-    fog[i].resize(count);
-    for (uint8_t j = 0; j < count; j++) {
-      fog[i][j] = reader.readU8();
+  auto &fog = Global::fogs;
+  for (uint8_t i = 0; i < 8; i++) {
+    for (uint8_t j = 0; j < 2; j++) {
+      fog[i][j].resize(count);
+      for (uint8_t k = 0; k < count; k++) {
+        fog[i][j][k] = reader.readU8();
+      }
     }
   }
 }
@@ -386,6 +393,42 @@ static void loadBoat(Reader &reader) {
   }
 }
 
+static void loadWaterWheel(Reader &reader) {
+  auto count = reader.readU32();
+  for (uint8_t i = 0; i < count; i++) {
+    auto index = reader.readU32();
+    auto [in, ent] = findEnt(index);
+    auto &r = World::registrys[in];
+    auto &wComp = r.get<WaterWheelComp>(ent);
+    auto rSize = reader.readU8();
+    wComp.resources.resize(rSize);
+    for (auto j = 0; j < rSize; j++) {
+      auto rId = reader.readU8();
+      auto rCount = reader.readU64();
+      wComp.resources[j] = {rId, rCount};
+    }
+  }
+}
+
+static void loadWindMill(Reader &reader) {
+  auto count = reader.readU32();
+  for (uint8_t i = 0; i < count; i++) {
+    auto index = reader.readU32();
+    auto [in, ent] = findEnt(index);
+    auto &r = World::registrys[in];
+    auto &wComp = r.get<WindMillComp>(ent);
+    auto rSize = reader.readU8();
+    wComp.resources.resize(rSize);
+    for (auto j = 0; j < rSize; j++) {
+      auto rId = reader.readU8();
+      auto rCount = reader.readU64();
+      wComp.resources[j] = {rId, rCount};
+    }
+  }
+}
+
+static void loadPuzzle(Reader &reader) {}
+
 void H3mDeSaver::afterEntLoad(Reader &reader) {
   clearDefaultEnt();
   auto size = reader.size();
@@ -398,6 +441,7 @@ void H3mDeSaver::afterEntLoad(Reader &reader) {
   loadPlayerId(reader);
   loadHero(reader);
   loadTown(reader);
+  loadBoat(reader);
   loadMonster(reader);
   loadDwe(reader);
   loadRefugee(reader);

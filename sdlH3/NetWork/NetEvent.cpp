@@ -38,7 +38,11 @@ void NetEvent::inScene(uint32_t scene, uint32_t seed, uint64_t hId,
   std::srand(seed);
   Global::gen.seed(seed);
 
-  Global::mapData = H3mData(Global::mapPath);
+  if (Global::mapPath.ends_with(".h3s")) {
+    Global::mapData = H3mData(Global::mapPath, false);
+  } else {
+    Global::mapData = H3mData(Global::mapPath);
+  }
   Global::mapData.init();
   Global::mapW = Global::mapData.header.width * 32;
   Global::mapH = Global::mapData.header.height * 32;

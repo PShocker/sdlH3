@@ -10,5 +10,5 @@
 #include <vector>
 // SCNRSAV.def
 struct SaveMapSys {
-  bool save();
+  static bool save();
 };

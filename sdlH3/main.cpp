@@ -12,6 +12,7 @@
 #include "Set/SpellSet.h"
 #include "Sys/AudioSys.h"
 #include "Sys/FreeTypeSys.h"
+#include "Sys/ui/SaveMapSys.h"
 #include "Window/Window.h"
 #include "World/World.h"
 #include <cstdint>
@@ -53,7 +54,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   CreatureSet::init();
   SpellSet::init();
 
-  Global::mapPath = "./Maps/Untitled.h3m";
+  // Global::mapPath = "./Maps/Untitled.h3m";
+  Global::mapPath = "./1.h3s";
   Global::viewPort = {0, 0, (float)width, (float)height};
   
   Window::createWindow("H3Test", width, height);
@@ -131,5 +133,6 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
   printf("exit");
+  SaveMapSys::save();
   SDL_Quit();
 }

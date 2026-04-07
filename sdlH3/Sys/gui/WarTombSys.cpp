@@ -14,7 +14,24 @@
 static float bakW = 450;
 static float bakH = 340;
 
-static void receive() { World::exitScrn(); }
+static bool visited() {
+  auto &warTombComp =
+      World::registrys[World::level].get<WarTombComp>(Global::goalEnt);
+  return warTombComp.artId == 0;
+}
+
+static void receive() {
+  World::exitScrn();
+  auto &heroComp =
+      World::registrys[World::level].get<HeroComp>(Global::heroEnt);
+  AdventureBonus bonus = {
+      .src = ObjectType::WARRIORS_TOMB,
+      .type = Enum::ADVENTURE_MORALE,
+      .val = -3,
+  };
+  heroComp.adventureBonus.insert({Enum::ADVENTURE_MORALE, bonus});
+  heroComp.visited.insert(ObjectType::TEMPLE);
+}
 
 static std::vector<Button> buttonInfo() {
   std::vector<Button> buttons;
@@ -50,14 +67,18 @@ static void draw() {
   SDL_FRect posRect;
   SDL_FPoint leftUp{Global::viewPort.w / 2 - bakW / 2,
                     Global::viewPort.h / 2 - bakH / 2};
-  auto &warTombComp =
-      World::registrys[World::level].get<WarTombComp>(Global::goalEnt);
-  auto texture = Global::defCache["Artifact.def/0"][warTombComp.artId];
-  posRect = {leftUp.x + artPosition.x, leftUp.y + artPosition.y, artPosition.w,
-             artPosition.h};
-  SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
-  SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
-  SDL_RenderRect(Window::renderer, &posRect);
+  if (visited()) {
+
+  } else {
+    auto &warTombComp =
+        World::registrys[World::level].get<WarTombComp>(Global::goalEnt);
+    auto texture = Global::defCache["Artifact.def/0"][warTombComp.artId];
+    posRect = {leftUp.x + artPosition.x, leftUp.y + artPosition.y,
+               artPosition.w, artPosition.h};
+    SDL_RenderTexture(Window::renderer, texture, nullptr, &posRect);
+    SDL_SetRenderDrawColor(Window::renderer, 240, 224, 104, 255); //
+    SDL_RenderRect(Window::renderer, &posRect);
+  }
 }
 
 static void drawButton() {

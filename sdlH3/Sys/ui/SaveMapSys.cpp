@@ -8,9 +8,7 @@
 
 // 存档，和解析地图文件类似
 bool SaveMapSys::save() {
-  auto &data = Global::mapData;
-  Writer writer("./1.h3s");
-  H3mSaver::saveMap(writer);
+  H3mSaver::saveMap("./1.h3s");
 
   return true;
 }
