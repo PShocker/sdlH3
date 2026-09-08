@@ -1,0 +1,30 @@
+#pragma once
+
+#include "SDL3/SDL_rect.h"
+#include <SDL3/SDL.h>
+#include <cstdint>
+
+class window {
+public:
+  static inline SDL_Window *win;
+  static inline SDL_Renderer *renderer;
+
+  static inline SDL_FPoint mouse_pos;
+
+  static inline SDL_MouseButtonFlags pre_mouse_state;
+  static inline SDL_MouseButtonFlags mouse_state;
+  static const inline auto keyboard_state = SDL_GetKeyboardState(nullptr);
+
+  static inline uint64_t dt_now = 0;
+  static inline uint64_t dt_last = 0;
+  static inline int32_t delta_time = 0;
+  static inline uint64_t dt_time = 0;
+
+  static void create(const char *title, uint32_t logic_w, uint32_t logic_h,
+                     uint32_t window_w, uint32_t window_h);
+
+  static void tick();
+
+  static void clear();
+  static void update();
+};
