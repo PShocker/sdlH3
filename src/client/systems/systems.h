@@ -2,7 +2,7 @@
 
 #include "SDL3/SDL_events.h"
 #include <vector>
-class system {
+class systems {
 public:
   static inline std::vector<bool (*)()> render_systems;
   static inline std::vector<bool (*)()> logic_systems;

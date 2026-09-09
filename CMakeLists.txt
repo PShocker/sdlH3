@@ -34,11 +34,11 @@ link_directories("C:/ffmpeg-master-latest-win64-gpl-shared/lib")
 include_directories("C:/freetype/include")
 link_directories("C:/freetype/build")
 
+include_directories("C:/json-develop/include")
+
 file(GLOB_RECURSE ALL_CPP_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 list(FILTER ALL_CPP_FILES EXCLUDE REGEX ".*CMakeFiles.*")
 add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/src/client/main.cpp ${ALL_CPP_FILES})
-
-target_link_libraries(main PRIVATE wzlib)
 
 target_link_libraries(main PRIVATE SDL3)
 
